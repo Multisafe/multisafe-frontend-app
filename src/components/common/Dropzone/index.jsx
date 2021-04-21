@@ -2,20 +2,28 @@ import React, { useCallback } from "react";
 import csv from "csv";
 import { useDropzone } from "react-dropzone";
 
+import UploadIcon from "assets/icons/dashboard/upload-icon.svg";
 import { Container } from "./styles";
+import Img from "../Img";
 
 export default function Basic(props) {
   const onDrop = useCallback(
     (acceptedFiles) => {
-      // Do something with the files
-      const reader = new FileReader();
-      reader.onload = () => {
-        csv.parse(reader.result, (err, data) => {
-          props.onDrop(data ? data.slice(1) : undefined);
-        });
-      };
+      try {
+        // Do something with the files
+        const reader = new FileReader();
+        reader.onload = () => {
+          csv.parse(reader.result, (err, data) => {
+            const fileName = acceptedFiles[0].path;
+            props.onDrop(data ? data.slice(1) : undefined, fileName);
+          });
+        };
 
-      reader.readAsBinaryString(acceptedFiles[0]);
+        reader.readAsBinaryString(acceptedFiles[0]);
+      } catch (err) {
+        console.error(err);
+        props.onDrop(undefined, "Invalid file");
+      }
     },
     [props]
   );
@@ -43,11 +51,15 @@ export default function Basic(props) {
       >
         <input {...getInputProps()} />
         {files && files.length > 0 ? (
-          <div className="text-center">Uploaded Successfully - {files}</div>
+          <div className="upload">
+            <div className="drag-text">Uploaded - {files}</div>
+          </div>
         ) : (
-          <p className="text-center">
-            Drag and drop a .csv file here, or click here to select a file
-          </p>
+          <div className="upload">
+            <Img src={UploadIcon} alt="upload" className="upload-icon" />
+            <p className="drag-text">Drag and drop your .csv file here</p>
+            <p className="click-text">Click to upload</p>
+          </div>
         )}
       </Container>
     </section>

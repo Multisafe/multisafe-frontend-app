@@ -1,27 +1,28 @@
 import styled from "styled-components/macro";
 
 export default styled.button`
-  border-radius: 4px;
-  background-color: ${({ theme }) => theme.primary};
+  width: ${({ width }) => width};
+  min-height: 4rem;
+  padding: 1.2rem 2rem;
+  background-color: #7367f0;
 
-  color: #ffffff;
-  text-align: center;
-  border: none;
-  padding: 10px 20px;
-  font-family: Montserrat;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 1.4rem;
+  font-weight: 900;
   font-stretch: normal;
   font-style: normal;
-  line-height: 1.19;
+  line-height: normal;
   letter-spacing: normal;
+  text-align: center;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.4rem;
 
   ${(props) =>
     props.large &&
     `
     width: 100%;
-    min-height: 60px;
-    border-radius: 10px;
+    min-height: 6rem;
+    border-radius: 1rem;
   `}
 
   &:hover {
@@ -34,11 +35,19 @@ export default styled.button`
 
   &.secondary {
     background: white;
-    border: 1px solid ${({ theme }) => theme.primary};
+    border: 0.1rem solid ${({ theme }) => theme.primary};
     color: ${({ theme }) => theme.primary};
     &:hover {
       background-color: ${({ theme }) => theme.primary};
       color: white;
+    }
+  }
+
+  &.secondary-2 {
+    background: #dddcdc;
+    color: #8b8b8b;
+    &:hover {
+      opacity: 0.85;
     }
   }
 

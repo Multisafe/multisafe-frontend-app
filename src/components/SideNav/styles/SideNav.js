@@ -3,7 +3,7 @@ import styled from "styled-components/macro";
 export default styled.div`
   width: 6em;
   position: fixed;
-  min-height: 92vh;
+  // min-height: 92vh;
   height: 100%;
   z-index: 1;
   top: 80px;

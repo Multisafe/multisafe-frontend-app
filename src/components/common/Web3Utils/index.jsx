@@ -100,18 +100,27 @@ export const Balance = () => {
   return !!balance ? parseFloat(formatEther(balance)).toPrecision(4) : null;
 };
 
+const etherscanPrefixByChainId = {
+  1: "",
+  3: `${networkNames.ROPSTEN.toLowerCase()}.`,
+  4: `${networkNames.RINKEBY.toLowerCase()}.`,
+  42: `${networkNames.KOVAN.toLowerCase()}.`,
+};
+export const getEtherscanLink = ({ chainId, type = "tx", hash, address }) => {
+  if (type === "tx") {
+    return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${hash}`;
+  } else if (type === "address") {
+    return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${address}`;
+  }
+  return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/`;
+};
+
 export const TransactionUrl = ({ hash, children }) => {
   const { chainId } = useActiveWeb3React();
 
-  const etherscanPrefixByChainId = {
-    1: "",
-    3: `${networkNames.ROPSTEN.toLowerCase()}.`,
-    4: `${networkNames.RINKEBY.toLowerCase()}.`,
-    42: `${networkNames.KOVAN.toLowerCase()}.`,
-  };
   return (
     <a
-      href={`https://${etherscanPrefixByChainId[chainId]}etherscan.io/tx/${hash}`}
+      href={getEtherscanLink({ chainId, hash })}
       rel="noopener noreferrer"
       target="_blank"
     >

@@ -1,5 +1,5 @@
 /**
- * The login state selectors
+ * The department state selectors
  */
 
 import { createSelector } from "reselect";
@@ -25,6 +25,12 @@ const makeSelectLoading = () =>
     (addDepartmentState) => addDepartmentState.loading
   );
 
+const makeSelectUpdating = () =>
+  createSelector(
+    selectAddDepartment,
+    (addDepartmentState) => addDepartmentState.updating
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectAddDepartment,
@@ -36,5 +42,6 @@ export {
   makeSelectFormData,
   makeSelectDepartmentId,
   makeSelectLoading,
+  makeSelectUpdating,
   makeSelectError,
 };

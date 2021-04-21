@@ -8,6 +8,9 @@ import {
   GET_SAFES_ERROR,
   GET_PARCEL_SAFES,
   FETCH_SAFES,
+  GET_SAFE_OWNERS,
+  GET_SAFE_OWNERS_SUCCESS,
+  GET_SAFE_OWNERS_ERROR,
 } from "./action-types";
 
 export function chooseStep(step) {
@@ -75,6 +78,29 @@ export function getSafesSuccess(safes, createdBy, log) {
 export function getSafesError(error) {
   return {
     type: GET_SAFES_ERROR,
+    error,
+  };
+}
+
+export function getSafeOwners(owner) {
+  return {
+    type: GET_SAFE_OWNERS,
+    owner,
+  };
+}
+
+export function getSafeOwnersSuccess(owners, threshold, log) {
+  return {
+    type: GET_SAFE_OWNERS_SUCCESS,
+    owners,
+    threshold,
+    log,
+  };
+}
+
+export function getSafeOwnersError(error) {
+  return {
+    type: GET_SAFE_OWNERS_ERROR,
     error,
   };
 }

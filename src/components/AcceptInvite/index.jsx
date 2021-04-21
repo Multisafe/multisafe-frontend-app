@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { utils } from "ethers";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { hashMessage } from "@ethersproject/hash";
+import { recoverAddress } from "@ethersproject/transactions";
+import { toUtf8Bytes } from "@ethersproject/strings";
+import { keccak256 } from "@ethersproject/keccak256";
+// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
 import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage } from "hooks";
@@ -21,17 +25,18 @@ import { acceptInvitation } from "store/invitation/actions";
 import Button from "components/common/Button";
 import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
-import PrivacyPng from "assets/images/register/privacy.png";
+import PrivacySvg from "assets/images/register/privacy.svg";
 import { MESSAGE_TO_SIGN } from "constants/index";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
 import TeamMembersPng from "assets/images/team-members.png";
 import { getPublicKey } from "utils/encryption";
+import ParcelLogo from "assets/images/parcel-logo-purple.png";
+import WelcomeImage from "assets/images/welcome-new.png";
 
 import {
   Background,
   InnerCard,
-  Image,
   StepDetails,
   StepInfo,
 } from "components/Login/styles";
@@ -63,8 +68,9 @@ const AcceptInvite = () => {
   const [hasAlreadySigned, setHasAlreadySigned] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [step, chooseStep] = useState(STEPS.ZERO);
+  const [signing, setSigning] = useState(false);
 
-  const { active, account, library } = useActiveWeb3React();
+  const { active, account, library, connector } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: invitationKey, reducer: invitationReducer });
@@ -94,10 +100,22 @@ const AcceptInvite = () => {
   }, [active]);
 
   useEffect(() => {
+    if (sign) {
+      const msgHash = hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = recoverAddress(msgHash, sign);
+      if (recoveredAddress !== account) {
+        setHasAlreadySigned(false);
+        setSign("");
+        chooseStep(STEPS.ZERO);
+      }
+    }
+  }, [account, sign, setSign]);
+
+  useEffect(() => {
     if (step === STEPS.ONE && account) {
       if (sign) {
-        const msgHash = utils.hashMessage(MESSAGE_TO_SIGN);
-        const recoveredAddress = utils.recoverAddress(msgHash, sign);
+        const msgHash = hashMessage(MESSAGE_TO_SIGN);
+        const recoveredAddress = recoverAddress(msgHash, sign);
         if (recoveredAddress === account) {
           setHasAlreadySigned(true);
         }
@@ -105,21 +123,45 @@ const AcceptInvite = () => {
     }
   }, [step, dispatch, account, sign]);
 
-  const signTerms = useCallback(async () => {
+  const signTerms = async () => {
     if (!!library && !!account) {
+      setSigning(true);
       try {
-        await library
-          .getSigner(account)
-          .signMessage(MESSAGE_TO_SIGN)
-          .then((signature) => {
-            setSign(signature);
-            chooseStep(step + 1);
-          });
+        if (connector.name === "WalletConnect") {
+          const rawMessage = MESSAGE_TO_SIGN;
+          const messageLength = new Blob([rawMessage]).size;
+          const message = toUtf8Bytes(
+            "\x19Ethereum Signed Message:\n" + messageLength + rawMessage
+          );
+          const hashedMessage = keccak256(message);
+
+          connector.provider.wc
+            .signMessage([account.toLowerCase(), hashedMessage])
+            .then((signature) => {
+              setSign(signature);
+              setSigning(false);
+              goNext();
+            })
+            .catch((error) => {
+              setSigning(false);
+              console.error("Signature Rejected");
+            });
+        } else {
+          await library
+            .getSigner(account)
+            .signMessage(MESSAGE_TO_SIGN)
+            .then((signature) => {
+              setSign(signature);
+              setSigning(false);
+              chooseStep(step + 1);
+            });
+        }
       } catch (error) {
-        console.error("Transaction Failed");
+        console.error("Signature Rejected");
+        setSigning(false);
       }
     }
-  }, [library, account, setSign, step]);
+  };
 
   const goBack = () => {
     chooseStep(step - 1);
@@ -140,36 +182,38 @@ const AcceptInvite = () => {
 
   const renderConnect = () => (
     <div>
-      <Image minHeight="323px" />
-      <InnerCard height="257px">
-        <h2 className="text-center">Welcome to Parcel</h2>
-        <div className="mt-2 mb-5 text-center">
-          Your one stop for crypto payroll management.
-          <br />
-          Please connect your Ethereum wallet to proceed.
+      <Img
+        src={WelcomeImage}
+        alt="welcome"
+        width="70%"
+        className="d-block mx-auto py-4"
+      />
+      <InnerCard height="260px">
+        <h2 className="text-center mb-4">
+          <img src={ParcelLogo} alt="parcel" width="240" />
+        </h2>
+        <div className="mt-2 title">
+          Your one stop for crypto treasury management.
+        </div>
+        <div className="subtitle">
+          {!active && `Please connect your Ethereum wallet to proceed.`}
         </div>
         {loadingAccount && (
-          <div className="d-flex align-items-center justify-content-center mt-5">
+          <div className="d-flex align-items-center justify-content-center">
             <Loading color="primary" width="50px" height="50px" />
           </div>
         )}
-
         {!loadingAccount &&
           (!active ? (
-            <ConnectButton large className="mx-auto d-block" />
+            <ConnectButton className="mx-auto d-block mt-4 connect" />
           ) : (
-            <div className="row">
-              <div className="col-12">
-                <Button
-                  type="button"
-                  large
-                  className="primary"
-                  onClick={goNext}
-                >
-                  Proceed
-                </Button>
-              </div>
-            </div>
+            <Button
+              type="button"
+              className="mx-auto d-block mt-4 connect"
+              onClick={goNext}
+            >
+              Proceed
+            </Button>
           ))}
       </InnerCard>
     </div>
@@ -188,7 +232,7 @@ const AcceptInvite = () => {
           <div>
             <h3 className="title">Accept Invite</h3>
             <p className="next">
-              {steps[step + 1] ? `NEXT: ${steps[step + 1]}` : `Finish`}
+              {steps[step + 1] ? `Next: ${steps[step + 1]}` : `Finish`}
             </p>
           </div>
           <div className="step-progress">
@@ -207,7 +251,7 @@ const AcceptInvite = () => {
     return (
       <StepDetails>
         <Img
-          src={PrivacyPng}
+          src={PrivacySvg}
           alt="privacy"
           className="my-2"
           width="130px"
@@ -218,14 +262,14 @@ const AcceptInvite = () => {
         {!hasAlreadySigned ? (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              Please sign this message using your private key and authorize
-              Parcel.
+              Please sign to authorize Parcel.
             </p>
             <Button
               type="button"
               onClick={signTerms}
-              large
-              className="mx-auto d-block"
+              className="mx-auto d-block proceed-btn"
+              loading={signing}
+              disabled={signing}
             >
               I'm in
             </Button>
@@ -238,10 +282,12 @@ const AcceptInvite = () => {
             <Button
               type="button"
               onClick={goNext}
-              large
-              className="mx-auto d-block"
+              className="mx-auto d-block proceed-btn"
             >
-              Next
+              <span>Proceed</span>
+              <span className="ml-3">
+                <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+              </span>
             </Button>
           </React.Fragment>
         )}
@@ -258,7 +304,7 @@ const AcceptInvite = () => {
         <h3 className="title">Accept Invite and join Parcel</h3>
 
         <p className="subtitle pb-5">
-          Once you accept the invitation, the main owner will approve you.
+          Once you accept the invitation, one of the owners will approve you.
           <br />
           Then, you can login and view the Parcel dashboard.
         </p>
@@ -266,8 +312,7 @@ const AcceptInvite = () => {
         <Button
           type="button"
           onClick={handleAccept}
-          large
-          className="mx-auto d-block"
+          className="mx-auto d-block proceed-btn"
           loading={loading}
           disabled={loading}
         >
@@ -280,11 +325,16 @@ const AcceptInvite = () => {
 
   const renderSuccess = () => (
     <div>
-      <Image minHeight="323px" />
+      <Img
+        src={WelcomeImage}
+        alt="welcome"
+        height="370px"
+        className="d-block mx-auto"
+      />
       <InnerCard height="257px">
         <h2 className="text-center">Invitation Accepted</h2>
         <div className="mt-2 mb-5 text-center">
-          Great! Now, the main owner will approve you
+          Great! Now, one of the owners will approve you
           <br />
           and you will be able to login to the Parcel dashboard.
         </div>
@@ -312,14 +362,15 @@ const AcceptInvite = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh" className="py-3">
+    <Background withImage minHeight="92vh">
       <Container>
         {!success ? (
           <Card
             className="mx-auto"
             style={{
-              maxWidth: "668px",
-              minHeight: "580px",
+              minHeight: "600px",
+              width: "90%",
+              marginTop: "80px",
             }}
           >
             {step !== STEPS.ZERO && renderStepHeader()}
@@ -329,8 +380,9 @@ const AcceptInvite = () => {
           <Card
             className="mx-auto"
             style={{
-              maxWidth: "668px",
-              minHeight: "580px",
+              minHeight: "600px",
+              width: "90%",
+              marginTop: "80px",
             }}
           >
             {renderSuccess()}

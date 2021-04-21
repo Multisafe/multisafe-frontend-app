@@ -1,15 +1,22 @@
 import { takeLatest, put, call, fork } from "redux-saga/effects";
-import { ADD_TRANSACTION, VIEW_TRANSACTIONS } from "./action-types";
+import {
+  ADD_TRANSACTION,
+  GET_TRANSACTION_BY_ID,
+  VIEW_TRANSACTIONS,
+} from "./action-types";
 import {
   addTransactionSuccess,
   addTransactionError,
   viewTransactionsSuccess,
   viewTransactionsError,
+  getTransactionByIdSuccess,
+  getTransactionByIdError,
 } from "./actions";
 import request from "utils/request";
 import {
   createTransactionEndpoint,
   getTransactionsEndpoint,
+  getTransactionByIdEndpoint,
 } from "constants/endpoints";
 
 function* addTransaction({ body }) {
@@ -53,7 +60,13 @@ function* addTransaction({ body }) {
       // Error in payload
       yield put(addTransactionError(result.log));
     } else {
-      yield put(addTransactionSuccess(result.log, result.transactionHash));
+      yield put(
+        addTransactionSuccess(
+          result.transactionHash,
+          result.transactionId,
+          result.log
+        )
+      );
     }
   } catch (err) {
     yield put(addTransactionError("Error in creating transaction."));
@@ -79,6 +92,25 @@ function* getTransactions(action) {
   }
 }
 
+function* getTransactionById(action) {
+  const requestURL = `${getTransactionByIdEndpoint}?safeAddress=${action.safeAddress}&transactionId=${action.transactionId}`;
+  const options = {
+    method: "GET",
+  };
+
+  try {
+    const result = yield call(request, requestURL, options);
+    if (result.flag !== 200) {
+      // Error in payload
+      yield put(getTransactionByIdError(result.log));
+    } else {
+      yield put(getTransactionByIdSuccess(result.transaction[0], result.log));
+    }
+  } catch (err) {
+    yield put(getTransactionByIdError(err));
+  }
+}
+
 function* watchAddTransaction() {
   yield takeLatest(ADD_TRANSACTION, addTransaction);
 }
@@ -86,7 +118,12 @@ function* watchAddTransaction() {
 function* watchGetTransactions() {
   yield takeLatest(VIEW_TRANSACTIONS, getTransactions);
 }
+
+function* watchGetTransactionById() {
+  yield takeLatest(GET_TRANSACTION_BY_ID, getTransactionById);
+}
 export default function* transactions() {
   yield fork(watchAddTransaction);
   yield fork(watchGetTransactions);
+  yield fork(watchGetTransactionById);
 }

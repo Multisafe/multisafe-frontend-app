@@ -1,24 +1,30 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { hashMessage } from "@ethersproject/hash";
+import { toUtf8Bytes } from "@ethersproject/strings";
+import { keccak256 } from "@ethersproject/keccak256";
+import { recoverAddress } from "@ethersproject/transactions";
+// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+
 import {
   faArrowLeft,
   faArrowRight,
   faLock,
-  faMinus,
-  faPlus,
+  faQuestionCircle,
+  faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "parcel-sdk";
-import { utils } from "ethers";
+import { show } from "redux-modal";
 
 import Container from "react-bootstrap/Container";
-import { useActiveWeb3React, useLocalStorage, useContract } from "hooks";
+import { useActiveWeb3React, useLocalStorage } from "hooks";
 import ConnectButton from "components/Connect";
 import { Card } from "components/common/Card";
 import { useInjectReducer } from "utils/injectReducer";
 import loginWizardReducer from "store/loginWizard/reducer";
 import loginReducer from "store/login/reducer";
-// import registerWizardReducer from "store/registerWizard/reducer";
 import {
   makeSelectFormData,
   makeSelectStep,
@@ -27,6 +33,9 @@ import {
   makeSelectLoading,
   makeSelectSafes,
   makeSelectCreatedBy,
+  makeSelectGnosisSafeOwners,
+  makeSelectGnosisSafeThreshold,
+  makeSelectFetchingSafeDetails,
 } from "store/loginWizard/selectors";
 import {
   chooseStep,
@@ -36,64 +45,75 @@ import {
   getParcelSafes,
   fetchSafes,
   chooseSafe,
+  getSafeOwners,
 } from "store/loginWizard/actions";
-import { makeSelectFlag } from "store/login/selectors";
-import { setOwnerDetails } from "store/global/actions";
+import {
+  setOwnerDetails,
+  setOwnersAndThreshold,
+  setOrganisationType,
+} from "store/global/actions";
 import Button from "components/common/Button";
 import CircularProgress from "components/common/CircularProgress";
 import { Input, ErrorMessage } from "components/common/Form";
 import { useForm, useFieldArray } from "react-hook-form";
 import Img from "components/common/Img";
 import CompanyPng from "assets/images/register/company.png";
-import OwnerPng from "assets/images/register/owner.png";
-import ThresholdPng from "assets/images/register/threshold.png";
-import PrivacyPng from "assets/images/register/privacy.png";
+// import OwnerPng from "assets/images/register/owner.png";
+import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
+import { getPublicKey } from "utils/encryption";
 
-import addresses from "constants/addresses";
 import { MESSAGE_TO_SIGN } from "constants/index";
-import GnosisSafeABI from "constants/abis/GnosisSafe.json";
-import ProxyFactoryABI from "constants/abis/ProxyFactory.json";
 import loginSaga from "store/login/saga";
 import loginWizardSaga from "store/loginWizard/saga";
+import registerReducer from "store/register/reducer";
 import registerSaga from "store/register/saga";
+import {
+  makeSelectError as makeSelectRegisterError,
+  makeSelectLoading as makeSelectLoadingRegister,
+} from "store/register/selectors";
 import { useInjectSaga } from "utils/injectSaga";
 import { loginUser } from "store/login/actions";
 import { registerUser } from "store/register/actions";
 import Loading from "components/common/Loading";
 import TeamPng from "assets/images/user-team.png";
+import ParcelLogo from "assets/images/parcel-logo-purple.png";
+import WelcomeImage from "assets/images/welcome-new.png";
+import {
+  STEPS,
+  ORGANISATION_TYPE,
+  FLOWS as OWNER_FLOWS,
+  organisationInfo,
+} from "store/register/resources";
+import {
+  FLOWS,
+  LOGIN_STEPS,
+  IMPORT_STEPS,
+  IMPORT_INDIVIDUAL_STEPS,
+} from "store/login/resources";
+import OrganisationInfoModal, {
+  MODAL_NAME as INFO_MODAL,
+} from "components/Register/InfoModal";
+import {
+  OrganisationCards,
+  OrganisationCard,
+  HighlightedText,
+  ReviewContent,
+  ReviewOwnerDetails,
+} from "components/Register/styles";
 
 import {
   Background,
   InnerCard,
-  Image,
   StepDetails,
   StepInfo,
   Safe,
   RetryText,
 } from "./styles";
 
-const { GNOSIS_SAFE_ADDRESS, PROXY_FACTORY_ADDRESS, ZERO_ADDRESS } = addresses;
-
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
 const registerKey = "register";
-
-const STEPS = {
-  ZERO: 0,
-  ONE: 1,
-  TWO: 2,
-  THREE: 3,
-  FOUR: 4,
-  FIVE: 5,
-  SIX: 6,
-};
-
-const FLOWS = {
-  IMPORT: "IMPORT",
-  LOGIN: "LOGIN",
-  IMPORT_INDIVIDUAL: "IMPORT_INDIVIDUAL",
-};
 
 const getStepsByFlow = (flow) => {
   switch (flow) {
@@ -120,41 +140,21 @@ const getStepsCountByFlow = (flow) => {
       return Object.keys(LOGIN_STEPS).length - 1;
   }
 };
-const LOGIN_STEPS = {
-  [STEPS.ZERO]: "Connect",
-  [STEPS.ONE]: "Privacy",
-  [STEPS.TWO]: "Choose Safe",
-};
-
-const IMPORT_STEPS = {
-  [STEPS.ZERO]: "Connect",
-  [STEPS.ONE]: "Privacy",
-  [STEPS.TWO]: "Choose Safe",
-  [STEPS.THREE]: "Company Name",
-  [STEPS.FOUR]: "Owner Name",
-  [STEPS.FIVE]: "Threshold",
-};
-
-const IMPORT_INDIVIDUAL_STEPS = {
-  [STEPS.ZERO]: "Connect",
-  [STEPS.ONE]: "Privacy",
-  [STEPS.TWO]: "Choose Safe",
-  [STEPS.THREE]: "Company Name",
-};
 
 const Login = () => {
   const [sign, setSign] = useLocalStorage("SIGNATURE");
   const [encryptionKey, setEncryptionKey] = useLocalStorage("ENCRYPTION_KEY"); // eslint-disable-line
   const [hasAlreadySigned, setHasAlreadySigned] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState(true);
-  const [finalSubmitted, setFinalSubmitted] = useState(false);
   const [safeDetails, setSafeDetails] = useState([]);
+  const [signing, setSigning] = useState(false);
 
-  const { active, account, library } = useActiveWeb3React();
+  const { active, account, library, connector } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
   useInjectReducer({ key: loginKey, reducer: loginReducer });
+  useInjectReducer({ key: registerKey, reducer: registerReducer });
 
   // Sagas
   useInjectSaga({ key: loginKey, saga: loginSaga });
@@ -162,6 +162,7 @@ const Login = () => {
   useInjectSaga({ key: registerKey, saga: registerSaga });
 
   const dispatch = useDispatch();
+  const location = useLocation();
 
   // Selectors
   const step = useSelector(makeSelectStep());
@@ -171,27 +172,18 @@ const Login = () => {
   const getSafesLoading = useSelector(makeSelectLoading());
   const flow = useSelector(makeSelectFlow());
   const chosenSafeAddress = useSelector(makeSelectChosenSafeAddress());
-  const flag = useSelector(makeSelectFlag());
+  const fetching = useSelector(makeSelectFetchingSafeDetails());
+  const gnosisSafeOwners = useSelector(makeSelectGnosisSafeOwners());
+  const gnosisSafeThreshold = useSelector(makeSelectGnosisSafeThreshold());
+  const errorInRegister = useSelector(makeSelectRegisterError());
+  const creating = useSelector(makeSelectLoadingRegister());
 
   // Form
   const { register, handleSubmit, errors, reset, control } = useForm();
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control,
     name: "owners",
   });
-
-  // Contracts
-  const gnosisSafeMasterContract = useContract(
-    GNOSIS_SAFE_ADDRESS,
-    GnosisSafeABI,
-    true
-  );
-
-  const proxyFactory = useContract(
-    PROXY_FACTORY_ADDRESS,
-    ProxyFactoryABI,
-    true
-  );
 
   useEffect(() => {
     let timer;
@@ -218,14 +210,30 @@ const Login = () => {
   }, [reset, formData, account]);
 
   useEffect(() => {
-    if (step === STEPS.ONE && account) {
-      if (sign) {
-        const msgHash = utils.hashMessage(MESSAGE_TO_SIGN);
-        const recoveredAddress = utils.recoverAddress(msgHash, sign);
-        if (recoveredAddress === account) {
-          setHasAlreadySigned(true);
-        }
+    if (sign) {
+      const msgHash = hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = recoverAddress(msgHash, sign);
+
+      if (recoveredAddress !== account) {
+        setHasAlreadySigned(false);
+        reset({});
+        setSign("");
+        dispatch(chooseStep(STEPS.ZERO));
+      } else {
+        setHasAlreadySigned(true);
       }
+    }
+  }, [reset, account, dispatch, sign, setSign, connector]);
+
+  useEffect(() => {
+    reset({
+      ...formData,
+      owners: gnosisSafeOwners.map((owner) => ({ name: "", owner })),
+    });
+  }, [reset, gnosisSafeOwners, formData]);
+
+  useEffect(() => {
+    if (step === STEPS.ONE && account) {
       dispatch(fetchSafes(account));
     }
     if (step === STEPS.TWO && account) {
@@ -235,58 +243,70 @@ const Login = () => {
         dispatch(getParcelSafes(account));
       }
     }
-  }, [step, dispatch, account, sign, flow]);
+  }, [step, dispatch, account, flow]);
 
   useEffect(() => {
-    if (finalSubmitted) {
-      signup(1); // one owner
+    if (step === STEPS.THREE && flow === FLOWS.IMPORT) {
+      dispatch(getSafeOwners(chosenSafeAddress));
     }
-  }, [finalSubmitted]); //eslint-disable-line
+  }, [step, dispatch, chosenSafeAddress, flow]);
 
   useEffect(() => {
-    // when an address is clicked in import flow,
-    // the login api is called, and it returns
-    // 145 => user not registered with parcel
-    // In this case, we take them through the register flow (with existing safe)
-    if (flag === 145) {
-      // dispatch(selectFlow(FLOWS.IMPORT));
-      dispatch(selectFlow(FLOWS.IMPORT_INDIVIDUAL)); // remove this line later
-      dispatch(chooseStep(STEPS.THREE));
-      // goNext();
+    const searchParams = new URLSearchParams(location.search);
+    const referralId = searchParams.get("referralId");
+    if (referralId) {
+      dispatch(updateForm({ referralId }));
     }
-  }, [flag, dispatch]);
+  }, [location, dispatch]);
+
+  const completeImport = async () => {
+    await signup();
+  };
 
   const onSubmit = async (values) => {
     dispatch(updateForm(values));
-
-    if (flow === FLOWS.IMPORT && step === getStepsCountByFlow(FLOWS.IMPORT)) {
-      await signup(values.threshold);
-    } else if (
-      flow === FLOWS.IMPORT_INDIVIDUAL &&
-      step === getStepsCountByFlow(FLOWS.IMPORT_INDIVIDUAL)
-    ) {
-      setFinalSubmitted(true);
-      // await signup(1); // only one owner
-    } else {
-      goNext();
-    }
+    goNext();
   };
 
-  const signTerms = useCallback(async () => {
+  const signTerms = async () => {
     if (!!library && !!account) {
+      setSigning(true);
       try {
-        await library
-          .getSigner(account)
-          .signMessage(MESSAGE_TO_SIGN)
-          .then((signature) => {
-            setSign(signature);
-            goNext();
-          });
+        if (connector.name === "WalletConnect") {
+          const rawMessage = MESSAGE_TO_SIGN;
+          const messageLength = new Blob([rawMessage]).size;
+          const message = toUtf8Bytes(
+            "\x19Ethereum Signed Message:\n" + messageLength + rawMessage
+          );
+          const hashedMessage = keccak256(message);
+
+          connector.provider.wc
+            .signMessage([account.toLowerCase(), hashedMessage])
+            .then((signature) => {
+              setSign(signature);
+              setSigning(false);
+              goNext();
+            })
+            .catch((error) => {
+              setSigning(false);
+              console.error("Signature Rejected");
+            });
+        } else {
+          await library
+            .getSigner(account)
+            .signMessage(MESSAGE_TO_SIGN)
+            .then((signature) => {
+              setSign(signature);
+              setSigning(false);
+              goNext();
+            });
+        }
       } catch (error) {
-        console.error("Transaction Failed");
+        console.error("Signature Rejected");
+        setSigning(false);
       }
     }
-  }, [library, account, setSign, dispatch, formData]); //eslint-disable-line
+  };
 
   const goBack = () => {
     dispatch(chooseStep(step - 1));
@@ -296,24 +316,26 @@ const Login = () => {
     dispatch(chooseStep(step + 1));
   };
 
-  const signup = async (_threshold) => {
+  const signup = async () => {
     // let body;
-    if (gnosisSafeMasterContract && proxyFactory && account) {
+    if (account) {
       // set encryptionKey
       const encryptionKey = cryptoUtils.getEncryptionKey(
         sign,
         chosenSafeAddress
       );
-      const ownerAddresses =
-        formData.owners && formData.owners.length
-          ? formData.owners.map(({ owner }) => owner)
-          : [account];
+      // set encryptionKey
+      setEncryptionKey(encryptionKey);
+
+      const organisationType = parseInt(formData.organisationType);
+
       const encryptedOwners =
         formData.owners && formData.owners.length
           ? formData.owners.map(({ name, owner }) => ({
               name: cryptoUtils.encryptDataUsingEncryptionKey(
                 name,
-                encryptionKey
+                encryptionKey,
+                organisationType
               ),
               owner,
             }))
@@ -321,44 +343,47 @@ const Login = () => {
               {
                 name: cryptoUtils.encryptDataUsingEncryptionKey(
                   formData.name,
-                  encryptionKey
+                  encryptionKey,
+                  organisationType
                 ),
                 owner: account,
               },
             ];
 
-      const threshold = formData.threshold
-        ? parseInt(formData.threshold)
-        : _threshold;
-      const creationData = gnosisSafeMasterContract.interface.encodeFunctionData(
-        "setup",
-        [
-          ownerAddresses,
-          threshold,
-          ZERO_ADDRESS,
-          ZERO_ADDRESS,
-          ZERO_ADDRESS,
-          ZERO_ADDRESS,
-          0,
-          ZERO_ADDRESS,
-        ]
-      );
+      const threshold = gnosisSafeThreshold ? parseInt(gnosisSafeThreshold) : 1;
+
+      const publicKey = getPublicKey(sign);
+
+      let encryptionKeyData;
+      try {
+        encryptionKeyData = await cryptoUtils.encryptUsingSignatures(
+          encryptionKey,
+          sign
+        );
+      } catch (error) {
+        console.error(error);
+        return;
+      }
 
       const body = {
         name: cryptoUtils.encryptDataUsingEncryptionKey(
           formData.name,
-          encryptionKey
+          encryptionKey,
+          organisationType
         ),
         safeAddress: chosenSafeAddress,
         createdBy: account,
         owners: encryptedOwners,
-        proxyData: {
-          from: account,
-          params: [GNOSIS_SAFE_ADDRESS, creationData],
-        },
+        referralId: formData.referralId,
+        threshold,
+        publicKey,
+        encryptionKeyData,
+        organisationType,
       };
 
       dispatch(setOwnerDetails(formData.name, chosenSafeAddress, account));
+      dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
+      dispatch(setOrganisationType(organisationType));
       dispatch(registerUser(body));
     }
   };
@@ -368,34 +393,69 @@ const Login = () => {
     goNext();
   };
 
+  const showOrganisationInfo = (info) => {
+    dispatch(show(INFO_MODAL, { info }));
+  };
+
+  const handleSelectOrganisation = (id) => {
+    let ownerFlow;
+    let organisationType;
+
+    switch (id) {
+      case 1:
+        ownerFlow = OWNER_FLOWS.INDIVIDUAL;
+        organisationType = ORGANISATION_TYPE.PRIVATE;
+        break;
+      case 2:
+        ownerFlow = OWNER_FLOWS.COMPANY;
+        organisationType = ORGANISATION_TYPE.PRIVATE;
+        break;
+      case 3:
+        ownerFlow = OWNER_FLOWS.DAO;
+        organisationType = ORGANISATION_TYPE.PUBLIC;
+        break;
+      default:
+        ownerFlow = OWNER_FLOWS.INDIVIDUAL;
+    }
+    dispatch(updateForm({ ownerFlow, organisationType }));
+    dispatch(chooseStep(step + 1));
+  };
+
   const renderConnect = () => (
     <div>
-      <Image minHeight="323px" />
-      <InnerCard height="257px">
-        <h2 className="text-center">Welcome to Parcel</h2>
-        <div className="mb-4 text-center">
-          Your one stop for crypto payroll management.
-          <br />
-          Please connect your Ethereum wallet to proceed.
+      <Img
+        src={WelcomeImage}
+        alt="welcome"
+        width="70%"
+        className="d-block mx-auto py-4"
+      />
+      <InnerCard height="260px">
+        <h2 className="text-center mb-4">
+          <img src={ParcelLogo} alt="parcel" width="240" />
+        </h2>
+        <div className="mt-2 title">
+          Your one stop for crypto treasury management.
+        </div>
+        <div className="subtitle">
+          {!active && `Please connect your Ethereum wallet to proceed.`}
         </div>
         {loadingAccount && (
-          <div className="d-flex align-items-center justify-content-center mt-5">
+          <div className="d-flex align-items-center justify-content-center mt-4">
             <Loading color="primary" width="50px" height="50px" />
           </div>
         )}
 
         {!loadingAccount &&
           (!active ? (
-            <ConnectButton large className="mx-auto d-block" />
+            <ConnectButton className="mx-auto d-block mt-3 connect" />
           ) : (
-            <div className="row">
+            <div className="row mt-3">
               <div className="col-6">
                 <Button
                   type="button"
-                  large
-                  className="secondary"
-                  onClick={() => handleSelectFlow(FLOWS.IMPORT_INDIVIDUAL)}
-                  disabled
+                  className="secondary import"
+                  onClick={() => handleSelectFlow(FLOWS.IMPORT)}
+                  disabled={!formData.referralId}
                 >
                   Import Existing Safe
                 </Button>
@@ -403,7 +463,7 @@ const Login = () => {
               <div className="col-6">
                 <Button
                   type="button"
-                  large
+                  className="login"
                   onClick={() => handleSelectFlow(FLOWS.LOGIN)}
                 >
                   Login
@@ -426,9 +486,11 @@ const Login = () => {
         </div>
         <StepInfo>
           <div>
-            <h3 className="title">Login</h3>
+            <h3 className="title">
+              {flow === FLOWS.LOGIN ? `Login` : `Import`}
+            </h3>
             <p className="next">
-              {steps[step + 1] ? `NEXT: ${steps[step + 1]}` : `Finish`}
+              {steps[step + 1] ? `Next: ${steps[step + 1]}` : `Finish`}
             </p>
           </div>
           <div className="step-progress">
@@ -443,7 +505,53 @@ const Login = () => {
     );
   };
 
-  const renderCompanyName = () => {
+  const renderAboutYou = () => {
+    return (
+      <StepDetails>
+        <p className="title">About You</p>
+        <p className="subtitle mb-5">Please choose what defines you the best</p>
+
+        <OrganisationCards>
+          {organisationInfo.map((info) => (
+            <OrganisationCard key={info.id}>
+              <Img
+                src={info.img}
+                alt={info.name}
+                width="100%"
+                style={{ minWidth: "130px" }}
+              />
+              <div className="px-3">
+                <div className="d-flex justify-content-between mt-3">
+                  <div className="org-title">{info.name}</div>
+                  <Button
+                    iconOnly
+                    className="p-0"
+                    onClick={() => showOrganisationInfo(info)}
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon={faQuestionCircle} color="#7367f0" />
+                  </Button>
+                </div>
+                <div className="org-subtitle">{info.subtitle}</div>
+              </div>
+
+              <div
+                className="select-org"
+                onClick={() => handleSelectOrganisation(info.id)}
+              >
+                <Button iconOnly className="px-0" type="button">
+                  <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                </Button>
+              </div>
+            </OrganisationCard>
+          ))}
+          <OrganisationInfoModal />
+        </OrganisationCards>
+      </StepDetails>
+    );
+  };
+
+  const renderName = ({ required, placeholder, name }) => {
     return (
       <StepDetails>
         <Img
@@ -453,36 +561,44 @@ const Login = () => {
           width="130px"
           style={{ minWidth: "130px" }}
         />
-        <h3 className="title">What is your Company Name</h3>
-        <p className="subtitle">You’ll be know by this name on Parcel.</p>
-        <Input
-          name="name"
-          register={register}
-          required={`Company Name is required`}
-          placeholder="Awesome Company Inc"
-        />
+        <p className="title">{name}</p>
+        <p className="subtitle">
+          You’ll be registered with this name on Parcel.
+        </p>
+        <div className="mt-2">
+          <Input
+            name="name"
+            register={register}
+            required={required}
+            placeholder={placeholder}
+            style={{ width: "400px" }}
+            defaultValue={formData.name || ""}
+          />
+        </div>
+
         <ErrorMessage name="name" errors={errors} />
-        <Button large type="submit" className="mt-4">
-          Proceed
+        <Button type="submit" className="proceed-btn">
+          <span>Proceed</span>
+          <span className="ml-3">
+            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+          </span>
         </Button>
       </StepDetails>
     );
   };
 
   const renderOwnerDetails = () => {
+    if (fetching) {
+      return (
+        <div className="d-flex align-items-center justify-content-center mt-5">
+          <Loading color="primary" width="50px" height="50px" />
+        </div>
+      );
+    }
     return (
       <StepDetails>
-        {fields.length === 1 && (
-          <Img
-            src={OwnerPng}
-            alt="owner"
-            className="my-2"
-            width="130px"
-            style={{ minWidth: "130px" }}
-          />
-        )}
         <h3 className="title">Owner Name & Address</h3>
-        <p className="subtitle">You can add multiple owners</p>
+        <p className="subtitle mb-3">Please enter the name of the owners</p>
         {fields.map(({ id, name, owner }, index) => {
           return (
             <div
@@ -490,7 +606,7 @@ const Login = () => {
               className="row mb-3 align-items-baseline"
               style={{ minHeight: "60px" }}
             >
-              <div className="col-5">
+              <div className="col-4 pr-0">
                 <Input
                   name={`owners[${index}].name`}
                   register={register}
@@ -504,7 +620,7 @@ const Login = () => {
                     <Error>{errors["owners"][index].name.message}</Error>
                   )}
               </div>
-              <div className="col-5">
+              <div className="col-8">
                 <Input
                   name={`owners[${index}].owner`}
                   register={register}
@@ -513,8 +629,8 @@ const Login = () => {
                     value: /^0x[a-fA-F0-9]{40}$/g,
                     message: "Invalid Ethereum Address",
                   }}
-                  placeholder="0x32Be...2D88"
                   defaultValue={owner}
+                  className="default-address"
                 />
                 {errors["owners"] &&
                   errors["owners"][index] &&
@@ -522,82 +638,15 @@ const Login = () => {
                     <Error>{errors["owners"][index].owner.message}</Error>
                   )}
               </div>
-              <div className="px-1">
-                {index === fields.length - 1 && (
-                  <div>
-                    <Button
-                      type="button"
-                      iconOnly
-                      onClick={() => append({})}
-                      style={{ backgroundColor: "#7367f0" }}
-                      className="px-2 py-2"
-                    >
-                      <FontAwesomeIcon icon={faPlus} color="#fff" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="px-1">
-                {fields.length > 1 && index === fields.length - 1 && (
-                  <div>
-                    <Button
-                      type="button"
-                      iconOnly
-                      onClick={() => remove(index)}
-                      style={{ backgroundColor: "#ff1c46" }}
-                      className="px-2 py-2"
-                    >
-                      <FontAwesomeIcon icon={faMinus} color="#fff" />
-                    </Button>
-                  </div>
-                )}
-              </div>
             </div>
           );
         })}
 
-        <Button large type="submit" className="mt-3">
-          Add Owners
-        </Button>
-      </StepDetails>
-    );
-  };
-
-  const renderThreshold = () => {
-    return (
-      <StepDetails>
-        <Img
-          src={ThresholdPng}
-          alt="threshold"
-          className="my-2"
-          width="130px"
-          style={{ minWidth: "130px" }}
-        />
-        <h3 className="title">Threshold</h3>
-        <p className="subtitle">
-          How many people should authorize transactions?
-        </p>
-        <div
-          className="row mr-4 align-items-center radio-toolbar"
-          style={{ padding: "10px 16px 0" }}
-        >
-          {formData.owners.map(({ owner }, index) => (
-            <Input
-              name={`threshold`}
-              register={register}
-              type="radio"
-              id={`threshold${index}`}
-              value={index + 1}
-              defaultChecked={index === 0}
-              label={index + 1}
-              key={owner}
-            />
-          ))}
-        </div>
-
-        <ErrorMessage name="threshold" errors={errors} />
-        <Button large type="submit" className="mt-3">
-          Complete Import
+        <Button type="submit" className="mt-3 proceed-btn">
+          <span>Proceed</span>
+          <span className="ml-3">
+            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+          </span>
         </Button>
       </StepDetails>
     );
@@ -607,25 +656,25 @@ const Login = () => {
     return (
       <StepDetails>
         <Img
-          src={PrivacyPng}
+          src={PrivacySvg}
           alt="privacy"
           className="my-2"
-          width="130px"
-          style={{ minWidth: "130px" }}
+          width="100px"
+          style={{ minWidth: "100px" }}
         />
         <h3 className="title">We care for Your Privacy </h3>
 
         {!hasAlreadySigned ? (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              Please sign this message using your private key and authorize
-              Parcel.
+              Please sign to authorize Parcel.
             </p>
             <Button
               type="button"
               onClick={signTerms}
-              large
-              className="mx-auto d-block"
+              className="mx-auto d-block proceed-btn"
+              loading={signing}
+              disabled={signing}
             >
               I'm in
             </Button>
@@ -633,15 +682,18 @@ const Login = () => {
         ) : (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              You have already authorized Parcel. Simply click Next to continue.
+              You have already authorized Parcel. Simply click Proceed to
+              continue.
             </p>
             <Button
               type="button"
               onClick={goNext}
-              large
-              className="mx-auto d-block"
+              className="mx-auto d-block proceed-btn"
             >
-              Next
+              <span>Proceed</span>
+              <span className="ml-3">
+                <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+              </span>
             </Button>
           </React.Fragment>
         )}
@@ -649,8 +701,12 @@ const Login = () => {
     );
   };
 
-  const getEncryptionKey = async (data, sign) => {
-    const encryptionKey = await cryptoUtils.decryptUsingSignatures(data, sign);
+  const getEncryptionKey = async (data, sign, organisationType) => {
+    const encryptionKey = await cryptoUtils.decryptUsingSignatures(
+      data,
+      sign,
+      organisationType
+    );
     return encryptionKey;
   };
 
@@ -674,18 +730,21 @@ const Login = () => {
       } else {
         const encryptionKey = await getEncryptionKey(
           safes[i].encryptionKeyData,
-          sign
+          sign,
+          safes[i].organisationType
         );
 
         safeDetails.push({
           safe: safes[i].safeAddress,
           name: cryptoUtils.decryptDataUsingEncryptionKey(
             safes[i].name,
-            encryptionKey
+            encryptionKey,
+            safes[i].organisationType
           ),
           balance: "0",
           encryptionKeyData: safes[i].encryptionKeyData,
           createdBy,
+          organisationType: safes[i].organisationType,
         });
       }
     }
@@ -700,17 +759,33 @@ const Login = () => {
     }
   }, [step, getSafeDetails]);
 
-  const handleSelectSafe = async (name, safe, encryptionKeyData, createdBy) => {
+  const handleSelectSafe = async (
+    name,
+    safe,
+    encryptionKeyData,
+    createdBy,
+    organisationType
+  ) => {
     dispatch(chooseSafe(safe));
     dispatch(setOwnerDetails(name, safe, createdBy));
 
     if (sign) {
-      const encryptionKey = await getEncryptionKey(encryptionKeyData, sign);
+      const encryptionKey = await getEncryptionKey(
+        encryptionKeyData,
+        sign,
+        organisationType
+      );
       setEncryptionKey(encryptionKey);
     }
 
     dispatch(loginUser(safe));
   };
+
+  const handleImportSelectedSafe = async (safe) => {
+    dispatch(chooseSafe(safe));
+    goNext();
+  };
+
   const handleRefetch = useCallback(() => {
     if (flow === FLOWS.IMPORT || flow === FLOWS.IMPORT_INDIVIDUAL) {
       dispatch(getSafes(account, 1)); // 1 => get safes from gnosis api
@@ -744,29 +819,38 @@ const Login = () => {
 
     return (
       <StepDetails>
-        <h3 className="title">Choose Safe</h3>
+        <h3 className="title">Choose Account</h3>
         <p className="subtitle">
           Select the safe with which you would like to continue
         </p>
         {safeDetails &&
-          safeDetails.map(({ safe, name, balance, encryptionKeyData }) => (
-            <Safe
-              key={safe}
-              onClick={() =>
-                handleSelectSafe(name, safe, encryptionKeyData, createdBy)
-              }
-            >
-              <div className="top">
-                <div className="details">
-                  <div className="icon">
-                    <img src={TeamPng} alt="user" width="50" />
+          safeDetails.map(
+            ({ safe, name, balance, encryptionKeyData, organisationType }) => (
+              <Safe
+                key={safe}
+                onClick={() =>
+                  encryptionKeyData
+                    ? handleSelectSafe(
+                        name,
+                        safe,
+                        encryptionKeyData,
+                        createdBy,
+                        organisationType
+                      )
+                    : handleImportSelectedSafe(safe)
+                }
+              >
+                <div className="top">
+                  <div className="details">
+                    <div className="icon">
+                      <img src={TeamPng} alt="user" width="50" />
+                    </div>
+                    <div className="info">
+                      <div className="desc">Name</div>
+                      <div className="val">{name}</div>
+                    </div>
                   </div>
-                  <div className="info">
-                    <div className="desc">Name</div>
-                    <div className="val">{name}</div>
-                  </div>
-                </div>
-                {/* <div className="details">
+                  {/* <div className="details">
                 <div className="icon">
                   <FontAwesomeIcon icon={faWallet} color="#aaa" />
                 </div>
@@ -775,28 +859,96 @@ const Login = () => {
                   <div className="val">{balance} ETH</div>
                 </div>
               </div> */}
-              </div>
+                </div>
 
-              <div className="bottom">
-                <div className="details">
-                  <div className="icon">
-                    <FontAwesomeIcon icon={faLock} color="#aaa" />
-                  </div>
-                  <div className="info">
-                    <div className="desc">Address</div>
-                    <div className="val">{safe}</div>
+                <div className="bottom">
+                  <div className="details">
+                    <div className="icon">
+                      <FontAwesomeIcon icon={faLock} color="#aaa" />
+                    </div>
+                    <div className="info">
+                      <div className="desc">Address</div>
+                      <div className="val">{safe}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="select-safe">
-                <Button iconOnly onClick={goBack} className="px-0">
-                  <FontAwesomeIcon icon={faArrowRight} color="#fff" />
-                </Button>
-              </div>
-            </Safe>
-          ))}
+                <div className="select-safe">
+                  <Button iconOnly className="px-0">
+                    <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                  </Button>
+                </div>
+              </Safe>
+            )
+          )}
         <RetryText onClick={handleRefetch}>Safe not loaded?</RetryText>
+      </StepDetails>
+    );
+  };
+
+  const getReviewHeading = () => {
+    if (formData.flow === FLOWS.INDIVIDUAL) return `Your Name`;
+    else if (formData.flow === FLOWS.COMPANY) return `Name of your Company`;
+    else if (formData.flow === FLOWS.DAO) return `Name of your Organization`;
+  };
+
+  const renderReview = () => {
+    return (
+      <StepDetails>
+        <ReviewContent className="row mt-4">
+          <div className="col-5">
+            <div>
+              <div className="review-heading">{getReviewHeading()}</div>
+              <div className="review-title">{formData.name}</div>
+            </div>
+            <div className="mt-4">
+              <div className="review-heading">
+                Any transaction requires the confirmation of:
+              </div>
+              <div className="review-title">
+                {gnosisSafeThreshold} out of{" "}
+                {gnosisSafeOwners && gnosisSafeOwners.length} owners
+              </div>
+            </div>
+          </div>
+          <div className="col-6">
+            <div className="review-heading">Owner Details</div>
+            <ReviewOwnerDetails>
+              {formData.owners.map(({ name, owner }, idx) => (
+                <div className="owner-card" key={`${owner}-${idx}`}>
+                  <div>
+                    <FontAwesomeIcon
+                      icon={faUserCircle}
+                      color="#7367f0"
+                      style={{ fontSize: "24px" }}
+                    />
+                  </div>
+                  <div>
+                    <div className="owner-name">{name}</div>
+                    <div className="owner-address">{owner}</div>
+                  </div>
+                </div>
+              ))}
+            </ReviewOwnerDetails>
+          </div>
+        </ReviewContent>
+
+        <HighlightedText className="mt-4">
+          <div>You’re about to import this safe to Parcel.</div>
+        </HighlightedText>
+
+        <Button
+          type="button"
+          className="proceed-btn"
+          onClick={completeImport}
+          loading={creating}
+          disabled={creating}
+        >
+          <span>Complete Import</span>
+        </Button>
+        {errorInRegister && (
+          <div className="text-danger ml-2 my-3">{errorInRegister}</div>
+        )}
       </StepDetails>
     );
   };
@@ -816,18 +968,38 @@ const Login = () => {
       }
 
       case STEPS.THREE: {
-        if (flow === FLOWS.IMPORT) return renderOwnerDetails();
-        if (flow === FLOWS.IMPORT_INDIVIDUAL) return renderCompanyName();
+        if (flow === FLOWS.IMPORT) return renderAboutYou();
         return null;
       }
 
       case STEPS.FOUR: {
-        if (flow === FLOWS.IMPORT) return renderCompanyName();
-        return null;
+        if (formData.ownerFlow === OWNER_FLOWS.COMPANY)
+          return renderName({
+            required: "Company Name is required",
+            placeholder: "Awesome Company Inc",
+            name: "Company Name",
+          });
+        else if (formData.ownerFlow === OWNER_FLOWS.DAO)
+          return renderName({
+            required: "Organization Name is required",
+            placeholder: "Awesome DAO Inc",
+            name: "Organization Name",
+          });
+        else
+          return renderName({
+            required: "Name is required",
+            placeholder: "John Doe",
+            name: "Your Name",
+          });
       }
 
       case STEPS.FIVE: {
-        if (flow === FLOWS.IMPORT) return renderThreshold();
+        if (flow === FLOWS.IMPORT) return renderOwnerDetails();
+        return null;
+      }
+
+      case STEPS.SIX: {
+        if (flow === FLOWS.IMPORT) return renderReview();
         return null;
       }
 
@@ -837,13 +1009,14 @@ const Login = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh" className="py-3">
+    <Background withImage minHeight="92vh">
       <Container>
         <Card
-          className="mx-auto"
+          className="mx-auto p-0"
           style={{
-            maxWidth: "668px",
-            minHeight: "580px",
+            minHeight: "600px",
+            width: "90%",
+            marginTop: "80px",
           }}
         >
           {step !== STEPS.ZERO && renderStepHeader()}

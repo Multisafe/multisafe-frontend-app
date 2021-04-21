@@ -17,4 +17,59 @@ export default styled.div`
   h2 {
     font-weight: bold;
   }
+
+  .connect,
+  .login,
+  .import {
+    min-width: 400px;
+    padding: 14px;
+    border-radius: 8px;
+    box-shadow: 10px 10px 40px 0 rgba(113, 113, 113, 0.25);
+    font-size: 14px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: left;
+  }
+
+  .connect {
+    background-color: #7367f0;
+    color: #ffffff;
+  }
+
+  .login,
+  .import {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .import {
+    color: #7367f0;
+    background-color: #fff;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #000000;
+    margin-bottom: 20px;
+  }
+  .subtitle {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: #000000;
+    margin-bottom: 20px;
+  }
 `;

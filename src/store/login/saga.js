@@ -4,9 +4,11 @@
 
 import { call, put, takeLatest } from "redux-saga/effects";
 import { push } from "connected-react-router";
+import jwt_decode from "jwt-decode";
 
 import { LOGIN_USER } from "./action-types";
 import { loginUserSuccess, loginUserError, setImportSafeFlag } from "./actions";
+import { setOrganisationType, setOwnersAndThreshold } from "../global/actions";
 import request from "utils/request";
 // import { makeSelectUsername } from "containers/HomePage/selectors";
 import { loginEndpoint } from "constants/endpoints";
@@ -29,6 +31,16 @@ export function* loginUser(action) {
       yield put(loginUserError(result.log));
     } else {
       localStorage.setItem("token", result.access_token);
+      let decoded;
+      try {
+        decoded = jwt_decode(result.access_token);
+      } catch (err) {
+        yield put(loginUserError(`Invalid JWT token.`));
+        return;
+      }
+
+      yield put(setOwnersAndThreshold(decoded.owners, decoded.threshold));
+      yield put(setOrganisationType(decoded.organisationType));
       yield put(loginUserSuccess(result.transactionHash, result.log));
       yield put(push("/dashboard"));
     }

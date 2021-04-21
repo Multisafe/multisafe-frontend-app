@@ -9,7 +9,7 @@ export default styled.div`
   min-height: 110px;
 
   .title {
-    padding: 10px 36px;
+    padding: 10px 36px 0;
     font-size: 20px;
     font-weight: bold;
     font-stretch: normal;

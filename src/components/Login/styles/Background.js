@@ -12,5 +12,4 @@ export default styled.div`
   min-height: ${(props) => props.minHeight};
   display: flex;
   justify-content: center;
-  align-items: center;
 `;

@@ -5,12 +5,11 @@ import { Col, Row } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { BigNumber } from "@ethersproject/bignumber";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
 import TransactionSubmitted from "components/Payments/TransactionSubmitted";
-import { Info } from "components/Dashboard/styles";
+import { Info } from "components/Dashboard-old/styles";
 import { Card } from "components/common/Card";
 import Button from "components/common/Button";
 import Img from "components/common/Img";
@@ -18,9 +17,10 @@ import {
   Input,
   ErrorMessage,
   TextArea,
-  SelectTokenDropdown,
+  CurrencyInput,
+  // SelectTokenDropdown,
 } from "components/common/Form";
-import { useMassPayout, useLocalStorage } from "hooks";
+import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
 import {
@@ -30,36 +30,47 @@ import {
 import {
   makeSelectMetaTransactionHash,
   makeSelectError as makeSelectErrorInCreateTx,
-  makeSelectLoading as makeSelectAddTxLoading,
+  makeSelectTransactionId as makeSelectSingleOwnerTransactionId,
+  makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
 } from "store/transactions/selectors";
+import metaTxReducer from "store/metatx/reducer";
+import metaTxSaga from "store/metatx/saga";
+import { getMetaTxEnabled } from "store/metatx/actions";
+import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
+import safeReducer from "store/safe/reducer";
+import safeSaga from "store/safe/saga";
+import { getNonce } from "store/safe/actions";
+import {
+  makeSelectNonce,
+  makeSelectLoading as makeSelectLoadingSafeDetails,
+} from "store/safe/selectors";
+import { createMultisigTransaction } from "store/multisig/actions";
+import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
+import multisigSaga from "store/multisig/saga";
+import multisigReducer from "store/multisig/reducer";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import dashboardReducer from "store/dashboard/reducer";
-import marketRatesReducer from "store/market-rates/reducer";
-import dashboardSaga from "store/dashboard/saga";
-import marketRatesSaga from "store/market-rates/saga";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { getSafeBalances } from "store/dashboard/actions";
+import tokensReducer from "store/tokens/reducer";
+import tokensSaga from "store/tokens/saga";
+import {
+  makeSelectOwnerSafeAddress,
+  makeSelectIsMultiOwner,
+  makeSelectThreshold,
+  makeSelectOrganisationType,
+} from "store/global/selectors";
+import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading,
-  makeSelectBalances,
+  makeSelectTokenList,
+  makeSelectPrices,
   // makeSelectError,
-} from "store/dashboard/selectors";
-import { makeSelectPrices } from "store/market-rates/selectors";
+} from "store/tokens/selectors";
 import Loading from "components/common/Loading";
-import { getMarketRates } from "store/market-rates/actions";
-import {
-  tokens,
-  getDefaultIconIfPossible,
-  defaultTokenDetails,
-} from "constants/index";
+import { defaultTokenDetails } from "constants/index";
 import SelectTokenModal, {
   MODAL_NAME as SELECT_TOKEN_MODAL,
 } from "components/Payments/SelectTokenModal";
 
-import ETHIcon from "assets/icons/tokens/ETH-icon.png";
-// import DAIIcon from "assets/icons/tokens/DAI-icon.png";
-// import USDCIcon from "assets/icons/tokens/USDC-icon.png";
 import {
   Container,
   Title,
@@ -69,32 +80,42 @@ import {
 } from "components/People/styles";
 import { ShowToken } from "./styles";
 import { Circle } from "components/Header/styles";
+import { TRANSACTION_MODES } from "constants/transactions";
+import { formatNumber } from "utils/number-helpers";
 
-const dashboardKey = "dashboard";
-const marketRatesKey = "marketRates";
 const transactionsKey = "transactions";
+const safeKey = "safe";
+const multisigKey = "multisig";
+const tokensKey = "tokens";
+const metaTxKey = "metatx";
 
 export default function QuickTransfer() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
-  const { txHash, loadingTx, massPayout, txData } = useMassPayout();
+  const { account } = useActiveWeb3React();
   const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
-  // eslint-disable-next-line
-  const [selectedTokenName, setSelectedTokenName] = useState(tokens.DAI);
+  const [selectedTokenName, setSelectedTokenName] = useState();
   const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
   const [payoutDetails, setPayoutDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
 
+  const { txHash, loadingTx, massPayout, txData } = useMassPayout({
+    tokenDetails: selectedTokenDetails,
+  });
   // Reducers
-  useInjectReducer({ key: dashboardKey, reducer: dashboardReducer });
-  useInjectReducer({ key: marketRatesKey, reducer: marketRatesReducer });
+  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
+  useInjectReducer({ key: safeKey, reducer: safeReducer });
+  useInjectReducer({ key: multisigKey, reducer: multisigReducer });
+  useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
 
   // Sagas
-  useInjectSaga({ key: dashboardKey, saga: dashboardSaga });
-  useInjectSaga({ key: marketRatesKey, saga: marketRatesSaga });
+  useInjectSaga({ key: tokensKey, saga: tokensSaga });
   useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
+  useInjectSaga({ key: safeKey, saga: safeSaga });
+  useInjectSaga({ key: multisigKey, saga: multisigSaga });
+  useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
   const { register, errors, handleSubmit, formState, control } = useForm({
     mode: "onChange",
@@ -106,11 +127,36 @@ export default function QuickTransfer() {
 
   // Selectors
   const loading = useSelector(makeSelectLoading());
-  const balances = useSelector(makeSelectBalances());
-  const prices = useSelector(makeSelectPrices());
+  const tokenList = useSelector(makeSelectTokenList());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
-  const addingTx = useSelector(makeSelectAddTxLoading());
+  const addingMultisigTx = useSelector(makeSelectAddTxLoading());
+  const addingSingleOwnerTx = useSelector(makeSelectSingleOwnerAddTxLoading());
+  const nonce = useSelector(makeSelectNonce());
+  const threshold = useSelector(makeSelectThreshold());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
+  const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
+  const prices = useSelector(makeSelectPrices());
+  const singleOwnerTransactionId = useSelector(
+    makeSelectSingleOwnerTransactionId()
+  );
+  const organisationType = useSelector(makeSelectOrganisationType());
+  const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
+
+  useEffect(() => {
+    if (ownerSafeAddress) {
+      dispatch(getTokens(ownerSafeAddress));
+      dispatch(getNonce(ownerSafeAddress));
+      dispatch(getMetaTxEnabled(ownerSafeAddress));
+    }
+  }, [ownerSafeAddress, dispatch]);
+
+  useEffect(() => {
+    if (tokenList && tokenList.length > 0) {
+      setTokenDetails(tokenList);
+      setSelectedTokenName(tokenList[0].name);
+    }
+  }, [tokenList]);
 
   useEffect(() => {
     if (selectedTokenName)
@@ -126,27 +172,13 @@ export default function QuickTransfer() {
     }
   }, [dispatch, txHashFromMetaTx]);
 
-  useEffect(() => {
-    if (ownerSafeAddress) {
-      dispatch(getSafeBalances(ownerSafeAddress));
-    }
-  }, [ownerSafeAddress, dispatch]);
-
-  useEffect(() => {
-    dispatch(getMarketRates());
-  }, [dispatch]);
-
   const totalAmountToPay = useMemo(() => {
-    if (prices && payoutDetails && payoutDetails.length > 0) {
-      return payoutDetails.reduce(
-        (total, { salaryAmount, salaryToken }) =>
-          (total += prices[salaryToken] * salaryAmount),
-        0
-      );
+    if (payoutDetails && payoutDetails.length > 0) {
+      return payoutDetails.reduce((total, { usd }) => (total += usd), 0);
     }
 
     return 0;
-  }, [prices, payoutDetails]);
+  }, [payoutDetails]);
 
   useEffect(() => {
     if (txHash) {
@@ -160,7 +192,8 @@ export default function QuickTransfer() {
       ) {
         const to = cryptoUtils.encryptDataUsingEncryptionKey(
           JSON.stringify(payoutDetails),
-          encryptionKey
+          encryptionKey,
+          organisationType
         );
         // const to = selectedTeammates;
 
@@ -170,11 +203,14 @@ export default function QuickTransfer() {
             safeAddress: ownerSafeAddress,
             createdBy: ownerSafeAddress,
             transactionHash: txHash,
-            tokenValue: totalAmountToPay,
+            tokenValue: payoutDetails.reduce(
+              (total, { salaryAmount }) => (total += parseFloat(salaryAmount)),
+              0
+            ),
             tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
+            fiatValue: parseFloat(totalAmountToPay).toFixed(5),
             addresses: payoutDetails.map(({ address }) => address),
-            transactionMode: 1, // quick transfer
+            transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
           })
         );
       }
@@ -188,21 +224,51 @@ export default function QuickTransfer() {
       ) {
         const to = cryptoUtils.encryptDataUsingEncryptionKey(
           JSON.stringify(payoutDetails),
-          encryptionKey
+          encryptionKey,
+          organisationType
         );
-        dispatch(
-          addTransaction({
-            to,
-            safeAddress: ownerSafeAddress,
-            createdBy: ownerSafeAddress,
-            txData,
-            tokenValue: totalAmountToPay,
-            tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
-            addresses: payoutDetails.map(({ address }) => address),
-            transactionMode: 1, // quick transfer
-          })
-        );
+
+        if (!isMultiOwner) {
+          // threshold = 1 or single owner
+          dispatch(
+            addTransaction({
+              to,
+              safeAddress: ownerSafeAddress,
+              createdBy: account,
+              txData,
+              tokenValue: payoutDetails.reduce(
+                (total, { salaryAmount }) =>
+                  (total += parseFloat(salaryAmount)),
+                0
+              ),
+              tokenCurrency: selectedTokenDetails.name,
+              fiatValue: parseFloat(totalAmountToPay).toFixed(5),
+              addresses: payoutDetails.map(({ address }) => address),
+              transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
+            })
+          );
+        } else {
+          // threshold > 1
+          dispatch(
+            createMultisigTransaction({
+              to,
+              safeAddress: ownerSafeAddress,
+              createdBy: account,
+              txData,
+              tokenValue: payoutDetails.reduce(
+                (total, { salaryAmount }) =>
+                  (total += parseFloat(salaryAmount)),
+                0
+              ),
+              tokenCurrency: selectedTokenDetails.name,
+              fiatValue: totalAmountToPay,
+              fiatCurrency: "USD",
+              addresses: payoutDetails.map(({ address }) => address),
+              transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
+              nonce: nonce,
+            })
+          );
+        }
       }
     }
   }, [
@@ -214,68 +280,34 @@ export default function QuickTransfer() {
     totalAmountToPay,
     selectedTokenDetails,
     txData,
+    account,
+    isMultiOwner,
+    nonce,
+    history,
+    organisationType,
   ]);
 
-  useEffect(() => {
-    if (balances && balances.length > 0 && prices) {
-      const seenTokens = {};
-      const allTokenDetails = balances
-        .map((bal, idx) => {
-          // erc20
-          if (bal.token && bal.tokenAddress) {
-            const balance = BigNumber.from(bal.balance)
-              .div(BigNumber.from(String(10 ** bal.token.decimals)))
-              .toString();
-            // mark as seen
-            seenTokens[bal.token.symbol] = true;
-            const tokenIcon = getDefaultIconIfPossible(bal.token.symbol);
-
-            return {
-              id: idx,
-              name: bal.token && bal.token.symbol,
-              icon: tokenIcon ? tokenIcon : bal.token.logoUri,
-              balance,
-              usd: bal.token
-                ? balance * prices[bal.token.symbol]
-                : balance * prices["ETH"],
-            };
-          }
-          // eth
-          else if (bal.balance) {
-            seenTokens[tokens.ETH] = true;
-            return {
-              id: idx,
-              name: tokens.ETH,
-              icon: ETHIcon,
-              balance: bal.balance / 10 ** 18,
-              usd: bal.balanceUsd,
-            };
-          } else return "";
-        })
-        .filter(Boolean);
-
-      if (allTokenDetails.length < 3) {
-        const zeroBalanceTokensToShow = defaultTokenDetails.filter(
-          (token) => !seenTokens[token.name]
-        );
-        setTokenDetails([...allTokenDetails, ...zeroBalanceTokensToShow]);
-      } else {
-        setTokenDetails(allTokenDetails);
-      }
-    }
-  }, [balances, prices]);
-
   const onSubmit = async (values) => {
+    console.log({ selectedTokenDetails });
     const payoutDetails = [
       {
         address: values.address,
         salaryAmount: values.amount,
-        salaryToken: values.currency.value,
+        salaryToken: selectedTokenDetails.name,
         description: values.description || "",
+        usd:
+          (selectedTokenDetails.usd / selectedTokenDetails.balance) *
+          values.amount,
       },
     ];
     setPayoutDetails(payoutDetails);
-    await massPayout(payoutDetails, selectedTokenDetails.name);
+    await massPayout(
+      payoutDetails,
+      selectedTokenDetails.name,
+      isMultiOwner,
+      nonce,
+      isMetaEnabled
+    );
   };
 
   const goBack = () => {
@@ -310,7 +342,7 @@ export default function QuickTransfer() {
           <div className="token-balance">
             <div className="value">
               {selectedTokenDetails.balance
-                ? parseFloat(selectedTokenDetails.balance).toFixed(2)
+                ? formatNumber(selectedTokenDetails.balance)
                 : "0.00"}
             </div>
             <div className="name">{selectedTokenDetails.name}</div>
@@ -338,26 +370,47 @@ export default function QuickTransfer() {
       </Row>
 
       <Row className="mb-4">
-        <Col lg="6" sm="12">
-          <Input
-            type="number"
+        <Col lg="12" sm="12">
+          <Controller
+            control={control}
             name="amount"
-            register={register}
-            required={`Amount is required`}
-            placeholder="Amount"
+            rules={{
+              required: "Amount is required",
+              validate: (value) => {
+                if (value <= 0) return "Please check your input";
+                else if (
+                  selectedTokenDetails &&
+                  parseFloat(value) > parseFloat(selectedTokenDetails.balance)
+                )
+                  return "Insufficient balance";
+
+                return true;
+              },
+            }}
+            defaultValue=""
+            render={({ onChange, value }) => (
+              <CurrencyInput
+                type="number"
+                name="amount"
+                // register={register}
+                // required={`Amount is required`}
+                value={value}
+                onChange={onChange}
+                placeholder="Amount"
+                conversionRate={
+                  prices &&
+                  selectedTokenDetails &&
+                  prices[selectedTokenDetails.name]
+                }
+                tokenName={
+                  selectedTokenDetails ? selectedTokenDetails.name : ""
+                }
+              />
+            )}
           />
           <ErrorMessage name="amount" errors={errors} />
         </Col>
-        <Col lg="6" sm="12">
-          {/* <Select
-            name="currency"
-            register={register}
-            required={`Token is required`}
-            options={[
-              { name: "DAI", value: "DAI" },
-              { name: "USDC", value: "USDC" },
-            ]}
-          /> */}
+        {/* <Col lg="6" sm="12">
           <Controller
             name="currency"
             control={control}
@@ -365,7 +418,7 @@ export default function QuickTransfer() {
             as={SelectTokenDropdown}
           />
           <ErrorMessage name="currency" errors={errors} />
-        </Col>
+        </Col> */}
       </Row>
 
       <Heading>DESCRIPTION (Optional)</Heading>
@@ -384,11 +437,17 @@ export default function QuickTransfer() {
       <Button
         large
         type="submit"
-        style={{ marginTop: "50px" }}
-        disabled={!formState.isValid || loadingTx || addingTx}
-        loading={loadingTx || addingTx}
+        className="mt-3"
+        disabled={
+          !formState.isValid ||
+          loadingTx ||
+          addingMultisigTx ||
+          addingSingleOwnerTx ||
+          loadingSafeDetails
+        }
+        loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
       >
-        Send
+        {threshold > 1 ? `Create Transaction` : `Send`}
       </Button>
       {errorFromMetaTx && (
         <div className="text-danger mt-3">{errorFromMetaTx}</div>
@@ -446,6 +505,7 @@ export default function QuickTransfer() {
     <TransactionSubmitted
       txHash={txHash ? txHash : metaTxHash}
       selectedCount={1}
+      transactionId={singleOwnerTransactionId}
     />
   );
 }

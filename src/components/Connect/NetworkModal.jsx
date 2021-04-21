@@ -31,9 +31,11 @@ const NetworkModal = () => {
             <div className="pb-4">
               <img src={NotFoundPng} alt="error" width="300" className="mb-4" />
             </div>
-            <h4 className="title pb-3">Your wallet is on different network!</h4>
+            <h4 className="title pb-3">
+              Your wallet is on a different network!
+            </h4>
             <div className="subtitle">
-              Simply select "{requiredNetworkName}" to continue.
+              Select "{requiredNetworkName}" to continue.
             </div>
           </div>
         </WrongNetwork>

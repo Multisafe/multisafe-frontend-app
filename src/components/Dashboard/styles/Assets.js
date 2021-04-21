@@ -1,67 +1,95 @@
 import styled from "styled-components/macro";
+import { Card } from "components/common/Card";
 
-export default styled.div`
-  margin: 16px 0;
-  padding: 0 0 0 16px;
-  border-radius: 8px;
-  border: solid 1px #f2f2f2;
-  background-color: #ffffff;
-
+export default styled(Card)`
+  grid-area: assets;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
 
-  .token-balance {
-    margin: 18px 201px 4px 16px;
-    font-size: 16px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.19;
-    letter-spacing: normal;
-    text-align: left;
-    color: #373737;
-  }
+  .title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 
-  .token-name {
-    margin: 4px 157px 17px 16px;
-    font-size: 14px;
-    font-weight: 300;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.29;
-    letter-spacing: normal;
-    text-align: left;
-    color: #373737;
-  }
-
-  .token-usd {
-    min-width: 184px;
-    padding: 19px 7px 20px 33px;
-    background-color: #f2f2f2;
-
-    .token-usd-title {
-      font-size: 14px;
-      font-weight: 300;
+    .title,
+    .view {
+      font-size: 1.6rem;
+      font-weight: 900;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.29;
+      line-height: normal;
       letter-spacing: normal;
-      text-align: center;
+      text-align: left;
       color: #373737;
-      text-transform: uppercase;
     }
 
-    .token-usd-amount {
-      margin-top: 5px;
-      font-size: 16px;
-      font-weight: bold;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.19;
-      letter-spacing: normal;
-      text-align: center;
-      color: #8b8b8b;
+    .view {
+      color: #7367f0;
+    }
+  }
+
+  .chart-container {
+    margin: 3rem auto;
+  }
+
+  .assets-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1.5rem;
+    width: 100%;
+
+    .asset-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem;
+      border-radius: 0.4rem;
+      background-color: #f1f0fd;
+
+      .token-details {
+        display: flex;
+        align-items: center;
+      }
+
+      .token-icon {
+        width: 2rem;
+        margin-right: 1rem;
+      }
+
+      .token-name,
+      .usd {
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: left;
+        color: #373737;
+      }
+
+      .token-name {
+        margin-bottom: 0.5rem;
+      }
+
+      .token-amount {
+        font-size: 1.2rem;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: left;
+        color: #373737;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    .assets-container {
+      grid-template-columns: 1fr;
     }
   }
 `;

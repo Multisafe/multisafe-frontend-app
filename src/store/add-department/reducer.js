@@ -4,6 +4,9 @@ import {
   ADD_DEPARTMENT,
   ADD_DEPARTMENT_ERROR,
   ADD_DEPARTMENT_SUCCESS,
+  DELETE_DEPARTMENT,
+  DELETE_DEPARTMENT_ERROR,
+  DELETE_DEPARTMENT_SUCCESS,
 } from "./action-types";
 
 export const initialState = {
@@ -12,6 +15,7 @@ export const initialState = {
   error: false,
   departmentId: "",
   log: "",
+  updating: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -34,6 +38,22 @@ const reducer = (state = initialState, action) =>
 
       case ADD_DEPARTMENT_SUCCESS:
         draft.loading = false;
+        draft.departmentId = action.departmentId;
+        draft.log = action.log;
+        break;
+
+      case DELETE_DEPARTMENT:
+        draft.updating = true;
+        draft.error = false;
+        break;
+
+      case DELETE_DEPARTMENT_ERROR:
+        draft.updating = false;
+        draft.error = action.error;
+        break;
+
+      case DELETE_DEPARTMENT_SUCCESS:
+        draft.updating = false;
         draft.departmentId = action.departmentId;
         draft.log = action.log;
         break;

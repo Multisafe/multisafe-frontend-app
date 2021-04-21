@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { utils } from "ethers";
-
+import { hashMessage } from "@ethersproject/hash";
+import { recoverAddress } from "@ethersproject/transactions";
 import { MESSAGE_TO_SIGN } from "constants/index";
 import { useLocalStorage, useActiveWeb3React } from "./index";
 
@@ -11,8 +11,8 @@ export default function useAuth() {
 
   const checkValidSignature = (sign, account) => {
     if (!sign) return false;
-    const msgHash = utils.hashMessage(MESSAGE_TO_SIGN);
-    const recoveredAddress = utils.recoverAddress(msgHash, sign);
+    const msgHash = hashMessage(MESSAGE_TO_SIGN);
+    const recoveredAddress = recoverAddress(msgHash, sign);
     if (recoveredAddress === account) {
       return true;
     }

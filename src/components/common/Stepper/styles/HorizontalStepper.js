@@ -64,7 +64,7 @@ export default styled.div`
     }
 
     .step-bar-right {
-      min-width: 200px;
+      min-width: ${({ count }) => (count < 5 ? "200px" : "100px")};
       width: 100%;
       height: 10px;
       background-color: #f2f2f2;

@@ -6,6 +6,7 @@ import LoadingSvg from "assets/icons/loading.svg";
 const CustomButton = ({
   children,
   className,
+  width,
   to,
   href,
   iconOnly,
@@ -18,6 +19,7 @@ const CustomButton = ({
       return (
         <Button
           className={className}
+          width={width}
           style={{ border: "none", background: "none", ...propStyles }}
           {...rest}
         >
@@ -28,6 +30,7 @@ const CustomButton = ({
     return (
       <Button
         className={className}
+        width={width}
         style={{ border: "none", background: "none", ...propStyles }}
         {...rest}
       >
@@ -39,7 +42,12 @@ const CustomButton = ({
   if (to) {
     return (
       <Link to={to}>
-        <Button className={`w-100 ${className}`} style={propStyles} {...rest}>
+        <Button
+          className={className}
+          width={width}
+          style={propStyles}
+          {...rest}
+        >
           {children}
         </Button>
       </Link>
@@ -47,7 +55,12 @@ const CustomButton = ({
   } else if (href) {
     return (
       <a href={href} rel="noopenner noreferrer" target="_blank">
-        <Button className={className} style={propStyles} {...rest}>
+        <Button
+          className={className}
+          width={width}
+          style={propStyles}
+          {...rest}
+        >
           {children}
         </Button>
       </a>
@@ -57,6 +70,7 @@ const CustomButton = ({
   return (
     <Button
       className={`d-flex align-items-center justify-content-center ${className}`}
+      width={width}
       style={propStyles}
       {...rest}
     >

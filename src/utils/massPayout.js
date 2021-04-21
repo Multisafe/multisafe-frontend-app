@@ -28,7 +28,7 @@ export const tokenNameToAddress = {
   // add other tokens and addresses here
 };
 
-const constructLabel = (value, icon) => {
+export const constructLabel = (value, icon) => {
   return (
     <div className="d-flex align-items-center">
       <img src={icon} alt={value} width="18" />

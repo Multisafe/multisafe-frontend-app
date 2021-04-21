@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Row } from "reactstrap";
 
-import { Info } from "components/Dashboard/styles";
+import { Info } from "components/Dashboard-old/styles";
 import { Card } from "components/common/Card";
 import Button from "components/common/Button";
 
@@ -9,7 +9,12 @@ import { TransactionUrl } from "components/common/Web3Utils";
 import TransactionSubmittedPng from "assets/images/transaction-submitted.png";
 
 import { Container, Title, Heading, Text } from "./styles";
-export default function TransactionSubmitted({ txHash, selectedCount }) {
+export default function TransactionSubmitted({
+  txHash,
+  selectedCount,
+  clearTxHash,
+  transactionId,
+}) {
   return (
     <div
       style={{
@@ -26,8 +31,10 @@ export default function TransactionSubmitted({ txHash, selectedCount }) {
             Transaction Submitted
           </Title>
           <Heading>
-            We are processing the payment of {selectedCount} people. You can
-            track the status of your payment in the transactions section.{" "}
+            {selectedCount
+              ? `We are processing the payment of ${selectedCount} people. You can
+            track the status of your payment in the transactions section.`
+              : "You can track the status of your transction in the transactions section."}
           </Heading>
           <Text>
             <TransactionUrl hash={txHash} />
@@ -40,7 +47,12 @@ export default function TransactionSubmitted({ txHash, selectedCount }) {
               </Button>
             </Col>
             <Col lg="6" sm="12">
-              <Button large type="button" to="/dashboard/transactions">
+              <Button
+                large
+                type="button"
+                to={`/dashboard/transactions/${transactionId}`}
+                onClick={() => clearTxHash && clearTxHash()}
+              >
                 Track Status
               </Button>
             </Col>

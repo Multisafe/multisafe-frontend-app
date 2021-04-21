@@ -1,12 +1,10 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  min-height: 100%;
-  background: ${({ theme }) => theme.card.backgroundColor};
-  color: ${({ theme }) => theme.card.color};
-  box-shadow: 0px 3px 6px #00000029;
-  border-radius: 16px;
-  opacity: 1;
   position: relative;
-  transition: all 0.25s linear;
+  padding: 2.2rem 3rem;
+  border-radius: 0.4rem;
+  box-shadow: 1rem 1rem 2rem 0 rgba(178, 178, 178, 0.1);
+  border: solid 0.1rem #dddcdc;
+  background-color: #ffffff;
 `;

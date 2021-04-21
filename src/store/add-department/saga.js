@@ -1,8 +1,17 @@
-import { takeLatest, put, call } from "redux-saga/effects";
-import { ADD_DEPARTMENT } from "./action-types";
-import { addDepartmentSuccess, addDepartmentError } from "./actions";
+import { takeLatest, put, call, fork } from "redux-saga/effects";
+import { push } from "connected-react-router";
+import { ADD_DEPARTMENT, DELETE_DEPARTMENT } from "./action-types";
+import {
+  addDepartmentSuccess,
+  addDepartmentError,
+  deleteDepartmentError,
+  deleteDepartmentSuccess,
+} from "./actions";
 import request from "utils/request";
-import { createDepartmentEndpoint } from "constants/endpoints";
+import {
+  createDepartmentEndpoint,
+  deleteDepartmentEndpoint,
+} from "constants/endpoints";
 
 function* addDepartment(action) {
   const requestURL = `${createDepartmentEndpoint}`;
@@ -12,7 +21,6 @@ function* addDepartment(action) {
       name: action.name,
       safeAddress: action.safeAddress,
       createdBy: action.createdBy,
-      payCycleDate: action.payCycleDate,
     }),
     // headers: {
     //   "content-type": "application/json",
@@ -32,6 +40,39 @@ function* addDepartment(action) {
   }
 }
 
-export default function* watchAddDepartment() {
+function* deleteDepartment(action) {
+  const requestURL = `${deleteDepartmentEndpoint}`;
+  const options = {
+    method: "POST",
+    body: JSON.stringify({
+      departmentId: action.departmentId,
+      safeAddress: action.safeAddress,
+    }),
+  };
+
+  try {
+    const result = yield call(request, requestURL, options);
+    if (result.flag !== 200) {
+      // Error in payload
+      yield put(deleteDepartmentError(result.log));
+    } else {
+      yield put(deleteDepartmentSuccess(result.departmentId, result.log));
+      yield put(push("/dashboard/people"));
+    }
+  } catch (err) {
+    yield put(deleteDepartmentError(err));
+  }
+}
+
+function* watchAddDepartment() {
   yield takeLatest(ADD_DEPARTMENT, addDepartment);
+}
+
+function* watchDeleteDepartment() {
+  yield takeLatest(DELETE_DEPARTMENT, deleteDepartment);
+}
+
+export default function* departments() {
+  yield fork(watchAddDepartment);
+  yield fork(watchDeleteDepartment);
 }

@@ -1,7 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  padding: 10px 36px;
+  padding: 10px 36px 100px;
 
   .title {
     font-size: 20px;
@@ -48,5 +48,33 @@ export default styled.div`
 
   .radio-toolbar input[type="radio"]:checked + label {
     background-color: #c3c3c3;
+  }
+
+  .default-address {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .proceed-btn {
+    width: 400px;
+    padding: 14px;
+    border-radius: 8px;
+    box-shadow: 10px 10px 40px 0 rgba(113, 113, 113, 0.25);
+    background-color: #7367f0;
+    position: absolute;
+    right: 40px;
+    bottom: 40px;
+    font-size: 14px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #3c3c3c;
+    }
   }
 `;

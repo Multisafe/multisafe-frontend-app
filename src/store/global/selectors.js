@@ -16,4 +16,38 @@ const makeSelectOwnerSafeAddress = () =>
 const makeSelectCreatedBy = () =>
   createSelector(selectGlobal, (globalState) => globalState.createdBy);
 
-export { makeSelectOwnerName, makeSelectOwnerSafeAddress, makeSelectCreatedBy };
+const makeSelectSafeOwners = () =>
+  createSelector(selectGlobal, (globalState) => globalState.owners);
+
+const makeSelectThreshold = () =>
+  createSelector(selectGlobal, (globalState) => globalState.threshold);
+
+const makeSelectIsMultiOwner = () =>
+  createSelector(selectGlobal, (globalState) => globalState.threshold > 1);
+
+const makeSelectOrganisationType = () =>
+  createSelector(selectGlobal, (globalState) => globalState.organisationType);
+
+const makeSelectIsOrganisationPrivate = () =>
+  createSelector(
+    selectGlobal,
+    (globalState) => globalState.organisationType === 0
+  );
+
+const makeSelectIsOrganisationPublic = () =>
+  createSelector(
+    selectGlobal,
+    (globalState) => globalState.organisationType === 1
+  );
+
+export {
+  makeSelectOwnerName,
+  makeSelectOwnerSafeAddress,
+  makeSelectCreatedBy,
+  makeSelectSafeOwners,
+  makeSelectThreshold,
+  makeSelectOrganisationType,
+  makeSelectIsMultiOwner,
+  makeSelectIsOrganisationPublic,
+  makeSelectIsOrganisationPrivate,
+};

@@ -1,9 +1,23 @@
 import { cryptoUtils } from "parcel-sdk";
 
 export const getPublicKey = (sign) => {
-  // const msgHash = utils.hashMessage(MESSAGE_TO_SIGN);
-  // const publicKey = utils.recoverPublicKey(msgHash, sign);
   const publicKey = cryptoUtils.getPublicKey(sign);
 
   return publicKey;
+};
+
+export const getDecryptedDetails = (data, encryptionKey, organisationType) => {
+  if (!encryptionKey) return "";
+  try {
+    return JSON.parse(
+      cryptoUtils.decryptDataUsingEncryptionKey(
+        data,
+        encryptionKey,
+        organisationType
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
 };

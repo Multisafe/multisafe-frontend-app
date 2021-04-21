@@ -9,6 +9,9 @@ import {
   SELECT_FLOW,
   FETCH_SAFES,
   GET_PARCEL_SAFES,
+  GET_SAFE_OWNERS,
+  GET_SAFE_OWNERS_SUCCESS,
+  GET_SAFE_OWNERS_ERROR,
 } from "./action-types";
 
 export const initialState = {
@@ -20,6 +23,9 @@ export const initialState = {
   flow: "", // LOGIN or IMPORT,
   chosenSafeAddress: "",
   createdBy: "",
+  gnosisSafeOwners: [], // for IMPORT flow
+  gnosisSafeThreshold: 0, //for IMPORT flow
+  fetchingSafeDetails: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -57,6 +63,22 @@ const reducer = (state = initialState, action) =>
 
       case GET_SAFES_ERROR:
         draft.loading = false;
+        draft.error = action.error;
+        break;
+
+      case GET_SAFE_OWNERS:
+        draft.fetchingSafeDetails = true;
+        draft.error = false;
+        break;
+
+      case GET_SAFE_OWNERS_SUCCESS:
+        draft.fetchingSafeDetails = false;
+        draft.gnosisSafeOwners = action.owners;
+        draft.gnosisSafeThreshold = action.threshold;
+        break;
+
+      case GET_SAFE_OWNERS_ERROR:
+        draft.fetchingSafeDetails = false;
         draft.error = action.error;
         break;
     }

@@ -23,6 +23,7 @@ export const initialState = {
   success: false,
   creating: false,
   approving: false,
+  setupCompleted: false,
   createdBy: "",
 };
 
@@ -39,6 +40,7 @@ const reducer = (state = initialState, action) =>
         draft.loading = false;
         draft.owners = action.owners;
         draft.createdBy = action.createdBy;
+        draft.setupCompleted = action.setupCompleted;
         break;
 
       case GET_INVITATIONS_ERROR:

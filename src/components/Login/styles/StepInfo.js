@@ -8,7 +8,7 @@ export default styled.div`
   border-bottom: solid 1px rgba(170, 170, 170, 0.2);
 
   .title {
-    padding: 10px 36px;
+    padding: 10px 36px 0;
     font-size: 20px;
     font-weight: bold;
     font-stretch: normal;

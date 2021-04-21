@@ -1,49 +1,48 @@
-import React, { useContext } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { Info, Container } from "./styles";
 import { makeSelectOwnerName } from "store/global/selectors";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
-import { SideNavContext } from "context/SideNavContext";
-import AccountCard from "./AccountCard";
-import PaymentsCard from "./PaymentsCard";
-import QuickTransferCard from "./QuickTransferCard";
+import { useInjectReducer } from "utils/injectReducer";
+import { useInjectSaga } from "utils/injectSaga";
+import OverviewCard from "./OverviewCard";
+import AssetsCard from "./AssetsCard";
+import RecentTxCard from "./RecentTxCard";
+import tokensReducer from "store/tokens/reducer";
+import tokensSaga from "store/tokens/saga";
+import { getTokens } from "store/tokens/actions";
+
+import { Greeting, CardsGrid } from "./styles";
+
+const tokensKey = "tokens";
 
 export default function Dashboard() {
-  const [toggled] = useContext(SideNavContext);
+  const dispatch = useDispatch();
+
+  // Reducers
+  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
+
+  // Sagas
+  useInjectSaga({ key: tokensKey, saga: tokensSaga });
+
   const ownerName = useSelector(makeSelectOwnerName());
+  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+
+  useEffect(() => {
+    if (ownerSafeAddress) {
+      dispatch(getTokens(ownerSafeAddress));
+    }
+  }, [ownerSafeAddress, dispatch]);
 
   return (
-    <div
-      className="position-relative"
-      style={{
-        transition: "all 0.25s linear",
-      }}
-    >
-      <Info>
-        <div
-          style={{
-            maxWidth: toggled ? "900px" : "1200px",
-            transition: "all 0.25s linear",
-          }}
-          className="mx-auto"
-        >
-          <div className="title">Hey {ownerName},</div>
-          <div className="subtitle">
-            We have a few things for you to look at
-          </div>
-        </div>
-      </Info>
-      <Container
-        style={{
-          maxWidth: toggled ? "900px" : "1200px",
-          transition: "all 0.25s linear",
-        }}
-      >
-        <AccountCard />
-        <QuickTransferCard />
-        <PaymentsCard />
-      </Container>
+    <div>
+      <Greeting>Hey, {ownerName}</Greeting>
+      <CardsGrid>
+        <OverviewCard />
+        <AssetsCard />
+        <RecentTxCard />
+      </CardsGrid>
     </div>
   );
 }

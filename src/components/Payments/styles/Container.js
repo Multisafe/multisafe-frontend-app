@@ -22,7 +22,7 @@ export default styled.div`
     .department-card {
       cursor: pointer;
       width: 100%;
-      min-height: 200px;
+      min-height: 160px;
       box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
       border-radius: 12px;
       border: solid 1px #f2f2f2;
@@ -88,7 +88,7 @@ export default styled.div`
 
   .payment-success {
     width: 488px;
-    min-height: 656px;
+    max-height: 656px;
     margin: 0 auto;
     border-radius: 16px;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);

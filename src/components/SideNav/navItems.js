@@ -41,7 +41,7 @@ const navItems = [
   },
   {
     id: 5,
-    href: "https://t.me/parcelHQ",
+    href: "https://discord.com/invite/UwRZjmMYVS",
     name: "Support",
     icon: faQuestionCircle,
     style: { position: "absolute", top: "75%", minWidth: "100px" },

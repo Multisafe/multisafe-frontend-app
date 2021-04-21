@@ -39,12 +39,19 @@ const makeSelectCreatedBy = () =>
     (invitationState) => invitationState.createdBy
   );
 
+const makeSelectIsSetupComplete = () =>
+  createSelector(
+    selectInvitation,
+    (invitationState) => invitationState.setupCompleted
+  );
+
 export {
   selectInvitation,
   makeSelectSafeOwners,
   makeSelectLoading,
   makeSelectError,
   makeSelectSuccess,
+  makeSelectIsSetupComplete,
   makeSelectCreating,
   makeSelectApproving,
   makeSelectCreatedBy,

@@ -5,7 +5,7 @@ export default styled.input`
   min-height: 52px;
   border-radius: 8px;
   border: solid 0.5px #aaaaaa;
-  background-color: #f2f2f2;
+  background-color: #ffffff;
   font-size: 16px;
   font-weight: 500;
   font-stretch: normal;
@@ -18,9 +18,16 @@ export default styled.input`
 
   &:focus {
     outline: none;
+    border: solid 0.5px #7367f0;
+    background-color: #ffffff;
   }
 
   &[type="radio"] {
     width: auto;
+  }
+
+  &:invalid {
+    border: solid 0.5px #aaaaaa;
+    background-color: #ffffff;
   }
 `;

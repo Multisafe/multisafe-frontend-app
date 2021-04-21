@@ -13,10 +13,11 @@ export function StepCircle({
   subtitle,
   titleColor,
   last,
+  stepStyles = {},
   ...rest
 }) {
   return (
-    <div className="step">
+    <div className="step" style={stepStyles} {...rest}>
       <div className="step-info">
         <div
           className="step-circle"
