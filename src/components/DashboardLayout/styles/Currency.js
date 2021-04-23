@@ -81,4 +81,7 @@ export default styled.div`
       border-bottom: none;
     }
   }
+  @media (max-width: 600px) {
+    margin-right: 2rem;
+  }
 `;

@@ -79,4 +79,11 @@ export default styled.div`
       border-bottom: none;
     }
   }
+
+  @media (max-width: 600px) {
+    .transfer-dropdown {
+      left: -2rem;
+      min-width: 16rem;
+    }
+  }
 `;

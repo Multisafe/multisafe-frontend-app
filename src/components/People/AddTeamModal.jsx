@@ -53,7 +53,7 @@ function AddTeamModal(props) {
   const adding = useSelector(makeSelectAddingTeam());
 
   useEffect(() => {
-    if (safeAddress) dispatch(getTokenList(safeAddress, 1));
+    if (safeAddress) dispatch(getTokenList(safeAddress));
   }, [dispatch, safeAddress]);
 
   const onSubmit = (values) => {

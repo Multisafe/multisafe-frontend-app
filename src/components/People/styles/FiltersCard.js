@@ -39,6 +39,7 @@ export default styled(Card)`
     height: auto;
     flex-wrap: wrap;
     .flex {
+      margin-top: 1rem;
       flex-wrap: wrap;
     }
   }

@@ -49,7 +49,7 @@ export default styled.nav`
       justify-content: center;
       grid-gap: 1rem 0;
       justify-content: flex-end;
-      margin-top: 1rem;
+      margin: 1rem 0;
     }
   }
 `;
