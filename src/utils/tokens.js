@@ -6,7 +6,7 @@ export const constructLabel = (tokenName, imgUrl) => {
   return (
     <div className="d-flex align-items-center">
       <img src={imgUrl} alt={tokenName} width="16" />
-      <div className="ml-2">{tokenName}</div>
+      <div className="ml-2 mt-1">{tokenName}</div>
     </div>
   );
 };

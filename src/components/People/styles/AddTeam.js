@@ -12,7 +12,7 @@ export default styled.div`
     letter-spacing: normal;
     text-align: left;
     color: #373737;
-    margin-bottom: 1.4rem;
+    margin-bottom: 1rem;
   }
 
   .subtitle {

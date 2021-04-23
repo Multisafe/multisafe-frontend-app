@@ -1,14 +1,20 @@
 import { takeLatest, put, call, fork } from "redux-saga/effects";
-import { GET_TOKENS, ADD_CUSTOM_TOKEN } from "./action-types";
+import { GET_TOKENS, ADD_CUSTOM_TOKEN, GET_TOKEN_LIST } from "./action-types";
 import {
   getTokens,
   getTokensSuccess,
   getTokensError,
   addCustomTokenSuccess,
   addCustomTokenError,
+  getTokenListSuccess,
+  getTokenListError,
 } from "./actions";
 import request from "utils/request";
-import { getTokensEndpoint, addCustomTokenEndpoint } from "constants/endpoints";
+import {
+  getTokensEndpoint,
+  getTokenListEndpoint,
+  addCustomTokenEndpoint,
+} from "constants/endpoints";
 
 function* addCustomToken(action) {
   const requestURL = `${addCustomTokenEndpoint}`;
@@ -57,6 +63,32 @@ function* fetchTokens(action) {
   }
 }
 
+function* fetchTokenList(action) {
+  // const requestURL = `${getTokenListEndpoint}?safeAddress=${action.safeAddress}&chainId=${action.chainId}`;
+  const requestURL = new URL(getTokenListEndpoint);
+  const params = [
+    ["safeAddress", action.safeAddress],
+    ["chainId", action.chainId],
+  ];
+
+  requestURL.search = new URLSearchParams(params).toString();
+  const options = {
+    method: "GET",
+  };
+
+  try {
+    const result = yield call(request, requestURL, options);
+    if (result.flag !== 200) {
+      // Error in payload
+      yield put(getTokenListError(result.log));
+    } else {
+      yield put(getTokenListSuccess(result.tokenDetails, result.log));
+    }
+  } catch (err) {
+    yield put(getTokenListError(err.message));
+  }
+}
+
 function* watchGetTokens() {
   yield takeLatest(GET_TOKENS, fetchTokens);
 }
@@ -65,7 +97,12 @@ function* watchAddCustomToken() {
   yield takeLatest(ADD_CUSTOM_TOKEN, addCustomToken);
 }
 
+function* watchGetTokenList() {
+  yield takeLatest(GET_TOKEN_LIST, fetchTokenList);
+}
+
 export default function* tokens() {
   yield fork(watchGetTokens);
   yield fork(watchAddCustomToken);
+  yield fork(watchGetTokenList);
 }

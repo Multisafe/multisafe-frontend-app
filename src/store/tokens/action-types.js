@@ -7,3 +7,7 @@ export const ADD_CUSTOM_TOKEN_SUCCESS =
   "parcel/tokens/ADD_CUSTOM_TOKEN_SUCCESS";
 export const ADD_CUSTOM_TOKEN_ERROR = "parcel/tokens/ADD_CUSTOM_TOKEN_ERROR";
 export const SET_SUCCESS = "parcel/tokens/SET_SUCCESS";
+
+export const GET_TOKEN_LIST = "parcel/tokens/GET_TOKEN_LIST";
+export const GET_TOKEN_LIST_SUCCESS = "parcel/tokens/GET_TOKEN_LIST_SUCCESS";
+export const GET_TOKEN_LIST_ERROR = "parcel/tokens/GET_TOKEN_LIST_ERROR";

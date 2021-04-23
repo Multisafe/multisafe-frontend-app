@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import { Controller } from "react-hook-form";
-import { defaultTokenOptions } from "utils/tokens";
+import { FixedSizeList as List } from "react-window";
 
 const inputStyles = {
   control: (styles, state) => ({
@@ -22,7 +22,8 @@ const inputStyles = {
   option: (styles, state) => {
     return {
       ...styles,
-      width: state.selectProps.width || "100%",
+      width: "100%",
+      overflow: "hidden",
       fontSize: "1.4rem",
       backgroundColor: state.isFocused ? "#f1f0fd" : "#ffffff",
       color: "#373737",
@@ -45,33 +46,77 @@ const inputStyles = {
   placeholder: (styles) => ({ ...styles }),
   singleValue: (styles) => ({ ...styles }),
 };
+
+function MenuList(props) {
+  const height = 40;
+  const { children, maxHeight } = props;
+  return (
+    <List
+      height={
+        children.length
+          ? children.length * height > maxHeight
+            ? maxHeight
+            : children.length * height
+          : height
+      }
+      itemCount={children.length || 1}
+      itemSize={height}
+      initialScrollOffset={0}
+    >
+      {({ index, style }) =>
+        children.length ? (
+          <div style={style}>{children[index]}</div>
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{
+              ...style,
+              color: "#8b8b8b",
+              fontSize: "1.2rem",
+            }}
+          >
+            No tokens found
+          </div>
+        )
+      }
+    </List>
+  );
+}
+
 const SelectField = ({
   name,
-  register,
+  control,
   required,
-  options = defaultTokenOptions,
+  options,
   isDisabled,
   isLoading,
   isClearable,
   isSearchable,
   width,
-  control,
   ...rest
 }) => (
   <Controller
-    as={Select}
     name={name}
     control={control}
-    className="basic-single"
-    classNamePrefix="select"
-    defaultValue={options[0] || `Select`}
-    isDisabled={isDisabled}
-    isLoading={isLoading}
-    isClearable={isClearable}
-    isSearchable={isSearchable}
-    options={options}
-    styles={inputStyles}
-    width={width}
+    rules={{ required }}
+    render={({ onChange, value }) => (
+      <Select
+        name={name}
+        className="basic-single"
+        classNamePrefix="select"
+        isDisabled={isDisabled}
+        isLoading={isLoading}
+        isClearable={isClearable}
+        isSearchable={isSearchable}
+        options={options}
+        styles={inputStyles}
+        width={width}
+        filterOption={createFilter({ ignoreAccents: false })}
+        components={{ MenuList }}
+        onChange={onChange}
+        value={value}
+      />
+    )}
     {...rest}
   />
 );

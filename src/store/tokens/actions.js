@@ -2,6 +2,9 @@ import {
   GET_TOKENS,
   GET_TOKENS_SUCCESS,
   GET_TOKENS_ERROR,
+  GET_TOKEN_LIST,
+  GET_TOKEN_LIST_SUCCESS,
+  GET_TOKEN_LIST_ERROR,
   ADD_CUSTOM_TOKEN,
   ADD_CUSTOM_TOKEN_SUCCESS,
   ADD_CUSTOM_TOKEN_ERROR,
@@ -28,6 +31,29 @@ export function getTokensSuccess(tokens, prices, icons, log) {
 export function getTokensError(error) {
   return {
     type: GET_TOKENS_ERROR,
+    error,
+  };
+}
+
+export function getTokenList(safeAddress, chainId) {
+  return {
+    type: GET_TOKEN_LIST,
+    safeAddress,
+    chainId,
+  };
+}
+
+export function getTokenListSuccess(tokenDetails, log) {
+  return {
+    type: GET_TOKEN_LIST_SUCCESS,
+    tokenDetails,
+    log,
+  };
+}
+
+export function getTokenListError(error) {
+  return {
+    type: GET_TOKEN_LIST_ERROR,
     error,
   };
 }

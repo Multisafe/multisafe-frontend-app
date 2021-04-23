@@ -9,6 +9,9 @@ import {
   ADD_CUSTOM_TOKEN_ERROR,
   ADD_CUSTOM_TOKEN_SUCCESS,
   SET_SUCCESS,
+  GET_TOKEN_LIST,
+  GET_TOKEN_LIST_SUCCESS,
+  GET_TOKEN_LIST_ERROR,
 } from "./action-types";
 import { defaultTokenDetails, getDefaultIconIfPossible } from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
@@ -23,6 +26,7 @@ export const initialState = {
   tokenList: [],
   prices: null,
   tokensDropdown: [],
+  tokenDetails: null,
   icons: null,
   totalBalance: "0.00",
 };
@@ -80,18 +84,6 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
-        const dropdownList =
-          action.tokens &&
-          action.tokens.map(({ tokenDetails }) => ({
-            value: tokenDetails.tokenInfo.symbol,
-            label: constructLabel(
-              tokenDetails.tokenInfo.symbol,
-              getDefaultIconIfPossible(
-                tokenDetails.tokenInfo.symbol,
-                action.icons
-              )
-            ),
-          }));
         if (allTokenDetails.length < 3) {
           for (let i = 0; i < defaultTokenDetails.length; i++) {
             if (
@@ -110,7 +102,6 @@ const reducer = (state = initialState, action) =>
         );
 
         draft.tokenList = allTokenDetails;
-        draft.tokensDropdown = dropdownList;
         draft.totalBalance = parseFloat(total).toFixed(2);
         draft.prices = action.prices;
         draft.loading = false;
@@ -121,6 +112,32 @@ const reducer = (state = initialState, action) =>
       case GET_TOKENS_ERROR:
         draft.loading = false;
         draft.error = action.error;
+        break;
+
+      case GET_TOKEN_LIST:
+        draft.loading = true;
+        draft.error = false;
+        break;
+
+      case GET_TOKEN_LIST_SUCCESS:
+        draft.loading = false;
+        draft.log = action.log;
+        draft.tokensDropdown = Object.keys(action.tokenDetails).map(
+          (tokenName) => ({
+            value: tokenName,
+            label: constructLabel(
+              tokenName,
+              action.tokenDetails[tokenName].logoURI
+            ),
+          })
+        );
+        draft.tokenDetails = action.tokenDetails;
+        draft.success = true;
+        break;
+
+      case GET_TOKEN_LIST_ERROR:
+        draft.error = action.error;
+        draft.loading = false;
         break;
 
       case ADD_CUSTOM_TOKEN:

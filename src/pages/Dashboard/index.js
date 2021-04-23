@@ -2,12 +2,8 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-// import Dashboard from "components/Dashboard-old";
 import Dashboard from "components/Dashboard";
 import People from "components/People";
-// import AddTeammate from "components/People/AddTeammate";
-import AddDepartment from "components/People/AddDepartment";
-import ViewTeammates from "components/People/ViewTeammates";
 import EditTeammate from "components/People/EditTeammate";
 import Payments from "components/Payments";
 import Transactions from "components/Transactions";
@@ -29,20 +25,11 @@ import { ToastMessage } from "components/common/Toast";
 import { useSocket } from "hooks";
 import DashboardLayout from "components/DashboardLayout";
 import { routeTemplates } from "constants/routes/templates";
-// import { closeNotifications } from "store/notifications/actions";
-// import { makeSelectShowNotifications } from "store/notifications/selectors";
 
 const DashboardPage = () => {
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   useSocket({ isMultiOwner, safeAddress });
-
-  // const showNotifications = useSelector(makeSelectShowNotifications());
-  // const dispatch = useDispatch();
-
-  // const closeNotificationsIfOpen = () => {
-  //   if (showNotifications) dispatch(closeNotifications());
-  // };
 
   return (
     <Authenticated>
@@ -60,23 +47,8 @@ const DashboardPage = () => {
           />
           <Route
             exact
-            path={routeTemplates.dashboard.people.view}
-            component={ViewTeammates}
-          />
-          <Route
-            exact
-            path={routeTemplates.dashboard.people.viewByDepartment}
-            component={ViewTeammates}
-          />
-          <Route
-            exact
             path={routeTemplates.dashboard.people.edit}
             component={EditTeammate}
-          />
-          <Route
-            exact
-            path={routeTemplates.dashboard.department.new}
-            component={AddDepartment}
           />
           <Route
             exact

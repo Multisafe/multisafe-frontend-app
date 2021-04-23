@@ -55,6 +55,7 @@ export const getTokenPricesEndpoint = `${ROOT_BE_URL}/api/v1/tokenPrices/usd`;
 // tokens
 export const getTokensEndpoint = `${ROOT_BE_URL}/api/v1/tokens/get`;
 export const addCustomTokenEndpoint = `${ROOT_BE_URL}/api/v1/tokens/add`;
+export const getTokenListEndpoint = `${ROOT_BE_URL}/api/v1/tokens/getTokensList`;
 
 // notifications
 export const getNotificationsEndpoint = `${ROOT_BE_URL}/api/v1/notifications/get`;

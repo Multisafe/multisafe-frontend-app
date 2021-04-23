@@ -217,7 +217,7 @@ export default function People() {
         height: "40rem",
       }}
     >
-      <td colSpan={4}>No results found!</td>
+      <td colSpan={4}>No people found!</td>
     </TableInfo>
   );
 
@@ -324,7 +324,9 @@ export default function People() {
             />
           </div>
         </TableTitle>
-        {peopleByTeam && peopleByTeam[teamFilter].length > 0
+        {peopleByTeam &&
+        peopleByTeam[teamFilter] &&
+        peopleByTeam[teamFilter].length > 0
           ? peopleByTeam[teamFilter].map((people) => renderRow(people))
           : renderNoPeopleFound()}
       </React.Fragment>
