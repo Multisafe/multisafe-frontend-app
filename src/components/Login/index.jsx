@@ -97,7 +97,7 @@ import OrganisationInfoModal, {
 import {
   OrganisationCards,
   OrganisationCard,
-  HighlightedText,
+  Information,
   ReviewContent,
   ReviewOwnerDetails,
 } from "components/Register/styles";
@@ -933,9 +933,9 @@ const Login = () => {
           </div>
         </ReviewContent>
 
-        <HighlightedText className="mt-4">
+        <Information className="mt-4">
           <div>You’re about to import this safe to Parcel.</div>
-        </HighlightedText>
+        </Information>
 
         <Button
           type="button"

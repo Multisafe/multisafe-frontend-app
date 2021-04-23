@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
-import { defaultTokenOptions } from "utils/massPayout";
+import { defaultTokenOptions } from "utils/tokens";
 
 const inputStyles = {
   control: (styles) => ({

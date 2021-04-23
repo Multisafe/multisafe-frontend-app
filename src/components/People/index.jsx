@@ -352,54 +352,49 @@ export default function People() {
     return renderPeopleByAlphabet();
   };
 
-  const renderForNormalUser = () => {
-    return (
-      <div>
-        <FiltersCard>
-          <div>
-            <div className="title">People</div>
-            <div className="subtitle">Manage teams and people here</div>
+  return (
+    <div>
+      <FiltersCard>
+        <div>
+          <div className="title">People</div>
+          <div className="subtitle">Manage teams and people here</div>
+        </div>
+        <div>
+          <ControlledInput
+            type="text"
+            id="search-people"
+            name="search-people"
+            placeholder={"Search for people"}
+            onChange={handleSearchPeople}
+            value={searchPeopleValue}
+          />
+        </div>
+      </FiltersCard>
+      <FiltersCard className="mt-3">
+        <div>
+          <div className="title mb-0">
+            {!isNewUser && `Showing ${allPeople ? allPeople.length : 0} people`}
           </div>
-          <div>
-            <ControlledInput
-              type="text"
-              id="search-people"
-              name="search-people"
-              placeholder={"Search for people"}
-              onChange={handleSearchPeople}
-              value={searchPeopleValue}
-            />
-          </div>
-        </FiltersCard>
-        <FiltersCard className="mt-3">
-          <div>
-            <div className="title mb-0">
-              {!isNewUser &&
-                `Showing ${allPeople ? allPeople.length : 0} people`}
-            </div>
-          </div>
-          <div className="flex">
-            <TeamsDropdown />
-            <AddPeopleDropdown />
-            <SearchByTeamDropdown />
-            <ExportButton />
-          </div>
-        </FiltersCard>
-        <Table style={{ marginTop: "3rem" }}>
-          <TableHead>
-            <tr>
-              <th style={{ width: "25%" }}>Name</th>
-              <th style={{ width: "20%" }}>Team</th>
-              <th style={{ width: "20%" }}>Disbursement</th>
-              <th style={{ width: "35%" }}>Address</th>
-            </tr>
-          </TableHead>
-          <TableBody>{renderTableContent()}</TableBody>
-        </Table>
-        <DeletePeopleModal />
-      </div>
-    );
-  };
-
-  return <div>{renderForNormalUser()}</div>;
+        </div>
+        <div className="flex">
+          <TeamsDropdown />
+          <AddPeopleDropdown />
+          <SearchByTeamDropdown />
+          <ExportButton />
+        </div>
+      </FiltersCard>
+      <Table style={{ marginTop: "3rem" }}>
+        <TableHead>
+          <tr>
+            <th style={{ width: "25%" }}>Name</th>
+            <th style={{ width: "20%" }}>Team</th>
+            <th style={{ width: "20%" }}>Disbursement</th>
+            <th style={{ width: "35%" }}>Address</th>
+          </tr>
+        </TableHead>
+        <TableBody>{renderTableContent()}</TableBody>
+      </Table>
+      <DeletePeopleModal />
+    </div>
+  );
 }

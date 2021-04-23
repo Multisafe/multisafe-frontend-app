@@ -22,3 +22,4 @@ export { default as PeopleDetails } from "./PeopleDetails";
 export { default as UploadScreen } from "./UploadScreen";
 export { default as UploadStatus } from "./UploadStatus";
 export { default as ModifyTeam } from "./ModifyTeam";
+export { default as AddTeam } from "./AddTeam";

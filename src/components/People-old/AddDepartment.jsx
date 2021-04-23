@@ -33,7 +33,7 @@ import TeamPng from "assets/images/user-team.png";
 
 import { Container, Title, Heading, Summary, ActionItem } from "./styles";
 import { Circle } from "components/Header/styles";
-import "react-day-picker/lib/style.css";
+// import "react-day-picker/lib/style.css";
 
 // const dateStyles = `
 // .DayPicker-Day--highlighted {

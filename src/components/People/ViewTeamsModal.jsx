@@ -1,23 +1,33 @@
 import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { show as showModal } from "redux-modal";
 
 import { makeSelectLoading, makeSelectTeams } from "store/view-teams/selectors";
-import { Table, TableHead, TableBody } from "components/common/Table";
+import { Table, TableBody, TableInfo } from "components/common/Table";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { getDefaultIconIfPossible } from "constants/index";
 import { makeSelectTokenIcons } from "store/tokens/selectors";
 import Loading from "components/common/Loading";
+import Img from "components/common/Img";
+import Button from "components/common/Button";
+import PlusIcon from "assets/icons/dashboard/plus-icon.svg";
+import { MODAL_NAME as ADD_TEAM_MODAL } from "./AddTeamModal";
 
 export const MODAL_NAME = "view-teams-modal";
 
 function ViewTeamsModal(props) {
   const { show, handleHide } = props;
+  const dispatch = useDispatch();
 
   const loading = useSelector(makeSelectLoading());
   const icons = useSelector(makeSelectTokenIcons());
   const allTeams = useSelector(makeSelectTeams());
-  console.log({ allTeams });
+
+  const showAddTeamModal = () => {
+    handleHide();
+    dispatch(showModal(ADD_TEAM_MODAL));
+  };
 
   const renderTeamRows = () => {
     if (loading) {
@@ -37,13 +47,13 @@ function ViewTeamsModal(props) {
       allTeams.map(({ name, departmentId, employees: peopleCount }) => (
         <tr key={departmentId}>
           <td>{name}</td>
-          <td>{peopleCount}</td>
+          <td>People: {peopleCount}</td>
           <td>
-            <img
+            Currency:{" "}
+            <Img
               src={getDefaultIconIfPossible("DAI", icons)}
               alt={"DAI"}
               width="16"
-              className="mr-2"
             />{" "}
             DAI
           </td>
@@ -56,15 +66,25 @@ function ViewTeamsModal(props) {
     return (
       <div style={{ minHeight: "10rem", height: "30rem", overflow: "auto" }}>
         <Table>
-          <TableHead>
-            <tr>
-              <th style={{ width: "33%" }}>Team Name</th>
-              <th style={{ width: "33%" }}>No. of People</th>
-              <th style={{ width: "33%" }}>Currency</th>
-            </tr>
-          </TableHead>
-
-          <TableBody>{renderTeamRows()}</TableBody>
+          <TableBody>
+            <TableInfo
+              style={{
+                // fontSize: "1.4rem",
+                // fontWeight: "900",
+                textAlign: "center",
+                height: "5rem",
+              }}
+              onClick={showAddTeamModal}
+            >
+              <td colSpan={3}>
+                <Button iconOnly style={{ color: "#7367f0" }}>
+                  <Img src={PlusIcon} alt="plus" className="mr-2" />{" "}
+                  <span>Create New Team</span>
+                </Button>
+              </td>
+            </TableInfo>
+            {renderTeamRows()}
+          </TableBody>
         </Table>
       </div>
     );
@@ -72,11 +92,7 @@ function ViewTeamsModal(props) {
 
   return (
     <Modal isOpen={show} toggle={handleHide}>
-      <ModalHeader
-        style={{ borderBottom: "none" }}
-        title={"All Teams"}
-        toggle={handleHide}
-      />
+      <ModalHeader title={"All Teams"} toggle={handleHide} />
       <ModalBody width="55rem">{renderTeams()}</ModalBody>
     </Modal>
   );

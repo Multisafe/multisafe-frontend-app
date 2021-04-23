@@ -62,12 +62,12 @@ function CustomModalHeader({ children, title, toggle, ...rest }) {
   );
 }
 
-function CustomModalBody({ children, width, ...rest }) {
+function CustomModalBody({ children, width, padding, minHeight, ...rest }) {
   return (
     <ModalBody {...rest}>
       <Card
         className="position-relative p-0 modal-card"
-        style={{ width: width || "100%" }}
+        style={{ width: width || "100%", minHeight: minHeight || "30rem" }}
       >
         {children}
       </Card>

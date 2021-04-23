@@ -85,7 +85,7 @@ import {
   StepInfo,
   OrganisationCards,
   OrganisationCard,
-  HighlightedText,
+  Information,
   ReviewContent,
   ReviewOwnerDetails,
   LoadingTransaction,
@@ -807,14 +807,14 @@ const Register = () => {
           </div>
         </div>
 
-        <HighlightedText style={{ marginBottom: "40px" }}>
+        <Information style={{ marginBottom: "40px" }}>
           <div>
             <Img src={LightbulbIcon} alt="lightbulb" />
           </div>
           <div className="ml-2">
             To get maximum security, add more than one owner.
           </div>
-        </HighlightedText>
+        </Information>
 
         <Button type="submit" className="proceed-btn">
           <span>Proceed</span>
@@ -999,7 +999,7 @@ const Register = () => {
           </div>
         </ReviewContent>
 
-        <HighlightedText className="mt-4 mb-5">
+        <Information className="mt-4 mb-5">
           {isMetaTxEnabled ? (
             <div>You’re about to create a new safe.</div>
           ) : (
@@ -1008,7 +1008,7 @@ const Register = () => {
               transaction with your currently connected wallet.
             </div>
           )}
-        </HighlightedText>
+        </Information>
 
         <Button
           type="submit"

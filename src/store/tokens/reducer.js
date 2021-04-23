@@ -12,7 +12,7 @@ import {
 } from "./action-types";
 import { defaultTokenDetails, getDefaultIconIfPossible } from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
-import { constructLabel } from "utils/massPayout";
+import { constructLabel } from "utils/tokens";
 
 export const initialState = {
   log: "",

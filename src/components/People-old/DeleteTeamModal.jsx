@@ -44,7 +44,7 @@ function DeleteTeamModal(props) {
   return (
     <Modal isOpen={show} centered>
       <style>{modalStyles}</style>
-      <ModalHeader toggle={handleHide} style={{ borderBottom: "none" }}>
+      <ModalHeader toggle={handleHide}>
         <Title className="mb-2">Delete Team</Title>
         <Heading>
           Are you sure you want to delete this team and all of its teammates?
