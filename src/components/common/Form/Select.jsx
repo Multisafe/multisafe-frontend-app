@@ -24,6 +24,8 @@ const inputStyles = {
       ...styles,
       width: state.selectProps.width || "100%",
       fontSize: "1.4rem",
+      backgroundColor: state.isFocused ? "#f1f0fd" : "#ffffff",
+      color: "#373737",
     };
   },
   menu: (styles, state) => {
@@ -41,7 +43,7 @@ const inputStyles = {
   },
   input: (styles) => ({ ...styles }),
   placeholder: (styles) => ({ ...styles }),
-  singleValue: (styles, { data }) => ({ ...styles }),
+  singleValue: (styles) => ({ ...styles }),
 };
 const SelectField = ({
   name,
@@ -57,9 +59,9 @@ const SelectField = ({
   ...rest
 }) => (
   <Controller
+    as={Select}
     name={name}
     control={control}
-    as={Select}
     className="basic-single"
     classNamePrefix="select"
     defaultValue={options[0] || `Select`}

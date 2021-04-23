@@ -190,8 +190,8 @@ export default function AccountSummary() {
               </div>
             )}
             {!loading &&
-              tokenList.map(({ id, name, icon, usd, balance }) => (
-                <TableRow col={2} key={id}>
+              tokenList.map(({ name, icon, usd, balance }) => (
+                <TableRow col={2} key={name}>
                   <div>
                     <Img src={icon} alt="ether" width="30" /> {name}
                   </div>
