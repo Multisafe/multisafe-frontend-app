@@ -727,6 +727,7 @@ export default function Payments() {
       style={{
         transition: "all 0.25s linear",
       }}
+      className="position-relative"
     >
       <div>
         <Info>

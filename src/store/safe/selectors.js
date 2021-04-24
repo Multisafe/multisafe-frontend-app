@@ -6,6 +6,9 @@ const selectSafeDetails = (state) => state.safe || initialState;
 const makeSelectLoading = () =>
   createSelector(selectSafeDetails, (safeState) => safeState.loading);
 
+const makeSelectUpdating = () =>
+  createSelector(selectSafeDetails, (safeState) => safeState.updating);
+
 const makeSelectOwners = () =>
   createSelector(selectSafeDetails, (safeState) => safeState.owners);
 
@@ -20,5 +23,6 @@ export {
   makeSelectOwners,
   makeSelectNonce,
   makeSelectLoading,
+  makeSelectUpdating,
   makeSelectError,
 };

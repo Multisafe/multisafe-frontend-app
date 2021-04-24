@@ -6,6 +6,9 @@ import {
   SET_OWNERS_AND_THRESHOLD,
   CLEAR_GLOBAL_STATE,
   SET_ORGANISATION_TYPE,
+  GET_SAFE_INFO,
+  GET_SAFE_INFO_SUCCESS,
+  GET_SAFE_INFO_ERROR,
 } from "./action-types";
 
 export const initialState = {
@@ -15,6 +18,9 @@ export const initialState = {
   owners: [], // [{name: "123", owner: "0x123"}]
   threshold: 0,
   organisationType: 0,
+  isOwner: true,
+  loading: false,
+  error: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -50,6 +56,23 @@ const reducer = (state = initialState, action) =>
         draft.createdBy = "";
         draft.owners = [];
         draft.threshold = 0;
+        draft.organisationType = 0;
+        draft.isOwner = true;
+        break;
+
+      case GET_SAFE_INFO:
+        draft.loading = true;
+        break;
+      case GET_SAFE_INFO_SUCCESS:
+        draft.loading = false;
+        draft.owners = action.owners;
+        draft.threshold = action.threshold;
+        draft.isOwner = action.isOwner;
+        draft.organisationType = action.organisationType;
+        break;
+      case GET_SAFE_INFO_ERROR:
+        draft.loading = false;
+        draft.error = action.error;
         break;
     }
   });

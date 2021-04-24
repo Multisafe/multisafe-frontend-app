@@ -61,6 +61,10 @@ export const getTokenListEndpoint = `${ROOT_BE_URL}/api/v1/tokens/getTokensList`
 export const getNotificationsEndpoint = `${ROOT_BE_URL}/api/v1/notifications/get`;
 export const updateNotificationsEndpoint = `${ROOT_BE_URL}/api/v1/notifications/update`;
 
+// SAFE
+export const getSafeInfoEndpoint = `${ROOT_BE_URL}/api/v1/users/getSafeInfo`;
+export const updateOwnerNameEndpoint = `${ROOT_BE_URL}/api/v1/users/updateOwnerDetails`;
+
 // GNOSIS
 export const gnosisSafeTransactionEndpoint =
   process.env.REACT_APP_NETWORK_NAME === networkNames.MAINNET

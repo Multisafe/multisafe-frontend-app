@@ -131,6 +131,9 @@ export default function SpendingLimits() {
           }
           setExistingSpendingLimits(spendingLimits);
           setLoadingLimits(false);
+        } else {
+          setExistingSpendingLimits([]);
+          setLoadingLimits(false);
         }
       } catch (err) {
         console.error(err);

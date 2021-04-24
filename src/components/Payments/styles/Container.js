@@ -8,7 +8,7 @@ export default styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  top: 240px;
+  top: 180px;
   .new-user {
     grid-row: 1/5;
   }

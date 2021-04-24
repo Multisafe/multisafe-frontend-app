@@ -1,5 +1,12 @@
 import produce from "immer";
-import { GET_NONCE, GET_NONCE_SUCCESS, GET_NONCE_ERROR } from "./action-types";
+import {
+  GET_NONCE,
+  GET_NONCE_SUCCESS,
+  GET_NONCE_ERROR,
+  UPDATE_OWNER_NAME,
+  UPDATE_OWNER_NAME_SUCCESS,
+  UPDATE_OWNER_NAME_ERROR,
+} from "./action-types";
 
 export const initialState = {
   loading: false,
@@ -27,6 +34,20 @@ const reducer = (state = initialState, action) =>
       case GET_NONCE_SUCCESS:
         draft.loading = false;
         draft.nonce = action.countUniqueNonce;
+        break;
+
+      case UPDATE_OWNER_NAME:
+        draft.updating = true;
+        draft.error = false;
+        break;
+
+      case UPDATE_OWNER_NAME_SUCCESS:
+        draft.updating = false;
+        break;
+
+      case UPDATE_OWNER_NAME_ERROR:
+        draft.updating = false;
+        draft.error = action.error;
         break;
     }
   });

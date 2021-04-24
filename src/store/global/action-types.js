@@ -5,3 +5,7 @@ export const SET_OWNERS_AND_THRESHOLD =
   "parcel/global/SET_OWNERS_AND_THRESHOLD";
 export const SET_ORGANISATION_TYPE = "parcel/global/SET_ORGANISATION_TYPE";
 export const CLEAR_GLOBAL_STATE = "parcel/global/CLEAR_GLOBAL_STATE";
+
+export const GET_SAFE_INFO = "parcel/global/GET_SAFE_INFO";
+export const GET_SAFE_INFO_SUCCESS = "parcel/global/GET_SAFE_INFO_SUCCESS";
+export const GET_SAFE_INFO_ERROR = "parcel/global/GET_SAFE_INFO_ERROR";

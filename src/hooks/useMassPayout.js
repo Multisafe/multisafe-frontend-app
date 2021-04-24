@@ -142,7 +142,8 @@ export default function useMassPayout(props = {}) {
   };
 
   const getERC20Contract = (contractAddress) => {
-    if (contractAddress) return customToken.attach(contractAddress);
+    if (contractAddress && customToken)
+      return customToken.attach(contractAddress);
     return customToken;
   };
 
@@ -912,6 +913,9 @@ export default function useMassPayout(props = {}) {
     if (!tokenDetails) return;
 
     const erc20 = getERC20Contract(tokenDetails.address);
+    if (!erc20) {
+      throw new Error("ERC20 token undefined");
+    }
 
     // If input and output tokens are different, swap using uniswap
     // If input and output tokens are same, simply call transfer
