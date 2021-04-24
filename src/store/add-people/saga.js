@@ -14,24 +14,28 @@ import {
   createBulkPeopleEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as ADD_BULK_MODAL } from "components/People/AddBulkPeopleModal";
+import { MODAL_NAME as ADD_SINGLE_MODAL } from "components/People/AddSinglePeopleModal";
 import { getAllPeople } from "store/view-people/actions";
 import { getTeams } from "store/view-teams/actions";
 
-export function* createTeammate({ body }) {
+export function* createTeammate({
+  encryptedEmployeeDetails,
+  safeAddress,
+  createdBy,
+  departmentId,
+  departmentName,
+}) {
   const requestURL = `${createPeopleEndpoint}`;
   const options = {
     method: "POST",
     body: JSON.stringify({
-      encryptedEmployeeDetails: body.encryptedEmployeeDetails,
-      safeAddress: body.safeAddress,
-      createdBy: body.createdBy,
-      departmentId: body.departmentId,
-      departmentName: body.departmentName,
+      encryptedEmployeeDetails,
+      safeAddress,
+      createdBy,
+      departmentId,
+      departmentName,
       joiningDate: Date.now(),
     }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -41,9 +45,12 @@ export function* createTeammate({ body }) {
       yield put(addPeopleError(result.log));
     } else {
       yield put(addPeopleSuccess());
+      yield put(hide(ADD_SINGLE_MODAL));
+      yield put(getAllPeople(safeAddress));
+      yield put(getTeams(safeAddress));
     }
   } catch (err) {
-    yield put(addPeopleError(err));
+    yield put(addPeopleError(err.message));
   }
 }
 

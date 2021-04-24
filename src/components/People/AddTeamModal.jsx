@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
-import { AddTeam } from "./styles";
+import { AddTeamContainer } from "./styles";
 import { Input, Select, ErrorMessage } from "components/common/Form";
 import Button from "components/common/Button";
 import { Information } from "components/Register/styles";
@@ -53,8 +53,8 @@ function AddTeamModal(props) {
   const adding = useSelector(makeSelectAddingTeam());
 
   useEffect(() => {
-    if (safeAddress) dispatch(getTokenList(safeAddress));
-  }, [dispatch, safeAddress]);
+    if (safeAddress && !tokenDetails) dispatch(getTokenList(safeAddress));
+  }, [dispatch, safeAddress, tokenDetails]);
 
   const onSubmit = (values) => {
     const tokenInfo = tokenDetails && tokenDetails[values.token.value];
@@ -73,7 +73,7 @@ function AddTeamModal(props) {
 
   const renderAddTeam = () => {
     return (
-      <AddTeam>
+      <AddTeamContainer>
         <div>
           <div className="title">Team Name</div>
           <div className="subtitle">What should it be called?</div>
@@ -118,7 +118,7 @@ function AddTeamModal(props) {
             Add Team
           </Button>
         </div>
-      </AddTeam>
+      </AddTeamContainer>
     );
   };
 

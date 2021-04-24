@@ -21,18 +21,14 @@ export function addPeople({
   createdBy,
   departmentId,
   departmentName,
-  joiningDate,
 }) {
   return {
     type: ADD_PEOPLE,
-    body: {
-      encryptedEmployeeDetails,
-      safeAddress,
-      createdBy,
-      departmentId,
-      departmentName,
-      joiningDate,
-    },
+    encryptedEmployeeDetails,
+    safeAddress,
+    createdBy,
+    departmentId,
+    departmentName,
   };
 }
 

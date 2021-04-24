@@ -93,33 +93,37 @@ const SelectField = ({
   isClearable,
   isSearchable,
   width,
+  placeholder,
   ...rest
-}) => (
-  <Controller
-    name={name}
-    control={control}
-    rules={{ required }}
-    render={({ onChange, value }) => (
-      <Select
-        name={name}
-        className="basic-single"
-        classNamePrefix="select"
-        isDisabled={isDisabled}
-        isLoading={isLoading}
-        isClearable={isClearable}
-        isSearchable={isSearchable}
-        options={options}
-        styles={inputStyles}
-        width={width}
-        filterOption={createFilter({ ignoreAccents: false })}
-        components={{ MenuList }}
-        onChange={onChange}
-        value={value}
-      />
-    )}
-    {...rest}
-  />
-);
+}) => {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      rules={{ required }}
+      render={({ onChange, value }) => (
+        <Select
+          name={name}
+          className="basic-single"
+          classNamePrefix="select"
+          isDisabled={isDisabled}
+          isLoading={isLoading}
+          isClearable={isClearable}
+          isSearchable={isSearchable}
+          options={options}
+          styles={inputStyles}
+          width={width}
+          filterOption={createFilter({ ignoreAccents: false })}
+          components={{ MenuList }}
+          onChange={onChange}
+          value={value}
+          placeholder={placeholder}
+          {...rest}
+        />
+      )}
+    />
+  );
+};
 
 SelectField.propTypes = {
   name: PropTypes.string.isRequired,

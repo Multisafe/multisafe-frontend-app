@@ -156,6 +156,14 @@ const GlobalStyle = createGlobalStyle`
   .tooltip {
     font-size: 1.2rem;
   }
+
+  .text-primary {
+    color: ${({ theme }) => theme.primary} !important;
+  }
+
+  .text-bold {
+    font-weight: 900 !important;
+  }
 `;
 
 export default GlobalStyle;
