@@ -93,29 +93,34 @@ function AddTeamModal(props) {
       };
 
       if (isEditMode) {
-        const peopleDetails = peopleByTeam.map(({ data, ...rest }) => {
-          const {
-            firstName,
-            lastName,
-            salaryAmount,
-            address,
-          } = getDecryptedDetails(data, encryptionKey, organisationType);
-          const encryptedData = cryptoUtils.encryptDataUsingEncryptionKey(
-            JSON.stringify({
+        const peopleDetails = peopleByTeam.map(
+          ({ data, departmentName, ...rest }) => {
+            const {
               firstName,
               lastName,
               salaryAmount,
-              salaryToken: tokenInfo.symbol,
               address,
-            }),
-            encryptionKey,
-            organisationType
-          );
+            } = getDecryptedDetails(data, encryptionKey, organisationType);
+            const encryptedData = cryptoUtils.encryptDataUsingEncryptionKey(
+              JSON.stringify({
+                firstName,
+                lastName,
+                salaryAmount,
+                salaryToken: tokenInfo.symbol,
+                address,
+              }),
+              encryptionKey,
+              organisationType
+            );
 
-          return { data: encryptedData, ...rest };
-        });
+            return {
+              data: encryptedData,
+              departmentName: values.name,
+              ...rest,
+            };
+          }
+        );
 
-        console.log({ peopleDetails });
         dispatch(editTeam({ ...body, departmentId, peopleDetails }));
       } else {
         dispatch(addTeam(body));

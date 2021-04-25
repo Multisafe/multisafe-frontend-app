@@ -24,6 +24,7 @@ export function* createTeammate({
   createdBy,
   departmentId,
   departmentName,
+  tokenInfo,
 }) {
   const requestURL = `${createPeopleEndpoint}`;
   const options = {
@@ -34,6 +35,7 @@ export function* createTeammate({
       createdBy,
       departmentId,
       departmentName,
+      tokenInfo,
       joiningDate: Date.now(),
     }),
   };

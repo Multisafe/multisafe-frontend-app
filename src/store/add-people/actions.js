@@ -21,6 +21,7 @@ export function addPeople({
   createdBy,
   departmentId,
   departmentName,
+  tokenInfo,
 }) {
   return {
     type: ADD_PEOPLE,
@@ -29,6 +30,7 @@ export function addPeople({
     createdBy,
     departmentId,
     departmentName,
+    tokenInfo,
   };
 }
 

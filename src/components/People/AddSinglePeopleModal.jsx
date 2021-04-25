@@ -146,6 +146,7 @@ function AddSinglePeopleModal(props) {
         departmentName: teamName
           ? teamName
           : teamIdToDetailsMap[team.value].name,
+        tokenInfo,
       };
 
       if (isEditMode) {
