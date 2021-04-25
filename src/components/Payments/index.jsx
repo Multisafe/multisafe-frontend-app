@@ -18,7 +18,7 @@ import { getTeams } from "store/view-teams/actions";
 import viewTeamsSaga from "store/view-teams/saga";
 import viewPeopleSaga from "store/view-people/saga";
 import viewPeopleReducer from "store/view-people/reducer";
-import { getAllPeople, getPeopleByDepartment } from "store/view-people/actions";
+import { getAllPeople, getPeopleByTeam } from "store/view-people/actions";
 import {
   makeSelectTeams,
   makeSelectLoading as makeSelectTeamsLoading,
@@ -497,7 +497,7 @@ export default function Payments() {
 
   const handleSelectDepartment = (departmentId) => {
     if (ownerSafeAddress && departmentId) {
-      dispatch(getPeopleByDepartment(ownerSafeAddress, departmentId));
+      dispatch(getPeopleByTeam(ownerSafeAddress, departmentId));
       setDepartmentStep(departmentStep + 1);
       setSelectedRows([]);
     }

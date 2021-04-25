@@ -1,15 +1,15 @@
 import { takeLatest, put, fork, call } from "redux-saga/effects";
-import { GET_ALL_PEOPLE, GET_PEOPLE_BY_DEPARTMENT } from "./action-types";
+import { GET_ALL_PEOPLE, GET_PEOPLE_BY_TEAM } from "./action-types";
 import {
   getAllPeopleSuccess,
   getAllPeopleError,
-  getPeopleByDepartmentSuccess,
-  getPeopleByDepartmentError,
+  getPeopleByTeamSuccess,
+  getPeopleByTeamError,
 } from "./actions";
 import request from "utils/request";
 import {
   getAllPeopleEndpoint,
-  getPeopleByDepartmentIdEndpoint,
+  getPeopleByTeamIdEndpoint,
 } from "constants/endpoints";
 
 function* fetchAllTeammates(action) {
@@ -22,7 +22,7 @@ function* fetchAllTeammates(action) {
     const result = yield call(request, requestURL, options);
     if (result.flag === 400) {
       // no teammates
-      yield put(getPeopleByDepartmentSuccess([]));
+      yield put(getAllPeopleSuccess([]));
     } else if (result.flag !== 200) {
       yield put(getAllPeopleError(result.log));
     } else {
@@ -34,7 +34,7 @@ function* fetchAllTeammates(action) {
 }
 
 function* fetchTeammatesByDepartmentId(action) {
-  const requestURL = `${getPeopleByDepartmentIdEndpoint}?safeAddress=${action.safeAddress}&departmentId=${action.departmentId}`;
+  const requestURL = `${getPeopleByTeamIdEndpoint}?safeAddress=${action.safeAddress}&departmentId=${action.departmentId}`;
   const options = {
     method: "GET",
   };
@@ -42,16 +42,16 @@ function* fetchTeammatesByDepartmentId(action) {
   try {
     const result = yield call(request, requestURL, options);
     if (result.flag === 400) {
-      yield put(getPeopleByDepartmentSuccess([], result.departmentName));
+      yield put(getPeopleByTeamSuccess([], result.departmentName));
     } else if (result.flag !== 200) {
-      yield put(getPeopleByDepartmentError(result.log));
+      yield put(getPeopleByTeamError(result.log));
     } else {
       yield put(
-        getPeopleByDepartmentSuccess(result.employees, result.departmentName)
+        getPeopleByTeamSuccess(result.employees, result.departmentName)
       );
     }
   } catch (err) {
-    yield put(getPeopleByDepartmentError(err));
+    yield put(getPeopleByTeamError(err));
   }
 }
 
@@ -59,11 +59,11 @@ function* watchGetAllPeople() {
   yield takeLatest(GET_ALL_PEOPLE, fetchAllTeammates);
 }
 
-function* watchGetPeopleByDepartmentId() {
-  yield takeLatest(GET_PEOPLE_BY_DEPARTMENT, fetchTeammatesByDepartmentId);
+function* watchgetPeopleByTeamId() {
+  yield takeLatest(GET_PEOPLE_BY_TEAM, fetchTeammatesByDepartmentId);
 }
 
 export default function* viewPeople() {
   yield fork(watchGetAllPeople);
-  yield fork(watchGetPeopleByDepartmentId);
+  yield fork(watchgetPeopleByTeamId);
 }

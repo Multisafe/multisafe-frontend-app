@@ -11,6 +11,12 @@ const selectViewPeople = (state) => state.viewPeople || initialState;
 const makeSelectPeople = () =>
   createSelector(selectViewPeople, (viewPeopleState) => viewPeopleState.people);
 
+const makeSelectPeopleByTeam = () =>
+  createSelector(
+    selectViewPeople,
+    (viewPeopleState) => viewPeopleState.peopleByTeam
+  );
+
 const makeSelectLoading = () =>
   createSelector(
     selectViewPeople,
@@ -80,4 +86,5 @@ export {
   makeSelectIsSearchByNameFilterApplied,
   makeSelectIsSearchByTeamFilterApplied,
   makeSelectError,
+  makeSelectPeopleByTeam,
 };

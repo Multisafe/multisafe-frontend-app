@@ -1,5 +1,4 @@
 import { isAddress } from "@ethersproject/address";
-import { tokens } from "constants/index";
 
 // check if the field is correct
 export const FIELD_NAMES = {
@@ -11,7 +10,7 @@ export const FIELD_NAMES = {
   DEPARTMENT_NAME: "DEPARTMENT_NAME",
 };
 
-export const isValidField = (fieldName, value) => {
+export const isValidField = (fieldName, value, tokens) => {
   switch (fieldName) {
     case FIELD_NAMES.FIRST_NAME: {
       if (!value || typeof value !== "string") return false;

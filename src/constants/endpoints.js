@@ -17,7 +17,7 @@ export const loginEndpoint = `${ROOT_BE_URL}/api/v1/users/login`;
 export const getAllPeopleEndpoint = `${ROOT_BE_URL}/api/v1/people/get`;
 export const createPeopleEndpoint = `${ROOT_BE_URL}/api/v1/people/create`;
 export const createBulkPeopleEndpoint = `${ROOT_BE_URL}/api/v1/people/add-multiple`;
-export const getPeopleByDepartmentIdEndpoint = `${ROOT_BE_URL}/api/v1/people/getByDepartment`;
+export const getPeopleByTeamIdEndpoint = `${ROOT_BE_URL}/api/v1/people/getByDepartment`;
 export const editPeopleEndpoint = `${ROOT_BE_URL}/api/v1/people/update`;
 export const deletePeopleEndpoint = `${ROOT_BE_URL}/api/v1/people/remove`;
 

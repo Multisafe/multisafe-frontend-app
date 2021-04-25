@@ -103,7 +103,7 @@ export default function People() {
   }, [dispatch, ownerSafeAddress]);
 
   useEffect(() => {
-    if (!encryptedPeople) {
+    if (!encryptedPeople || (encryptedPeople && !encryptedPeople.length)) {
       setIsNewUser(true);
     } else {
       setIsNewUser(false);

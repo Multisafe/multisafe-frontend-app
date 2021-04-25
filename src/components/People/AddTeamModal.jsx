@@ -2,13 +2,17 @@ import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
+import { cryptoUtils } from "parcel-sdk";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { AddTeamContainer } from "./styles";
 import { Input, Select, ErrorMessage } from "components/common/Form";
 import Button from "components/common/Button";
 import { Information } from "components/Register/styles";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import {
+  makeSelectOrganisationType,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
 import {
   makeSelectTokensDropdown,
   makeSelectLoading,
@@ -23,7 +27,7 @@ import {
 } from "store/add-team/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useActiveWeb3React } from "hooks";
+import { useActiveWeb3React, useLocalStorage } from "hooks";
 import {
   makeSelectUpdating,
   makeSelectError as makeSelectErrorInUpdate,
@@ -32,12 +36,17 @@ import modifyTeamReducer from "store/modify-team/reducer";
 import modifyTeamSaga from "store/modify-team/saga";
 import { editTeam } from "store/modify-team/actions";
 import ErrorText from "components/common/ErrorText";
+import { useEffect } from "react";
+import { getPeopleByTeam } from "store/view-people/actions";
+import { makeSelectPeopleByTeam } from "store/view-people/selectors";
+import { getDecryptedDetails } from "utils/encryption";
 
 export const MODAL_NAME = "add-team-modal";
 const addTeamKey = "addTeam";
 const modifyTeamKey = "modifyTeam";
 
 function AddTeamModal(props) {
+  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const { show, handleHide, isEditMode, defaultValues, departmentId } = props;
   const { register, handleSubmit, errors, formState, control } = useForm({
     mode: "onChange",
@@ -56,13 +65,21 @@ function AddTeamModal(props) {
   const dispatch = useDispatch();
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const organisationType = useSelector(makeSelectOrganisationType());
   const tokensDropdown = useSelector(makeSelectTokensDropdown());
   const loadingTokenList = useSelector(makeSelectLoading());
   const tokenDetails = useSelector(makeSelectTokensDetails());
+  const peopleByTeam = useSelector(makeSelectPeopleByTeam());
   const adding = useSelector(makeSelectAddingTeam());
   const updating = useSelector(makeSelectUpdating());
   const errorInAdd = useSelector(makeSelectErrorInAdd());
   const errorInUpdate = useSelector(makeSelectErrorInUpdate());
+
+  useEffect(() => {
+    if (isEditMode && safeAddress && departmentId) {
+      dispatch(getPeopleByTeam(safeAddress, departmentId));
+    }
+  }, [isEditMode, dispatch, safeAddress, departmentId]);
 
   const onSubmit = (values) => {
     const tokenInfo = tokenDetails && tokenDetails[values.token.value];
@@ -76,7 +93,30 @@ function AddTeamModal(props) {
       };
 
       if (isEditMode) {
-        dispatch(editTeam({ ...body, departmentId }));
+        const peopleDetails = peopleByTeam.map(({ data, ...rest }) => {
+          const {
+            firstName,
+            lastName,
+            salaryAmount,
+            address,
+          } = getDecryptedDetails(data, encryptionKey, organisationType);
+          const encryptedData = cryptoUtils.encryptDataUsingEncryptionKey(
+            JSON.stringify({
+              firstName,
+              lastName,
+              salaryAmount,
+              salaryToken: tokenInfo.symbol,
+              address,
+            }),
+            encryptionKey,
+            organisationType
+          );
+
+          return { data: encryptedData, ...rest };
+        });
+
+        console.log({ peopleDetails });
+        dispatch(editTeam({ ...body, departmentId, peopleDetails }));
       } else {
         dispatch(addTeam(body));
       }

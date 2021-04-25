@@ -27,6 +27,7 @@ import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import Img from "components/common/Img";
 import UploadSuccessIcon from "assets/icons/dashboard/upload-success-icon.svg";
 import UploadFailIcon from "assets/icons/dashboard/upload-fail-icon.svg";
+import { makeSelectTokensDetails } from "store/tokens/selectors";
 
 export const MODAL_NAME = "add-bulk-people-modal";
 const addPeopleKey = "addPeople";
@@ -50,6 +51,7 @@ function AddBulkPeopleModal(props) {
   const addBulkSuccess = useSelector(makeSelectSuccess());
   const loading = useSelector(makeSelectLoading());
   const organisationType = useSelector(makeSelectOrganisationType());
+  const tokens = useSelector(makeSelectTokensDetails());
 
   useEffect(() => {
     if (addBulkSuccess && success) {
@@ -178,7 +180,7 @@ function AddBulkPeopleModal(props) {
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
     const invalidPayDetails =
       !isValidField(FIELD_NAMES.AMOUNT, salaryAmount) ||
-      !isValidField(FIELD_NAMES.TOKEN, salaryToken);
+      !isValidField(FIELD_NAMES.TOKEN, salaryToken, tokens);
     const invalidDepartment = !isValidField(
       FIELD_NAMES.DEPARTMENT_NAME,
       departmentName

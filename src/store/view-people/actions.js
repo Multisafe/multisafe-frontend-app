@@ -2,9 +2,9 @@ import {
   GET_ALL_PEOPLE,
   GET_ALL_PEOPLE_SUCCESS,
   GET_ALL_PEOPLE_ERROR,
-  GET_PEOPLE_BY_DEPARTMENT,
-  GET_PEOPLE_BY_DEPARTMENT_SUCCESS,
-  GET_PEOPLE_BY_DEPARTMENT_ERROR,
+  GET_PEOPLE_BY_TEAM,
+  GET_PEOPLE_BY_TEAM_SUCCESS,
+  GET_PEOPLE_BY_TEAM_ERROR,
   ADD_PEOPLE_FILTER,
   REMOVE_PEOPLE_FILTER,
   SET_SEARCH_NAME,
@@ -31,25 +31,25 @@ export function getAllPeopleError(error) {
   };
 }
 
-export function getPeopleByDepartment(safeAddress, departmentId) {
+export function getPeopleByTeam(safeAddress, departmentId) {
   return {
-    type: GET_PEOPLE_BY_DEPARTMENT,
+    type: GET_PEOPLE_BY_TEAM,
     safeAddress,
     departmentId,
   };
 }
 
-export function getPeopleByDepartmentSuccess(teammates, departmentName) {
+export function getPeopleByTeamSuccess(people, departmentName) {
   return {
-    type: GET_PEOPLE_BY_DEPARTMENT_SUCCESS,
-    teammates,
+    type: GET_PEOPLE_BY_TEAM_SUCCESS,
+    people,
     departmentName,
   };
 }
 
-export function getPeopleByDepartmentError(error) {
+export function getPeopleByTeamError(error) {
   return {
-    type: GET_PEOPLE_BY_DEPARTMENT_ERROR,
+    type: GET_PEOPLE_BY_TEAM_ERROR,
     error,
   };
 }

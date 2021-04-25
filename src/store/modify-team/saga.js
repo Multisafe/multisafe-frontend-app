@@ -19,7 +19,13 @@ import { getAllPeople, removePeopleFilter } from "store/view-people/actions";
 import { PEOPLE_FILTERS } from "store/view-people/constants";
 import { getTeams } from "store/view-teams/actions";
 
-function* editDepartment({ name, safeAddress, tokenInfo, departmentId }) {
+function* editDepartment({
+  name,
+  safeAddress,
+  tokenInfo,
+  departmentId,
+  peopleDetails,
+}) {
   const requestURL = `${updateDepartmentEndpoint}`;
   const options = {
     method: "POST",
@@ -28,6 +34,7 @@ function* editDepartment({ name, safeAddress, tokenInfo, departmentId }) {
       safeAddress,
       tokenInfo,
       name,
+      peopleDetails,
     }),
   };
 

@@ -23,7 +23,7 @@ import { useLocalStorage } from "hooks";
 import Button from "components/common/Button";
 import viewPeopleReducer from "store/view-people/reducer";
 import viewPeopleSaga from "store/view-people/saga";
-import { getAllPeople, getPeopleByDepartment } from "store/view-people/actions";
+import { getAllPeople, getPeopleByTeam } from "store/view-people/actions";
 import {
   makeSelectPeople,
   makeSelectLoading,
@@ -83,7 +83,7 @@ export default function ViewTeammate() {
   useEffect(() => {
     if (ownerSafeAddress) {
       if (params && params.departmentId) {
-        dispatch(getPeopleByDepartment(ownerSafeAddress, params.departmentId));
+        dispatch(getPeopleByTeam(ownerSafeAddress, params.departmentId));
       } else {
         dispatch(getAllPeople(ownerSafeAddress));
       }
