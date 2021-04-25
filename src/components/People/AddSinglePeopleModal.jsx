@@ -52,16 +52,9 @@ function AddSinglePeopleModal(props) {
 
   const { account } = useActiveWeb3React();
 
-  const {
-    register,
-    handleSubmit,
-    errors,
-    control,
-    watch,
-    setValue,
-    reset,
-  } = useForm({
+  const { register, handleSubmit, errors, control, watch, setValue } = useForm({
     mode: "onChange",
+    defaultValues: isEditMode ? defaultValues : {},
   });
   const teamChanged = watch("team");
 
@@ -102,12 +95,6 @@ function AddSinglePeopleModal(props) {
       });
     }
   }, [teamChanged, setValue, teamIdToDetailsMap]);
-
-  useEffect(() => {
-    if (isEditMode) {
-      reset(defaultValues);
-    }
-  }, [isEditMode, reset, defaultValues]);
 
   useEffect(() => {
     if (allTeams && allTeams.length > 0) {

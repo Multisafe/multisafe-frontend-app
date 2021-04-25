@@ -7,12 +7,13 @@ import {
   DELETE_TEAM_ERROR,
 } from "./action-types";
 
-export function editTeam({ name, safeAddress, createdBy }) {
+export function editTeam({ name, safeAddress, tokenInfo, departmentId }) {
   return {
     type: EDIT_TEAM,
     name,
     safeAddress,
-    createdBy,
+    tokenInfo,
+    departmentId,
   };
 }
 

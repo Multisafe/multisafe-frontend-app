@@ -5,10 +5,8 @@ import { useDispatch } from "react-redux";
 import { show } from "redux-modal";
 
 import { useDropdown } from "hooks";
-import ViewTeamsModal, {
-  MODAL_NAME as VIEW_TEAMS_MODAL,
-} from "./ViewTeamsModal";
-import AddTeamModal, { MODAL_NAME as ADD_TEAM_MODAL } from "./AddTeamModal";
+import { MODAL_NAME as VIEW_TEAMS_MODAL } from "./ViewTeamsModal";
+import { MODAL_NAME as ADD_TEAM_MODAL } from "./AddTeamModal";
 import { Teams } from "./styles";
 
 export default function TeamsDropdown() {
@@ -34,8 +32,6 @@ export default function TeamsDropdown() {
           <div className="name">Add Team</div>
         </div>
       </div>
-      <ViewTeamsModal />
-      <AddTeamModal />
     </Teams>
   );
 }

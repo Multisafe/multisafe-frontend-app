@@ -55,6 +55,9 @@ import { makeSelectTeams } from "store/view-teams/selectors";
 import AddBulkPeoplModal from "./AddBulkPeopleModal";
 import AddSinglePeopleModal from "./AddSinglePeopleModal";
 import TokenImg from "components/common/TokenImg";
+import DeleteTeamModal from "./DeleteTeamModal";
+import AddTeamModal from "./AddTeamModal";
+import ViewTeamsModal from "./ViewTeamsModal";
 
 const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
@@ -394,6 +397,9 @@ export default function People() {
       <AddSinglePeopleModal />
       <AddBulkPeoplModal />
       <DeletePeopleModal />
+      <DeleteTeamModal />
+      <AddTeamModal />
+      <ViewTeamsModal />
     </div>
   );
 }
