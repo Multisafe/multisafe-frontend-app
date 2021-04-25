@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
@@ -9,14 +9,11 @@ import { Input, Select, ErrorMessage } from "components/common/Form";
 import Button from "components/common/Button";
 import { Information } from "components/Register/styles";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { getTokenList } from "store/tokens/actions";
 import {
   makeSelectTokensDropdown,
   makeSelectLoading,
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
-import tokensReducer from "store/tokens/reducer";
-import tokensSaga from "store/tokens/saga";
 import addTeamReducer from "store/add-team/reducer";
 import addTeamSaga from "store/add-team/saga";
 import { addTeam } from "store/add-team/actions";
@@ -26,7 +23,6 @@ import { useInjectSaga } from "utils/injectSaga";
 import { useActiveWeb3React } from "hooks";
 
 export const MODAL_NAME = "add-team-modal";
-const tokensKey = "tokens";
 const addTeamKey = "addTeam";
 
 function AddTeamModal(props) {
@@ -37,11 +33,9 @@ function AddTeamModal(props) {
   const { account } = useActiveWeb3React();
 
   // Reducers
-  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
   useInjectReducer({ key: addTeamKey, reducer: addTeamReducer });
 
   // Sagas
-  useInjectSaga({ key: tokensKey, saga: tokensSaga });
   useInjectSaga({ key: addTeamKey, saga: addTeamSaga });
 
   const dispatch = useDispatch();
@@ -51,10 +45,6 @@ function AddTeamModal(props) {
   const loadingTokenList = useSelector(makeSelectLoading());
   const tokenDetails = useSelector(makeSelectTokensDetails());
   const adding = useSelector(makeSelectAddingTeam());
-
-  useEffect(() => {
-    if (safeAddress && !tokenDetails) dispatch(getTokenList(safeAddress));
-  }, [dispatch, safeAddress, tokenDetails]);
 
   const onSubmit = (values) => {
     const tokenInfo = tokenDetails && tokenDetails[values.token.value];

@@ -13,20 +13,16 @@ export function editPeople({
   createdBy,
   departmentId,
   departmentName,
-  joiningDate,
   peopleId,
 }) {
   return {
     type: EDIT_PEOPLE,
-    body: {
-      encryptedEmployeeDetails,
-      safeAddress,
-      createdBy,
-      departmentId,
-      departmentName,
-      joiningDate,
-      peopleId,
-    },
+    encryptedEmployeeDetails,
+    safeAddress,
+    createdBy,
+    departmentId,
+    departmentName,
+    peopleId,
   };
 }
 

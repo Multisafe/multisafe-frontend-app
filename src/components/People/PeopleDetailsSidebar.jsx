@@ -2,10 +2,7 @@ import React, { memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
 
-// import { useInjectSaga } from "utils/injectSaga";
-// import { useInjectReducer } from "utils/injectReducer";
 import Img from "components/common/Img";
-// import Loading from "components/common/Loading";
 import CloseIcon from "assets/icons/navbar/close.svg";
 import {
   makeSelectIsPeopleDetailsOpen,
@@ -14,11 +11,13 @@ import {
 import { togglePeopleDetails } from "store/layout/actions";
 import Avatar from "components/common/Avatar";
 import CopyButton from "components/common/Copy";
-
+import { makeSelectTokensDetails } from "store/tokens/selectors";
 import { PeopleDetails } from "./styles";
 import EtherscanLink from "components/common/EtherscanLink";
 import Button from "components/common/Button";
 import { MODAL_NAME as DELETE_PEOPLE_MODAL } from "./DeletePeopleModal";
+import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "./AddSinglePeopleModal";
+import { constructLabel } from "utils/tokens";
 
 const sidebarStyles = {
   bmCrossButton: {
@@ -54,6 +53,7 @@ const sidebarStyles = {
 function PeopleDetailsSidebar() {
   const isPeopleDetailsOpen = useSelector(makeSelectIsPeopleDetailsOpen());
   const peopleDetails = useSelector(makeSelectPeopleDetails());
+  const tokenDetails = useSelector(makeSelectTokensDetails());
 
   const dispatch = useDispatch();
 
@@ -67,6 +67,39 @@ function PeopleDetailsSidebar() {
 
   const handleDelete = () => {
     dispatch(show(DELETE_PEOPLE_MODAL, { peopleId: peopleDetails.peopleId }));
+  };
+
+  const handleEdit = () => {
+    const {
+      firstName,
+      lastName,
+      departmentName,
+      departmentId,
+      peopleId,
+      salaryAmount,
+      salaryToken,
+      address,
+    } = peopleDetails;
+    dispatch(
+      show(EDIT_PEOPLE_MODAL, {
+        defaultValues: {
+          firstName,
+          lastName,
+          amount: salaryAmount,
+          token: {
+            value: salaryToken,
+            label: constructLabel(
+              salaryToken,
+              tokenDetails[salaryToken] && tokenDetails[salaryToken].logoURI
+            ),
+          },
+          address,
+          team: { value: departmentId, label: departmentName },
+        },
+        isEditMode: true,
+        peopleId,
+      })
+    );
   };
 
   const renderInfo = () => {
@@ -153,7 +186,7 @@ function PeopleDetailsSidebar() {
       </div>
       {renderInfo()}
       <div className="modify-buttons">
-        <Button className="mr-3" width={"10rem"}>
+        <Button className="mr-3" width={"10rem"} onClick={handleEdit}>
           Edit
         </Button>
         <Button className="secondary-2" width={"10rem"} onClick={handleDelete}>

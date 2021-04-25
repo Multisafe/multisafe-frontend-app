@@ -47,13 +47,14 @@ import { FiltersCard } from "./styles";
 import { useLocalStorage } from "hooks";
 import { getDecryptedDetails } from "utils/encryption";
 import Img from "components/common/Img";
-import { getDefaultIconIfPossible } from "constants/index";
-import { makeSelectTokenIcons } from "store/tokens/selectors";
 import { togglePeopleDetails, setPeopleDetails } from "store/layout/actions";
 import DeletePeopleModal from "./DeletePeopleModal";
 import AddPeopleIcon from "assets/icons/dashboard/add-people-icon.svg";
 import ModifyTeamDropdown from "./ModifyTeamDropdown";
 import { makeSelectTeams } from "store/view-teams/selectors";
+import AddBulkPeoplModal from "./AddBulkPeopleModal";
+import AddSinglePeopleModal from "./AddSinglePeopleModal";
+import TokenImg from "components/common/TokenImg";
 
 const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
@@ -83,7 +84,6 @@ export default function People() {
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const encryptedPeople = useSelector(makeSelectPeople());
   const organisationType = useSelector(makeSelectOrganisationType());
-  const icons = useSelector(makeSelectTokenIcons());
   const isNameFilterApplied = useSelector(
     makeSelectIsSearchByNameFilterApplied()
   );
@@ -288,12 +288,7 @@ export default function People() {
         {departmentName}
       </td>
       <td>
-        <Img
-          src={getDefaultIconIfPossible(salaryToken, icons)}
-          alt="token"
-          className="mr-1"
-          width="16"
-        />{" "}
+        <TokenImg token={salaryToken} />
         <span>
           {salaryAmount} {salaryToken}
         </span>
@@ -396,6 +391,8 @@ export default function People() {
         </TableHead>
         <TableBody>{renderTableContent()}</TableBody>
       </Table>
+      <AddSinglePeopleModal />
+      <AddBulkPeoplModal />
       <DeletePeopleModal />
     </div>
   );

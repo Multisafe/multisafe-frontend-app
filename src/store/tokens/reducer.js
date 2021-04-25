@@ -106,7 +106,7 @@ const reducer = (state = initialState, action) =>
         draft.prices = action.prices;
         draft.loading = false;
         draft.log = action.log;
-        draft.icons = action.icons;
+        // draft.icons = action.icons;
         break;
 
       case GET_TOKENS_ERROR:
@@ -131,6 +131,10 @@ const reducer = (state = initialState, action) =>
             ),
           })
         );
+        draft.icons = Object.keys(action.tokenDetails).reduce((map, key) => {
+          map[key] = action.tokenDetails[key].logoURI;
+          return map;
+        }, {});
         draft.tokenDetails = action.tokenDetails;
         draft.success = true;
         break;

@@ -12,25 +12,30 @@ import request from "utils/request";
 import { editPeopleEndpoint, deletePeopleEndpoint } from "constants/endpoints";
 import { getAllPeople } from "store/view-people/actions";
 import { MODAL_NAME as DELETE_PEOPLE_MODAL } from "components/People/DeletePeopleModal";
+import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "components/People/AddSinglePeopleModal";
 import { togglePeopleDetails } from "store/layout/actions";
 import { getTeams } from "store/view-teams/actions";
 
-export function* editPeople({ body }) {
+export function* editPeople({
+  encryptedEmployeeDetails,
+  safeAddress,
+  createdBy,
+  departmentId,
+  departmentName,
+  peopleId,
+}) {
   const requestURL = `${editPeopleEndpoint}`;
   const options = {
     method: "PUT",
     body: JSON.stringify({
-      encryptedEmployeeDetails: body.encryptedEmployeeDetails,
-      safeAddress: body.safeAddress,
-      createdBy: body.createdBy,
-      departmentId: body.departmentId,
-      departmentName: body.departmentName,
+      encryptedEmployeeDetails,
+      safeAddress,
+      createdBy,
+      departmentId,
+      departmentName,
+      peopleId,
       joiningDate: Date.now(),
-      peopleId: body.peopleId,
     }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -40,6 +45,9 @@ export function* editPeople({ body }) {
       yield put(editPeopleError(result.log));
     } else {
       yield put(editPeopleSuccess(result.log));
+      yield put(hide(EDIT_PEOPLE_MODAL));
+      yield put(togglePeopleDetails(false));
+      yield put(getAllPeople(safeAddress));
     }
   } catch (err) {
     yield put(editPeopleError(err));

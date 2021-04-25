@@ -64,12 +64,11 @@ function* fetchTokens(action) {
 }
 
 function* fetchTokenList(action) {
-  // const requestURL = `${getTokenListEndpoint}?safeAddress=${action.safeAddress}&chainId=${action.chainId}`;
   const requestURL = new URL(getTokenListEndpoint);
-  const params = [
-    ["safeAddress", action.safeAddress],
-    ["chainId", action.chainId],
-  ];
+  const params = [["safeAddress", action.safeAddress]];
+  if (action.chainId) {
+    params.push(["chainId", action.chainId]);
+  }
 
   requestURL.search = new URLSearchParams(params).toString();
   const options = {

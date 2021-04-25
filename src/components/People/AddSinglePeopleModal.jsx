@@ -13,21 +13,25 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectOrganisationType,
 } from "store/global/selectors";
-import { getTokenList } from "store/tokens/actions";
 import {
   makeSelectTokensDropdown,
   makeSelectLoading,
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
-import tokensReducer from "store/tokens/reducer";
-import tokensSaga from "store/tokens/saga";
 import addPeopleReducer from "store/add-people/reducer";
 import addPeopleSaga from "store/add-people/saga";
 import { addPeople } from "store/add-people/actions";
 import {
   makeSelectLoading as makeSelectAddingPeople,
-  makeSelectError,
+  makeSelectError as makeSelectErrorInAdd,
 } from "store/add-people/selectors";
+import modifyPeopleReducer from "store/modify-people/reducer";
+import modifyPeopleSaga from "store/modify-people/saga";
+import { editPeople } from "store/modify-people/actions";
+import {
+  makeSelectUpdating,
+  makeSelectError as makeSelectErrorInUpdate,
+} from "store/modify-people/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 import { useActiveWeb3React, useLocalStorage } from "hooks";
@@ -39,16 +43,24 @@ import { constructLabel } from "utils/tokens";
 import ErrorText from "components/common/ErrorText";
 
 export const MODAL_NAME = "add-single-people-modal";
-const tokensKey = "tokens";
 const addPeopleKey = "addPeople";
+const modifyPeopleKey = "modifyPeople";
 
 function AddSinglePeopleModal(props) {
-  const { show, handleHide } = props;
+  const { show, handleHide, isEditMode, defaultValues, peopleId } = props;
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
   const { account } = useActiveWeb3React();
 
-  const { register, handleSubmit, errors, control, watch, setValue } = useForm({
+  const {
+    register,
+    handleSubmit,
+    errors,
+    control,
+    watch,
+    setValue,
+    reset,
+  } = useForm({
     mode: "onChange",
   });
   const teamChanged = watch("team");
@@ -56,12 +68,12 @@ function AddSinglePeopleModal(props) {
   const [teamsDropdown, setTeamsDropdown] = useState([]);
 
   // Reducers
-  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
   useInjectReducer({ key: addPeopleKey, reducer: addPeopleReducer });
+  useInjectReducer({ key: modifyPeopleKey, reducer: modifyPeopleReducer });
 
   // Sagas
-  useInjectSaga({ key: tokensKey, saga: tokensSaga });
   useInjectSaga({ key: addPeopleKey, saga: addPeopleSaga });
+  useInjectSaga({ key: modifyPeopleKey, saga: modifyPeopleSaga });
 
   const dispatch = useDispatch();
 
@@ -70,10 +82,12 @@ function AddSinglePeopleModal(props) {
   const loadingTokenList = useSelector(makeSelectLoading());
   const tokenDetails = useSelector(makeSelectTokensDetails());
   const adding = useSelector(makeSelectAddingPeople());
+  const updating = useSelector(makeSelectUpdating());
   const allTeams = useSelector(makeSelectTeams());
   const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
   const organisationType = useSelector(makeSelectOrganisationType());
-  const error = useSelector(makeSelectError());
+  const errorInAdd = useSelector(makeSelectErrorInAdd());
+  const errorInUpdate = useSelector(makeSelectErrorInUpdate());
 
   useEffect(() => {
     if (
@@ -90,8 +104,10 @@ function AddSinglePeopleModal(props) {
   }, [teamChanged, setValue, teamIdToDetailsMap]);
 
   useEffect(() => {
-    if (safeAddress && !tokenDetails) dispatch(getTokenList(safeAddress));
-  }, [dispatch, safeAddress, tokenDetails]);
+    if (isEditMode) {
+      reset(defaultValues);
+    }
+  }, [isEditMode, reset, defaultValues]);
 
   useEffect(() => {
     if (allTeams && allTeams.length > 0) {
@@ -99,14 +115,17 @@ function AddSinglePeopleModal(props) {
         value: departmentId,
         label: name,
       }));
-      dropdownList.unshift({
-        value: "",
-        label: <div className="text-primary text-bold">Add Team</div>,
-      });
+
+      if (!isEditMode) {
+        dropdownList.unshift({
+          value: "",
+          label: <div className="text-primary text-bold">Add Team</div>,
+        });
+      }
 
       setTeamsDropdown(dropdownList);
     }
-  }, [allTeams]);
+  }, [allTeams, isEditMode]);
 
   const onSubmit = (values) => {
     const {
@@ -142,7 +161,13 @@ function AddSinglePeopleModal(props) {
           : teamIdToDetailsMap[team.value].name,
       };
 
-      dispatch(addPeople(body));
+      if (isEditMode) {
+        // Update
+        dispatch(editPeople({ ...body, peopleId }));
+      } else {
+        // Add
+        dispatch(addPeople(body));
+      }
     }
   };
 
@@ -253,16 +278,17 @@ function AddSinglePeopleModal(props) {
           </div>
         </div>
 
-        {error && <ErrorText>{error}</ErrorText>}
+        {errorInAdd && <ErrorText>{errorInAdd}</ErrorText>}
+        {errorInUpdate && <ErrorText>{errorInUpdate}</ErrorText>}
 
         <div className="add-people-btn">
           <Button
             type="submit"
             width="16rem"
-            loading={adding}
-            disabled={adding}
+            loading={adding || updating}
+            disabled={adding || updating}
           >
-            Add Person
+            {isEditMode ? `Save` : `Add Person`}
           </Button>
         </div>
       </AddPeopleContainer>
@@ -271,7 +297,10 @@ function AddSinglePeopleModal(props) {
 
   return (
     <Modal isOpen={show} toggle={handleHide}>
-      <ModalHeader title={"Add Person"} toggle={handleHide} />
+      <ModalHeader
+        title={isEditMode ? "Edit Person" : "Add Person"}
+        toggle={handleHide}
+      />
       <ModalBody width="55rem">
         <form onSubmit={handleSubmit(onSubmit)}>{renderAddTeam()}</form>
       </ModalBody>

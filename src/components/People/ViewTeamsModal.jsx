@@ -6,13 +6,12 @@ import { show as showModal } from "redux-modal";
 import { makeSelectLoading, makeSelectTeams } from "store/view-teams/selectors";
 import { Table, TableBody, TableInfo } from "components/common/Table";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
-import { getDefaultIconIfPossible } from "constants/index";
-import { makeSelectTokenIcons } from "store/tokens/selectors";
 import Loading from "components/common/Loading";
 import Img from "components/common/Img";
 import Button from "components/common/Button";
 import PlusIcon from "assets/icons/dashboard/plus-icon.svg";
 import { MODAL_NAME as ADD_TEAM_MODAL } from "./AddTeamModal";
+import TokenImg from "components/common/TokenImg";
 
 export const MODAL_NAME = "view-teams-modal";
 
@@ -21,7 +20,6 @@ function ViewTeamsModal(props) {
   const dispatch = useDispatch();
 
   const loading = useSelector(makeSelectLoading());
-  const icons = useSelector(makeSelectTokenIcons());
   const allTeams = useSelector(makeSelectTeams());
 
   const showAddTeamModal = () => {
@@ -44,21 +42,18 @@ function ViewTeamsModal(props) {
 
     return (
       allTeams &&
-      allTeams.map(({ name, departmentId, employees: peopleCount }) => (
-        <tr key={departmentId}>
-          <td>{name}</td>
-          <td>People: {peopleCount}</td>
-          <td>
-            Currency:{" "}
-            <Img
-              src={getDefaultIconIfPossible("DAI", icons)}
-              alt={"DAI"}
-              width="16"
-            />{" "}
-            DAI
-          </td>
-        </tr>
-      ))
+      allTeams.map(
+        ({ name, departmentId, employees: peopleCount, tokenInfo }) => (
+          <tr key={departmentId}>
+            <td>{name}</td>
+            <td>People: {peopleCount}</td>
+            <td>
+              Currency: <TokenImg token={tokenInfo.symbol} />
+              <span className="mt-1">{tokenInfo.symbol}</span>
+            </td>
+          </tr>
+        )
+      )
     );
   };
 
@@ -69,8 +64,6 @@ function ViewTeamsModal(props) {
           <TableBody>
             <TableInfo
               style={{
-                // fontSize: "1.4rem",
-                // fontWeight: "900",
                 textAlign: "center",
                 height: "5rem",
               }}

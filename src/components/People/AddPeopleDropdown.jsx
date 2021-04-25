@@ -5,12 +5,8 @@ import { show } from "redux-modal";
 import { useDispatch } from "react-redux";
 
 import { useDropdown } from "hooks";
-import AddBulkPeoplModal, {
-  MODAL_NAME as ADD_BULK_MODAL,
-} from "./AddBulkPeopleModal";
-import AddSinglePeopleModal, {
-  MODAL_NAME as ADD_SINGLE_MODAL,
-} from "./AddSinglePeopleModal";
+import { MODAL_NAME as ADD_BULK_MODAL } from "./AddBulkPeopleModal";
+import { MODAL_NAME as ADD_SINGLE_MODAL } from "./AddSinglePeopleModal";
 import { AddPeople } from "./styles";
 
 export default function AddPeopleDropdown() {
@@ -38,8 +34,6 @@ export default function AddPeopleDropdown() {
           <div className="name">Import Multiple</div>
         </div>
       </div>
-      <AddSinglePeopleModal />
-      <AddBulkPeoplModal />
     </AddPeople>
   );
 }
