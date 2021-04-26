@@ -51,13 +51,12 @@ function AddBulkPeopleModal(props) {
   const addBulkSuccess = useSelector(makeSelectSuccess());
   const loading = useSelector(makeSelectLoading());
   const organisationType = useSelector(makeSelectOrganisationType());
-  const tokens = useSelector(makeSelectTokensDetails());
+  const tokenDetails = useSelector(makeSelectTokensDetails());
 
   useEffect(() => {
     if (addBulkSuccess && success) {
       setCSVData(null);
       setSuccess(false);
-      // history.push("/dashboard/people/view");
     }
   }, [addBulkSuccess, success]);
 
@@ -139,6 +138,7 @@ function AddBulkPeopleModal(props) {
             if (!data[uniqueIndex]) {
               data[uniqueIndex] = {
                 departmentName,
+                tokenInfo: tokenDetails[salaryToken],
                 peopleDetails: [
                   {
                     encryptedEmployeeDetails,
@@ -180,7 +180,7 @@ function AddBulkPeopleModal(props) {
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
     const invalidPayDetails =
       !isValidField(FIELD_NAMES.AMOUNT, salaryAmount) ||
-      !isValidField(FIELD_NAMES.TOKEN, salaryToken, tokens);
+      !isValidField(FIELD_NAMES.TOKEN, salaryToken, tokenDetails);
     const invalidDepartment = !isValidField(
       FIELD_NAMES.DEPARTMENT_NAME,
       departmentName

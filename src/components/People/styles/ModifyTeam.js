@@ -19,9 +19,8 @@ export default styled.div`
   }
 
   .modify-team-dropdown {
-    position: absolute;
-    top: 10rem;
-    right: 4rem;
+    position: fixed;
+    right: 9rem;
     width: 10rem;
     border-radius: 0.2rem;
     box-shadow: 1rem 1rem 2rem 0 rgba(170, 170, 170, 0.2);
@@ -37,7 +36,6 @@ export default styled.div`
       visibility: visible;
       opacity: 1;
       height: auto;
-      z-index: 3;
     }
 
     .modify-team-option {
@@ -71,7 +69,8 @@ export default styled.div`
 
   @media (max-width: 978px) {
     .modify-team-dropdown {
-      right: 1rem;
+      right: 3rem;
+      margin-top: 1rem;
     }
   }
 `;

@@ -7,7 +7,12 @@ import { cryptoUtils } from "parcel-sdk";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { AddPeopleContainer } from "./styles";
-import { Input, Select, ErrorMessage } from "components/common/Form";
+import {
+  Input,
+  Select,
+  ErrorMessage,
+  TokenSelect,
+} from "components/common/Form";
 import Button from "components/common/Button";
 import {
   makeSelectOwnerSafeAddress,
@@ -97,21 +102,22 @@ function AddSinglePeopleModal(props) {
   }, [teamChanged, setValue, teamIdToDetailsMap]);
 
   useEffect(() => {
+    let dropdownList = [];
     if (allTeams && allTeams.length > 0) {
-      const dropdownList = allTeams.map(({ departmentId, name }) => ({
+      dropdownList = allTeams.map(({ departmentId, name }) => ({
         value: departmentId,
         label: name,
       }));
-
-      if (!isEditMode) {
-        dropdownList.unshift({
-          value: "",
-          label: <div className="text-primary text-bold">Add Team</div>,
-        });
-      }
-
-      setTeamsDropdown(dropdownList);
     }
+
+    if (!isEditMode) {
+      dropdownList.unshift({
+        value: "",
+        label: <div className="text-primary text-bold">Add Team</div>,
+      });
+    }
+
+    setTeamsDropdown(dropdownList);
   }, [allTeams, isEditMode]);
 
   const onSubmit = (values) => {
@@ -209,30 +215,31 @@ function AddSinglePeopleModal(props) {
 
         <div className="mt-5">
           <div className="title">Choose Team</div>
-          <Row>
-            <Col lg="6" sm="12">
+          <div className="d-flex">
+            <div className="mr-3">
               <Select
                 name="team"
                 control={control}
                 required={`Team is required`}
-                width="100%"
+                width="20rem"
                 options={teamsDropdown}
                 placeholder={`Select Team...`}
               />
-            </Col>
+            </div>
             {teamChanged && !teamChanged.value && (
-              <Col lg="6" sm="12">
+              <div>
                 <Input
                   type="text"
                   name="teamName"
                   register={register}
                   required={`Team Name is required`}
                   placeholder="Enter Team Name"
+                  style={{ width: "18rem" }}
                 />
                 <ErrorMessage name="teamName" errors={errors} />
-              </Col>
+              </div>
             )}
-          </Row>
+          </div>
         </div>
 
         <div className="mt-5">
@@ -251,7 +258,7 @@ function AddSinglePeopleModal(props) {
               <ErrorMessage name="amount" errors={errors} />
             </div>
             <div>
-              <Select
+              <TokenSelect
                 name="token"
                 control={control}
                 required={`Token is required`}

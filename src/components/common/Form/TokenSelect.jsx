@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Select from "react-select";
+import Select, { createFilter } from "react-select";
 import { Controller } from "react-hook-form";
+import { FixedSizeList as List } from "react-window";
 
 const inputStyles = {
   control: (styles, state) => ({
@@ -46,7 +47,43 @@ const inputStyles = {
   singleValue: (styles) => ({ ...styles }),
 };
 
-const SelectField = ({
+function MenuList(props) {
+  const height = 40;
+  const { children, maxHeight } = props;
+  return (
+    <List
+      height={
+        children.length
+          ? children.length * height > maxHeight
+            ? maxHeight
+            : children.length * height
+          : height
+      }
+      itemCount={children.length || 1}
+      itemSize={height}
+      initialScrollOffset={0}
+    >
+      {({ index, style }) =>
+        children.length ? (
+          <div style={style}>{children[index]}</div>
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{
+              ...style,
+              color: "#8b8b8b",
+              fontSize: "1.2rem",
+            }}
+          >
+            No tokens found
+          </div>
+        )
+      }
+    </List>
+  );
+}
+
+const TokenSelectField = ({
   name,
   control,
   required,
@@ -76,6 +113,8 @@ const SelectField = ({
           options={options}
           styles={inputStyles}
           width={width}
+          filterOption={createFilter({ ignoreAccents: false })}
+          components={{ MenuList }}
           onChange={onChange}
           value={value}
           placeholder={placeholder}
@@ -86,7 +125,7 @@ const SelectField = ({
   );
 };
 
-SelectField.propTypes = {
+TokenSelectField.propTypes = {
   name: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({
@@ -96,4 +135,4 @@ SelectField.propTypes = {
   ),
 };
 
-export default SelectField;
+export default TokenSelectField;

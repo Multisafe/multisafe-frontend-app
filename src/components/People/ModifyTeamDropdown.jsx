@@ -42,28 +42,28 @@ export default function ModifyTeamDropdown({ departmentId }) {
   };
 
   return (
-    <ModifyTeam onClick={toggleDropdown}>
-      <div>
+    <ModifyTeam onClick={() => toggleDropdown()}>
+      <div className="position-relative">
         <Img src={DotsIcon} alt="modify" />
-      </div>
-      <div className={`modify-team-dropdown ${open && "show"}`}>
-        <div className="modify-team-option" onClick={showEditTeamModal}>
-          <FontAwesomeIcon
-            icon={faEdit}
-            color="#373737"
-            className="mr-3"
-            style={{ fontSize: "1rem" }}
-          />
-          <div className="name">Edit</div>
-        </div>
-        <div className="modify-team-option" onClick={showDeleteTeamModal}>
-          <FontAwesomeIcon
-            icon={faTrashAlt}
-            color="#ff4660"
-            className="mr-3"
-            style={{ fontSize: "1rem" }}
-          />
-          <div className="name">Delete</div>
+        <div className={`modify-team-dropdown ${open && "show"}`}>
+          <div className="modify-team-option" onClick={showEditTeamModal}>
+            <FontAwesomeIcon
+              icon={faEdit}
+              color="#373737"
+              className="mr-3"
+              style={{ fontSize: "1rem" }}
+            />
+            <div className="name">Edit</div>
+          </div>
+          <div className="modify-team-option" onClick={showDeleteTeamModal}>
+            <FontAwesomeIcon
+              icon={faTrashAlt}
+              color="#ff4660"
+              className="mr-3"
+              style={{ fontSize: "1rem" }}
+            />
+            <div className="name">Delete</div>
+          </div>
         </div>
       </div>
     </ModifyTeam>

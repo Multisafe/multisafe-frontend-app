@@ -7,7 +7,6 @@ import { hashMessage } from "@ethersproject/hash";
 import { recoverAddress } from "@ethersproject/transactions";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
-// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
 import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage } from "hooks";

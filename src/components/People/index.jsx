@@ -66,7 +66,6 @@ export default function People() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
   const [isNewUser, setIsNewUser] = useState();
-  const [peopleByAlphabet, setPeopleByAlphabet] = useState();
   const [allPeople, setAllPeople] = useState();
   const [peopleByTeam, setPeopleByTeam] = useState();
   const [filteredPeople, setFilteredPeople] = useState();
@@ -172,21 +171,21 @@ export default function People() {
 
       setAllPeople(sortedDecryptedPeople);
 
-      const peopleByAlphabet = sortedDecryptedPeople.reduce(
-        (accumulator, people) => {
-          const alphabet = people.firstName[0].toUpperCase();
-          if (!accumulator[alphabet]) {
-            accumulator[alphabet] = [people];
-          } else {
-            accumulator[alphabet].push(people);
-          }
+      // const peopleByAlphabet = sortedDecryptedPeople.reduce(
+      //   (accumulator, people) => {
+      //     const alphabet = people.firstName[0].toUpperCase();
+      //     if (!accumulator[alphabet]) {
+      //       accumulator[alphabet] = [people];
+      //     } else {
+      //       accumulator[alphabet].push(people);
+      //     }
 
-          return accumulator;
-        },
-        {}
-      );
+      //     return accumulator;
+      //   },
+      //   {}
+      // );
 
-      setPeopleByAlphabet(peopleByAlphabet);
+      // setPeopleByAlphabet(peopleByAlphabet);
 
       const peopleByTeam = sortedDecryptedPeople.reduce(
         (accumulator, people) => {
@@ -300,12 +299,30 @@ export default function People() {
     </tr>
   );
 
-  const renderPeopleByAlphabet = () => {
-    return peopleByAlphabet && Object.keys(peopleByAlphabet).length > 0
-      ? Object.keys(peopleByAlphabet).map((alphabet) => (
-          <React.Fragment key={alphabet}>
-            <TableTitle>{alphabet}</TableTitle>
-            {peopleByAlphabet[alphabet].map((people) => renderRow(people))}
+  // const renderPeopleByAlphabet = () => {
+  //   return peopleByAlphabet && Object.keys(peopleByAlphabet).length > 0
+  //     ? Object.keys(peopleByAlphabet).map((alphabet) => (
+  //         <React.Fragment key={alphabet}>
+  //           <TableTitle>{alphabet}</TableTitle>
+  //           {peopleByAlphabet[alphabet].map((people) => renderRow(people))}
+  //         </React.Fragment>
+  //       ))
+  //     : renderNoPeopleFound();
+  // };
+
+  const renderPeopleByTeam = () => {
+    return peopleByTeam && Object.keys(peopleByTeam).length > 0
+      ? Object.keys(peopleByTeam).map((team) => (
+          <React.Fragment key={team}>
+            <TableTitle>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>{team}</div>
+                <ModifyTeamDropdown
+                  departmentId={teamNameToIdMap && teamNameToIdMap[team]}
+                />
+              </div>
+            </TableTitle>
+            {peopleByTeam[team].map((people) => renderRow(people))}
           </React.Fragment>
         ))
       : renderNoPeopleFound();
@@ -349,7 +366,8 @@ export default function People() {
     // existing user
     if (isNameFilterApplied) return renderFilteredPeopleByName();
     else if (isTeamFilterApplied) return renderFilteredPeopleByTeam();
-    return renderPeopleByAlphabet();
+    // return renderPeopleByAlphabet();
+    return renderPeopleByTeam();
   };
 
   return (

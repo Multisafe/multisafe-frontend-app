@@ -46,6 +46,7 @@ function* editDepartment({
     } else {
       yield put(editTeamSuccess(result.departmentId, result.log));
       yield put(hide(EDIT_TEAM_MODAL));
+      yield put(removePeopleFilter(PEOPLE_FILTERS.TEAM));
       yield put(getAllPeople(safeAddress));
       yield put(getTeams(safeAddress));
     }

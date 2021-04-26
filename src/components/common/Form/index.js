@@ -4,3 +4,4 @@ export { default as Select } from "./Select";
 export { default as TextArea } from "./TextArea";
 export { default as SelectTokenDropdown } from "./SelectTokenDropdown";
 export { default as CurrencyInput } from "./CurrencyInput";
+export { default as TokenSelect } from "./TokenSelect";
