@@ -832,7 +832,7 @@ export default function AddTeammate() {
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
     const invalidPayDetails =
       !isValidField(FIELD_NAMES.AMOUNT, salaryAmount) ||
-      !isValidField(FIELD_NAMES.TOKEN, salaryToken);
+      !isValidField(FIELD_NAMES.TOKEN, salaryToken, departmentName);
     const invalidDepartment = !isValidField(
       FIELD_NAMES.DEPARTMENT_NAME,
       departmentName

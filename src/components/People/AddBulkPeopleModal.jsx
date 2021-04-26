@@ -40,6 +40,7 @@ function AddBulkPeopleModal(props) {
   const [csvData, setCSVData] = useState();
   const [invalidCsvData, setInvalidCsvData] = useState(false);
   const [fileName, setFileName] = useState();
+  const [teamNameToTokenMap, setTeamNameToTokenMap] = useState();
 
   useInjectReducer({ key: addPeopleKey, reducer: addPeopleReducer });
 
@@ -62,6 +63,19 @@ function AddBulkPeopleModal(props) {
 
   useEffect(() => {
     setInvalidCsvData(false);
+  }, [csvData]);
+
+  useEffect(() => {
+    if (csvData) {
+      const teamNameToTokenMap = {};
+      for (let i = 0; i < csvData.length; i++) {
+        const { salaryToken, departmentName } = csvData[i];
+
+        if (!teamNameToTokenMap[departmentName])
+          teamNameToTokenMap[departmentName] = salaryToken;
+      }
+      setTeamNameToTokenMap(teamNameToTokenMap);
+    }
   }, [csvData]);
 
   const handleDrop = (data, fileName) => {
@@ -180,7 +194,9 @@ function AddBulkPeopleModal(props) {
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
     const invalidPayDetails =
       !isValidField(FIELD_NAMES.AMOUNT, salaryAmount) ||
-      !isValidField(FIELD_NAMES.TOKEN, salaryToken, tokenDetails);
+      !isValidField(FIELD_NAMES.TOKEN, salaryToken, tokenDetails) ||
+      (teamNameToTokenMap &&
+        teamNameToTokenMap[departmentName] !== salaryToken);
     const invalidDepartment = !isValidField(
       FIELD_NAMES.DEPARTMENT_NAME,
       departmentName
@@ -233,6 +249,15 @@ function AddBulkPeopleModal(props) {
             </div>
           </div>
         )}
+
+        <div className="points-to-remember">
+          <div className="title">Some points to remember</div>
+          <ul className="points">
+            <li>Please make sure the file extension is .csv</li>
+            <li>Every field except last name is a required field</li>
+            <li>Every team should have only one currency associated with it</li>
+          </ul>
+        </div>
       </UploadScreen>
     );
   };

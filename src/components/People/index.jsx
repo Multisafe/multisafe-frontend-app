@@ -231,7 +231,7 @@ export default function People() {
         fontSize: "1.4rem",
         fontWeight: "500",
         textAlign: "center",
-        height: "40rem",
+        height: "10rem",
       }}
     >
       <td colSpan={4}>No people found!</td>
@@ -241,8 +241,8 @@ export default function People() {
   const renderAddPeopleText = (teamName) => (
     <div className="d-flex align-items-center justify-content-center">
       <Button
-        className="secondary"
-        width="16rem"
+        className="secondary p-0"
+        width="10rem"
         onClick={() => showAddPeopleModal(teamNameToIdMap[teamName], teamName)}
       >
         Add People
