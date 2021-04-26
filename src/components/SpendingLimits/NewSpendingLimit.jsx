@@ -117,7 +117,13 @@ export default function SpendingLimits() {
   const [spendingLimitDetails, setSpendingLimitDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
 
-  const { txHash, loadingTx, createSpendingLimit, txData } = useMassPayout({
+  const {
+    txHash,
+    loadingTx,
+    createSpendingLimit,
+    txData,
+    error: errorInPayout,
+  } = useMassPayout({
     tokenDetails: selectedTokenDetails,
   });
   // Reducers
@@ -468,6 +474,7 @@ export default function SpendingLimits() {
       {errorFromMetaTx && (
         <div className="text-danger mt-3">{errorFromMetaTx}</div>
       )}
+      {errorInPayout && <div className="text-danger mt-3">{errorInPayout}</div>}
     </Card>
   );
 

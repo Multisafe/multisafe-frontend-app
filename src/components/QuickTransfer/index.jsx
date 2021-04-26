@@ -99,7 +99,13 @@ export default function QuickTransfer() {
   const [payoutDetails, setPayoutDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
 
-  const { txHash, loadingTx, massPayout, txData } = useMassPayout({
+  const {
+    txHash,
+    loadingTx,
+    massPayout,
+    txData,
+    error: errorInPayout,
+  } = useMassPayout({
     tokenDetails: selectedTokenDetails,
   });
   // Reducers
@@ -451,6 +457,7 @@ export default function QuickTransfer() {
       {errorFromMetaTx && (
         <div className="text-danger mt-3">{errorFromMetaTx}</div>
       )}
+      {errorInPayout && <div className="text-danger mt-3">{errorInPayout}</div>}
     </Card>
   );
 

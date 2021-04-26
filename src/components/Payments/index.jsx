@@ -176,6 +176,7 @@ export default function Payments() {
     massPayout,
     txData,
     setTxData,
+    error: errorInPayout,
   } = useMassPayout({ tokenDetails: selectedTokenDetails });
 
   const toggle = (tab) => {
@@ -869,6 +870,9 @@ export default function Payments() {
               )} */}
               {!loadingTx && errorFromMetaTx && (
                 <div className="text-danger mt-3">{errorFromMetaTx}</div>
+              )}
+              {errorInPayout && (
+                <div className="text-danger mt-3">{errorInPayout}</div>
               )}
             </div>
           </form>

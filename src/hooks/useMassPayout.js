@@ -67,6 +67,7 @@ export default function useMassPayout(props = {}) {
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [isHardwareWallet, setIsHardwareWallet] = useState(false);
+  const [error, setError] = useState();
 
   useInjectReducer({ key: gasPriceKey, reducer: gasPriceReducer });
 
@@ -913,11 +914,14 @@ export default function useMassPayout(props = {}) {
   ) => {
     setRecievers(recievers);
     setTokenFrom(tokenFrom);
+    setError();
     if (!tokenDetails) return;
 
     const erc20 = getERC20Contract(tokenDetails.address);
-    if (!erc20) {
-      throw new Error("ERC20 token undefined");
+    if (!erc20 || !tokenDetails.address) {
+      setError(`ERC20 token is ${tokenDetails.address}`);
+      console.error(`ERC20 token is ${tokenDetails.address}`);
+      return;
     }
 
     // If input and output tokens are different, swap using uniswap
@@ -985,6 +989,12 @@ export default function useMassPayout(props = {}) {
     isMetaEnabled
   ) => {
     const transactions = [];
+
+    if (!tokenDetails.address) {
+      setError("ERC20 token undefined");
+      console.error("ERC20 token undefined");
+      return;
+    }
 
     // 1. enableModule
     const allModules = await proxyContract.getModules();
@@ -1056,6 +1066,7 @@ export default function useMassPayout(props = {}) {
     setRejecting,
     approving,
     rejecting,
+    error,
     createSpendingLimit,
   };
 }
