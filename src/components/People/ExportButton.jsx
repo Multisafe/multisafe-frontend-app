@@ -13,10 +13,6 @@ import { makeSelectPeople } from "store/view-people/selectors";
 
 export default function ExportButton() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const handleExport = () => {
-    console.log("export");
-  };
-
   const [csvData, setCsvData] = useState([]);
 
   const teammates = useSelector(makeSelectPeople());
@@ -58,7 +54,7 @@ export default function ExportButton() {
       data={csvData}
       filename={`people-${format(Date.now(), "dd/MM/yyyy-HH:mm:ss")}.csv`}
     >
-      <Export onClick={handleExport}>
+      <Export>
         <div className="text">Export</div>
         <Img src={ExportIcon} alt="export" className="ml-2" />
       </Export>
