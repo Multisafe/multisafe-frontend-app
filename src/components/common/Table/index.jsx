@@ -15,8 +15,10 @@ function CustomTableBody({ children, ...rest }) {
 
 function CustomTableTitle({ children, ...rest }) {
   return (
-    <TableTitle {...rest}>
-      <td colSpan={42}>{children}</td>
+    <TableTitle>
+      <td colSpan={42} {...rest}>
+        {children}
+      </td>
     </TableTitle>
   );
 }

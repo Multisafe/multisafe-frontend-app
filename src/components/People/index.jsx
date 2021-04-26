@@ -44,7 +44,7 @@ import {
   TableTitle,
   TableInfo,
 } from "components/common/Table";
-import { FiltersCard } from "./styles";
+import { FiltersCard, TeamContainer } from "./styles";
 import { useLocalStorage } from "hooks";
 import { getDecryptedDetails } from "utils/encryption";
 import Img from "components/common/Img";
@@ -341,8 +341,11 @@ export default function People() {
     return peopleByTeam && Object.keys(peopleByTeam).length > 0
       ? Object.keys(peopleByTeam).map((team) => (
           <React.Fragment key={team}>
-            <TableTitle>
-              <div className="d-flex justify-content-between align-items-center">
+            <TableTitle
+              style={{ height: "6rem", overflow: "visible" }}
+              className="position-relative"
+            >
+              <TeamContainer>
                 <div>{team}</div>
                 <div className="d-flex align-items-center">
                   {!peopleByTeam[team].length && (
@@ -353,7 +356,7 @@ export default function People() {
                     departmentId={teamNameToIdMap && teamNameToIdMap[team]}
                   />
                 </div>
-              </div>
+              </TeamContainer>
             </TableTitle>
             {peopleByTeam[team].map((people) => renderRow(people))}
           </React.Fragment>
@@ -364,14 +367,24 @@ export default function People() {
   const renderFilteredPeopleByTeam = () => {
     return (
       <React.Fragment>
-        <TableTitle>
-          <div className="d-flex justify-content-between align-items-center">
+        <TableTitle
+          style={{ height: "6rem", overflow: "visible" }}
+          className="position-relative"
+        >
+          <TeamContainer>
             <div>{teamFilter}</div>
-            <ModifyTeamDropdown
-              departmentId={teamNameToIdMap && teamNameToIdMap[teamFilter]}
-            />
-          </div>
+            <div className="d-flex align-items-center">
+              {!peopleByTeam[teamFilter].length && (
+                <div className="mr-3">{renderAddPeopleText(teamFilter)}</div>
+              )}
+
+              <ModifyTeamDropdown
+                departmentId={teamNameToIdMap && teamNameToIdMap[teamFilter]}
+              />
+            </div>
+          </TeamContainer>
         </TableTitle>
+
         {peopleByTeam &&
         peopleByTeam[teamFilter] &&
         peopleByTeam[teamFilter].length > 0
