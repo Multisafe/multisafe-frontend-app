@@ -59,7 +59,7 @@ function AddSinglePeopleModal(props) {
 
   const { register, handleSubmit, errors, control, watch, setValue } = useForm({
     mode: "onChange",
-    defaultValues: isEditMode ? defaultValues : {},
+    defaultValues: defaultValues ? defaultValues : {},
   });
   const teamChanged = watch("team");
 

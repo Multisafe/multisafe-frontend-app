@@ -35,6 +35,7 @@ import TeamsDropdown from "./TeamsDropdown";
 import AddPeopleDropdown from "./AddPeopleDropdown";
 import SearchByTeamDropdown from "./SearchByTeamDropdown";
 import ExportButton from "./ExportButton";
+import Button from "components/common/Button";
 import Avatar from "components/common/Avatar";
 import {
   Table,
@@ -53,11 +54,14 @@ import AddPeopleIcon from "assets/icons/dashboard/add-people-icon.svg";
 import ModifyTeamDropdown from "./ModifyTeamDropdown";
 import { makeSelectTeams } from "store/view-teams/selectors";
 import AddBulkPeoplModal from "./AddBulkPeopleModal";
-import AddSinglePeopleModal from "./AddSinglePeopleModal";
+import AddSinglePeopleModal, {
+  MODAL_NAME as ADD_SINGLE_MODAL,
+} from "./AddSinglePeopleModal";
 import TokenImg from "components/common/TokenImg";
 import DeleteTeamModal from "./DeleteTeamModal";
 import AddTeamModal from "./AddTeamModal";
 import ViewTeamsModal from "./ViewTeamsModal";
+import { show } from "redux-modal";
 
 const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
@@ -102,12 +106,15 @@ export default function People() {
   }, [dispatch, ownerSafeAddress]);
 
   useEffect(() => {
-    if (!encryptedPeople || (encryptedPeople && !encryptedPeople.length)) {
+    if (
+      !encryptedPeople ||
+      (encryptedPeople && !encryptedPeople.length && !allTeams.length)
+    ) {
       setIsNewUser(true);
     } else {
       setIsNewUser(false);
     }
-  }, [encryptedPeople]);
+  }, [encryptedPeople, allTeams]);
 
   useEffect(() => {
     if (!searchPeopleValue && isNameFilterApplied) {
@@ -146,7 +153,7 @@ export default function People() {
   }, [allTeams]);
 
   useEffect(() => {
-    if (encryptedPeople && encryptedPeople.length > 0 && encryptionKey) {
+    if (encryptedPeople && encryptionKey) {
       const sortedDecryptedPeople = encryptedPeople
         .map(({ data, ...rest }) => {
           const {
@@ -187,27 +194,35 @@ export default function People() {
 
       // setPeopleByAlphabet(peopleByAlphabet);
 
-      const peopleByTeam = sortedDecryptedPeople.reduce(
-        (accumulator, people) => {
-          const departmentName = people.departmentName;
-          if (!accumulator[departmentName]) {
-            accumulator[departmentName] = [people];
-          } else {
-            accumulator[departmentName].push(people);
-          }
+      const peopleByTeam = allTeams
+        ? allTeams.reduce((accumulator, { name }) => {
+            accumulator[name] = [];
+            return accumulator;
+          }, {})
+        : {};
 
-          return accumulator;
-        },
-        {}
-      );
+      for (let i = 0; i < sortedDecryptedPeople.length; i++) {
+        const people = sortedDecryptedPeople[i];
+        if (peopleByTeam[people.departmentName]) {
+          peopleByTeam[people.departmentName].push(people);
+        }
+      }
 
       setPeopleByTeam(peopleByTeam);
     }
-  }, [encryptedPeople, encryptionKey, organisationType]);
+  }, [encryptedPeople, encryptionKey, organisationType, allTeams]);
 
   const openSidebar = (peopleDetails) => {
     dispatch(togglePeopleDetails(true));
     dispatch(setPeopleDetails(peopleDetails));
+  };
+
+  const showAddPeopleModal = (departmentId, departmentName) => {
+    dispatch(
+      show(ADD_SINGLE_MODAL, {
+        defaultValues: { team: { value: departmentId, label: departmentName } },
+      })
+    );
   };
 
   const renderNoPeopleFound = () => (
@@ -221,6 +236,18 @@ export default function People() {
     >
       <td colSpan={4}>No people found!</td>
     </TableInfo>
+  );
+
+  const renderAddPeopleText = (teamName) => (
+    <div className="d-flex align-items-center justify-content-center">
+      <Button
+        className="secondary"
+        width="16rem"
+        onClick={() => showAddPeopleModal(teamNameToIdMap[teamName], teamName)}
+      >
+        Add People
+      </Button>
+    </div>
   );
 
   const renderLoading = () => (
@@ -250,7 +277,7 @@ export default function People() {
     >
       <td colSpan={4}>
         <Img src={AddPeopleIcon} alt="add-people" />
-        <div className="mt-4">Start by adding some people!</div>
+        <div className="mt-4">Start by adding some teams and people!</div>
       </td>
     </TableInfo>
   );
@@ -317,9 +344,15 @@ export default function People() {
             <TableTitle>
               <div className="d-flex justify-content-between align-items-center">
                 <div>{team}</div>
-                <ModifyTeamDropdown
-                  departmentId={teamNameToIdMap && teamNameToIdMap[team]}
-                />
+                <div className="d-flex align-items-center">
+                  {!peopleByTeam[team].length && (
+                    <div className="mr-3">{renderAddPeopleText(team)}</div>
+                  )}
+
+                  <ModifyTeamDropdown
+                    departmentId={teamNameToIdMap && teamNameToIdMap[team]}
+                  />
+                </div>
               </div>
             </TableTitle>
             {peopleByTeam[team].map((people) => renderRow(people))}
