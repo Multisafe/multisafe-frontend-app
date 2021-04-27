@@ -1,23 +1,31 @@
 import React from "react";
-import { startCase } from "lodash";
 
-import { Account } from "components/common/Web3Utils";
-import { findNetworkNameByWeb3ChainId } from "constants/networks";
 import Button from "components/common/Button";
 import { useActiveWeb3React } from "hooks";
+import { useState } from "react";
 
 const ConnectToWallet = ({ className, ...rest }) => {
-  const { chainId, active, onboard } = useActiveWeb3React();
+  const { onboard } = useActiveWeb3React();
+  const [loading, setLoading] = useState();
 
   const handleClick = async () => {
     if (onboard) {
-      await onboard.walletSelect();
-      await onboard.walletCheck();
+      setLoading(true);
+      try {
+        const walletSelected = await onboard.walletSelect();
+        if (walletSelected) {
+          const ready = await onboard.walletCheck();
+          if (!ready) {
+            setLoading(false);
+          }
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
     }
-  };
-
-  const getNetworkName = () => {
-    return startCase(findNetworkNameByWeb3ChainId(chainId));
   };
 
   return (
@@ -26,15 +34,11 @@ const ConnectToWallet = ({ className, ...rest }) => {
         type="button"
         onClick={handleClick}
         className={className}
+        loading={loading}
+        disabled={loading}
         {...rest}
       >
-        {!active ? (
-          <span>Connect</span>
-        ) : (
-          <span>
-            {getNetworkName()} <Account />
-          </span>
-        )}
+        <span>Connect</span>
       </Button>
     </div>
   );

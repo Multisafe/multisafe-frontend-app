@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { cryptoUtils } from "parcel-sdk";
 import formatDistance from "date-fns/formatDistance";
 
 import { makeSelectOrganisationType } from "store/global/selectors";
@@ -23,6 +22,7 @@ import Loading from "components/common/Loading";
 import CloseIcon from "assets/icons/navbar/close.svg";
 import { makeSelectIsNotificationOpen } from "store/layout/selectors";
 import { toggleNotification } from "store/layout/actions";
+import { getDecryptedDetails } from "utils/encryption";
 
 import { NotificationMenu } from "./styles";
 
@@ -115,10 +115,11 @@ function NotificationSidebar() {
               <div className="notification-heading">{data.headline}</div>
               <div className="notification-description">
                 {data.name &&
-                  cryptoUtils.decryptDataUsingEncryptionKey(
+                  getDecryptedDetails(
                     data.name,
                     encryptionKey,
-                    organisationType
+                    organisationType,
+                    false
                   )}{" "}
                 {data.message}
               </div>

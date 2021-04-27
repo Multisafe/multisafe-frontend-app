@@ -14,7 +14,13 @@ function PlainHeader() {
   const history = useHistory();
   const isLoginPage = location.pathname === "/";
   const isSignupPage = location.pathname === "/signup";
-  const { account } = useActiveWeb3React();
+  const { account, onboard } = useActiveWeb3React();
+
+  const handleDisconnect = () => {
+    if (onboard) {
+      onboard.walletReset();
+    }
+  };
 
   const renderSignUpButton = () => (
     <Button
@@ -51,10 +57,15 @@ function PlainHeader() {
             </HeaderLink>
           </div>
           <NavGroup>
-            {!account && (
-              <ConnectButton className="py-2 px-4 secondary">
-                Connect
-              </ConnectButton>
+            {!account ? (
+              <ConnectButton className="py-2 px-4">Connect</ConnectButton>
+            ) : (
+              <Button
+                className="py-2 px-4 secondary"
+                onClick={handleDisconnect}
+              >
+                Disconnect
+              </Button>
             )}
             {isLoginPage && renderSignUpButton()}
             {isSignupPage && renderLoginButton()}

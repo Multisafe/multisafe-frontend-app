@@ -107,12 +107,12 @@ export default function People() {
 
   useEffect(() => {
     if (
-      !encryptedPeople ||
-      (encryptedPeople && !encryptedPeople.length && !allTeams.length)
+      (encryptedPeople && encryptedPeople.length > 0) ||
+      (allTeams && allTeams.length > 0)
     ) {
-      setIsNewUser(true);
-    } else {
       setIsNewUser(false);
+    } else {
+      setIsNewUser(true);
     }
   }, [encryptedPeople, allTeams]);
 

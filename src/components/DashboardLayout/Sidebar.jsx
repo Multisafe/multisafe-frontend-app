@@ -34,9 +34,9 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
 
   const safeOwners = useSelector(makeSelectSafeOwners());
 
-  const logout = async () => {
+  const logout = () => {
     if (onboard) {
-      await onboard.walletReset();
+      onboard.walletReset();
     }
     dispatch(logoutUser());
   };

@@ -35,21 +35,8 @@ export function initOnboard(subscriptions) {
           walletName: "walletConnect",
           infuraKey: process.env.REACT_APP_INFURA_TOKEN,
         },
-        {
-          walletName: "lattice",
-          appName: "Onboard Demo",
-          rpcUrl,
-        },
         { walletName: "coinbase" },
-        { walletName: "status" },
-        { walletName: "walletLink", rpcUrl },
-        {
-          walletName: "portis",
-          apiKey: "b2b7586f-2b1e-4c30-a7fb-c2d1533b153b",
-        },
         { walletName: "fortmatic", apiKey: "pk_test_886ADCAB855632AA" },
-        { walletName: "torus" },
-        { walletName: "authereum", disableNotifications: true },
       ],
     },
     walletCheck: [

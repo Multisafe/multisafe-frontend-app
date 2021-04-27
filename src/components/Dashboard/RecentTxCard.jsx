@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback, memo, useMemo } from "react";
+import React, { useState, useEffect, memo, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { format } from "date-fns";
-import { cryptoUtils } from "parcel-sdk";
 import { Link } from "react-router-dom";
 
 import { useLocalStorage } from "hooks";
@@ -26,11 +25,7 @@ import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
-// import Loading from "components/common/Loading";
-// import { TransactionUrl } from "components/common/Web3Utils";
-
-// import TeamMembersPng from "assets/images/team-members.png";
-// import TeamPng from "assets/images/user-team.png";
+import { getDecryptedDetails } from "utils/encryption";
 import IncomingIcon from "assets/icons/dashboard/incoming.svg";
 // import CancelledIcon from "assets/icons/dashboard/cancelled.svg";
 
@@ -67,20 +62,6 @@ function RecentTxCard() {
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationType = useSelector(makeSelectOrganisationType());
   const teammates = useSelector(makeSelectPeople());
-
-  const getDecryptedDetails = useCallback(
-    (data) => {
-      if (!encryptionKey) return "";
-      return JSON.parse(
-        cryptoUtils.decryptDataUsingEncryptionKey(
-          data,
-          encryptionKey,
-          organisationType
-        )
-      );
-    },
-    [encryptionKey, organisationType]
-  );
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -157,7 +138,13 @@ function RecentTxCard() {
     } else if (transactionMode === TRANSACTION_MODES.SPENDING_LIMITS) {
       return "New Spending Limit";
     } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
-      const payeeDetails = getDecryptedDetails(to);
+      const payeeDetails = getDecryptedDetails(
+        to,
+        encryptionKey,
+        organisationType
+      );
+
+      if (!payeeDetails) return "";
 
       const { firstName, lastName } = payeeDetails[0];
       const firstPersonName = `${firstName} ${lastName}`;

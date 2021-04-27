@@ -17,7 +17,7 @@ export const initialState = {
   createdBy: "",
   owners: [], // [{name: "123", owner: "0x123"}]
   threshold: 0,
-  organisationType: 0,
+  organisationType: undefined,
   isOwner: true,
   loading: false,
   error: false,
@@ -56,7 +56,7 @@ const reducer = (state = initialState, action) =>
         draft.createdBy = "";
         draft.owners = [];
         draft.threshold = 0;
-        draft.organisationType = 0;
+        draft.organisationType = undefined;
         draft.isOwner = true;
         break;
 

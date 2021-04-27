@@ -61,7 +61,7 @@ import CompanyPng from "assets/images/register/company.png";
 // import OwnerPng from "assets/images/register/owner.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
-import { getPublicKey } from "utils/encryption";
+import { getDecryptedDetails, getPublicKey } from "utils/encryption";
 
 import { MESSAGE_TO_SIGN } from "constants/index";
 import loginSaga from "store/login/saga";
@@ -702,12 +702,17 @@ const Login = () => {
   };
 
   const getEncryptionKey = async (data, sign, organisationType) => {
-    const encryptionKey = await cryptoUtils.decryptUsingSignatures(
-      data,
-      sign,
-      organisationType
-    );
-    return encryptionKey;
+    try {
+      const encryptionKey = await cryptoUtils.decryptUsingSignatures(
+        data,
+        sign,
+        organisationType
+      );
+      return encryptionKey;
+    } catch (err) {
+      console.error(err);
+      return "";
+    }
   };
 
   const getSafeDetails = useCallback(async () => {
@@ -736,10 +741,11 @@ const Login = () => {
 
         safeDetails.push({
           safe: safes[i].safeAddress,
-          name: cryptoUtils.decryptDataUsingEncryptionKey(
+          name: getDecryptedDetails(
             safes[i].name,
             encryptionKey,
-            safes[i].organisationType
+            safes[i].organisationType,
+            false
           ),
           balance: "0",
           encryptionKeyData: safes[i].encryptionKeyData,

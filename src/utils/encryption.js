@@ -6,16 +6,21 @@ export const getPublicKey = (sign) => {
   return publicKey;
 };
 
-export const getDecryptedDetails = (data, encryptionKey, organisationType) => {
-  if (!encryptionKey) return "";
+export const getDecryptedDetails = (
+  data,
+  encryptionKey,
+  organisationType,
+  parse = true
+) => {
+  if (!encryptionKey || !data || organisationType === undefined) return "";
   try {
-    return JSON.parse(
-      cryptoUtils.decryptDataUsingEncryptionKey(
-        data,
-        encryptionKey,
-        organisationType
-      )
+    const decryptedData = cryptoUtils.decryptDataUsingEncryptionKey(
+      data,
+      encryptionKey,
+      organisationType
     );
+
+    return parse ? JSON.parse(decryptedData) : decryptedData;
   } catch (err) {
     console.error(err);
     return "";
