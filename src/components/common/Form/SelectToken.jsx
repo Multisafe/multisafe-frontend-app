@@ -94,7 +94,6 @@ const SelectTokenField = ({
   width,
   placeholder,
   defaultValue,
-  handleChange,
   ...rest
 }) => {
   return (
@@ -117,12 +116,7 @@ const SelectTokenField = ({
           width={width}
           filterOption={createFilter({ ignoreAccents: false })}
           components={{ MenuList }}
-          onChange={(e) => {
-            onChange(e);
-            if (handleChange) {
-              handleChange(e);
-            }
-          }}
+          onChange={onChange}
           value={value}
           placeholder={placeholder}
           {...rest}

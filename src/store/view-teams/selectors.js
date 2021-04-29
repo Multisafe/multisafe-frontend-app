@@ -10,14 +10,13 @@ const makeSelectTeams = () =>
   createSelector(selectViewTeams, (viewTeamsState) => viewTeamsState.teams);
 
 const makeSelectTeamIdToDetailsMap = () =>
-  createSelector(
-    selectViewTeams,
-    (viewTeamsState) =>
-      viewTeamsState.teams &&
-      viewTeamsState.teams.reduce((map, details) => {
-        map[details.departmentId] = details;
-        return map;
-      }, {})
+  createSelector(selectViewTeams, (viewTeamsState) =>
+    viewTeamsState.teams
+      ? viewTeamsState.teams.reduce((map, details) => {
+          map[details.departmentId] = details;
+          return map;
+        }, {})
+      : {}
   );
 
 const makeSelectPeopleCount = () =>

@@ -23,6 +23,12 @@ const makeSelectLoading = () =>
     (viewPeopleState) => viewPeopleState.loading
   );
 
+const makeSelectLoadingPeopleByTeam = () =>
+  createSelector(
+    selectViewPeople,
+    (viewPeopleState) => viewPeopleState.loadingPeopleByTeam
+  );
+
 const makeSelectDepartmentName = () =>
   createSelector(
     selectViewPeople,
@@ -77,6 +83,7 @@ export {
   selectViewPeople,
   makeSelectPeople,
   makeSelectLoading,
+  makeSelectLoadingPeopleByTeam,
   makeSelectDepartmentName,
   makeSelectPeopleFilters,
   makeSelectSearchName,

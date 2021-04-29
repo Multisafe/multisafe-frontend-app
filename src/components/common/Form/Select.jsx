@@ -58,7 +58,6 @@ const SelectField = ({
   width,
   placeholder,
   defaultValue,
-  handleChange,
   ...rest
 }) => {
   return (
@@ -79,10 +78,7 @@ const SelectField = ({
           options={options}
           styles={inputStyles}
           width={width}
-          onChange={(e) => {
-            onChange(e);
-            if (handleChange) handleChange(e);
-          }}
+          onChange={onChange}
           value={value}
           placeholder={placeholder}
           {...rest}

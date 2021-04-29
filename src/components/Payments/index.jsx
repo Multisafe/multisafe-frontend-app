@@ -18,8 +18,8 @@ import {
   makeSelectTeamIdToDetailsMap,
 } from "store/view-teams/selectors";
 import {
-  makeSelectLoading as makeSelectPeopleLoading,
   makeSelectPeopleByTeam,
+  makeSelectLoadingPeopleByTeam,
 } from "store/view-people/selectors";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
@@ -75,7 +75,6 @@ import {
   TableInfo,
 } from "components/common/Table";
 
-import { defaultTokenDetails } from "constants/index";
 import { MassPayoutContainer, PaymentSummary } from "./styles";
 import TransactionSubmitted from "./TransactionSubmitted";
 import { TRANSACTION_MODES } from "constants/transactions";
@@ -85,6 +84,7 @@ import { getDecryptedDetails } from "utils/encryption";
 import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
+import ErrorText from "components/common/ErrorText";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -98,20 +98,12 @@ const metaTxKey = "metatx";
 
 export default function Payments() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    getValues,
-    watch,
-  } = useForm({
+  const { register, handleSubmit, control, setValue, watch } = useForm({
     mode: "onChange",
   });
 
-  const hasTeamChanged = watch("team");
-  const selectedTeamId = getValues()["team"] && getValues()["team"].value;
-  const selectedToken = getValues()["token"] && getValues()["token"].value;
+  const selectedTeamId = watch("team") && watch("team").value;
+  const selectedToken = watch("token") && watch("token").value;
 
   const { account } = useActiveWeb3React();
 
@@ -123,12 +115,10 @@ export default function Payments() {
   const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [isSelectedTokenUSD, setIsSelectedTokenUSD] = useState();
-  const [existingTokenDetails, setExistingTokenDetails] = useState(
-    defaultTokenDetails
-  );
+  const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
   const [teamsDropdown, setTeamsDropdown] = useState();
-  const [selectedTokenName, setSelectedTokenName] = useState();
+  const [tokenError, setTokenError] = useState(false);
   const {
     loadingTx,
     txHash,
@@ -167,7 +157,7 @@ export default function Payments() {
   // Selectors
   const allTeams = useSelector(makeSelectTeams());
   const loadingTeams = useSelector(makeSelectTeamsLoading());
-  const loadingTeammates = useSelector(makeSelectPeopleLoading());
+  const loadingTeammates = useSelector(makeSelectLoadingPeopleByTeam());
   const teammates = useSelector(makeSelectPeopleByTeam());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const prices = useSelector(makeSelectPrices());
@@ -217,14 +207,11 @@ export default function Payments() {
       }));
       setTeamsDropdown(dropdownList);
     }
-  }, [allTeams, existingTokenDetails, teamIdToDetailsMap, teamsDropdown]);
+  }, [allTeams, existingTokenDetails, teamsDropdown]);
 
   useEffect(() => {
-    if (
-      hasTeamChanged &&
-      selectedTeamId &&
-      teamIdToDetailsMap[selectedTeamId]
-    ) {
+    if (selectedTeamId && teamIdToDetailsMap[selectedTeamId]) {
+      setTokenError(false);
       const { tokenInfo } = teamIdToDetailsMap[selectedTeamId];
       const existingToken = existingTokenDetails.filter(
         ({ name }) => name === tokenInfo.symbol
@@ -249,22 +236,39 @@ export default function Payments() {
             imgUrl: existingToken.icon,
           }),
         });
+      } else {
+        if (tokenInfo && tokenInfo.symbol === "USD") {
+          setValue("token", {
+            value: existingTokenDetails[0].name,
+            label: constructLabel({
+              token: existingTokenDetails[0].name,
+              component: (
+                <div>
+                  {formatNumber(existingTokenDetails[0].balance)}{" "}
+                  {existingTokenDetails[0].name}
+                </div>
+              ),
+              imgUrl: existingTokenDetails[0].icon,
+            }),
+          });
+        } else {
+          setTokenError(
+            `Please deposit ${tokenInfo.symbol} tokens into your safe and try again`
+          );
+          setValue("token", {
+            value: tokenInfo.symbol,
+            label: `0.00 ${tokenInfo.symbol}`,
+          });
+        }
       }
     }
-  }, [
-    teamsDropdown,
-    existingTokenDetails,
-    teamIdToDetailsMap,
-    hasTeamChanged,
-    selectedTeamId,
-    setValue,
-  ]);
+  }, [selectedTeamId, existingTokenDetails, setValue]); // eslint-disable-line
 
   useEffect(() => {
-    if (hasTeamChanged && selectedTeamId) {
+    if (selectedTeamId) {
       dispatch(getPeopleByTeam(ownerSafeAddress, selectedTeamId));
     }
-  }, [hasTeamChanged, selectedTeamId, dispatch, ownerSafeAddress]);
+  }, [selectedTeamId, dispatch, ownerSafeAddress]);
 
   useEffect(() => {
     if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
@@ -287,10 +291,6 @@ export default function Payments() {
   }, [tokenList, tokensDropdown]);
 
   useEffect(() => {
-    // reset to initial state
-    setSelectedRows([]);
-    setChecked([]);
-    setIsCheckedAll(false);
     if (!allTeams) {
       dispatch(getTeams(ownerSafeAddress));
     }
@@ -301,7 +301,7 @@ export default function Payments() {
     setSelectedRows([]);
     setChecked([]);
     setIsCheckedAll(false);
-  }, [selectedTokenName]);
+  }, [selectedToken, selectedTeamId]);
 
   useEffect(() => {
     if (people && people.length > 0) {
@@ -326,6 +326,7 @@ export default function Payments() {
   }, [selectedToken, existingTokenDetails]);
 
   const totalAmountToPay = useMemo(() => {
+    if (!selectedRows.length) return 0;
     if (prices) {
       return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
         if (salaryToken === "USD") {
@@ -638,6 +639,7 @@ export default function Payments() {
                           id={`checkbox${idx}`}
                           name={`checkbox${idx}`}
                           checked={checked[idx] || false}
+                          onChange={() => handleChecked(teammateDetails, idx)}
                         />
                         <div>
                           {firstName} {lastName}
@@ -661,7 +663,9 @@ export default function Payments() {
   };
 
   const renderPaymentSummary = () => {
-    if (!people || !selectedToken || !selectedTokenDetails) return;
+    if (tokenError) return <ErrorText>{tokenError}</ErrorText>;
+
+    if (!people || !selectedToken || !selectedTokenDetails) return null;
     const insufficientBalance =
       selectedTokenDetails.usd - totalAmountToPay > 0 ? false : true;
     return (
@@ -733,7 +737,6 @@ export default function Payments() {
                   required={`Team is required`}
                   width="18rem"
                   options={teamsDropdown}
-                  isSearchable
                   isLoading={loadingTeams}
                   placeholder={`Select Team...`}
                   defaultValue={null}
@@ -753,9 +756,6 @@ export default function Payments() {
                     placeholder={`Select Currency...`}
                     isDisabled={!isSelectedTokenUSD}
                     defaultValue={null}
-                    handleChange={(event) => {
-                      setSelectedTokenName(event.value);
-                    }}
                   />
                 </div>
               )}

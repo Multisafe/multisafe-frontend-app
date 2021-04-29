@@ -19,6 +19,7 @@ export const initialState = {
   filters: {}, // {name: "john", department: "Engineering", ...}
   searchName: "",
   peopleByTeam: undefined,
+  loadingPeopleByTeam: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -31,12 +32,13 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_PEOPLE_BY_TEAM:
-        draft.loading = false;
+        draft.loadingPeopleByTeam = true;
         draft.error = false;
         break;
 
       case GET_ALL_PEOPLE_ERROR:
       case GET_PEOPLE_BY_TEAM_ERROR:
+        draft.loadingPeopleByTeam = false;
         draft.loading = false;
         draft.error = action.error;
         break;
@@ -47,7 +49,7 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_PEOPLE_BY_TEAM_SUCCESS:
-        draft.loading = false;
+        draft.loadingPeopleByTeam = false;
         draft.departmentName = action.departmentName;
         draft.peopleByTeam = action.people;
         break;
