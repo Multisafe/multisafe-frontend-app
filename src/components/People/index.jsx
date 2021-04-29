@@ -101,9 +101,9 @@ export default function People() {
   const searchPeopleValue = useSelector(makeSelectSearchName());
 
   useEffect(() => {
-    dispatch(getTeams(ownerSafeAddress));
-    dispatch(getAllPeople(ownerSafeAddress));
-  }, [dispatch, ownerSafeAddress]);
+    if (!allTeams) dispatch(getTeams(ownerSafeAddress));
+    if (!encryptedPeople) dispatch(getAllPeople(ownerSafeAddress));
+  }, [dispatch, ownerSafeAddress, encryptedPeople, allTeams]);
 
   useEffect(() => {
     if (
@@ -313,7 +313,7 @@ export default function People() {
           {firstName} {lastName}
         </div>
       </td>
-      <td style={isTeamFilterApplied ? { color: "#dddcdc" } : {}}>
+      <td style={!isNameFilterApplied ? { color: "#dddcdc" } : {}}>
         {departmentName}
       </td>
       <td>
@@ -437,7 +437,10 @@ export default function People() {
       <FiltersCard className="mt-3">
         <div>
           <div className="title mb-0">
-            {!isNewUser && `Showing ${allPeople ? allPeople.length : 0} people`}
+            {!isNewUser &&
+              allPeople &&
+              allPeople.length > 0 &&
+              `Showing ${allPeople.length} people`}
           </div>
         </div>
         <div className="flex">

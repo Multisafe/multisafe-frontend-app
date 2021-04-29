@@ -88,10 +88,11 @@ function PeopleDetailsSidebar() {
           amount: salaryAmount,
           token: {
             value: salaryToken,
-            label: constructLabel(
-              salaryToken,
-              tokenDetails[salaryToken] && tokenDetails[salaryToken].logoURI
-            ),
+            label: constructLabel({
+              token: salaryToken,
+              imgUrl:
+                tokenDetails[salaryToken] && tokenDetails[salaryToken].logoURI,
+            }),
           },
           address,
           team: { value: departmentId, label: departmentName },

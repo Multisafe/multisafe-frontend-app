@@ -1,5 +1,6 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { push } from "connected-react-router";
+import { hide } from "redux-modal";
 
 import {
   CONFIRM_MULTISIG_TRANSACTION,
@@ -28,6 +29,7 @@ import {
   submitMultisigTransactionEndpoint,
   getMultisigTransactionByIdEndpoint,
 } from "constants/endpoints";
+import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
 
 function* getMultisigTransactions(action) {
   const requestURL = `${getMultisigTransactionEndpoint}?safeAddress=${action.safeAddress}`;
@@ -84,6 +86,7 @@ function* createMultisigTransaction(action) {
       createMultisigTransactionSuccess(result.transactionId, result.log)
     );
     yield put(push(`/dashboard/transactions/${result.transactionId}`));
+    yield put(hide(MASS_PAYOUT_MODAL));
   } catch (err) {
     yield put(createMultisigTransactionError(err));
   }

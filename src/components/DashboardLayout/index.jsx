@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }) {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   useEffect(() => {
-    if (safeAddress) dispatch(getTokenList(safeAddress, 1));
+    if (safeAddress) dispatch(getTokenList(safeAddress));
   }, [dispatch, safeAddress]);
 
   const openSidebar = () => {

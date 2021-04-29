@@ -1,31 +1,25 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLongArrowAltLeft,
-  faLongArrowAltRight,
-} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import { cryptoUtils } from "parcel-sdk";
-import { show } from "redux-modal";
+// import { show } from "redux-modal";
 import { useHistory } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
-import { Info } from "components/Dashboard-old/styles";
-import { Card } from "components/common/Card";
 import Button from "components/common/Button";
 import viewTeamsReducer from "store/view-teams/reducer";
 import { getTeams } from "store/view-teams/actions";
 import viewTeamsSaga from "store/view-teams/saga";
 import viewPeopleSaga from "store/view-people/saga";
 import viewPeopleReducer from "store/view-people/reducer";
-import { getAllPeople, getPeopleByTeam } from "store/view-people/actions";
+import { getPeopleByTeam } from "store/view-people/actions";
 import {
   makeSelectTeams,
   makeSelectLoading as makeSelectTeamsLoading,
+  makeSelectTeamIdToDetailsMap,
 } from "store/view-teams/selectors";
 import {
-  makeSelectPeople,
   makeSelectLoading as makeSelectPeopleLoading,
+  makeSelectPeopleByTeam,
 } from "store/view-people/selectors";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
@@ -61,7 +55,6 @@ import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
   makeSelectPrices,
-  makeSelectTokenIcons,
 } from "store/tokens/selectors";
 import tokensSaga from "store/tokens/saga";
 import tokensReducer from "store/tokens/reducer";
@@ -74,20 +67,24 @@ import {
   makeSelectIsMultiOwner,
   makeSelectOrganisationType,
 } from "store/global/selectors";
-import { minifyAddress } from "components/common/Web3Utils";
 import Loading from "components/common/Loading";
-import TeamPng from "assets/images/user-team.png";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableInfo,
+} from "components/common/Table";
 
-import { getDefaultIconIfPossible, defaultTokenDetails } from "constants/index";
-import { Container, Table, PaymentSummary, TokenBalance } from "./styles";
+import { defaultTokenDetails } from "constants/index";
+import { MassPayoutContainer, PaymentSummary } from "./styles";
 import TransactionSubmitted from "./TransactionSubmitted";
-import SelectTokenModal, {
-  MODAL_NAME as SELECT_TOKEN_MODAL,
-} from "./SelectTokenModal";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
-
-const { TableBody, TableHead, TableRow } = Table;
+import TokenImg from "components/common/TokenImg";
+import { getDecryptedDetails } from "utils/encryption";
+import { Input, Select, SelectToken } from "components/common/Form";
+import { constructLabel } from "utils/tokens";
+import CheckBox from "components/common/CheckBox";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -99,74 +96,39 @@ const tokensKey = "tokens";
 const invitationKey = "invitation";
 const metaTxKey = "metatx";
 
-const TABS = {
-  PEOPLE: "1",
-  DEPARTMENT: "2",
-};
-
-const navStyles = `
-  .nav-tabs {
-    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
-    border-bottom: solid 1px #f2f2f2;
-    background-color: #ffffff;
-  }
-
-  .nav-link {
-    font-size: 20px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    text-align: left;
-    color: #aaaaaa;
-    cursor: pointer;
-    opacity: 0.4;
-    padding-bottom: 15px;
-    padding-top: 15px;
-  }
-
-  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    border-bottom: 5px solid #7367f0;
-  }
-
-  .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
-    border: none;
-    border-bottom: 5px solid #7367f0;
-    opacity: 1;
-  }
-
-  .nav-link.active {
-    opacity: 1;
-    border: none;
-    font-size: 20px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    text-align: left;
-    color: #373737;
-  }
-`;
-
 export default function Payments() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    getValues,
+    watch,
+  } = useForm({
+    mode: "onChange",
+  });
+
+  const hasTeamChanged = watch("team");
+  const selectedTeamId = getValues()["team"] && getValues()["team"].value;
+  const selectedToken = getValues()["token"] && getValues()["token"].value;
 
   const { account } = useActiveWeb3React();
 
   const [checked, setChecked] = useState([]);
   const [isCheckedAll, setIsCheckedAll] = useState(false);
-  const [activeTab, setActiveTab] = useState(TABS.PEOPLE);
-  // const [loadingTx, setLoadingTx] = useState(false);
-  // const [txHash, setTxHash] = useState("");
+  const [people, setPeople] = useState();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [departmentStep, setDepartmentStep] = useState(0);
   const [metaTxHash, setMetaTxHash] = useState();
   const [submittedTx, setSubmittedTx] = useState(false);
-  const [selectedTokenName, setSelectedTokenName] = useState();
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
-  const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
+  const [isSelectedTokenUSD, setIsSelectedTokenUSD] = useState();
+  const [existingTokenDetails, setExistingTokenDetails] = useState(
+    defaultTokenDetails
+  );
+  const [tokensDropdown, setTokensDropdown] = useState([]);
+  const [teamsDropdown, setTeamsDropdown] = useState();
+  const [selectedTokenName, setSelectedTokenName] = useState();
   const {
     loadingTx,
     txHash,
@@ -175,10 +137,6 @@ export default function Payments() {
     txData,
     setTxData,
   } = useMassPayout({ tokenDetails: selectedTokenDetails });
-
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
 
   // Reducers
   useInjectReducer({ key: viewPeopleKey, reducer: viewPeopleReducer });
@@ -207,10 +165,10 @@ export default function Payments() {
   const history = useHistory();
 
   // Selectors
-  const allDepartments = useSelector(makeSelectTeams());
-  const loadingDepartments = useSelector(makeSelectTeamsLoading());
+  const allTeams = useSelector(makeSelectTeams());
+  const loadingTeams = useSelector(makeSelectTeamsLoading());
   const loadingTeammates = useSelector(makeSelectPeopleLoading());
-  const teammates = useSelector(makeSelectPeople());
+  const teammates = useSelector(makeSelectPeopleByTeam());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const prices = useSelector(makeSelectPrices());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
@@ -222,12 +180,12 @@ export default function Payments() {
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
   const tokenList = useSelector(makeSelectTokenList());
   const loadingTokens = useSelector(makeSelectLoadingTokens());
-  const icons = useSelector(makeSelectTokenIcons());
   const singleOwnerTransactionId = useSelector(
     makeSelectSingleOwnerTransactionId()
   );
   const organisationType = useSelector(makeSelectOrganisationType());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
+  const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
 
   useEffect(() => {
     if (txHashFromMetaTx) {
@@ -245,57 +203,139 @@ export default function Payments() {
   }, [ownerSafeAddress, dispatch]);
 
   useEffect(() => {
-    if (ownerSafeAddress && !icons) {
+    if (ownerSafeAddress && (!tokenList || !tokenList.length)) {
       dispatch(getTokens(ownerSafeAddress));
     }
-  }, [ownerSafeAddress, dispatch, icons]);
-
-  // useEffect(() => {
-  //   setSelectedTokenDetails(
-  //     tokenDetails.filter(({ name }) => name === tokens.DAI)[0]
-  //   );
-  // }, [tokenDetails]);
+  }, [ownerSafeAddress, dispatch, tokenList]);
 
   useEffect(() => {
-    if (tokenList && tokenList.length > 0) {
-      setTokenDetails(tokenList);
-      setSelectedTokenName(tokenList[0].name);
+    let dropdownList = [];
+    if (allTeams && allTeams.length > 0 && !teamsDropdown) {
+      dropdownList = allTeams.map(({ departmentId, name }) => ({
+        value: departmentId,
+        label: name,
+      }));
+      setTeamsDropdown(dropdownList);
     }
-  }, [tokenList]);
+  }, [allTeams, existingTokenDetails, teamIdToDetailsMap, teamsDropdown]);
 
   useEffect(() => {
-    if (selectedTokenName)
-      setSelectedTokenDetails(
-        tokenDetails.filter(({ name }) => name === selectedTokenName)[0]
+    if (
+      hasTeamChanged &&
+      selectedTeamId &&
+      teamIdToDetailsMap[selectedTeamId]
+    ) {
+      const { tokenInfo } = teamIdToDetailsMap[selectedTeamId];
+      const existingToken = existingTokenDetails.filter(
+        ({ name }) => name === tokenInfo.symbol
+      )[0];
+
+      if (tokenInfo && tokenInfo.symbol === "USD") {
+        setIsSelectedTokenUSD(true);
+      } else {
+        setIsSelectedTokenUSD(false);
+      }
+
+      if (existingToken) {
+        setValue("token", {
+          value: existingToken.name,
+          label: constructLabel({
+            token: existingToken.name,
+            component: (
+              <div>
+                {formatNumber(existingToken.balance)} {existingToken.name}
+              </div>
+            ),
+            imgUrl: existingToken.icon,
+          }),
+        });
+      }
+    }
+  }, [
+    teamsDropdown,
+    existingTokenDetails,
+    teamIdToDetailsMap,
+    hasTeamChanged,
+    selectedTeamId,
+    setValue,
+  ]);
+
+  useEffect(() => {
+    if (hasTeamChanged && selectedTeamId) {
+      dispatch(getPeopleByTeam(ownerSafeAddress, selectedTeamId));
+    }
+  }, [hasTeamChanged, selectedTeamId, dispatch, ownerSafeAddress]);
+
+  useEffect(() => {
+    if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
+      setExistingTokenDetails(tokenList);
+      setTokensDropdown(
+        tokenList.map((details) => ({
+          value: details.name,
+          label: constructLabel({
+            token: details.name,
+            component: (
+              <div>
+                {formatNumber(details.balance)} {details.name}
+              </div>
+            ),
+            imgUrl: details.icon,
+          }),
+        }))
       );
-  }, [tokenDetails, selectedTokenName]);
+    }
+  }, [tokenList, tokensDropdown]);
 
   useEffect(() => {
     // reset to initial state
     setSelectedRows([]);
     setChecked([]);
     setIsCheckedAll(false);
-    if (activeTab === TABS.PEOPLE) {
-      dispatch(getAllPeople(ownerSafeAddress));
-    } else {
-      setDepartmentStep(0);
+    if (!allTeams) {
       dispatch(getTeams(ownerSafeAddress));
     }
-  }, [dispatch, ownerSafeAddress, activeTab]);
+  }, [dispatch, ownerSafeAddress, allTeams]);
 
   useEffect(() => {
-    if (teammates && teammates.length > 0) {
-      setChecked(new Array(teammates.length).fill(false));
+    // reset to initial state
+    setSelectedRows([]);
+    setChecked([]);
+    setIsCheckedAll(false);
+  }, [selectedTokenName]);
+
+  useEffect(() => {
+    if (people && people.length > 0) {
+      setChecked(new Array(people.length).fill(false));
     }
-  }, [teammates]);
+  }, [people]);
+
+  useEffect(() => {
+    if (selectedTeamId && teammates) {
+      setPeople(teammates);
+    } else {
+      setPeople();
+    }
+  }, [selectedTeamId, teammates]);
+
+  useEffect(() => {
+    if (selectedToken && existingTokenDetails) {
+      setSelectedTokenDetails(
+        existingTokenDetails.filter(({ name }) => name === selectedToken)[0]
+      );
+    }
+  }, [selectedToken, existingTokenDetails]);
 
   const totalAmountToPay = useMemo(() => {
     if (prices) {
-      return selectedRows.reduce(
-        (total, { salaryAmount, salaryToken }) =>
-          (total += prices[salaryToken] * salaryAmount),
-        0
-      );
+      return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
+        if (salaryToken === "USD") {
+          total += Number(salaryAmount);
+        } else {
+          total += prices[salaryToken] * salaryAmount;
+        }
+
+        return total;
+      }, 0);
     }
 
     return selectedRows.reduce(
@@ -303,21 +343,6 @@ export default function Payments() {
       0
     );
   }, [prices, selectedRows]);
-
-  const isMassPayoutAllowed = useMemo(() => {
-    const hashmap = selectedRows.reduce((hashmap, token) => {
-      if (!hashmap[token.salaryToken]) {
-        hashmap[token.salaryToken] = true;
-      }
-      return hashmap;
-    }, {});
-
-    return selectedTokenDetails &&
-      Object.keys(hashmap).length === 1 &&
-      hashmap[selectedTokenDetails.name]
-      ? true
-      : false;
-  }, [selectedRows, selectedTokenDetails]);
 
   useEffect(() => {
     if (txHash) {
@@ -428,21 +453,6 @@ export default function Payments() {
     organisationType,
   ]);
 
-  const isNoneChecked = useMemo(() => checked.every((check) => !check), [
-    checked,
-  ]);
-
-  const getDecryptedDetails = (data) => {
-    if (!encryptionKey) return "";
-    return JSON.parse(
-      cryptoUtils.decryptDataUsingEncryptionKey(
-        data,
-        encryptionKey,
-        organisationType
-      )
-    );
-  };
-
   const handleMassPayout = async (selectedTeammates) => {
     await massPayout(
       selectedTeammates,
@@ -453,241 +463,217 @@ export default function Payments() {
     );
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    console.log({ selectedRows });
+  const onSubmit = async (values) => {
+    const selectedTeammates = selectedRows.map(
+      ({ address, salaryAmount, salaryToken, ...rest }) => {
+        const amount =
+          salaryToken === "USD"
+            ? String(salaryAmount / selectedTokenDetails.usdConversionRate)
+            : salaryAmount;
+        return {
+          address,
+          salaryAmount: amount,
+          salaryToken,
+          description: values.description || "",
+          usd: selectedTokenDetails.usdConversionRate * amount,
+          ...rest,
+        };
+      }
+    );
 
-    await handleMassPayout(selectedRows);
+    console.log({ selectedTeammates });
+
+    await handleMassPayout(selectedTeammates);
   };
 
   const handleCheckAll = (e) => {
-    if (checked.every((check) => check)) {
-      // deselect all
-      setChecked(new Array(checked.length).fill(false));
+    if (checked.length === people.length && checked.every((check) => check)) {
+      // if all are checked, deselect all
       setIsCheckedAll(false);
       setSelectedRows([]);
+      setChecked([]);
     } else {
       // select all
-      setChecked(new Array(checked.length).fill(true));
+      setChecked(new Array(people.length).fill(true));
       setIsCheckedAll(true);
-      if (teammates && teammates.length > 0) {
-        const allRows = teammates.map(({ data }) => getDecryptedDetails(data));
+      if (people && people.length > 0) {
+        const allRows = people.map(({ data, peopleId }) => ({
+          peopleId,
+          ...getDecryptedDetails(data, encryptionKey, organisationType),
+        }));
         setSelectedRows(allRows);
       }
     }
   };
 
-  const handleChecked = (e, teammateDetails, index) => {
+  const handleChecked = (teammateDetails, index) => {
     const newChecked = [...checked];
     newChecked[index] = !checked[index];
+    if (
+      newChecked.length === people.length &&
+      newChecked.every((check) => check)
+    ) {
+      setIsCheckedAll(true);
+    } else {
+      setIsCheckedAll(false);
+    }
     setChecked(newChecked);
     // if checked, push the details, provided it doesn't already exist in the array
     // else remove the unselected details from the array
     if (
-      e.target.checked &&
-      !selectedRows.some((row) => row.address === teammateDetails.address)
+      newChecked[index] &&
+      !selectedRows.some((row) => row.peopleId === teammateDetails.peopleId)
     ) {
       setSelectedRows([...selectedRows, teammateDetails]);
     } else {
       setSelectedRows(
-        selectedRows.filter((row) => row.address !== teammateDetails.address)
+        selectedRows.filter((row) => row.peopleId !== teammateDetails.peopleId)
       );
     }
-  };
-
-  const handleSelectDepartment = (departmentId) => {
-    if (ownerSafeAddress && departmentId) {
-      dispatch(getPeopleByTeam(ownerSafeAddress, departmentId));
-      setDepartmentStep(departmentStep + 1);
-      setSelectedRows([]);
-    }
-  };
-
-  const goBackToDepartments = () => {
-    setDepartmentStep(departmentStep - 1);
   };
 
   const getSelectedCount = () => {
     return checked.filter(Boolean).length;
   };
 
-  const showTokenModal = () => {
-    dispatch(
-      show(SELECT_TOKEN_MODAL, {
-        selectedTokenDetails,
-        setSelectedTokenDetails,
-      })
-    );
-  };
+  const renderNoPeopleFound = () => (
+    <TableInfo
+      style={{
+        fontSize: "1.4rem",
+        fontWeight: "500",
+        textAlign: "center",
+        height: "20rem",
+      }}
+    >
+      <td colSpan={4}>No people found!</td>
+    </TableInfo>
+  );
+
+  const renderLoading = () => (
+    <TableInfo
+      style={{
+        textAlign: "center",
+        height: "20rem",
+      }}
+    >
+      <td colSpan={4}>
+        <div className="d-flex align-items-center justify-content-center">
+          <Loading color="primary" width="3rem" height="3rem" />
+        </div>
+      </td>
+    </TableInfo>
+  );
 
   const renderPayTable = () => {
-    if (!teammates.length)
-      return (
-        <div
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "400px" }}
-        >
-          No Teammates Found!
-        </div>
-      );
+    if (!people || !selectedToken) return;
 
     return (
       <div>
-        <TableHead>
-          <div className="form-check d-flex">
-            <input
-              className="form-check-input position-static mr-3"
-              type="checkbox"
-              id="allCheckbox"
-              checked={isCheckedAll}
-              onChange={handleCheckAll}
-            />
-            <div>Teammate Name</div>
-          </div>
-          <div>Team</div>
-          {/* <div>Pay Token</div> */}
-          <div>Pay Amount</div>
-          <div>Address</div>
-          <div></div>
-        </TableHead>
-        <TableBody>
-          {teammates.length > 0 &&
-            teammates.map(({ data, departmentName }, idx) => {
-              const {
-                firstName,
-                lastName,
-                salaryAmount,
-                salaryToken,
-                address,
-              } = getDecryptedDetails(data);
-              return (
-                <TableRow key={`${address}-${idx}`}>
-                  <div className="form-check d-flex">
-                    <input
-                      className="form-check-input position-static mr-3"
-                      type="checkbox"
-                      id={`checkbox${idx}`}
-                      name={`checkbox${idx}`}
-                      checked={checked[idx] || false}
-                      onChange={(e) => {
-                        const teammateDetails = {
-                          firstName,
-                          lastName,
-                          salaryToken,
-                          salaryAmount,
-                          address,
-                        };
-                        handleChecked(e, teammateDetails, idx);
-                      }}
-                    />
-                    <div>
-                      {firstName} {lastName}
-                    </div>
-                  </div>
-                  <div>{departmentName}</div>
-                  {/* <div>{salaryToken}</div> */}
-                  <div>
-                    <img
-                      src={getDefaultIconIfPossible(salaryToken, icons)}
-                      alt={salaryToken}
-                      width="16"
-                    />{" "}
-                    {salaryAmount} {salaryToken}{" "}
-                    {prices &&
-                      prices[salaryToken] !== undefined &&
-                      `(US$
-                       ${parseFloat(prices[salaryToken] * salaryAmount).toFixed(
-                         2
-                       )})`}
-                  </div>
-                  <div>{minifyAddress(address)}</div>
-                  <div className="text-right">
-                    {checked.filter(Boolean).length <= 1 && (
-                      <Button
-                        type="submit"
-                        iconOnly
-                        disabled={
-                          !checked[idx] ||
-                          loadingTx ||
-                          isNoneChecked ||
-                          !isMassPayoutAllowed
-                        }
-                        className="py-0"
-                      >
-                        <span className="pay-text">PAY</span>
-                      </Button>
-                    )}
-                  </div>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </div>
-    );
-  };
+        <div className="outer-flex mt-5">
+          <div className="title">Team Details</div>
 
-  const renderDepartments = () => {
-    if (!allDepartments || !allDepartments.length) {
-      return (
-        <div
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "400px" }}
-        >
-          No Teams Found!
+          {!loadingTeammates && people.length > 0 && (
+            <div className="select-all">
+              <CheckBox
+                type="checkbox"
+                id="allCheckbox"
+                checked={isCheckedAll}
+                onChange={handleCheckAll}
+                label={`Select All`}
+              />
+              {/* <div>Select All</div> */}
+            </div>
+          )}
         </div>
-      );
-    }
-    return (
-      <div className="department-cards">
-        {allDepartments &&
-          allDepartments.map(({ departmentId, name, employees }) => (
-            <Card
-              className="department-card mb-4"
-              key={departmentId}
-              onClick={() => handleSelectDepartment(departmentId)}
-            >
-              <div className="upper">
-                <div className="d-flex justify-content-between">
-                  <img src={TeamPng} alt={name} width="50" />
-                  <div className="circle circle-grey">
-                    <FontAwesomeIcon
-                      icon={faLongArrowAltRight}
-                      color="#7367f0"
-                    />
-                  </div>
-                </div>
-                <div className="mt-2">{name}</div>
-              </div>
+        <div style={{ height: "25rem", overflow: "auto" }}>
+          <Table>
+            <TableHead>
+              <tr>
+                <th style={{ width: "30%" }}>Name</th>
+                <th style={{ width: "25%" }}>Disbursement</th>
+                <th style={{ width: "45%" }}>Address</th>
+              </tr>
+            </TableHead>
+            <TableBody>
+              {loadingTeammates && renderLoading()}
+              {!loadingTeammates && !people.length && renderNoPeopleFound()}
+              {!loadingTeammates &&
+                people.length > 0 &&
+                people.map(({ peopleId, data, ...rest }, idx) => {
+                  const {
+                    firstName,
+                    lastName,
+                    salaryAmount,
+                    salaryToken,
+                    address,
+                  } = getDecryptedDetails(
+                    data,
+                    encryptionKey,
+                    organisationType
+                  );
 
-              <div className="line" />
-              <div className="lower">
-                <div className="mb-3">Teammates : {employees}</div>
-              </div>
-            </Card>
-          ))}
+                  const teammateDetails = {
+                    firstName,
+                    lastName,
+                    salaryToken,
+                    salaryAmount,
+                    address,
+                    peopleId,
+                    ...rest,
+                  };
+                  return (
+                    <tr
+                      key={`${address}-${idx}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleChecked(teammateDetails, idx);
+                      }}
+                      style={{
+                        backgroundColor: checked[idx] ? "#f1f0fd" : "#fff",
+                      }}
+                    >
+                      <td className="d-flex align-items-center">
+                        <CheckBox
+                          type="checkbox"
+                          id={`checkbox${idx}`}
+                          name={`checkbox${idx}`}
+                          checked={checked[idx] || false}
+                        />
+                        <div>
+                          {firstName} {lastName}
+                        </div>
+                      </td>
+                      <td>
+                        <TokenImg token={salaryToken} />
+                        <span>
+                          {salaryAmount} {salaryToken}{" "}
+                        </span>
+                      </td>
+                      <td>{address}</td>
+                    </tr>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     );
   };
 
   const renderPaymentSummary = () => {
+    if (!people || !selectedToken || !selectedTokenDetails) return;
     const insufficientBalance =
       selectedTokenDetails.usd - totalAmountToPay > 0 ? false : true;
     return (
       <PaymentSummary>
         <div className="payment-info">
           <div>
-            <div className="payment-title">Total Selected</div>
-            <div className="payment-subtitle">{getSelectedCount()} people</div>
-          </div>
-          <div>
-            <div className="payment-title">Total Amount</div>
-            {!isNaN(totalAmountToPay) ? (
-              <div className="payment-subtitle">
-                US$ {formatNumber(totalAmountToPay)}
-              </div>
-            ) : (
-              0
-            )}
+            <div className="payment-title">
+              Current {selectedTokenDetails.name} Balance
+            </div>
+            <div className="payment-subtitle">{`US$ ${formatNumber(
+              selectedTokenDetails.usd
+            )}`}</div>
           </div>
           <div>
             <div className="payment-title">Balance after payment</div>
@@ -699,18 +685,29 @@ export default function Payments() {
                 : `Insufficient Balance`}
             </div>
           </div>
+          <div>
+            <div className="payment-title">Total Selected</div>
+            <div className="payment-subtitle">{getSelectedCount()} people</div>
+          </div>
+          <div>
+            <div className="payment-title">Total Amount</div>
+            <div className="payment-subtitle">
+              {!isNaN(totalAmountToPay)
+                ? `US$ ${formatNumber(totalAmountToPay)}`
+                : `0`}
+            </div>
+          </div>
         </div>
 
-        <div className="pay-button">
+        <div>
           <Button
             type="submit"
-            large
+            width="20rem"
             loading={loadingTx || addingTx}
             disabled={
               loadingTx ||
               insufficientBalance ||
               addingTx ||
-              !isMassPayoutAllowed ||
               loadingSafeDetails ||
               loadingTokens
             }
@@ -723,156 +720,69 @@ export default function Payments() {
   };
 
   return !metaTxHash && !submittedTx ? (
-    <div
-      style={{
-        transition: "all 0.25s linear",
-      }}
-      className="position-relative"
-    >
+    <MassPayoutContainer>
       <div>
-        <Info>
-          <div
-            style={{
-              maxWidth: "1200px",
-              transition: "all 0.25s linear",
-            }}
-            className="mx-auto"
-          >
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <div className="title">Payments</div>
-                <div className="subtitle">
-                  One click mass payouts to teams and people
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="outer-flex">
+            <div className="inner-flex">
+              <div className="mr-3">
+                <div className="title">Paying To</div>
+                <Select
+                  name="team"
+                  control={control}
+                  required={`Team is required`}
+                  width="18rem"
+                  options={teamsDropdown}
+                  isSearchable
+                  isLoading={loadingTeams}
+                  placeholder={`Select Team...`}
+                  defaultValue={null}
+                />
               </div>
-              {!selectedTokenDetails && (
-                <TokenBalance>
-                  <div className="d-flex align-items-center justify-content-center">
-                    <Loading color="primary" width="50px" height="50px" />
-                  </div>
-                </TokenBalance>
+              {selectedTeamId && (
+                <div className="mr-4">
+                  <div className="title">Paying From</div>
+                  <SelectToken
+                    name="token"
+                    control={control}
+                    required={`Token is required`}
+                    width="18rem"
+                    options={tokensDropdown}
+                    isSearchable
+                    isLoading={loadingTeams}
+                    placeholder={`Select Currency...`}
+                    isDisabled={!isSelectedTokenUSD}
+                    defaultValue={null}
+                    handleChange={(event) => {
+                      setSelectedTokenName(event.value);
+                    }}
+                  />
+                </div>
               )}
-              {selectedTokenDetails && (
-                <TokenBalance onClick={showTokenModal}>
-                  <div className="token-icon">
-                    <img
-                      src={selectedTokenDetails.icon}
-                      alt="token"
-                      width="45"
-                    />
-                  </div>
-                  <div className="balance-info">
-                    <div className="balance-text">
-                      Paying from {selectedTokenDetails.name}
-                    </div>
-                    <div className="balance-value">
-                      {formatNumber(selectedTokenDetails.balance)}{" "}
-                      {selectedTokenDetails.name} (US$
-                      {formatNumber(selectedTokenDetails.usd)})
-                    </div>
-                  </div>
-                  <div className="separator"></div>
-                  <div className="change-text">CHANGE</div>
-                </TokenBalance>
-              )}
-              <SelectTokenModal />
+            </div>
+            <div>
+              <div className="title">Description</div>
+              <Input
+                type="text"
+                name="description"
+                style={{ width: "30rem" }}
+                register={register}
+                placeholder="Enter description"
+              />
             </div>
           </div>
-        </Info>
-        <Container
-          style={{
-            maxWidth: "1200px",
-            transition: "all 0.25s linear",
-          }}
-        >
-          <form onSubmit={onSubmit}>
-            <style>{navStyles}</style>
-            <Card style={{ minHeight: "532px" }} className="pt-3">
-              <Nav tabs>
-                <NavItem className="px-3">
-                  <NavLink
-                    className={`${activeTab === TABS.PEOPLE ? "active" : ""}`}
-                    onClick={() => toggle(TABS.PEOPLE)}
-                  >
-                    People
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={`${
-                      activeTab === TABS.DEPARTMENT ? "active" : ""
-                    }`}
-                    onClick={() => toggle(TABS.DEPARTMENT)}
-                  >
-                    Teams
-                  </NavLink>
-                </NavItem>
-              </Nav>
-              <TabContent activeTab={activeTab}>
-                <TabPane tabId={TABS.PEOPLE}>
-                  {loadingTeammates && (
-                    <div
-                      className="d-flex align-items-center justify-content-center"
-                      style={{ height: "400px" }}
-                    >
-                      <Loading color="primary" width="50px" height="50px" />
-                    </div>
-                  )}
-                  {!loadingTeammates && teammates && renderPayTable()}
-                </TabPane>
-                <TabPane tabId={TABS.DEPARTMENT}>
-                  {(loadingDepartments || loadingTeammates) && (
-                    <div
-                      className="d-flex align-items-center justify-content-center"
-                      style={{ height: "400px" }}
-                    >
-                      <Loading color="primary" width="50px" height="50px" />
-                    </div>
-                  )}
 
-                  {!loadingTeammates &&
-                    !loadingDepartments &&
-                    (departmentStep === 0 ? (
-                      renderDepartments()
-                    ) : (
-                      <div>
-                        <Button iconOnly onClick={goBackToDepartments}>
-                          <div className="circle">
-                            <FontAwesomeIcon
-                              icon={faLongArrowAltLeft}
-                              color="#fff"
-                            />
-                          </div>
-                        </Button>
-                        {teammates && renderPayTable()}
-                      </div>
-                    ))}
-                </TabPane>
-              </TabContent>
+          {renderPayTable()}
 
-              {!isNoneChecked && renderPaymentSummary()}
-            </Card>
-            <div style={{ minHeight: "20vh" }}>
-              {!isNoneChecked && !isMassPayoutAllowed && (
-                <div className="text-danger mt-3">
-                  Please make sure all the teammate's token match your selected
-                  token
-                </div>
-              )}
-              {/* {!isNoneChecked && !isSetupComplete && (
-                <div className="mt-3">
-                  Please <Link to="/dashboard/invite">complete your setup</Link>{" "}
-                  before creating a transaction
-                </div>
-              )} */}
-              {!loadingTx && errorFromMetaTx && (
-                <div className="text-danger mt-3">{errorFromMetaTx}</div>
-              )}
-            </div>
-          </form>
-        </Container>
+          <div>
+            {!loadingTx && errorFromMetaTx && (
+              <div className="text-danger mt-3">{errorFromMetaTx}</div>
+            )}
+          </div>
+          {renderPaymentSummary()}
+        </form>
       </div>
-    </div>
+    </MassPayoutContainer>
   ) : (
     <TransactionSubmitted
       txHash={txHash ? txHash : metaTxHash}

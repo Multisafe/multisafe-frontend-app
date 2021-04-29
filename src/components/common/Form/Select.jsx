@@ -57,6 +57,8 @@ const SelectField = ({
   isSearchable,
   width,
   placeholder,
+  defaultValue,
+  handleChange,
   ...rest
 }) => {
   return (
@@ -64,6 +66,7 @@ const SelectField = ({
       name={name}
       control={control}
       rules={{ required }}
+      defaultValue={defaultValue}
       render={({ onChange, value }) => (
         <Select
           name={name}
@@ -76,7 +79,10 @@ const SelectField = ({
           options={options}
           styles={inputStyles}
           width={width}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            if (handleChange) handleChange(e);
+          }}
           value={value}
           placeholder={placeholder}
           {...rest}

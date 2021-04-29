@@ -61,30 +61,26 @@ function RecentTxCard() {
   const loadingTeammates = useSelector(makeSelectLoadingTeammates());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationType = useSelector(makeSelectOrganisationType());
-  const teammates = useSelector(makeSelectPeople());
+  const people = useSelector(makeSelectPeople());
 
   useEffect(() => {
     if (ownerSafeAddress) {
       dispatch(viewTransactions(ownerSafeAddress));
-      dispatch(getAllPeople(ownerSafeAddress));
+      if (!people) dispatch(getAllPeople(ownerSafeAddress));
     }
-  }, [dispatch, ownerSafeAddress]);
+  }, [dispatch, ownerSafeAddress, people]);
 
   useEffect(() => {
     if (!loadingTransactions && !loadingTeammates && loading) setLoading(false);
   }, [loadingTeammates, loadingTransactions, loading]);
 
   useEffect(() => {
-    if (
-      teammates &&
-      teammates.length > 0 &&
-      state !== STATES.TRANSACTION_EXECUTED
-    ) {
+    if (people && people.length > 0 && state !== STATES.TRANSACTION_EXECUTED) {
       setState(STATES.TEAMMATES_ADDED);
     } else if (state !== STATES.TRANSACTION_EXECUTED) {
       setState(STATES.EMPTY_STATE);
     }
-  }, [teammates, state]);
+  }, [people, state]);
 
   useEffect(() => {
     if (transactions && transactions.length > 0) {

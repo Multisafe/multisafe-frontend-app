@@ -125,10 +125,10 @@ const reducer = (state = initialState, action) =>
         draft.tokensDropdown = Object.keys(action.tokenDetails).map(
           (tokenName) => ({
             value: tokenName,
-            label: constructLabel(
-              tokenName,
-              action.tokenDetails[tokenName].logoURI
-            ),
+            label: constructLabel({
+              token: tokenName,
+              imgUrl: action.tokenDetails[tokenName].logoURI,
+            }),
           })
         );
         draft.icons = Object.keys(action.tokenDetails).reduce((map, key) => {

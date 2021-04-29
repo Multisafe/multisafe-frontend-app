@@ -6,7 +6,7 @@ import { cryptoUtils } from "parcel-sdk";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { AddTeamContainer } from "./styles";
-import { Input, TokenSelect, ErrorMessage } from "components/common/Form";
+import { Input, SelectToken, ErrorMessage } from "components/common/Form";
 import Button from "components/common/Button";
 import { Information } from "components/Register/styles";
 import {
@@ -151,7 +151,7 @@ function AddTeamModal(props) {
             Every person in the team will be paid using this currency
           </div>
           <div>
-            <TokenSelect
+            <SelectToken
               name="token"
               control={control}
               required={`Token is required`}

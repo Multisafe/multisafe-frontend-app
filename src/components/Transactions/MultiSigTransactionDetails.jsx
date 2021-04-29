@@ -58,6 +58,7 @@ import { Circle } from "components/Header/styles";
 import { Info } from "components/Dashboard-old/styles";
 import { Container, Detail, ConfirmSection } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
+import TokenImg from "components/common/TokenImg";
 
 const { TableBody, TableHead, TableRow } = Table;
 
@@ -595,8 +596,8 @@ export default function MultiSigTransactions() {
       transactionHash: txDetailsHash,
       safeAddress,
       to,
-      // tokenValue,
-      // tokenCurrency,
+      tokenValue,
+      tokenCurrency,
       fiatValue,
       // fiatCurrency,
       transactionFees,
@@ -605,6 +606,8 @@ export default function MultiSigTransactions() {
       transactionMode,
       // createdBy,
     } = txDetails;
+    console.log({ txDetails });
+
     const paidTeammates = getDecryptedDetails(to);
     const isMassPayout = transactionMode === TRANSACTION_MODES.MASS_PAYOUT;
     const isQuickTransfer =
@@ -714,6 +717,7 @@ export default function MultiSigTransactions() {
                     salaryToken,
                     allowanceAmount,
                     allowanceToken,
+                    usd,
                   }) => {
                     if (isQuickTransfer) {
                       return (
@@ -728,15 +732,11 @@ export default function MultiSigTransactions() {
                             <Detail>
                               <div className="title">Disbursement</div>
                               <div className="desc">
-                                <img
-                                  src={getDefaultIconIfPossible(
-                                    salaryToken,
-                                    icons
-                                  )}
-                                  alt={salaryToken}
-                                  width="16"
-                                />{" "}
-                                {salaryAmount} {salaryToken}
+                                <TokenImg token={salaryToken} />
+
+                                {salaryToken === "USD"
+                                  ? `${usd} USD`
+                                  : `${salaryAmount} ${salaryToken}`}
                               </div>
                             </Detail>
                           </div>
@@ -800,7 +800,9 @@ export default function MultiSigTransactions() {
                             alt={salaryToken}
                             width="16"
                           />{" "}
-                          {salaryAmount} {salaryToken}
+                          {salaryToken === "USD"
+                            ? `${usd} USD`
+                            : `${salaryAmount} ${salaryToken}`}
                         </div>
                         <div>{minifyAddress(address)}</div>
                       </TableRow>
@@ -866,7 +868,9 @@ export default function MultiSigTransactions() {
                   </Detail>
                   <Detail style={{ width: "300px" }}>
                     <div className="title">Total Amount</div>
-                    <div className="desc">US ${fiatValue}</div>
+                    <div className="desc">
+                      US ${fiatValue} ({tokenValue} {tokenCurrency})
+                    </div>
                   </Detail>
                   <Detail style={{ width: "300px" }}>
                     <div className="title">Transaction Fees</div>

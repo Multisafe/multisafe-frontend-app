@@ -13,14 +13,24 @@ const modalStyles = `
     background: none;
     margin: auto;
     width: fit-content;
+    width: -moz-fit-content;
   }
 
   .modal-dialog {
     max-width: 100% !important;
   }
 
-  .modal-open .modal {
-    backdrop-filter: blur(4rem);
+  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    .modal-open .modal {
+      -webkit-backdrop-filter: blur(4rem);
+      backdrop-filter: blur(4rem);
+    }
+  }
+
+  @supports not ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .modal-open .modal {
+      background-color: rgba(255, 255, 255, .875);
+    }
   }
 
   .modal-title {

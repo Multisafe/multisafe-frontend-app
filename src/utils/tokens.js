@@ -2,11 +2,11 @@ import { tokens } from "constants/index";
 import DAIIcon from "assets/icons/tokens/DAI-icon.png";
 import USDCIcon from "assets/icons/tokens/USDC-icon.png";
 
-export const constructLabel = (tokenName, imgUrl) => {
+export const constructLabel = ({ token, imgUrl, component: Component }) => {
   return (
     <div className="d-flex align-items-center">
-      <img src={imgUrl} alt={tokenName} width="16" />
-      <div className="ml-2 mt-1">{tokenName}</div>
+      <img src={imgUrl} alt={token} width="16" />
+      <div className="ml-2 mt-1">{Component ? Component : token}</div>
     </div>
   );
 };
@@ -14,10 +14,10 @@ export const constructLabel = (tokenName, imgUrl) => {
 export const defaultTokenOptions = [
   {
     value: tokens.DAI,
-    label: constructLabel(tokens.DAI, DAIIcon),
+    label: constructLabel({ token: tokens.DAI, imgUrl: DAIIcon }),
   },
   {
     value: "USDC",
-    label: constructLabel(tokens.USDC, USDCIcon),
+    label: constructLabel({ token: tokens.USDC, imgUrl: USDCIcon }),
   },
 ];

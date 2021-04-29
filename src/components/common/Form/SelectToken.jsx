@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Select, { createFilter } from "react-select";
 import { Controller } from "react-hook-form";
 import { FixedSizeList as List } from "react-window";
@@ -83,7 +82,7 @@ function MenuList(props) {
   );
 }
 
-const TokenSelectField = ({
+const SelectTokenField = ({
   name,
   control,
   required,
@@ -94,6 +93,8 @@ const TokenSelectField = ({
   isSearchable,
   width,
   placeholder,
+  defaultValue,
+  handleChange,
   ...rest
 }) => {
   return (
@@ -101,6 +102,7 @@ const TokenSelectField = ({
       name={name}
       control={control}
       rules={{ required }}
+      defaultValue={defaultValue}
       render={({ onChange, value }) => (
         <Select
           name={name}
@@ -115,7 +117,12 @@ const TokenSelectField = ({
           width={width}
           filterOption={createFilter({ ignoreAccents: false })}
           components={{ MenuList }}
-          onChange={onChange}
+          onChange={(e) => {
+            onChange(e);
+            if (handleChange) {
+              handleChange(e);
+            }
+          }}
           value={value}
           placeholder={placeholder}
           {...rest}
@@ -125,14 +132,4 @@ const TokenSelectField = ({
   );
 };
 
-TokenSelectField.propTypes = {
-  name: PropTypes.string.isRequired,
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })
-  ),
-};
-
-export default TokenSelectField;
+export default SelectTokenField;

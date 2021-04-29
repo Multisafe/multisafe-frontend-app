@@ -11,7 +11,7 @@ import {
   Input,
   Select,
   ErrorMessage,
-  TokenSelect,
+  SelectToken,
 } from "components/common/Form";
 import Button from "components/common/Button";
 import {
@@ -61,7 +61,7 @@ function AddSinglePeopleModal(props) {
     mode: "onChange",
     defaultValues: defaultValues ? defaultValues : {},
   });
-  const teamChanged = watch("team");
+  const hasTeamChanged = watch("team");
 
   const [teamsDropdown, setTeamsDropdown] = useState([]);
 
@@ -89,17 +89,20 @@ function AddSinglePeopleModal(props) {
 
   useEffect(() => {
     if (
-      teamChanged &&
-      teamChanged.value &&
-      teamIdToDetailsMap[teamChanged.value]
+      hasTeamChanged &&
+      hasTeamChanged.value &&
+      teamIdToDetailsMap[hasTeamChanged.value]
     ) {
-      const { tokenInfo } = teamIdToDetailsMap[teamChanged.value];
+      const { tokenInfo } = teamIdToDetailsMap[hasTeamChanged.value];
       setValue("token", {
         value: tokenInfo.symbol,
-        label: constructLabel(tokenInfo.symbol, tokenInfo.logoURI),
+        label: constructLabel({
+          token: tokenInfo.symbol,
+          imgUrl: tokenInfo.logoURI,
+        }),
       });
     }
-  }, [teamChanged, setValue, teamIdToDetailsMap]);
+  }, [hasTeamChanged, setValue, teamIdToDetailsMap]);
 
   useEffect(() => {
     let dropdownList = [];
@@ -226,7 +229,7 @@ function AddSinglePeopleModal(props) {
                 placeholder={`Select Team...`}
               />
             </div>
-            {teamChanged && !teamChanged.value && (
+            {hasTeamChanged && !hasTeamChanged.value && (
               <div>
                 <Input
                   type="text"
@@ -258,7 +261,7 @@ function AddSinglePeopleModal(props) {
               <ErrorMessage name="amount" errors={errors} />
             </div>
             <div>
-              <TokenSelect
+              <SelectToken
                 name="token"
                 control={control}
                 required={`Token is required`}
@@ -267,7 +270,7 @@ function AddSinglePeopleModal(props) {
                 isSearchable
                 isLoading={loadingTokenList}
                 placeholder={`Select Currency...`}
-                isDisabled={teamChanged && teamChanged.value}
+                isDisabled={hasTeamChanged && hasTeamChanged.value}
               />
             </div>
           </div>

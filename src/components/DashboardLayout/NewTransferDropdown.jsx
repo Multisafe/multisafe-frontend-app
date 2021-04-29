@@ -1,32 +1,38 @@
 import React from "react";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { show } from "redux-modal";
 
 import { useDropdown } from "hooks";
 import Img from "components/common/Img";
 import MassPayoutIcon from "assets/icons/navbar/mass-payout.svg";
 import PaySomeoneIcon from "assets/icons/navbar/pay-someone.svg";
 import AddFundsIcon from "assets/icons/navbar/add-funds.svg";
-import { routeTemplates } from "constants/routes/templates";
+import MassPayoutModal, {
+  MODAL_NAME as MASS_PAYOUT_MODAL,
+} from "components/Payments/MassPayoutModal";
 
 import { NewTransfer } from "./styles";
 
 export default function NewTransferDropdown() {
   const { open, toggleDropdown } = useDropdown();
 
+  const dispatch = useDispatch();
+
+  const showMassPayoutModal = () => {
+    dispatch(show(MASS_PAYOUT_MODAL));
+  };
+
   return (
     <NewTransfer onClick={toggleDropdown}>
       <div className="text">New Transfer</div>
       <FontAwesomeIcon icon={faAngleDown} className="ml-2" color="#fff" />
       <div className={`transfer-dropdown ${open && "show"}`}>
-        <Link
-          to={routeTemplates.dashboard.quickTransfer}
-          className="transfer-option"
-        >
+        <div className="transfer-option" onClick={showMassPayoutModal}>
           <Img src={MassPayoutIcon} alt="mass-payout" className="icon" />
           <div className="name">Mass Payout</div>
-        </Link>
+        </div>
         <div className="transfer-option">
           <Img src={PaySomeoneIcon} alt="pay-someone" className="icon" />
           <div className="name">Pay Someone</div>
@@ -36,6 +42,8 @@ export default function NewTransferDropdown() {
           <div className="name">Add Funds</div>
         </div>
       </div>
+
+      <MassPayoutModal />
     </NewTransfer>
   );
 }
