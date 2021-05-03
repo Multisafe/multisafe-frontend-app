@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Dashboard from "components/Dashboard";
 import People from "components/People";
-import EditTeammate from "components/People/EditTeammate";
 import Payments from "components/Payments";
 import Transactions from "components/Transactions";
 import AccountSummary from "components/AccountSummary";
@@ -58,11 +57,6 @@ const DashboardPage = () => {
             exact
             path={routeTemplates.dashboard.people.root}
             component={People}
-          />
-          <Route
-            exact
-            path={routeTemplates.dashboard.people.edit}
-            component={EditTeammate}
           />
           <Route
             exact

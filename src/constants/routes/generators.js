@@ -10,7 +10,7 @@ export function generatePath(template, params = {}) {
   return result;
 }
 
-module.exports = {
+export const routeGenerators = {
   dashboard: {
     people: {
       viewByDepartment: ({ departmentId }) =>
@@ -18,5 +18,9 @@ module.exports = {
           departmentId,
         }),
     },
+    transactionById: ({ transactionId }) =>
+      generatePath(routeTemplates.dashboard.transactionById, {
+        transactionId,
+      }),
   },
 };

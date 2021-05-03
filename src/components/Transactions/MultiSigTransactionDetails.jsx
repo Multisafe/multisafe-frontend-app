@@ -44,11 +44,6 @@ import {
 import Loading from "components/common/Loading";
 import { minifyAddress, TransactionUrl } from "components/common/Web3Utils";
 import StatusText from "./StatusText";
-import { getDefaultIconIfPossible } from "constants/index";
-import { getTokens } from "store/tokens/actions";
-import { makeSelectTokenIcons } from "store/tokens/selectors";
-import tokensSaga from "store/tokens/saga";
-import tokensReducer from "store/tokens/reducer";
 import { Stepper, StepCircle } from "components/common/Stepper";
 import addresses from "constants/addresses";
 import TransactionSubmitted from "components/Payments/TransactionSubmitted";
@@ -59,13 +54,13 @@ import { Info } from "components/Dashboard-old/styles";
 import { Container, Detail, ConfirmSection } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
+import { getDecryptedDetails } from "utils/encryption";
 
 const { TableBody, TableHead, TableRow } = Table;
 
 const multisigKey = "multisig";
 const safeKey = "safe";
 const metaTxKey = "metatx";
-const tokensKey = "tokens";
 
 const { MULTISEND_ADDRESS } = addresses;
 
@@ -93,13 +88,11 @@ export default function MultiSigTransactions() {
   useInjectReducer({ key: multisigKey, reducer: multisigReducer });
   useInjectReducer({ key: safeKey, reducer: safeReducer });
   useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
-  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
 
   // Sagas
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
   useInjectSaga({ key: safeKey, saga: safeSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
-  useInjectSaga({ key: tokensKey, saga: tokensSaga });
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -117,7 +110,6 @@ export default function MultiSigTransactions() {
     makeSelectMultisigTransactionDetails()
   );
   const executionAllowed = useSelector(makeSelectMultisigExecutionAllowed());
-  const icons = useSelector(makeSelectTokenIcons());
   const multisigTransactionId = useSelector(makeSelectMultisigTransactionId());
   const organisationType = useSelector(makeSelectOrganisationType());
 
@@ -126,12 +118,6 @@ export default function MultiSigTransactions() {
       dispatch(getMetaTxEnabled(ownerSafeAddress));
     }
   }, [dispatch, ownerSafeAddress]);
-
-  useEffect(() => {
-    if (ownerSafeAddress && !icons) {
-      dispatch(getTokens(ownerSafeAddress));
-    }
-  }, [ownerSafeAddress, dispatch, icons]);
 
   useEffect(() => {
     const transactionId = params && params.transactionId;
@@ -201,17 +187,6 @@ export default function MultiSigTransactions() {
 
   const goBack = () => {
     history.push("/dashboard/transactions");
-  };
-
-  const getDecryptedDetails = (data) => {
-    if (!encryptionKey) return "";
-    return JSON.parse(
-      cryptoUtils.decryptDataUsingEncryptionKey(
-        data,
-        encryptionKey,
-        organisationType
-      )
-    );
   };
 
   const renderFinalStatus = (confirmedCount, rejectedCount, isExecuted) => {
@@ -577,7 +552,7 @@ export default function MultiSigTransactions() {
         </div>
       );
 
-    if (!transactionDetails) return null;
+    if (!transactionDetails || !encryptionKey) return null;
 
     const {
       // transactionHash,
@@ -606,9 +581,12 @@ export default function MultiSigTransactions() {
       transactionMode,
       // createdBy,
     } = txDetails;
-    console.log({ txDetails });
 
-    const paidTeammates = getDecryptedDetails(to);
+    const paidTeammates = getDecryptedDetails(
+      to,
+      encryptionKey,
+      organisationType
+    );
     const isMassPayout = transactionMode === TRANSACTION_MODES.MASS_PAYOUT;
     const isQuickTransfer =
       transactionMode === TRANSACTION_MODES.QUICK_TRANSFER;
@@ -765,14 +743,7 @@ export default function MultiSigTransactions() {
                             <Detail>
                               <div className="title">Allowance</div>
                               <div className="desc">
-                                <img
-                                  src={getDefaultIconIfPossible(
-                                    allowanceToken,
-                                    icons
-                                  )}
-                                  alt={allowanceToken}
-                                  width="16"
-                                />{" "}
+                                <TokenImg token={allowanceToken} />
                                 {allowanceAmount} {allowanceToken}
                               </div>
                             </Detail>
@@ -795,11 +766,7 @@ export default function MultiSigTransactions() {
                           {firstName} {lastName}
                         </div>
                         <div>
-                          <img
-                            src={getDefaultIconIfPossible(salaryToken, icons)}
-                            alt={salaryToken}
-                            width="16"
-                          />{" "}
+                          <TokenImg token={salaryToken} />
                           {salaryToken === "USD"
                             ? `${usd} USD`
                             : `${salaryAmount} ${salaryToken}`}

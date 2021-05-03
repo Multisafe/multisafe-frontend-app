@@ -12,6 +12,7 @@ import AddFundsIcon from "assets/icons/navbar/add-funds.svg";
 import MassPayoutModal, {
   MODAL_NAME as MASS_PAYOUT_MODAL,
 } from "components/Payments/MassPayoutModal";
+import TransactionSubmittedModal from "components/Payments/TransactionSubmittedModal";
 
 import { NewTransfer } from "./styles";
 
@@ -44,6 +45,7 @@ export default function NewTransferDropdown() {
       </div>
 
       <MassPayoutModal />
+      <TransactionSubmittedModal />
     </NewTransfer>
   );
 }

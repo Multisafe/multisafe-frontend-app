@@ -8,3 +8,4 @@ export { default as Title } from "./Title";
 export { default as TokenCard } from "./TokenCard";
 
 export { default as MassPayoutContainer } from "./MassPayoutContainer";
+export { default as TxSubmittedContainer } from "./TxSubmittedContainer";

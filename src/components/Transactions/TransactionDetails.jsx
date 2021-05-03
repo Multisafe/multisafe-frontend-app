@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink, faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
-import { cryptoUtils } from "parcel-sdk";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 
@@ -26,31 +25,25 @@ import {
 import Loading from "components/common/Loading";
 import { minifyAddress, TransactionUrl } from "components/common/Web3Utils";
 import StatusText from "./StatusText";
-import { getDefaultIconIfPossible } from "constants/index";
-import { getTokens } from "store/tokens/actions";
-import { makeSelectTokenIcons } from "store/tokens/selectors";
-import tokensSaga from "store/tokens/saga";
-import tokensReducer from "store/tokens/reducer";
 import { Table, ActionItem } from "../People/styles";
 import { Circle } from "components/Header/styles";
 import { Info } from "components/Dashboard-old/styles";
 import { Container, Detail } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
+import TokenImg from "components/common/TokenImg";
+import { getDecryptedDetails } from "utils/encryption";
 
 const { TableBody, TableHead, TableRow } = Table;
 
 const transactionsKey = "transactions";
-const tokensKey = "tokens";
 
 export default function TransactionDetails() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
-  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
 
   // Sagas
   useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
-  useInjectSaga({ key: tokensKey, saga: tokensSaga });
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -59,7 +52,6 @@ export default function TransactionDetails() {
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const transactionDetails = useSelector(makeSelectTransactionDetails());
-  const icons = useSelector(makeSelectTokenIcons());
   const organisationType = useSelector(makeSelectOrganisationType());
 
   useEffect(() => {
@@ -69,25 +61,8 @@ export default function TransactionDetails() {
     }
   }, [dispatch, ownerSafeAddress, params]);
 
-  useEffect(() => {
-    if (ownerSafeAddress && !icons) {
-      dispatch(getTokens(ownerSafeAddress));
-    }
-  }, [ownerSafeAddress, dispatch, icons]);
-
   const goBack = () => {
     history.push("/dashboard/transactions");
-  };
-
-  const getDecryptedDetails = (data) => {
-    if (!encryptionKey) return "";
-    return JSON.parse(
-      cryptoUtils.decryptDataUsingEncryptionKey(
-        data,
-        encryptionKey,
-        organisationType
-      )
-    );
   };
 
   const renderTransactionDetails = () => {
@@ -101,20 +76,26 @@ export default function TransactionDetails() {
         </div>
       );
 
-    if (!transactionDetails) return null;
+    if (!transactionDetails || !encryptionKey) return null;
 
     const {
       transactionId,
       transactionHash,
       safeAddress,
       to,
+      tokenValue,
+      tokenCurrency,
       fiatValue,
       transactionFees,
       status,
       createdOn,
       transactionMode,
     } = transactionDetails;
-    const paidTeammates = getDecryptedDetails(to);
+    const paidTeammates = getDecryptedDetails(
+      to,
+      encryptionKey,
+      organisationType
+    );
     const isMassPayout = transactionMode === TRANSACTION_MODES.MASS_PAYOUT;
     const isQuickTransfer =
       transactionMode === TRANSACTION_MODES.QUICK_TRANSFER;
@@ -200,6 +181,7 @@ export default function TransactionDetails() {
                     salaryToken,
                     allowanceAmount,
                     allowanceToken,
+                    usd,
                   }) => {
                     if (isQuickTransfer) {
                       return (
@@ -214,15 +196,11 @@ export default function TransactionDetails() {
                             <Detail>
                               <div className="title">Disbursement</div>
                               <div className="desc">
-                                <img
-                                  src={getDefaultIconIfPossible(
-                                    salaryToken,
-                                    icons
-                                  )}
-                                  alt={salaryToken}
-                                  width="16"
-                                />{" "}
-                                {salaryAmount} {salaryToken}
+                                <TokenImg token={salaryToken} />
+
+                                {salaryToken === "USD"
+                                  ? `${usd} USD`
+                                  : `${salaryAmount} ${salaryToken}`}
                               </div>
                             </Detail>
                           </div>
@@ -251,14 +229,7 @@ export default function TransactionDetails() {
                             <Detail>
                               <div className="title">Allowance</div>
                               <div className="desc">
-                                <img
-                                  src={getDefaultIconIfPossible(
-                                    allowanceToken,
-                                    icons
-                                  )}
-                                  alt={allowanceToken}
-                                  width="16"
-                                />{" "}
+                                <TokenImg token={allowanceToken} />
                                 {allowanceAmount} {allowanceToken}
                               </div>
                             </Detail>
@@ -281,12 +252,10 @@ export default function TransactionDetails() {
                           {firstName} {lastName}
                         </div>
                         <div>
-                          <img
-                            src={getDefaultIconIfPossible(salaryToken, icons)}
-                            alt={salaryToken}
-                            width="16"
-                          />{" "}
-                          {salaryAmount} {salaryToken}
+                          <TokenImg token={salaryToken} />
+                          {salaryToken === "USD"
+                            ? `${usd} USD`
+                            : `${salaryAmount} ${salaryToken}`}
                         </div>
                         <div>{minifyAddress(address)}</div>
                       </TableRow>
@@ -347,7 +316,9 @@ export default function TransactionDetails() {
                 </Detail>
                 <Detail style={{ width: "300px" }}>
                   <div className="title">Total Amount</div>
-                  <div className="desc">US ${fiatValue}</div>
+                  <div className="desc">
+                    US ${fiatValue} ({tokenValue} {tokenCurrency})
+                  </div>
                 </Detail>
                 <Detail style={{ width: "300px" }}>
                   <div className="title">Transaction Fees</div>

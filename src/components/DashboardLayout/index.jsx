@@ -9,7 +9,7 @@ import { useInjectSaga } from "utils/injectSaga";
 import layoutReducer from "store/layout/reducer";
 import NotificationSidebar from "./NotificationSidebar";
 import PeopleDetailsSidebar from "components/People/PeopleDetailsSidebar";
-import { getTokenList } from "store/tokens/actions";
+import { getTokenList, getTokens } from "store/tokens/actions";
 import tokensReducer from "store/tokens/reducer";
 import tokensSaga from "store/tokens/saga";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
@@ -30,7 +30,10 @@ export default function DashboardLayout({ children }) {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   useEffect(() => {
-    if (safeAddress) dispatch(getTokenList(safeAddress));
+    if (safeAddress) {
+      dispatch(getTokenList(safeAddress));
+      dispatch(getTokens(safeAddress));
+    }
   }, [dispatch, safeAddress]);
 
   const openSidebar = () => {

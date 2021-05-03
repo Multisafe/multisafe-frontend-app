@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
-// import { show } from "redux-modal";
+import { show } from "redux-modal";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
@@ -50,14 +50,11 @@ import metaTxReducer from "store/metatx/reducer";
 import metaTxSaga from "store/metatx/saga";
 import { getMetaTxEnabled } from "store/metatx/actions";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
-import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
   makeSelectPrices,
 } from "store/tokens/selectors";
-import tokensSaga from "store/tokens/saga";
-import tokensReducer from "store/tokens/reducer";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
@@ -85,6 +82,7 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "./TransactionSubmittedModal";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -92,15 +90,15 @@ const viewTeamsKey = "viewTeams";
 const transactionsKey = "transactions";
 const safeKey = "safe";
 const multisigKey = "multisig";
-const tokensKey = "tokens";
 const invitationKey = "invitation";
 const metaTxKey = "metatx";
 
-export default function Payments() {
+export default function Payments(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const { register, handleSubmit, control, setValue, watch } = useForm({
     mode: "onChange",
   });
+  const { handleHide } = props;
 
   const selectedTeamId = watch("team") && watch("team").value;
   const selectedToken = watch("token") && watch("token").value;
@@ -137,7 +135,6 @@ export default function Payments() {
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
   useInjectReducer({ key: safeKey, reducer: safeReducer });
   useInjectReducer({ key: multisigKey, reducer: multisigReducer });
-  useInjectReducer({ key: tokensKey, reducer: tokensReducer });
   useInjectReducer({ key: invitationKey, reducer: invitationReducer });
   useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
 
@@ -147,7 +144,6 @@ export default function Payments() {
   useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
   useInjectSaga({ key: safeKey, saga: safeSaga });
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
-  useInjectSaga({ key: tokensKey, saga: tokensSaga });
   useInjectSaga({ key: invitationKey, saga: invitationSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
@@ -191,12 +187,6 @@ export default function Payments() {
       dispatch(getMetaTxEnabled(ownerSafeAddress));
     }
   }, [ownerSafeAddress, dispatch]);
-
-  useEffect(() => {
-    if (ownerSafeAddress && (!tokenList || !tokenList.length)) {
-      dispatch(getTokens(ownerSafeAddress));
-    }
-  }, [ownerSafeAddress, dispatch, tokenList]);
 
   useEffect(() => {
     let dropdownList = [];
@@ -454,6 +444,31 @@ export default function Payments() {
     organisationType,
   ]);
 
+  const selectedCount = useMemo(() => {
+    return checked.filter(Boolean).length;
+  }, [checked]);
+
+  useEffect(() => {
+    if ((metaTxHash || submittedTx) && selectedCount > 0) {
+      handleHide();
+      dispatch(
+        show(TX_SUBMITTED_MODAL, {
+          txHash: txHash ? txHash : metaTxHash,
+          selectedCount,
+          transactionId: singleOwnerTransactionId,
+        })
+      );
+    }
+  }, [
+    dispatch,
+    selectedCount,
+    metaTxHash,
+    singleOwnerTransactionId,
+    submittedTx,
+    txHash,
+    handleHide,
+  ]); // eslint-disa
+
   const handleMassPayout = async (selectedTeammates) => {
     await massPayout(
       selectedTeammates,
@@ -531,10 +546,6 @@ export default function Payments() {
         selectedRows.filter((row) => row.peopleId !== teammateDetails.peopleId)
       );
     }
-  };
-
-  const getSelectedCount = () => {
-    return checked.filter(Boolean).length;
   };
 
   const renderNoPeopleFound = () => (
@@ -691,7 +702,7 @@ export default function Payments() {
           </div>
           <div>
             <div className="payment-title">Total Selected</div>
-            <div className="payment-subtitle">{getSelectedCount()} people</div>
+            <div className="payment-subtitle">{selectedCount} people</div>
           </div>
           <div>
             <div className="payment-title">Total Amount</div>
@@ -713,7 +724,8 @@ export default function Payments() {
               insufficientBalance ||
               addingTx ||
               loadingSafeDetails ||
-              loadingTokens
+              loadingTokens ||
+              !selectedCount
             }
           >
             {threshold > 1 ? `Create Transaction` : `Pay Now`}
@@ -786,7 +798,7 @@ export default function Payments() {
   ) : (
     <TransactionSubmitted
       txHash={txHash ? txHash : metaTxHash}
-      selectedCount={getSelectedCount()}
+      selectedCount={selectedCount}
       transactionId={singleOwnerTransactionId}
     />
   );

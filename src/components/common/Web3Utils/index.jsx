@@ -115,7 +115,7 @@ export const getEtherscanLink = ({ chainId, type = "tx", hash, address }) => {
   return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/`;
 };
 
-export const TransactionUrl = ({ hash, children }) => {
+export const TransactionUrl = ({ hash, children, ...rest }) => {
   const { chainId } = useActiveWeb3React();
 
   return (
@@ -123,6 +123,7 @@ export const TransactionUrl = ({ hash, children }) => {
       href={getEtherscanLink({ chainId, hash })}
       rel="noopener noreferrer"
       target="_blank"
+      {...rest}
     >
       {children || `View Transaction`}
     </a>
