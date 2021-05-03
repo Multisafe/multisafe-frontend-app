@@ -18,8 +18,6 @@ export default function Assets() {
   const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
 
-  // const [totalBalance, setTotalBalance] = useState("0.00");
-
   // Selectors
   const loading = useSelector(makeSelectLoading());
   const tokenList = useSelector(makeSelectTokenList());
