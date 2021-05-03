@@ -6,7 +6,7 @@ import Dashboard from "components/Dashboard";
 import People from "components/People";
 import Payments from "components/Payments";
 import Transactions from "components/Transactions";
-import AccountSummary from "components/AccountSummary";
+import Assets from "components/Assets";
 import MultiSigTransactions from "components/Transactions/MultiSigTransactions";
 import MultiSigTransactionDetails from "components/Transactions/MultiSigTransactionDetails";
 import TransactionDetails from "components/Transactions/TransactionDetails";
@@ -82,8 +82,8 @@ const DashboardPage = () => {
           />
           <Route
             exact
-            path={routeTemplates.dashboard.account}
-            component={AccountSummary}
+            path={routeTemplates.dashboard.assets}
+            component={Assets}
           />
           <Route
             exact

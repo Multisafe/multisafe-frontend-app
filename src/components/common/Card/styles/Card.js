@@ -7,4 +7,8 @@ export default styled.div`
   box-shadow: 1rem 1rem 2rem 0 rgba(178, 178, 178, 0.1);
   border: solid 0.1rem #dddcdc;
   background-color: #ffffff;
+
+  @media (max-width: 978px) {
+    padding: 2.2rem 2rem;
+  }
 `;

@@ -254,7 +254,7 @@ export default function People() {
     <TableInfo
       style={{
         textAlign: "center",
-        height: "40rem",
+        height: "30rem",
       }}
     >
       <td colSpan={4}>

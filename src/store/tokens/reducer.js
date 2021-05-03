@@ -136,7 +136,6 @@ const reducer = (state = initialState, action) =>
           return map;
         }, {});
         draft.tokenDetails = action.tokenDetails;
-        draft.success = true;
         break;
 
       case GET_TOKEN_LIST_ERROR:

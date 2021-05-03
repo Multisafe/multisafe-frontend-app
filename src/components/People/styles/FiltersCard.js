@@ -5,7 +5,7 @@ export default styled(Card)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 10rem;
+  min-height: 10rem;
 
   .title {
     margin-bottom: 1rem;
