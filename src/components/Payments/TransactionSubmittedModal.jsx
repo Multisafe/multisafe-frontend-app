@@ -38,7 +38,7 @@ function TransactionSubmittedModal(props) {
               : "You can track the status of your transction in the transactions section."}
           </div>
 
-          <div className="text-center">
+          <div className="text-center mt-4">
             <TransactionUrl hash={txHash} className="view-tx" />
           </div>
 

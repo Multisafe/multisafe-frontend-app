@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 import { CurrencyInput } from "./styles";
 import Button from "components/common/Button";
+import SwapIcon from "assets/icons/dashboard/swap-icon.svg";
+import Img from "../Img";
+import { Input } from "./styles";
 
 const MultiCurrencyInputField = ({
   name,
@@ -18,26 +19,29 @@ const MultiCurrencyInputField = ({
   value,
   tokenName,
   selectedTokenDetails,
+  setValue,
   ...rest
 }) => {
   const [conversionValue, setConversionValue] = useState("");
-  const [toggleFlex, setToggleFlex] = useState(false);
   const [currentTokenName, setCurrentTokenName] = useState();
+  const [swapped, setSwapped] = useState(false);
 
-  const handleUsdValueChange = (e) => {
-    setConversionValue(e.target.value);
-    const tokenValue = e.target.value
-      ? parseFloat(e.target.value / conversionRate).toFixed(4)
+  const handleUsdValueChange = (value) => {
+    setConversionValue(value);
+    const tokenValue = value
+      ? parseFloat(value / conversionRate).toFixed(4)
       : "";
     onChange(tokenValue);
   };
 
-  const handleTokenValueChange = (e) => {
-    const newConversionValue = e.target.value
-      ? parseFloat(e.target.value * conversionRate).toFixed(4)
+  const handleTokenValueChange = (value) => {
+    setSwapped(false);
+
+    const newConversionValue = value
+      ? parseFloat(value * conversionRate).toFixed(4)
       : "";
     setConversionValue(newConversionValue);
-    onChange(e.target.value);
+    onChange(value);
   };
 
   useEffect(() => {
@@ -58,54 +62,64 @@ const MultiCurrencyInputField = ({
     else setConversionValue("");
   }, [tokenName, currentTokenName]);
 
-  const handleToggleFlex = () => {
-    setToggleFlex((flex) => !flex);
+  const handleToggleSwap = () => {
+    const swap = !swapped;
+
+    if (swap) {
+      // setValue(name, conversionValue);
+      onChange(conversionValue);
+      const newConversionValue = conversionValue
+        ? parseFloat(conversionValue * conversionRate).toFixed(4)
+        : "";
+      setConversionValue(newConversionValue);
+    } else {
+      setConversionValue(value);
+
+      const tokenValue = value
+        ? parseFloat(value / conversionRate).toFixed(4)
+        : "";
+      onChange(tokenValue);
+    }
+    setSwapped(swap);
   };
 
   return (
-    <CurrencyInput className="position-relative">
+    <CurrencyInput>
       <div className="d-flex align-items-center">
-        <div
-          className="d-flex w-100"
-          style={{
-            flexDirection: toggleFlex ? "column-reverse" : "column",
-          }}
-        >
-          <div className="tokenAmount">
-            <span>{tokenName}</span>
-            <input
-              name={name}
-              id={id || name}
-              // ref={register({ required, pattern })}
-              type={type}
-              value={value}
-              onChange={handleTokenValueChange}
-              step=".0001"
-              {...rest}
-            />
-          </div>
-          <div className="usdAmount">
-            <span>US$</span>
-            <input
-              name={"convertion"}
-              type={"number"}
-              placeholder="0.00"
-              value={conversionValue}
-              onChange={handleUsdValueChange}
-            />
-          </div>
+        <div className="position-relative">
+          <Input
+            name={name}
+            id={id || name}
+            type={type}
+            value={value}
+            onChange={(e) => handleTokenValueChange(e.target.value)}
+            step=".0001"
+            style={{ paddingLeft: "4.4rem" }}
+            {...rest}
+          />
+          <label htmlFor={id || name} className="static-text">
+            {tokenName}
+          </label>
         </div>
         <div>
           <div className="convert">
-            <Button
-              iconOnly
-              type="button"
-              onClick={handleToggleFlex}
-              style={{ color: "#373737" }}
-            >
-              <FontAwesomeIcon icon={faExchangeAlt} color="#373737" />
+            <Button iconOnly type="button" onClick={handleToggleSwap}>
+              <Img src={SwapIcon} alt="swap" />
             </Button>
           </div>
+        </div>
+        <div className="position-relative">
+          <Input
+            name={"convertion"}
+            type={"number"}
+            placeholder="0.00"
+            value={conversionValue}
+            onChange={(e) => handleUsdValueChange(e.target.value)}
+            style={{ paddingLeft: "3.3rem" }}
+          />
+          <label htmlFor={id || name} className="static-text">
+            US$
+          </label>
         </div>
       </div>
     </CurrencyInput>

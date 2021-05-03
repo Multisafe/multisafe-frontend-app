@@ -1,24 +1,17 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
-import TransactionSubmitted from "components/Payments/TransactionSubmitted";
-import { Info } from "components/Dashboard-old/styles";
-import { Card } from "components/common/Card";
 import Button from "components/common/Button";
-import Img from "components/common/Img";
 import {
   Input,
   ErrorMessage,
   TextArea,
   CurrencyInput,
-  // SelectTokenDropdown,
+  SelectToken,
 } from "components/common/Form";
 import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
@@ -60,28 +53,17 @@ import {
 } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import {
-  makeSelectLoading,
+  makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
   makeSelectPrices,
-  // makeSelectError,
 } from "store/tokens/selectors";
-import Loading from "components/common/Loading";
-import { defaultTokenDetails } from "constants/index";
-import SelectTokenModal, {
-  MODAL_NAME as SELECT_TOKEN_MODAL,
-} from "components/Payments/SelectTokenModal";
-
-import {
-  Container,
-  Title,
-  Heading,
-  StepsCard,
-  ActionItem,
-} from "components/People/styles";
-import { ShowToken } from "./styles";
-import { Circle } from "components/Header/styles";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
+import { constructLabel } from "utils/tokens";
+import ErrorText from "components/common/ErrorText";
+
+import { QuickTransferContainer } from "./styles";
 
 const transactionsKey = "transactions";
 const safeKey = "safe";
@@ -89,16 +71,17 @@ const multisigKey = "multisig";
 const tokensKey = "tokens";
 const metaTxKey = "metatx";
 
-export default function QuickTransfer() {
+export default function QuickTransfer(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
+  const { handleHide } = props;
   const { account } = useActiveWeb3React();
   const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
-  const [selectedTokenName, setSelectedTokenName] = useState();
-  const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
+  const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [payoutDetails, setPayoutDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
+  const [tokensDropdown, setTokensDropdown] = useState([]);
 
   const { txHash, loadingTx, massPayout, txData } = useMassPayout({
     tokenDetails: selectedTokenDetails,
@@ -117,16 +100,26 @@ export default function QuickTransfer() {
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
-  const { register, errors, handleSubmit, formState, control } = useForm({
+  const {
+    register,
+    errors,
+    handleSubmit,
+    formState,
+    control,
+    watch,
+    setValue,
+  } = useForm({
     mode: "onChange",
   });
+
+  const selectedToken = watch("token") && watch("token").value;
 
   const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const history = useHistory();
 
   // Selectors
-  const loading = useSelector(makeSelectLoading());
+  const loadingTokens = useSelector(makeSelectLoadingTokens());
   const tokenList = useSelector(makeSelectTokenList());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
@@ -152,18 +145,12 @@ export default function QuickTransfer() {
   }, [ownerSafeAddress, dispatch]);
 
   useEffect(() => {
-    if (tokenList && tokenList.length > 0) {
-      setTokenDetails(tokenList);
-      setSelectedTokenName(tokenList[0].name);
-    }
-  }, [tokenList]);
-
-  useEffect(() => {
-    if (selectedTokenName)
+    if (selectedToken && existingTokenDetails) {
       setSelectedTokenDetails(
-        tokenDetails.filter(({ name }) => name === selectedTokenName)[0]
+        existingTokenDetails.filter(({ name }) => name === selectedToken)[0]
       );
-  }, [tokenDetails, selectedTokenName]);
+    }
+  }, [selectedToken, existingTokenDetails]);
 
   useEffect(() => {
     if (txHashFromMetaTx) {
@@ -208,7 +195,7 @@ export default function QuickTransfer() {
               0
             ),
             tokenCurrency: selectedTokenDetails.name,
-            fiatValue: parseFloat(totalAmountToPay).toFixed(5),
+            fiatValue: parseFloat(totalAmountToPay).toFixed(4),
             addresses: payoutDetails.map(({ address }) => address),
             transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
           })
@@ -242,7 +229,7 @@ export default function QuickTransfer() {
                 0
               ),
               tokenCurrency: selectedTokenDetails.name,
-              fiatValue: parseFloat(totalAmountToPay).toFixed(5),
+              fiatValue: parseFloat(totalAmountToPay).toFixed(4),
               addresses: payoutDetails.map(({ address }) => address),
               transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
             })
@@ -287,6 +274,46 @@ export default function QuickTransfer() {
     organisationType,
   ]);
 
+  useEffect(() => {
+    if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
+      setExistingTokenDetails(tokenList);
+      setTokensDropdown(
+        tokenList.map((details) => ({
+          value: details.name,
+          label: constructLabel({
+            token: details.name,
+            component: (
+              <div>
+                {formatNumber(details.balance)} {details.name}
+              </div>
+            ),
+            imgUrl: details.icon,
+          }),
+        }))
+      );
+    }
+  }, [tokenList, tokensDropdown]);
+
+  useEffect(() => {
+    if (metaTxHash || submittedTx) {
+      handleHide();
+      dispatch(
+        show(TX_SUBMITTED_MODAL, {
+          txHash: txHash ? txHash : metaTxHash,
+          selectedCount: 1,
+          transactionId: singleOwnerTransactionId,
+        })
+      );
+    }
+  }, [
+    dispatch,
+    metaTxHash,
+    singleOwnerTransactionId,
+    submittedTx,
+    txHash,
+    handleHide,
+  ]);
+
   const onSubmit = async (values) => {
     console.log({ selectedTokenDetails });
     const payoutDetails = [
@@ -310,67 +337,41 @@ export default function QuickTransfer() {
     );
   };
 
-  const goBack = () => {
-    history.goBack();
-  };
+  const renderQuickTransfer = () => (
+    <div>
+      <div className="title">Paying To</div>
+      <div className="mb-3">
+        <Input
+          type="text"
+          name="address"
+          register={register}
+          required={`Wallet Address is required`}
+          pattern={{
+            value: /^0x[a-fA-F0-9]{40}$/,
+            message: "Invalid Ethereum Address",
+          }}
+          placeholder="Wallet Address"
+        />
+        <ErrorMessage name="address" errors={errors} />
+      </div>
 
-  const showTokenModal = () => {
-    dispatch(
-      show(SELECT_TOKEN_MODAL, {
-        selectedTokenDetails,
-        setSelectedTokenDetails,
-      })
-    );
-  };
+      <div className="title mt-5">Paying From</div>
+      <div className="mb-3">
+        <SelectToken
+          name="token"
+          control={control}
+          required={`Token is required`}
+          width="20rem"
+          options={tokensDropdown}
+          isSearchable
+          placeholder={`Select Currency...`}
+          defaultValue={null}
+          isLoading={loadingTokens}
+        />
+      </div>
 
-  const renderTransferDetails = () => (
-    <Card className="quick-transfer">
-      <Title className="mb-4">Quick Fund Transfer</Title>
-      <Heading>PAYING FROM</Heading>
-
-      {loading && (
-        <ShowToken>
-          <Loading color="#7367f0" />
-        </ShowToken>
-      )}
-
-      {!loading && selectedTokenDetails && (
-        <ShowToken onClick={showTokenModal}>
-          <div>
-            <Img src={selectedTokenDetails.icon} alt="token icon" width="36" />
-          </div>
-          <div className="token-balance">
-            <div className="value">
-              {selectedTokenDetails.balance
-                ? formatNumber(selectedTokenDetails.balance)
-                : "0.00"}
-            </div>
-            <div className="name">{selectedTokenDetails.name}</div>
-          </div>
-          <div className="change">Change</div>
-        </ShowToken>
-      )}
-
-      <Heading>PAYING TO</Heading>
-      <Row className="mb-3">
-        <Col lg="12">
-          <Input
-            type="text"
-            name="address"
-            register={register}
-            required={`Wallet Address is required`}
-            pattern={{
-              value: /^0x[a-fA-F0-9]{40}$/,
-              message: "Invalid Ethereum Address",
-            }}
-            placeholder="Wallet Address"
-          />
-          <ErrorMessage name="address" errors={errors} />
-        </Col>
-      </Row>
-
-      <Row className="mb-4">
-        <Col lg="12" sm="12">
+      {selectedToken && (
+        <div className="mt-4">
           <Controller
             control={control}
             name="amount"
@@ -392,11 +393,9 @@ export default function QuickTransfer() {
               <CurrencyInput
                 type="number"
                 name="amount"
-                // register={register}
-                // required={`Amount is required`}
                 value={value}
                 onChange={onChange}
-                placeholder="Amount"
+                placeholder="0.00"
                 conversionRate={
                   prices &&
                   selectedTokenDetails &&
@@ -405,107 +404,57 @@ export default function QuickTransfer() {
                 tokenName={
                   selectedTokenDetails ? selectedTokenDetails.name : ""
                 }
+                setValue={setValue}
               />
             )}
           />
           <ErrorMessage name="amount" errors={errors} />
-        </Col>
-        {/* <Col lg="6" sm="12">
-          <Controller
-            name="currency"
-            control={control}
-            rules={{ required: true }}
-            as={SelectTokenDropdown}
-          />
-          <ErrorMessage name="currency" errors={errors} />
-        </Col> */}
-      </Row>
-
-      <Heading>DESCRIPTION (Optional)</Heading>
-      <Row className="mb-3">
-        <Col lg="12">
-          <TextArea
-            name="description"
-            register={register}
-            placeholder="Paid 500 DAI to John Doe..."
-            rows="5"
-            cols="50"
-          />
-        </Col>
-      </Row>
-
-      <Button
-        large
-        type="submit"
-        className="mt-3"
-        disabled={
-          !formState.isValid ||
-          loadingTx ||
-          addingMultisigTx ||
-          addingSingleOwnerTx ||
-          loadingSafeDetails
-        }
-        loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
-      >
-        {threshold > 1 ? `Create Transaction` : `Send`}
-      </Button>
-      {errorFromMetaTx && (
-        <div className="text-danger mt-3">{errorFromMetaTx}</div>
+        </div>
       )}
-    </Card>
+
+      <div className="title mt-5">Description (Optional)</div>
+      <div>
+        <TextArea
+          name="description"
+          register={register}
+          placeholder="Paid 500 DAI to John Doe..."
+          rows="3"
+          cols="50"
+        />
+      </div>
+
+      <div className="d-flex justify-content-center mt-5">
+        <Button
+          type="button"
+          width="16rem"
+          className="secondary-2 mr-3"
+          onClick={handleHide}
+        >
+          Close
+        </Button>
+        <Button
+          type="submit"
+          width="16rem"
+          disabled={
+            !formState.isValid ||
+            loadingTx ||
+            addingMultisigTx ||
+            addingSingleOwnerTx ||
+            loadingSafeDetails
+          }
+          loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
+        >
+          {threshold > 1 ? `Create Transaction` : `Send`}
+        </Button>
+      </div>
+
+      {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
+    </div>
   );
 
-  const renderQuickTransfer = () => {
-    return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <StepsCard>{renderTransferDetails()}</StepsCard>
-      </form>
-    );
-  };
-
-  return !metaTxHash && !submittedTx ? (
-    <div
-      className="position-relative"
-      style={{
-        transition: "all 0.25s linear",
-      }}
-    >
-      <Info>
-        <div
-          style={{
-            maxWidth: "1200px",
-            transition: "all 0.25s linear",
-          }}
-          className="mx-auto"
-        >
-          <Button iconOnly className="p-0" onClick={goBack}>
-            <ActionItem>
-              <Circle>
-                <FontAwesomeIcon icon={faLongArrowAltLeft} color="#fff" />
-              </Circle>
-              <div className="mx-3">
-                <div className="name">Back</div>
-              </div>
-            </ActionItem>
-          </Button>
-        </div>
-      </Info>
-
-      <Container
-        style={{
-          maxWidth: "1200px",
-          transition: "all 0.25s linear",
-        }}
-      >
-        {renderQuickTransfer()}
-      </Container>
-      <SelectTokenModal />
-    </div>
-  ) : (
-    <TransactionSubmitted
-      txHash={txHash ? txHash : metaTxHash}
-      selectedCount={1}
-      transactionId={singleOwnerTransactionId}
-    />
+  return (
+    <QuickTransferContainer>
+      <form onSubmit={handleSubmit(onSubmit)}>{renderQuickTransfer()}</form>
+    </QuickTransferContainer>
   );
 }

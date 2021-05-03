@@ -467,7 +467,7 @@ export default function Payments(props) {
     submittedTx,
     txHash,
     handleHide,
-  ]); // eslint-disa
+  ]);
 
   const handleMassPayout = async (selectedTeammates) => {
     await massPayout(
