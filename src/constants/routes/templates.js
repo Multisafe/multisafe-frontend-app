@@ -18,6 +18,7 @@ export const routeTemplates = {
       new: "/dashboard/department/new",
     },
     payments: "/dashboard/payments",
+    settings: "/dashboard/settings",
     transactions: "/dashboard/transactions",
     transactionById: "/dashboard/transactions/:transactionId",
     quickTransfer: "/dashboard/quick-transfer",
@@ -25,7 +26,7 @@ export const routeTemplates = {
     owners: "/dashboard/invite",
     spendingLimits: {
       root: "/dashboard/spending-limits",
-      new: "/spending-limits/new",
+      new: "/dashboard/spending-limits/new",
     },
   },
 };

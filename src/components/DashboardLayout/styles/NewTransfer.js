@@ -12,6 +12,7 @@ export default styled.div`
   align-items: center;
   cursor: pointer;
   position: relative;
+  width: 15rem;
 
   .text {
     font-size: 1.4rem;
@@ -27,7 +28,7 @@ export default styled.div`
   .transfer-dropdown {
     position: absolute;
     top: 5rem;
-    left: -4rem;
+    left: -3rem;
     min-width: 20rem;
     border-radius: 1rem;
     box-shadow: 1rem 1rem 2rem 0 rgba(170, 170, 170, 0.2);
@@ -81,9 +82,22 @@ export default styled.div`
   }
 
   @media (max-width: 600px) {
+    width: 13rem;
+    .text {
+      font-size: 1.2rem;
+    }
+
     .transfer-dropdown {
       left: -2rem;
-      min-width: 16rem;
+      min-width: 15rem;
+
+      .transfer-option {
+        padding: 1.2rem;
+
+        .name {
+          font-size: 1.2rem;
+        }
+      }
     }
   }
 `;

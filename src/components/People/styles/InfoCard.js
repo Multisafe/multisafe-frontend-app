@@ -38,6 +38,7 @@ export default styled(Card)`
   @media (max-width: 978px) {
     height: auto;
     flex-wrap: wrap;
+    grid-gap: 1rem 0;
     .flex {
       margin-top: 1rem;
       flex-wrap: wrap;

@@ -3,15 +3,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { makeSelectTokenList, makeSelectLoading } from "store/tokens/selectors";
 import { getTokens } from "store/tokens/actions";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import Loading from "components/common/Loading";
 import {
   Table,
   TableHead,
   TableBody,
-  TableInfo,
+  TableLoader,
 } from "components/common/Table";
 import { formatNumber } from "utils/number-helpers";
-import { FiltersCard } from "components/People/styles";
+import { InfoCard } from "components/People/styles";
 import TokenImg from "components/common/TokenImg";
 
 export default function Assets() {
@@ -28,23 +27,8 @@ export default function Assets() {
     }
   }, [ownerSafeAddress, dispatch]);
 
-  const renderLoading = () => (
-    <TableInfo
-      style={{
-        textAlign: "center",
-        height: "40rem",
-      }}
-    >
-      <td colSpan={4}>
-        <div className="d-flex align-items-center justify-content-center">
-          <Loading color="primary" width="3rem" height="3rem" />
-        </div>
-      </td>
-    </TableInfo>
-  );
-
   const renderAssets = () => {
-    if (loading) return renderLoading();
+    if (loading) return <TableLoader colSpan={4} />;
 
     return tokenList.map(({ name, usd, balance }) => (
       <tr key={name}>
@@ -64,13 +48,13 @@ export default function Assets() {
 
   return (
     <div>
-      <FiltersCard>
+      <InfoCard>
         <div>
           <div className="title">Assets</div>
           <div className="subtitle">View all your assets here</div>
         </div>
         <div></div>
-      </FiltersCard>
+      </InfoCard>
       <Table style={{ marginTop: "3rem" }}>
         <TableHead>
           <tr>

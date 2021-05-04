@@ -28,7 +28,6 @@ import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
-import Loading from "components/common/Loading";
 
 import ControlledInput from "components/common/Input";
 import TeamsDropdown from "./TeamsDropdown";
@@ -43,8 +42,9 @@ import {
   TableBody,
   TableTitle,
   TableInfo,
+  TableLoader,
 } from "components/common/Table";
-import { FiltersCard, TeamContainer } from "./styles";
+import { InfoCard, TeamContainer } from "./styles";
 import { useLocalStorage } from "hooks";
 import { getDecryptedDetails } from "utils/encryption";
 import Img from "components/common/Img";
@@ -250,21 +250,6 @@ export default function People() {
     </div>
   );
 
-  const renderLoading = () => (
-    <TableInfo
-      style={{
-        textAlign: "center",
-        height: "30rem",
-      }}
-    >
-      <td colSpan={4}>
-        <div className="d-flex align-items-center justify-content-center">
-          <Loading color="primary" width="3rem" height="3rem" />
-        </div>
-      </td>
-    </TableInfo>
-  );
-
   const renderAddPeople = () => (
     <TableInfo
       style={{
@@ -402,7 +387,7 @@ export default function People() {
 
   const renderTableContent = () => {
     if (loadingPeople) {
-      return renderLoading();
+      return <TableLoader colSpan={4} height="30rem" />;
     }
 
     if (isNewUser) {
@@ -418,7 +403,7 @@ export default function People() {
 
   return (
     <div>
-      <FiltersCard>
+      <InfoCard>
         <div>
           <div className="title">People</div>
           <div className="subtitle">Manage teams and people here</div>
@@ -433,8 +418,8 @@ export default function People() {
             value={searchPeopleValue}
           />
         </div>
-      </FiltersCard>
-      <FiltersCard className="mt-3">
+      </InfoCard>
+      <InfoCard className="mt-3">
         <div>
           <div className="title mb-0">
             {!isNewUser &&
@@ -449,7 +434,7 @@ export default function People() {
           <SearchByTeamDropdown />
           <ExportButton />
         </div>
-      </FiltersCard>
+      </InfoCard>
       <Table style={{ marginTop: "3rem" }}>
         <TableHead>
           <tr>

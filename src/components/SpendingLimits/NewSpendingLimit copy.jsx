@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row } from "reactstrap";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
+import TransactionSubmitted from "components/Payments/TransactionSubmitted";
+import { Info } from "components/Dashboard/styles";
+import { Card } from "components/common/Card";
 import Button from "components/common/Button";
-import {
-  Input,
-  ErrorMessage,
-  CurrencyInput,
-  SelectToken,
-} from "components/common/Form";
-import { formatNumber } from "utils/number-helpers";
-import { constructLabel } from "utils/tokens";
+import Img from "components/common/Img";
+import { Input, ErrorMessage, CurrencyInput } from "components/common/Form";
 import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
@@ -54,13 +55,28 @@ import {
 } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import {
-  makeSelectLoading as makeSelectLoadingTokens,
+  makeSelectLoading,
   makeSelectTokenList,
   makeSelectPrices,
+  // makeSelectError,
 } from "store/tokens/selectors";
-import { SpendingLimitContainer } from "./styles";
+import Loading from "components/common/Loading";
+import { defaultTokenDetails } from "constants/index";
+import SelectTokenModal, {
+  MODAL_NAME as SELECT_TOKEN_MODAL,
+} from "components/Payments/SelectTokenModal";
+
+import {
+  Container,
+  Title,
+  Heading,
+  StepsCard,
+  ActionItem,
+} from "components/People/styles";
+
+import { ShowToken } from "components/QuickTransfer/styles";
+import { Circle } from "components/Header/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 
 const transactionsKey = "transactions";
 const safeKey = "safe";
@@ -77,32 +93,30 @@ const resetOptions = [
   {
     id: "reset-daily",
     value: 1440, // 24 * 60
-    label: "1 Day",
+    label: "1 day",
   },
   {
     id: "reset-weekly",
     value: 10080, // 24 * 60 * 7
-    label: "1 Week",
+    label: "1 week",
   },
   {
     id: "reset-monthly",
     value: 43200, // 24 * 60 * 30
-    label: "1 Month",
+    label: "1 month",
   },
 ];
 
-export default function SpendingLimits(props) {
+export default function SpendingLimits() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-
-  const { handleHide } = props;
 
   const { account } = useActiveWeb3React();
   const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
-  const [existingTokenDetails, setExistingTokenDetails] = useState();
+  const [selectedTokenName, setSelectedTokenName] = useState();
+  const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
   const [spendingLimitDetails, setSpendingLimitDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
-  const [tokensDropdown, setTokensDropdown] = useState([]);
 
   const { txHash, loadingTx, createSpendingLimit, txData } = useMassPayout({
     tokenDetails: selectedTokenDetails,
@@ -121,18 +135,16 @@ export default function SpendingLimits(props) {
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
-  const { register, errors, handleSubmit, formState, control, watch } = useForm(
-    {
-      mode: "onChange",
-    }
-  );
-  const selectedToken = watch("token") && watch("token").value;
+  const { register, errors, handleSubmit, formState, control } = useForm({
+    mode: "onChange",
+  });
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   // Selectors
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const loadingTokens = useSelector(makeSelectLoadingTokens());
+  const loading = useSelector(makeSelectLoading());
   const tokenList = useSelector(makeSelectTokenList());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
@@ -162,6 +174,20 @@ export default function SpendingLimits(props) {
       dispatch(getTokens(ownerSafeAddress));
     }
   }, [ownerSafeAddress, dispatch, icons]);
+
+  useEffect(() => {
+    if (tokenList && tokenList.length > 0) {
+      setTokenDetails(tokenList);
+      setSelectedTokenName(tokenList[0].name);
+    }
+  }, [tokenList]);
+
+  useEffect(() => {
+    if (selectedTokenName)
+      setSelectedTokenDetails(
+        tokenDetails.filter(({ name }) => name === selectedTokenName)[0]
+      );
+  }, [tokenDetails, selectedTokenName]);
 
   useEffect(() => {
     if (txHashFromMetaTx) {
@@ -282,58 +308,11 @@ export default function SpendingLimits(props) {
     account,
     isMultiOwner,
     nonce,
+    history,
     organisationType,
   ]);
 
-  useEffect(() => {
-    if (selectedToken && existingTokenDetails) {
-      setSelectedTokenDetails(
-        existingTokenDetails.filter(({ name }) => name === selectedToken)[0]
-      );
-    }
-  }, [selectedToken, existingTokenDetails]);
-
-  useEffect(() => {
-    if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
-      setExistingTokenDetails(tokenList);
-      setTokensDropdown(
-        tokenList.map((details) => ({
-          value: details.name,
-          label: constructLabel({
-            token: details.name,
-            component: (
-              <div>
-                {formatNumber(details.balance)} {details.name}
-              </div>
-            ),
-            imgUrl: details.icon,
-          }),
-        }))
-      );
-    }
-  }, [tokenList, tokensDropdown]);
-
-  useEffect(() => {
-    if (metaTxHash || submittedTx) {
-      handleHide();
-      dispatch(
-        show(TX_SUBMITTED_MODAL, {
-          txHash: txHash ? txHash : metaTxHash,
-          transactionId: singleOwnerTransactionId,
-        })
-      );
-    }
-  }, [
-    dispatch,
-    metaTxHash,
-    singleOwnerTransactionId,
-    submittedTx,
-    txHash,
-    handleHide,
-  ]);
-
   const onSubmit = async (values) => {
-    console.log({ values });
     const spendingLimitDetails = [
       {
         address: values.address,
@@ -355,41 +334,68 @@ export default function SpendingLimits(props) {
     );
   };
 
-  const renderSpendingLimitDetails = () => (
-    <SpendingLimitContainer>
-      <div className="title">Beneficiary</div>
-      <div className="mb-3">
-        <Input
-          type="text"
-          name="address"
-          register={register}
-          required={`Beneficiary Address is required`}
-          pattern={{
-            value: /^0x[a-fA-F0-9]{40}$/,
-            message: "Invalid Ethereum Address",
-          }}
-          placeholder="Beneficiary Address"
-        />
-        <ErrorMessage name="address" errors={errors} />
-      </div>
+  const goBack = () => {
+    history.goBack();
+  };
 
-      <div className="title mt-5">Select Asset</div>
-      <div className="mb-3">
-        <SelectToken
-          name="token"
-          control={control}
-          required={`Token is required`}
-          width="20rem"
-          options={tokensDropdown}
-          isSearchable
-          placeholder={`Select Currency...`}
-          defaultValue={null}
-          isLoading={loadingTokens}
-        />
-      </div>
+  const showTokenModal = () => {
+    dispatch(
+      show(SELECT_TOKEN_MODAL, {
+        selectedTokenDetails,
+        setSelectedTokenDetails,
+      })
+    );
+  };
 
-      {selectedToken && (
-        <div className="mt-4">
+  const renderTransferDetails = () => (
+    <Card className="new-spending-limit">
+      <Title className="mb-4">New spending limit</Title>
+
+      <Heading>BENEFICIARY</Heading>
+      <Row className="mb-4">
+        <Col lg="12">
+          <Input
+            type="text"
+            name="address"
+            register={register}
+            required={`Beneficiary Address is required`}
+            pattern={{
+              value: /^0x[a-fA-F0-9]{40}$/,
+              message: "Invalid Ethereum Address",
+            }}
+            placeholder="Beneficiary Address"
+          />
+          <ErrorMessage name="address" errors={errors} />
+        </Col>
+      </Row>
+
+      <Heading>SELECT AN ASSET</Heading>
+
+      {loading && (
+        <ShowToken>
+          <Loading color="#7367f0" />
+        </ShowToken>
+      )}
+
+      {!loading && selectedTokenDetails && (
+        <ShowToken onClick={showTokenModal}>
+          <div>
+            <Img src={selectedTokenDetails.icon} alt="token icon" width="36" />
+          </div>
+          <div className="token-balance">
+            <div className="value">
+              {selectedTokenDetails.balance
+                ? parseFloat(selectedTokenDetails.balance).toFixed(2)
+                : "0.00"}
+            </div>
+            <div className="name">{selectedTokenDetails.name}</div>
+          </div>
+          <div className="change">Change</div>
+        </ShowToken>
+      )}
+
+      <Row className="mb-4">
+        <Col lg="12" sm="12">
           <Controller
             control={control}
             name="amount"
@@ -408,7 +414,7 @@ export default function SpendingLimits(props) {
                 name="amount"
                 value={value}
                 onChange={onChange}
-                placeholder="0.00"
+                placeholder="Amount"
                 conversionRate={
                   prices &&
                   selectedTokenDetails &&
@@ -421,11 +427,11 @@ export default function SpendingLimits(props) {
             )}
           />
           <ErrorMessage name="amount" errors={errors} />
-        </div>
-      )}
+        </Col>
+      </Row>
 
-      <div className="title mt-5">Reset Time</div>
-      <p className="subtitle">
+      <Heading>RESET TIME</Heading>
+      <p>
         The allowance will automatically reset after the defined time period.
       </p>
 
@@ -440,43 +446,77 @@ export default function SpendingLimits(props) {
             defaultChecked={index === 0}
             label={label}
             key={id}
-            labelStyle={{
-              marginBottom: 0,
-              padding: "0 2.4rem",
-              fontSize: "1.4rem",
-            }}
+            labelStyle={{ marginBottom: 0, padding: "0 0.8em 0 0.5em" }}
           />
         ))}
       </div>
 
-      <div className="d-flex justify-content-center">
-        <Button
-          type="submit"
-          style={{ marginTop: "8rem", minWidth: "16rem" }}
-          disabled={
-            !formState.isValid ||
-            loadingTx ||
-            addingMultisigTx ||
-            addingSingleOwnerTx ||
-            loadingSafeDetails
-          }
-          loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
-        >
-          {threshold > 1 ? `Create Transaction` : `Create`}
-        </Button>
-      </div>
-
+      <Button
+        large
+        type="submit"
+        className="mt-3"
+        disabled={
+          !formState.isValid ||
+          loadingTx ||
+          addingMultisigTx ||
+          addingSingleOwnerTx ||
+          loadingSafeDetails
+        }
+        loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
+      >
+        {threshold > 1 ? `Create Transaction` : `Create`}
+      </Button>
       {errorFromMetaTx && (
         <div className="text-danger mt-3">{errorFromMetaTx}</div>
       )}
-    </SpendingLimitContainer>
+    </Card>
   );
 
-  return (
-    <div>
+  const renderNewSpendingLimit = () => {
+    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-        {renderSpendingLimitDetails()}
+        <StepsCard>{renderTransferDetails()}</StepsCard>
       </form>
+    );
+  };
+
+  return !metaTxHash && !submittedTx ? (
+    <div className="position-relative">
+      <Info>
+        <div
+          style={{
+            maxWidth: "1200px",
+            transition: "all 0.25s linear",
+          }}
+          className="mx-auto"
+        >
+          <Button iconOnly className="p-0" onClick={goBack}>
+            <ActionItem>
+              <Circle>
+                <FontAwesomeIcon icon={faLongArrowAltLeft} color="#fff" />
+              </Circle>
+              <div className="mx-3">
+                <div className="name">Back</div>
+              </div>
+            </ActionItem>
+          </Button>
+        </div>
+      </Info>
+
+      <Container
+        style={{
+          maxWidth: "1200px",
+          transition: "all 0.25s linear",
+        }}
+      >
+        {renderNewSpendingLimit()}
+      </Container>
+      <SelectTokenModal />
     </div>
+  ) : (
+    <TransactionSubmitted
+      txHash={txHash ? txHash : metaTxHash}
+      transactionId={singleOwnerTransactionId}
+    />
   );
 }

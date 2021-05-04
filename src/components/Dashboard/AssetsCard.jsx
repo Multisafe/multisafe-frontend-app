@@ -72,7 +72,7 @@ function AssetsCard() {
     <Assets>
       <div className="title-container">
         <div className="title">Assets</div>
-        <Link to={routeTemplates.dashboard.account} className="view">
+        <Link to={routeTemplates.dashboard.assets} className="view">
           View All
         </Link>
       </div>

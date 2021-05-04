@@ -19,7 +19,6 @@ const MultiCurrencyInputField = ({
   value,
   tokenName,
   selectedTokenDetails,
-  setValue,
   ...rest
 }) => {
   const [conversionValue, setConversionValue] = useState("");
@@ -66,7 +65,6 @@ const MultiCurrencyInputField = ({
     const swap = !swapped;
 
     if (swap) {
-      // setValue(name, conversionValue);
       onChange(conversionValue);
       const newConversionValue = conversionValue
         ? parseFloat(conversionValue * conversionRate).toFixed(4)

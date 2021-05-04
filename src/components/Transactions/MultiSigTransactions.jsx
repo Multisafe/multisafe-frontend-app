@@ -188,8 +188,8 @@ export default function MultiSigTransactions() {
                 </div>
               ) : transactions && transactions.length > 0 ? (
                 transactions.map((transaction, idx) => {
-                  // const { txDetails } = transaction;
-
+                  const { txDetails } = transaction;
+                  if (!txDetails) return null;
                   const {
                     transactionId,
                     tokenValue,
@@ -198,7 +198,7 @@ export default function MultiSigTransactions() {
                     status,
                     createdOn,
                     createdBy,
-                  } = transaction;
+                  } = txDetails;
                   return (
                     <TableRow key={`${transactionId}-${idx}`}>
                       <div>

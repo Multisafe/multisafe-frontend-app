@@ -64,14 +64,13 @@ import {
   makeSelectIsMultiOwner,
   makeSelectOrganisationType,
 } from "store/global/selectors";
-import Loading from "components/common/Loading";
 import {
   Table,
   TableHead,
   TableBody,
   TableInfo,
+  TableLoader,
 } from "components/common/Table";
-
 import { MassPayoutContainer, PaymentSummary } from "./styles";
 import TransactionSubmitted from "./TransactionSubmitted";
 import { TRANSACTION_MODES } from "constants/transactions";
@@ -561,21 +560,6 @@ export default function Payments(props) {
     </TableInfo>
   );
 
-  const renderLoading = () => (
-    <TableInfo
-      style={{
-        textAlign: "center",
-        height: "20rem",
-      }}
-    >
-      <td colSpan={4}>
-        <div className="d-flex align-items-center justify-content-center">
-          <Loading color="primary" width="3rem" height="3rem" />
-        </div>
-      </td>
-    </TableInfo>
-  );
-
   const renderPayTable = () => {
     if (!people || !selectedToken) return;
 
@@ -607,7 +591,7 @@ export default function Payments(props) {
               </tr>
             </TableHead>
             <TableBody>
-              {loadingTeammates && renderLoading()}
+              {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
               {!loadingTeammates && !people.length && renderNoPeopleFound()}
               {!loadingTeammates &&
                 people.length > 0 &&

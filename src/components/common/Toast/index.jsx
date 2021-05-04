@@ -9,7 +9,7 @@ const StyledContainer = styled(ToastContainer).attrs({
 })`
   &.Toastify__toast-container {
     position: absolute;
-    width: 1200px;
+    // width: 1200px;
     display: flex;
     justify-content: flex-end;
     align-items: center;

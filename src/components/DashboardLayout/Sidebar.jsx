@@ -109,12 +109,15 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               </div>
               <div className="name">Owners</div>
             </Link>
-            <div className="settings-option">
+            <Link
+              to={routeTemplates.dashboard.settings}
+              className="settings-option"
+            >
               <div className="icon">
                 <Img src={SettingsIcon} alt="settings" />
               </div>
               <div className="name">Settings</div>
-            </div>
+            </Link>
             <div className="settings-option" onClick={logout}>
               <div className="icon">
                 <Img src={LogoutIcon} alt="logout" />

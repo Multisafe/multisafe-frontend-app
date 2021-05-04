@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLongArrowAltLeft, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
 import formatDistance from "date-fns/formatDistance";
+import { show } from "redux-modal";
 
-import { Info } from "components/Dashboard/styles";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableInfo,
+  TableLoader,
+} from "components/common/Table";
 import Button from "components/common/Button";
 import { useContract } from "hooks";
 import { makeSelectTokenIcons } from "store/tokens/selectors";
@@ -15,20 +19,18 @@ import tokensReducer from "store/tokens/reducer";
 import tokensSaga from "store/tokens/saga";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
-
-import Loading from "components/common/Loading";
-import { getDefaultIconIfPossible } from "constants/index";
+import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
+import NoSpendingLimitsIcon from "assets/icons/dashboard/empty/spending-limits.svg";
 import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import ERC20ABI from "constants/abis/ERC20.json";
-
-import { Container, ActionItem, Table } from "components/People/styles";
-
-import { Circle } from "components/Header/styles";
+import { InfoCard } from "components/People/styles";
 import { getAmountFromWei } from "utils/tx-helpers";
-import { minifyAddress } from "components/common/Web3Utils";
-
-const { TableBody, TableHead, TableRow } = Table;
+import TokenImg from "components/common/TokenImg";
+import Img from "components/common/Img";
+import NewSpendingLimitModal, {
+  MODAL_NAME as NEW_SPENDING_LIMIT_MODAL,
+} from "./NewSpendingLimitModal";
 
 const tokensKey = "tokens";
 
@@ -51,7 +53,6 @@ export default function SpendingLimits() {
   useInjectSaga({ key: tokensKey, saga: tokensSaga });
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   // Selectors
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -118,10 +119,9 @@ export default function SpendingLimits() {
                   delegate: delegates[i],
                   allowanceAmount: getAmountFromWei(
                     tokenAllowance[0],
-                    decimals,
-                    0
+                    decimals
                   ),
-                  spentAmount: getAmountFromWei(tokenAllowance[1], decimals, 2),
+                  spentAmount: getAmountFromWei(tokenAllowance[1], decimals),
                   resetTimeMin: tokenAllowance[2].toNumber(),
                   lastResetMin: tokenAllowance[3].toNumber(),
                   tokenName,
@@ -147,10 +147,6 @@ export default function SpendingLimits() {
     getSpendingLimits();
   }, [getSpendingLimits]);
 
-  const goBack = () => {
-    history.goBack();
-  };
-
   const renderResetTime = (resetTimeMin, lastResetMin) => {
     const ms = 60 * 1000;
     if (resetTimeMin === 0) return "One-time";
@@ -162,148 +158,97 @@ export default function SpendingLimits() {
     )}`;
   };
 
-  const renderAllSpendingLimits = () => {
-    return (
-      <div
-        style={{
-          position: "absolute",
-          top: "0em",
-          left: "0",
-          right: "0",
-        }}
-      >
-        <TableHead col={3} style={{ width: "683px" }} className="mx-auto">
-          <div>Beneficiary</div>
-          <div>Spent</div>
-          <div>Reset Time</div>
-        </TableHead>
-        <TableBody
-          className="mx-auto"
-          style={{
-            height: "420px",
-            minHeight: "0",
-            overflow: "auto",
-            width: "683px",
-          }}
-        >
-          {loadingLimits && (
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{ height: "400px" }}
+  const showNewSpendingLimitPopup = () => {
+    dispatch(show(NEW_SPENDING_LIMIT_MODAL));
+  };
+
+  const renderNoSpendingLimits = () => (
+    <TableInfo
+      style={{
+        textAlign: "center",
+        height: "40rem",
+      }}
+    >
+      <td colSpan={3}>
+        <div className="d-flex align-items-center justify-content-center">
+          <div>
+            <Img
+              src={NoSpendingLimitsIcon}
+              alt="no-spending-limit"
+              className="mb-4"
+            />
+            <div className="text-center">No spending limits yet!</div>
+            <Button
+              className="d-flex align-items-center mt-3"
+              onClick={showNewSpendingLimitPopup}
             >
-              <Loading color="primary" width="50px" height="50px" />
-            </div>
-          )}
-          {!loadingLimits &&
-            existingSpendingLimits &&
-            !existingSpendingLimits.length && (
-              <div
-                className="d-flex align-items-center justify-content-center"
-                style={{ height: "400px" }}
-              >
-                <div>
-                  <div className="text-center">No spending limits yet!</div>
-                  <div className="d-flex align-items-center justify-content-center">
-                    <Button
-                      className="d-flex align-items-center mt-3"
-                      to={`/dashboard/spending-limits/new`}
-                    >
-                      <FontAwesomeIcon
-                        icon={faPlus}
-                        color="#fff"
-                        className="mr-2"
-                      />
-                      <div>Create Spending Limit</div>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-          {!loadingLimits &&
-            existingSpendingLimits &&
-            existingSpendingLimits.length > 0 &&
-            existingSpendingLimits.map(
-              (
-                {
-                  delegate,
-                  allowanceAmount,
-                  spentAmount,
-                  resetTimeMin,
-                  lastResetMin,
-                  tokenName,
-                },
-                idx
-              ) => (
-                <TableRow col={3} key={`${delegate}-${idx}`}>
-                  <div>{minifyAddress(delegate)}</div>
-                  <div>
-                    <img
-                      src={getDefaultIconIfPossible(tokenName, icons)}
-                      alt={tokenName}
-                      width="16"
-                    />{" "}
-                    {spentAmount} of {allowanceAmount} {tokenName}
-                  </div>
-                  <div>{renderResetTime(resetTimeMin, lastResetMin)}</div>
-                </TableRow>
-              )
-            )}
-        </TableBody>
-      </div>
+              <Img src={PlusIcon} alt="plus" className="mr-3" />
+              <div>Create Spending Limit</div>
+            </Button>
+          </div>
+        </div>
+      </td>
+    </TableInfo>
+  );
+
+  const renderAllSpendingLimits = () => {
+    if (loadingLimits) return <TableLoader colSpan={3} />;
+
+    if (existingSpendingLimits && !existingSpendingLimits.length)
+      return renderNoSpendingLimits();
+
+    return (
+      existingSpendingLimits &&
+      existingSpendingLimits.map(
+        (
+          {
+            delegate,
+            allowanceAmount,
+            spentAmount,
+            resetTimeMin,
+            lastResetMin,
+            tokenName,
+          },
+          idx
+        ) => (
+          <tr key={`${delegate}-${idx}`}>
+            <td>{delegate}</td>
+            <td>
+              <TokenImg token={tokenName} /> {spentAmount} of {allowanceAmount}{" "}
+              {tokenName}
+            </td>
+            <td>{renderResetTime(resetTimeMin, lastResetMin)}</td>
+          </tr>
+        )
+      )
     );
   };
 
   return (
-    <div className="position-relative">
-      <Info>
-        <div
-          style={{
-            maxWidth: "1200px",
-            transition: "all 0.25s linear",
-          }}
-          className="mx-auto"
-        >
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <Button iconOnly className="p-0" onClick={goBack}>
-                <ActionItem>
-                  <Circle>
-                    <FontAwesomeIcon icon={faLongArrowAltLeft} color="#fff" />
-                  </Circle>
-                  <div className="mx-3">
-                    <div className="name">Back</div>
-                  </div>
-                </ActionItem>
-              </Button>
-            </div>
-            <div>
-              <Button
-                iconOnly
-                className="p-0 mr-3"
-                to={`/dashboard/spending-limits/new`}
-              >
-                <ActionItem>
-                  <Circle>
-                    <FontAwesomeIcon icon={faPlus} color="#fff" />
-                  </Circle>
-                  <div className="mx-3">
-                    <div className="name">Create Spending Limit</div>
-                  </div>
-                </ActionItem>
-              </Button>
-            </div>
-          </div>
+    <div>
+      <InfoCard>
+        <div>
+          <div className="title">Spending Limits</div>
+          <div className="subtitle">View and manage spending limits here</div>
         </div>
-      </Info>
-
-      <Container
-        style={{
-          maxWidth: "1200px",
-          transition: "all 0.25s linear",
-        }}
-      >
-        {renderAllSpendingLimits()}
-      </Container>
+        <div>
+          <Button className="primary" onClick={showNewSpendingLimitPopup}>
+            <Img src={PlusIcon} alt="plus" className="mr-2" /> Create Spending
+            Limit
+          </Button>
+        </div>
+      </InfoCard>
+      <Table style={{ marginTop: "3rem" }}>
+        <TableHead>
+          <tr>
+            <th style={{ width: "45%" }}>Beneficiary</th>
+            <th style={{ width: "30%" }}>Spent</th>
+            <th style={{ width: "25%" }}>Reset Time</th>
+          </tr>
+        </TableHead>
+        <TableBody>{renderAllSpendingLimits()}</TableBody>
+      </Table>
+      <NewSpendingLimitModal />
     </div>
   );
 }

@@ -30,6 +30,8 @@ import {
   getMultisigTransactionByIdEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
+import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimits/NewSpendingLimitModal";
+import { routeGenerators } from "constants/routes/generators";
 
 function* getMultisigTransactions(action) {
   const requestURL = `${getMultisigTransactionEndpoint}?safeAddress=${action.safeAddress}`;
@@ -85,8 +87,15 @@ function* createMultisigTransaction(action) {
     yield put(
       createMultisigTransactionSuccess(result.transactionId, result.log)
     );
-    yield put(push(`/dashboard/transactions/${result.transactionId}`));
+    yield put(
+      push(
+        routeGenerators.dashboard.transactionById({
+          transactionId: result.transactionId,
+        })
+      )
+    );
     yield put(hide(MASS_PAYOUT_MODAL));
+    yield put(hide(NEW_SPENDING_LIMIT_MODAL));
   } catch (err) {
     yield put(createMultisigTransactionError(err));
   }

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
@@ -116,7 +115,6 @@ export default function QuickTransfer(props) {
 
   const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const history = useHistory();
 
   // Selectors
   const loadingTokens = useSelector(makeSelectLoadingTokens());
@@ -270,7 +268,6 @@ export default function QuickTransfer(props) {
     account,
     isMultiOwner,
     nonce,
-    history,
     organisationType,
   ]);
 
@@ -434,7 +431,7 @@ export default function QuickTransfer(props) {
         </Button>
         <Button
           type="submit"
-          width="16rem"
+          style={{ minWidth: "18rem" }}
           disabled={
             !formState.isValid ||
             loadingTx ||
