@@ -72,7 +72,6 @@ import {
   TableLoader,
 } from "components/common/Table";
 import { MassPayoutContainer, PaymentSummary } from "./styles";
-import TransactionSubmitted from "./TransactionSubmitted";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
 import TokenImg from "components/common/TokenImg";
@@ -318,6 +317,7 @@ export default function Payments(props) {
     if (!selectedRows.length) return 0;
     if (prices) {
       return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
+        // TODO use Big.js to fix precision errors
         if (salaryToken === "USD") {
           total += Number(salaryAmount);
         } else {
@@ -327,12 +327,22 @@ export default function Payments(props) {
         return total;
       }, 0);
     }
-
-    return selectedRows.reduce(
-      (total, { salaryAmount }) => (total += Number(salaryAmount)),
-      0
-    );
   }, [prices, selectedRows]);
+
+  const totalAmountInToken = useMemo(() => {
+    if (!selectedRows.length) return 0;
+    if (prices) {
+      return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
+        // TODO use Big.js to fix precision errors
+        if (salaryToken === "USD" && selectedTokenDetails) {
+          total += salaryAmount / prices[selectedTokenDetails.name];
+        } else {
+          total += salaryAmount / prices[salaryToken];
+        }
+        return total;
+      }, 0);
+    }
+  }, [prices, selectedRows, selectedTokenDetails]);
 
   useEffect(() => {
     if (txHash) {
@@ -363,7 +373,7 @@ export default function Payments(props) {
               0
             ),
             tokenCurrency: selectedTokenDetails.name,
-            fiatValue: parseFloat(totalAmountToPay).toFixed(5),
+            fiatValue: totalAmountToPay,
             addresses: recievers.map(({ address }) => address),
           })
         );
@@ -396,7 +406,7 @@ export default function Payments(props) {
                 0
               ),
               tokenCurrency: selectedTokenDetails.name,
-              fiatValue: parseFloat(totalAmountToPay).toFixed(5),
+              fiatValue: totalAmountToPay,
               addresses: recievers.map(({ address }) => address),
             })
           );
@@ -667,8 +677,11 @@ export default function Payments(props) {
       <PaymentSummary>
         <div className="payment-info">
           <div>
-            <div className="payment-title">
-              Current {selectedTokenDetails.name} Balance
+            <div className="payment-title">Current Balance</div>
+            <div className="payment-subtitle text-bold">
+              {`${formatNumber(selectedTokenDetails.balance)} ${
+                selectedTokenDetails.name
+              }`}
             </div>
             <div className="payment-subtitle">{`US$ ${formatNumber(
               selectedTokenDetails.usd
@@ -676,6 +689,13 @@ export default function Payments(props) {
           </div>
           <div>
             <div className="payment-title">Balance after payment</div>
+            <div className="payment-subtitle text-bold">
+              {!insufficientBalance
+                ? `${formatNumber(
+                    selectedTokenDetails.balance - totalAmountInToken
+                  )} ${selectedTokenDetails.name}`
+                : `Insufficient Balance`}
+            </div>
             <div className="payment-subtitle">
               {!insufficientBalance
                 ? `US$ ${formatNumber(
@@ -690,6 +710,13 @@ export default function Payments(props) {
           </div>
           <div>
             <div className="payment-title">Total Amount</div>
+            <div className="payment-subtitle text-bold">
+              {!isNaN(totalAmountInToken)
+                ? `${formatNumber(totalAmountInToken)} ${
+                    selectedTokenDetails.name
+                  }`
+                : `0`}
+            </div>
             <div className="payment-subtitle">
               {!isNaN(totalAmountToPay)
                 ? `US$ ${formatNumber(totalAmountToPay)}`
@@ -719,7 +746,7 @@ export default function Payments(props) {
     );
   };
 
-  return !metaTxHash && !submittedTx ? (
+  return (
     <MassPayoutContainer>
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -779,11 +806,5 @@ export default function Payments(props) {
         </form>
       </div>
     </MassPayoutContainer>
-  ) : (
-    <TransactionSubmitted
-      txHash={txHash ? txHash : metaTxHash}
-      selectedCount={selectedCount}
-      transactionId={singleOwnerTransactionId}
-    />
   );
 }

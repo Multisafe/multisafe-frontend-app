@@ -5,7 +5,7 @@ export default styled.div`
   justify-content: space-between;
   align-items: center;
   position: absolute;
-  z-index: 2;
+  z-index: 1;
   inset: 0 4rem;
 
   @media (max-width: 600px) {

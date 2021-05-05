@@ -55,6 +55,7 @@ import { Container, Detail, ConfirmSection } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
 import { getDecryptedDetails } from "utils/encryption";
+import { formatNumber } from "utils/number-helpers";
 
 const { TableBody, TableHead, TableRow } = Table;
 
@@ -836,7 +837,8 @@ export default function MultiSigTransactions() {
                   <Detail style={{ width: "300px" }}>
                     <div className="title">Total Amount</div>
                     <div className="desc">
-                      US ${fiatValue} ({tokenValue} {tokenCurrency})
+                      US ${formatNumber(fiatValue, 5)} (
+                      {formatNumber(tokenValue, 5)} {tokenCurrency})
                     </div>
                   </Detail>
                   <Detail style={{ width: "300px" }}>

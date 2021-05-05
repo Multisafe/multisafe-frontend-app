@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
+import Big from "big.js";
+
 import { CurrencyInput } from "./styles";
 import Button from "components/common/Button";
 import SwapIcon from "assets/icons/dashboard/swap-icon.svg";
 import Img from "../Img";
 import { Input } from "./styles";
+
+Big.DP = 18;
 
 const MultiCurrencyInputField = ({
   name,
@@ -28,7 +32,7 @@ const MultiCurrencyInputField = ({
   const handleUsdValueChange = (value) => {
     setConversionValue(value);
     const tokenValue = value
-      ? parseFloat(value / conversionRate).toFixed(4)
+      ? Big(value).div(Big(conversionRate)).toString()
       : "";
     onChange(tokenValue);
   };
@@ -37,7 +41,7 @@ const MultiCurrencyInputField = ({
     setSwapped(false);
 
     const newConversionValue = value
-      ? parseFloat(value * conversionRate).toFixed(4)
+      ? Big(value).mul(Big(conversionRate)).toString()
       : "";
     setConversionValue(newConversionValue);
     onChange(value);
@@ -48,7 +52,7 @@ const MultiCurrencyInputField = ({
       setConversionValue("");
     } else {
       const newConversionValue = value
-        ? parseFloat(value * conversionRate).toFixed(4)
+        ? Big(value).mul(Big(conversionRate)).toString()
         : "";
       if (!conversionValue) setConversionValue(newConversionValue);
     }
@@ -67,14 +71,14 @@ const MultiCurrencyInputField = ({
     if (swap) {
       onChange(conversionValue);
       const newConversionValue = conversionValue
-        ? parseFloat(conversionValue * conversionRate).toFixed(4)
+        ? Big(conversionValue).mul(Big(conversionRate)).toString()
         : "";
       setConversionValue(newConversionValue);
     } else {
       setConversionValue(value);
 
       const tokenValue = value
-        ? parseFloat(value / conversionRate).toFixed(4)
+        ? Big(value).div(Big(conversionRate)).toString()
         : "";
       onChange(tokenValue);
     }

@@ -113,9 +113,7 @@ export default function MultiSigTransactions() {
               "Transaction Hash": transactionHash || "",
               "Created On": format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss"),
               "Transaction ID": transactionId,
-              "Transaction fees": transactionFees
-                ? parseFloat(transactionFees).toFixed(5)
-                : "",
+              "Transaction fees": transactionFees ? transactionFees : "",
             });
           }
         }

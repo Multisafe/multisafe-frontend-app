@@ -99,17 +99,11 @@ export default function QuickTransfer(props) {
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
-  const {
-    register,
-    errors,
-    handleSubmit,
-    formState,
-    control,
-    watch,
-    setValue,
-  } = useForm({
-    mode: "onChange",
-  });
+  const { register, errors, handleSubmit, formState, control, watch } = useForm(
+    {
+      mode: "onChange",
+    }
+  );
 
   const selectedToken = watch("token") && watch("token").value;
 
@@ -193,7 +187,7 @@ export default function QuickTransfer(props) {
               0
             ),
             tokenCurrency: selectedTokenDetails.name,
-            fiatValue: parseFloat(totalAmountToPay).toFixed(4),
+            fiatValue: totalAmountToPay,
             addresses: payoutDetails.map(({ address }) => address),
             transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
           })
@@ -227,7 +221,7 @@ export default function QuickTransfer(props) {
                 0
               ),
               tokenCurrency: selectedTokenDetails.name,
-              fiatValue: parseFloat(totalAmountToPay).toFixed(4),
+              fiatValue: totalAmountToPay,
               addresses: payoutDetails.map(({ address }) => address),
               transactionMode: TRANSACTION_MODES.QUICK_TRANSFER, // quick transfer
             })
@@ -401,7 +395,6 @@ export default function QuickTransfer(props) {
                 tokenName={
                   selectedTokenDetails ? selectedTokenDetails.name : ""
                 }
-                setValue={setValue}
               />
             )}
           />

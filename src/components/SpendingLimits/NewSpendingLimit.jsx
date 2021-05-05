@@ -207,7 +207,7 @@ export default function SpendingLimits(props) {
               0
             ),
             tokenCurrency: selectedTokenDetails.name,
-            fiatValue: parseFloat(totalAllowanceAmount).toFixed(5),
+            fiatValue: totalAllowanceAmount,
             addresses: spendingLimitDetails.map(({ address }) => address),
             transactionMode: TRANSACTION_MODES.SPENDING_LIMITS, // spending limits
           })
@@ -241,7 +241,7 @@ export default function SpendingLimits(props) {
                 0
               ),
               tokenCurrency: selectedTokenDetails.name,
-              fiatValue: parseFloat(totalAllowanceAmount).toFixed(5),
+              fiatValue: totalAllowanceAmount,
               addresses: spendingLimitDetails.map(({ address }) => address),
               transactionMode: TRANSACTION_MODES.SPENDING_LIMITS, // spending limits
             })

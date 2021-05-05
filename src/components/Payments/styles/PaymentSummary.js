@@ -10,7 +10,7 @@ export default styled.div`
     width: 60%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
 
     .payment-title {
       font-size: 1.2rem;
@@ -25,13 +25,13 @@ export default styled.div`
     }
     .payment-subtitle {
       font-size: 1.4rem;
-      font-weight: 900;
       font-stretch: normal;
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
       text-align: left;
       color: #373737;
+      margin-bottom: 0.4rem;
     }
   }
 

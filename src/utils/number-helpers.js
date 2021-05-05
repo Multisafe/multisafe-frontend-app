@@ -1,5 +1,8 @@
+import Big from "big.js";
+
 export function formatNumber(x, decimals = 2) {
-  return parseFloat(x)
-    .toFixed(decimals)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return Big(x)
+    .round(decimals)
+    .toString()
+    .replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
