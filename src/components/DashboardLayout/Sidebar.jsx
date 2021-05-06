@@ -9,7 +9,6 @@ import { makeSelectSafeOwners } from "store/global/selectors";
 import Img from "components/common/Img";
 import ParcelLogo from "assets/icons/parcel-logo.svg";
 import InviteIcon from "assets/icons/sidebar/invite-icon.svg";
-import OwnerIcon from "assets/icons/sidebar/owner-icon.svg";
 import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
 import LogoutIcon from "assets/icons/sidebar/logout-icon.svg";
 import { logoutUser } from "store/logout/actions";
@@ -100,15 +99,6 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
           <div className={`settings-dropdown ${open && "show"}`}>
-            <Link
-              to={routeTemplates.dashboard.owners}
-              className="settings-option"
-            >
-              <div className="icon">
-                <Img src={OwnerIcon} alt="owners" />
-              </div>
-              <div className="name">Owners</div>
-            </Link>
             <Link
               to={routeTemplates.dashboard.settings}
               className="settings-option"

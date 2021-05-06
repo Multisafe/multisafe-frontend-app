@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLongArrowAltLeft,
-  faUserCircle,
-  faInfoCircle,
-  faLink,
-  faEdit,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLink, faEdit } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 import { Col, Row } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
-import { Info } from "components/Dashboard-old/styles";
 import { Card } from "components/common/Card";
 import Button from "components/common/Button";
-import { Input, ErrorMessage } from "components/common/Form";
 import { useLocalStorage } from "hooks";
 import invitationSaga from "store/invitation/saga";
 import invitationReducer from "store/invitation/reducer";
@@ -46,22 +38,22 @@ import { useActiveWeb3React } from "hooks";
 import CopyButton from "components/common/Copy";
 import Img from "components/common/Img";
 
-import { Title, Heading, ActionItem } from "components/People/styles";
-import { Container, OwnerDetails, StepDetails } from "./styles";
-import { Circle } from "components/Header/styles";
-import { minifyAddress } from "components/common/Web3Utils";
+import { Title, Heading, InfoCard } from "components/People/styles";
+import { OwnersContainer, OwnerDetails, StepDetails } from "./styles";
+import QuestionIcon from "assets/icons/dashboard/question-icon.svg";
 import Step1Png from "assets/icons/invite/step-1.png";
 import Step2Png from "assets/icons/invite/step-2.png";
 import Step3Png from "assets/icons/invite/step-3.png";
 import EditOwnerModal, {
   MODAL_NAME as EDIT_OWNER_MODAL,
 } from "./EditOwnerModal";
+import Avatar from "components/common/Avatar";
+import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 
 const invitationKey = "invitation";
 
 export default function InviteOwners() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const [showEmail, setShowEmail] = useState();
   const [ownerToBeInvited, setOwnerToBeInvited] = useState();
   const [displayInviteSteps, setDisplayInviteSteps] = useState(false);
 
@@ -81,7 +73,6 @@ export default function InviteOwners() {
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const threshold = useSelector(makeSelectThreshold());
   const safeOwners = useSelector(makeSelectSafeOwners());
-  const createdBy = useSelector(makeSelectCreatedBy());
   const loading = useSelector(makeSelectLoading());
   const creatingInvitation = useSelector(makeSelectCreating());
   const successfullyInvited = useSelector(makeSelectSuccess());
@@ -89,7 +80,6 @@ export default function InviteOwners() {
   const isOrganisationPrivate = useSelector(makeSelectIsOrganisationPrivate());
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -100,7 +90,6 @@ export default function InviteOwners() {
   useEffect(() => {
     if (successfullyInvited && ownerSafeAddress) {
       dispatch(getInvitations(ownerSafeAddress));
-      setShowEmail();
     }
   }, [dispatch, successfullyInvited, ownerSafeAddress]);
 
@@ -119,7 +108,7 @@ export default function InviteOwners() {
     setDisplayInviteSteps((displayInviteSteps) => !displayInviteSteps);
   };
 
-  const onSubmit = async (values) => {
+  const inviteOwner = () => {
     if (!account || !ownerToBeInvited || !ownerSafeAddress) return;
     dispatch(
       createInvitation({
@@ -127,8 +116,8 @@ export default function InviteOwners() {
         createdBy: account,
         toAddress: ownerToBeInvited,
         fromAddress: account,
-        toEmail: values.email || "",
-        fromEmail: "hello@parcel.money", // TODO: change this later
+        toEmail: "",
+        fromEmail: "hello@multisafe.finance", // TODO: change this later
       })
     );
   };
@@ -146,85 +135,71 @@ export default function InviteOwners() {
     );
   };
 
-  const goBack = () => {
-    history.goBack();
-  };
-
-  const toggleShowEmail = (idx, owner) => {
-    if (showEmail === idx) {
-      setShowEmail();
-      setOwnerToBeInvited();
-    } else {
-      setShowEmail(idx);
-      setOwnerToBeInvited(owner);
-    }
-  };
-
   const handleEditName = (name, ownerAddress) => {
     dispatch(show(EDIT_OWNER_MODAL, { name, ownerAddress }));
   };
 
   const renderInvitationStatus = (owner, invitationDetails, idx) => {
     if (owner === account) {
-      return <div className="highlighted-status">You</div>;
-    }
-    if (owner === createdBy) {
-      return <div className="highlighted-status">Owner</div>;
+      return (
+        <div className="d-flex align-items-center">
+          <div className="you-status">YOU</div>
+          <div className="highlighted-status ml-3">Member</div>
+        </div>
+      );
     }
 
     if (!isOrganisationPrivate) {
-      return <div className="highlighted-status">Owner</div>;
+      return <div className="highlighted-status">Member</div>;
     }
 
     if (!invitationDetails) {
       return (
-        <div
-          className="invite-status"
-          onClick={() => toggleShowEmail(idx, owner)}
-        >
-          <Button
-            large
-            type="submit"
-            style={{ minHeight: "0", height: "100%", fontSize: "14px" }}
-            loading={creatingInvitation}
-            className="px-3 py-2"
-          >
-            Invite to Parcel
-          </Button>
+        <div className="invite-status" onClick={inviteOwner}>
+          Invite
         </div>
       );
     }
 
     if (invitationDetails && invitationDetails.status === 0) {
       // sent invite and awaiting confirmation
+      const tooltip =
+        "This member has not yet joined the organisation.<br /> Please share the invite link with them.";
       return (
         <div className="d-flex align-items-center">
-          <div className="awaiting-status mr-2">Awaiting Confirmation</div>
+          <div className="awaiting-status mr-3">Awaiting Confirmation</div>
           {invitationDetails.invitationLink && (
             <CopyButton
+              className="mr-3"
               id={`invitation-link-${idx}`}
               tooltip="Invitation Link"
               value={invitationDetails.invitationLink}
-            >
-              <Button
-                large
-                type="button"
-                style={{ minHeight: "0", height: "100%", fontSize: "12px" }}
-                className="p-2"
-              >
-                {/* Copy */}
-                <FontAwesomeIcon icon={faLink} color={"#fff"} />
-              </Button>
-            </CopyButton>
+            />
           )}
+
+          <Img
+            id={`invitation-info-${idx}`}
+            src={InfoIcon}
+            alt="info"
+            data-for={`invitation-info-${idx}`}
+            data-tip={tooltip}
+          />
+          <ReactTooltip
+            id={`invitation-info-${idx}`}
+            place={"right"}
+            type={"dark"}
+            effect={"solid"}
+            multiline={true}
+          />
         </div>
       );
     }
+
     if (invitationDetails && invitationDetails.status === 1) {
       // approve
       return (
         <div
-          className="approved-status"
+          className="approve-status"
           onClick={() => approveOwner(owner, invitationDetails)}
         >
           Approve
@@ -232,129 +207,76 @@ export default function InviteOwners() {
       );
     }
 
-    if (invitationDetails && invitationDetails.status === 2) {
+    if ((invitationDetails && invitationDetails.status === 2) || true) {
       // completed
-      return <div className="joined-status">Owner</div>;
+      return <div className="joined-status">Member</div>;
     }
 
     return null;
   };
 
-  // eslint-disable-next-line
-  const renderEmail = () => (
-    <div className="send-email">
-      <Row>
-        <Col lg="8">
-          <Input
-            type="text"
-            name="email"
-            register={register}
-            // required={`Email is required`}
-            pattern={{
-              value: /\S+@\S+\.\S+/,
-              message: "Invalid email address",
-            }}
-            placeholder="Email ID (Optional)"
-          />
-        </Col>
-        <Col lg="4">
-          <Button
-            large
-            type="submit"
-            disabled={!formState.isValid}
-            style={{ minHeight: "0", height: "100%" }}
-            loading={creatingInvitation}
-          >
-            Send
-          </Button>
-        </Col>
-      </Row>
-      <ErrorMessage name="email" errors={errors} />
-    </div>
-  );
-
   const renderInviteOwners = () => {
     return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="invite-owners">
-          <Row className="justify-content-between align-items-center mb-4">
-            <Col lg="10">
-              <Title className="mb-2">Owners</Title>
-              <Heading>List of all owners of the safe</Heading>
-            </Col>
-            <Col lg="2" className="text-right">
-              <Button iconOnly className="p-0" onClick={toggleShowOwners}>
-                <FontAwesomeIcon
-                  icon={faInfoCircle}
-                  color="#333"
-                  style={{ fontSize: "28px" }}
-                />
-              </Button>
-            </Col>
-          </Row>
-          {loading && (
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{ height: "250px" }}
-            >
-              <Loading color="primary" width="50px" height="50px" />
-            </div>
-          )}
+      <div>
+        {loading && (
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: "250px" }}
+          >
+            <Loading color="primary" width="50px" height="50px" />
+          </div>
+        )}
 
-          {!loading &&
-            safeOwners &&
-            safeOwners.map(
-              ({ name: encryptedName, owner, invitationDetails }, idx) => {
-                const isOwnerWithoutName =
-                  encryptedName === "0000" ? true : false;
-                const name = isOwnerWithoutName
-                  ? "New Owner"
-                  : cryptoUtils.decryptDataUsingEncryptionKey(
-                      encryptedName,
-                      encryptionKey,
-                      organisationType
-                    );
-                return (
-                  <Row key={`${owner}${idx}`}>
-                    <Col lg="12">
-                      <OwnerDetails>
-                        <div className="left">
-                          <div className="icon">
-                            <FontAwesomeIcon icon={faUserCircle} color="#333" />
-                          </div>
-                          <div className="details">
-                            <div className="name">
-                              {name}
-                              <FontAwesomeIcon
-                                icon={faEdit}
-                                color="#8b8b8b"
-                                className="ml-2 cursor-pointer"
-                                onClick={() => handleEditName(name, owner)}
-                              />
-                            </div>
-                            <div className="address">
-                              Address: {minifyAddress(owner)}
-                            </div>
-                          </div>
+        {!loading &&
+          safeOwners &&
+          safeOwners.map(
+            ({ name: encryptedName, owner, invitationDetails }, idx) => {
+              const isOwnerWithoutName =
+                encryptedName === "0000" ? true : false;
+              const name = isOwnerWithoutName
+                ? "New Owner"
+                : cryptoUtils.decryptDataUsingEncryptionKey(
+                    encryptedName,
+                    encryptionKey,
+                    organisationType
+                  );
+              const firstName = name.split(" ")[0];
+              const lastName = name.split(" ")[1];
+              return (
+                <div className="d-flex" key={`${owner}${idx}`}>
+                  <OwnerDetails>
+                    <div className="left">
+                      <Avatar
+                        firstName={firstName}
+                        lastName={lastName}
+                        style={{
+                          fontSize: "1.2rem",
+                          width: "3rem",
+                          height: "3rem",
+                        }}
+                      />
+                      <div className="details">
+                        <div className="name">
+                          {name}
+                          <FontAwesomeIcon
+                            icon={faEdit}
+                            color="#8b8b8b"
+                            className="ml-2 cursor-pointer"
+                            onClick={() => handleEditName(name, owner)}
+                            style={{ fontSize: "1.2rem" }}
+                          />
                         </div>
-                        {renderInvitationStatus(owner, invitationDetails, idx)}
-                        {/* {showEmail === idx && renderEmail()} */}
-                      </OwnerDetails>
-                    </Col>
-                  </Row>
-                );
-              }
-            )}
-          <Heading className="payment-status-threshold">
-            Every transaction requires the confirmation of{" "}
-            <span>
-              {threshold} out of {safeOwners.length}
-            </span>{" "}
-            owners
-          </Heading>
-        </Card>
+                        <div className="address">Address: {owner}</div>
+                      </div>
+                    </div>
+                    {renderInvitationStatus(owner, invitationDetails, idx)}
+                  </OwnerDetails>
+                </div>
+              );
+            }
+          )}
         <EditOwnerModal />
-      </form>
+      </div>
     );
   };
 
@@ -439,79 +361,61 @@ export default function InviteOwners() {
 
   const renderInviteSteps = () => {
     return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Card className="invite-owners">
-          <Title className="mb-2">Owners</Title>
-          <Heading>
+      <Card className="invite-owners">
+        <Title className="mb-2">Owners</Title>
+        <Heading>
+          {isOrganisationPrivate
+            ? `To allow other owners to use Parcel, follow these simple steps`
+            : `All the owners can directly login to Parcel`}
+        </Heading>
+        {loading && (
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: "250px" }}
+          >
+            <Loading color="primary" width="50px" height="50px" />
+          </div>
+        )}
+        {!loading && (
+          <React.Fragment>
             {isOrganisationPrivate
-              ? `To allow other owners to use Parcel, follow these simple steps`
-              : `All the owners can directly login to Parcel`}
-          </Heading>
-          {loading && (
-            <div
-              className="d-flex align-items-center justify-content-center"
-              style={{ height: "250px" }}
-            >
-              <Loading color="primary" width="50px" height="50px" />
-            </div>
-          )}
-          {!loading && (
-            <React.Fragment>
-              {isOrganisationPrivate
-                ? renderStepsForPrivateOrganisation()
-                : renderStepsForPublicOrganisation()}
+              ? renderStepsForPrivateOrganisation()
+              : renderStepsForPublicOrganisation()}
 
-              <Button
-                large
-                type="button"
-                className="mt-5"
-                onClick={toggleShowOwners}
-              >
-                View All Owners
-              </Button>
-            </React.Fragment>
-          )}
-        </Card>
-      </form>
+            <Button
+              large
+              type="button"
+              className="mt-5"
+              onClick={toggleShowOwners}
+            >
+              View All Owners
+            </Button>
+          </React.Fragment>
+        )}
+      </Card>
     );
   };
 
   return (
-    <div
-      className="position-relative"
-      style={{
-        transition: "all 0.25s linear",
-      }}
-    >
-      <Info>
-        <div
-          style={{
-            maxWidth: "1200px",
-            transition: "all 0.25s linear",
-          }}
-          className="mx-auto"
-        >
-          <Button iconOnly className="p-0" onClick={goBack}>
-            <ActionItem>
-              <Circle>
-                <FontAwesomeIcon icon={faLongArrowAltLeft} color="#fff" />
-              </Circle>
-              <div className="mx-3">
-                <div className="name">Back</div>
-              </div>
-            </ActionItem>
-          </Button>
+    <div>
+      <InfoCard className="mt-5">
+        <div>
+          <div className="title">Members</div>
+          <div className="subtitle">List of all owners of the safe</div>
+          <div className="subtitle mt-2">
+            Every transaction requires the confirmation of{" "}
+            <span className="text-bold">
+              {threshold} out of {safeOwners.length}
+            </span>{" "}
+            owners
+          </div>
         </div>
-      </Info>
-
-      <Container
-        style={{
-          maxWidth: "1200px",
-          transition: "all 0.25s linear",
-        }}
-      >
-        {displayInviteSteps ? renderInviteSteps() : renderInviteOwners()}
-      </Container>
+        <Button iconOnly className="help">
+          <Img src={QuestionIcon} alt="question" />
+          <div className="ml-3 text">How invitation works</div>
+        </Button>
+      </InfoCard>
+      <OwnersContainer>{renderInviteOwners()}</OwnersContainer>
     </div>
   );
 }

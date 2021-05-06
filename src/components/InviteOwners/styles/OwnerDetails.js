@@ -2,11 +2,12 @@ import styled from "styled-components/macro";
 
 export default styled.div`
   width: 100%;
-  min-height: 62px;
-  margin-bottom: 16px;
-  padding: 13px 24px;
-  border-radius: 12px;
-  background-color: #f2f2f2;
+  min-height: 6rem;
+  max-width: 80rem;
+  margin-bottom: 1rem;
+  padding: 1.2rem 1.5rem;
+  border-radius: 0.4rem;
+  background-color: #f7f7f8;
   flex-wrap: wrap;
 
   display: flex;
@@ -18,89 +19,82 @@ export default styled.div`
     align-items: center;
   }
 
-  .icon {
-    font-size: 26px;
-  }
   .details {
-    margin-left: 20px;
+    margin-left: 2rem;
     .name {
-      font-size: 14px;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.29;
-      letter-spacing: normal;
+      font-size: 1.4rem;
+      font-weight: 900;
       text-align: left;
+      line-height: normal;
       color: #373737;
-      font-weight: bold;
     }
     .address {
-      font-size: 14px;
+      font-size: 1.2rem;
       font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.29;
-      letter-spacing: normal;
+      line-height: normal;
       text-align: left;
       color: #373737;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
-  .invite-status {
-    font-size: 12px;
+  .invite-status,
+  .you-status,
+  .approve-status {
+    font-size: 1.2rem;
     font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.25;
-    letter-spacing: normal;
+    line-height: normal;
     text-align: right;
-    color: ${({ theme }) => theme.primary};
-    text-transform: uppercase;
+    color: #fff;
+    padding: 0.6rem 1.6rem 0.5rem;
+    border-radius: 0.2rem;
+    background-color: ${({ theme }) => theme.primary};
     cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .you-status {
+    padding: 0.6rem 1.2rem 0.5rem;
   }
 
   .highlighted-status,
   .joined-status {
-    font-size: 12px;
+    font-size: 1.2rem;
     font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.25;
-    letter-spacing: normal;
+    line-height: normal;
     text-align: right;
     color: #fff;
-    text-transform: uppercase;
-    padding: 5px 10px;
-    border-radius: 5px;
-    background-color: #3bd800;
+    padding: 0.6rem 1.6rem 0.5rem;
+    border-radius: 0.2rem;
+    background-color: #6cb44c;
   }
 
   .awaiting-status {
-    font-size: 12px;
+    font-size: 1.2rem;
     font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.25;
-    letter-spacing: normal;
+    line-height: normal;
     text-align: right;
-    color: #373737;
-    text-transform: uppercase;
+    color: #aaaaaa;
+    padding: 0.6rem 0.6rem 0.4rem;
+    border-radius: 0.2rem;
+    border: solid 0.1rem #c7c7c7;
   }
 
-  .approved-status {
-    font-size: 12px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.25;
-    letter-spacing: normal;
-    text-align: right;
-    color: #3bd800;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
+  @media (max-width: 600px) {
+    grid-gap: 1rem;
 
-  .send-email {
-    width: 100%;
-    margin-top: 16px;
+    .left {
+      width: 100%;
+    }
+
+    .details {
+      width: 100%;
+      margin-left: 0;
+    }
   }
 `;

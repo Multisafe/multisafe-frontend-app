@@ -5,6 +5,7 @@ import Img from "components/common/Img";
 import OwnersIcon from "assets/icons/dashboard/owners-icon.svg";
 import SpendingLimitsIcon from "assets/icons/dashboard/spending-limits-icon.svg";
 import SpendingLimits from "components/SpendingLimits";
+import InviteOwners from "components/InviteOwners";
 
 const TABS = {
   OWNERS: "1",
@@ -38,8 +39,8 @@ const navStyles = `
 
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
     border-bottom: 0.8rem solid #7367f0;
-    border-bottom-right-radius: 0.4rem;
-    border-bottom-left-radius: 0.4rem;
+    border-bottom-right-radius: 0.3rem;
+    border-bottom-left-radius: 0.3rem;
   }
 
   .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
@@ -76,7 +77,6 @@ export default function Settings() {
   return (
     <div>
       <style>{navStyles}</style>
-
       <Nav tabs>
         <NavItem>
           <NavLink
@@ -102,7 +102,9 @@ export default function Settings() {
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
-        <TabPane tabId={TABS.OWNERS}>Owners</TabPane>
+        <TabPane tabId={TABS.OWNERS}>
+          <InviteOwners />
+        </TabPane>
         <TabPane tabId={TABS.SPENDING_LIMITS}>
           <div className="mt-5">
             <SpendingLimits />
