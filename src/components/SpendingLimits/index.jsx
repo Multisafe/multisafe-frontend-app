@@ -129,22 +129,29 @@ export default function SpendingLimits() {
               }
             }
           }
-          setExistingSpendingLimits(spendingLimits);
-          setLoadingLimits(false);
+          return spendingLimits;
         } else {
-          setExistingSpendingLimits([]);
-          setLoadingLimits(false);
+          return [];
         }
       } catch (err) {
         console.error(err);
-        setExistingSpendingLimits([]);
-        setLoadingLimits(false);
+        return [];
       }
     }
   }, [allowanceModule, ownerSafeAddress, getERC20Contract]);
 
   useEffect(() => {
-    getSpendingLimits();
+    let isMounted = true;
+
+    getSpendingLimits().then((spendingLimits) => {
+      if (isMounted) {
+        setExistingSpendingLimits(spendingLimits);
+        setLoadingLimits(false);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
   }, [getSpendingLimits]);
 
   const renderResetTime = (resetTimeMin, lastResetMin) => {

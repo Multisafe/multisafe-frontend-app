@@ -277,7 +277,6 @@ export default function MultiSigTransactions() {
           subtitle={subtitle}
           backgroundColor={backgroundColor}
           stepStyles={{ marginBottom: "0" }}
-          last={idx === statuses.length - 1}
         />
       )
     );

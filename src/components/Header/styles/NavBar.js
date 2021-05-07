@@ -1,7 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  min-height: 8rem;
+  min-height: 6rem;
   background-color: ${({ theme, white }) => (white ? "#fff" : theme.primary)};
 
   box-shadow: ${({ white }) =>
