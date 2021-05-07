@@ -227,6 +227,7 @@ function AddSinglePeopleModal(props) {
                 width="20rem"
                 options={teamsDropdown}
                 placeholder={`Select Team...`}
+                defaultValue={null}
               />
             </div>
             {hasTeamChanged && !hasTeamChanged.value && (
@@ -271,6 +272,7 @@ function AddSinglePeopleModal(props) {
                 isLoading={loadingTokenList}
                 placeholder={`Select Currency...`}
                 isDisabled={hasTeamChanged && hasTeamChanged.value}
+                defaultValue={null}
               />
             </div>
           </div>

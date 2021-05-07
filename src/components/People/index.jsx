@@ -173,7 +173,11 @@ export default function People() {
           };
         })
         .sort((a, b) =>
-          a.firstName.toUpperCase() > b.firstName.toUpperCase() ? 1 : -1
+          a.firstName &&
+          b.firstName &&
+          a.firstName.toUpperCase() > b.firstName.toUpperCase()
+            ? 1
+            : -1
         );
 
       setAllPeople(sortedDecryptedPeople);

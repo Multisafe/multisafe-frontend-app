@@ -33,7 +33,7 @@ const StyledContainer = styled(ToastContainer).attrs({
   .Toastify__toast--success {
   }
   .Toastify__toast-body {
-    font-family: "Montserrat";
+    font-family: "Montserrat", sans-serif;
     font-size: 15px;
     font-weight: 300;
     font-stretch: normal;

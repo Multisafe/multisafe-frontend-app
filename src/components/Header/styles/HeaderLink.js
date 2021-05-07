@@ -8,10 +8,6 @@ export default styled(Link)`
   text-decoration: none;
   cursor: pointer;
   outline: 0;
-  font-family: "Montserrat", sans-serif;
-  font-weight: bold;
-  font-size: 20px;
-  color: ${({ theme }) => theme.logo.color};
 
   &:active {
     background: none;

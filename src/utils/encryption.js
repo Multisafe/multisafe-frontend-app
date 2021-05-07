@@ -12,7 +12,7 @@ export const getDecryptedDetails = (
   organisationType,
   parse = true
 ) => {
-  if (!encryptionKey || !data || organisationType === undefined) return {};
+  if (!encryptionKey || !data || organisationType === undefined) return "";
   try {
     const decryptedData = cryptoUtils.decryptDataUsingEncryptionKey(
       data,
@@ -23,6 +23,6 @@ export const getDecryptedDetails = (
     return parse ? JSON.parse(decryptedData) : decryptedData;
   } catch (err) {
     console.error(err);
-    return {};
+    return "";
   }
 };
