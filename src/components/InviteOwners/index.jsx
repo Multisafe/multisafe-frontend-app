@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink, faEdit } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
-import { Col, Row } from "reactstrap";
-import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
@@ -54,8 +52,8 @@ const invitationKey = "invitation";
 
 export default function InviteOwners() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const [ownerToBeInvited, setOwnerToBeInvited] = useState();
-  const [displayInviteSteps, setDisplayInviteSteps] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [pendingOwners, setPendingOwners] = useState([]);
 
   const { account } = useActiveWeb3React();
 
@@ -65,14 +63,10 @@ export default function InviteOwners() {
   // Sagas
   useInjectSaga({ key: invitationKey, saga: invitationSaga });
 
-  const { register, errors, handleSubmit, formState } = useForm({
-    mode: "all",
-  });
-
-  // const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const threshold = useSelector(makeSelectThreshold());
   const safeOwners = useSelector(makeSelectSafeOwners());
+  const createdBy = useSelector(makeSelectCreatedBy());
   const loading = useSelector(makeSelectLoading());
   const creatingInvitation = useSelector(makeSelectCreating());
   const successfullyInvited = useSelector(makeSelectSuccess());
@@ -94,27 +88,31 @@ export default function InviteOwners() {
   }, [dispatch, successfullyInvited, ownerSafeAddress]);
 
   useEffect(() => {
-    if (
-      (safeOwners && safeOwners.some((owner) => owner.invitationDetails)) ||
-      !isOrganisationPrivate
-    ) {
-      setDisplayInviteSteps(false);
-    } else {
-      setDisplayInviteSteps(true);
+    if (safeOwners) {
+      const members = [];
+      const pendingOwners = [];
+      for (let i = 0; i < safeOwners.length; i++) {
+        const { owner, invitationDetails } = safeOwners[i];
+        const isMember =
+          owner === createdBy ||
+          (invitationDetails && invitationDetails.status === 2) ||
+          !isOrganisationPrivate;
+        if (isMember) members.push(safeOwners[i]);
+        else pendingOwners.push(safeOwners[i]);
+      }
+
+      setMembers(members);
+      setPendingOwners(pendingOwners);
     }
-  }, [safeOwners, isOrganisationPrivate]);
+  }, [safeOwners, createdBy, isOrganisationPrivate]);
 
-  const toggleShowOwners = () => {
-    setDisplayInviteSteps((displayInviteSteps) => !displayInviteSteps);
-  };
-
-  const inviteOwner = () => {
-    if (!account || !ownerToBeInvited || !ownerSafeAddress) return;
+  const inviteOwner = (owner) => {
+    if (!account || !owner || !ownerSafeAddress) return;
     dispatch(
       createInvitation({
         safeAddress: ownerSafeAddress,
         createdBy: account,
-        toAddress: ownerToBeInvited,
+        toAddress: owner,
         fromAddress: account,
         toEmail: "",
         fromEmail: "hello@multisafe.finance", // TODO: change this later
@@ -149,15 +147,25 @@ export default function InviteOwners() {
       );
     }
 
+    if (owner === createdBy) {
+      return <div className="highlighted-status">Member</div>;
+    }
+
     if (!isOrganisationPrivate) {
       return <div className="highlighted-status">Member</div>;
     }
 
     if (!invitationDetails) {
       return (
-        <div className="invite-status" onClick={inviteOwner}>
+        <Button
+          className="invite-status"
+          style={{ minHeight: "0" }}
+          onClick={() => inviteOwner(owner)}
+          disabled={creatingInvitation}
+          loading={creatingInvitation}
+        >
           Invite
-        </div>
+        </Button>
       );
     }
 
@@ -207,12 +215,60 @@ export default function InviteOwners() {
       );
     }
 
-    if ((invitationDetails && invitationDetails.status === 2) || true) {
+    if (invitationDetails && invitationDetails.status === 2) {
       // completed
       return <div className="joined-status">Member</div>;
     }
 
     return null;
+  };
+
+  const renderOwnerDetails = (
+    { name: encryptedName, owner, invitationDetails },
+    idx,
+    noBackground = false
+  ) => {
+    const isOwnerWithoutName = encryptedName === "0000" ? true : false;
+    const name = isOwnerWithoutName
+      ? "New Owner"
+      : cryptoUtils.decryptDataUsingEncryptionKey(
+          encryptedName,
+          encryptionKey,
+          organisationType
+        );
+    const firstName = name.split(" ")[0];
+    const lastName = name.split(" ")[1];
+    return (
+      <div className="d-flex" key={`${owner}${idx}`}>
+        <OwnerDetails backgroundColor={noBackground && "#fff"}>
+          <div className="left">
+            <Avatar
+              firstName={firstName}
+              lastName={lastName}
+              style={{
+                fontSize: "1.2rem",
+                width: "3rem",
+                height: "3rem",
+              }}
+            />
+            <div className="details">
+              <div className="name">
+                {name}
+                <FontAwesomeIcon
+                  icon={faEdit}
+                  color="#8b8b8b"
+                  className="ml-2 cursor-pointer"
+                  onClick={() => handleEditName(name, owner)}
+                  style={{ fontSize: "1.2rem" }}
+                />
+              </div>
+              <div className="address">Address: {owner}</div>
+            </div>
+          </div>
+          {renderInvitationStatus(owner, invitationDetails, idx)}
+        </OwnerDetails>
+      </div>
+    );
   };
 
   const renderInviteOwners = () => {
@@ -228,52 +284,14 @@ export default function InviteOwners() {
         )}
 
         {!loading &&
-          safeOwners &&
-          safeOwners.map(
-            ({ name: encryptedName, owner, invitationDetails }, idx) => {
-              const isOwnerWithoutName =
-                encryptedName === "0000" ? true : false;
-              const name = isOwnerWithoutName
-                ? "New Owner"
-                : cryptoUtils.decryptDataUsingEncryptionKey(
-                    encryptedName,
-                    encryptionKey,
-                    organisationType
-                  );
-              const firstName = name.split(" ")[0];
-              const lastName = name.split(" ")[1];
-              return (
-                <div className="d-flex" key={`${owner}${idx}`}>
-                  <OwnerDetails>
-                    <div className="left">
-                      <Avatar
-                        firstName={firstName}
-                        lastName={lastName}
-                        style={{
-                          fontSize: "1.2rem",
-                          width: "3rem",
-                          height: "3rem",
-                        }}
-                      />
-                      <div className="details">
-                        <div className="name">
-                          {name}
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            color="#8b8b8b"
-                            className="ml-2 cursor-pointer"
-                            onClick={() => handleEditName(name, owner)}
-                            style={{ fontSize: "1.2rem" }}
-                          />
-                        </div>
-                        <div className="address">Address: {owner}</div>
-                      </div>
-                    </div>
-                    {renderInvitationStatus(owner, invitationDetails, idx)}
-                  </OwnerDetails>
-                </div>
-              );
-            }
+          pendingOwners &&
+          pendingOwners.map((ownerDetails, idx) =>
+            renderOwnerDetails(ownerDetails, idx)
+          )}
+        {!loading &&
+          members &&
+          members.map((ownerDetails, idx) =>
+            renderOwnerDetails(ownerDetails, idx, true)
           )}
         <EditOwnerModal />
       </div>
@@ -281,92 +299,69 @@ export default function InviteOwners() {
   };
 
   const renderStepsForPrivateOrganisation = () => (
-    <React.Fragment>
-      <Row className="align-items-center mt-4">
-        <Col lg="2" className="pr-0">
-          <Img src={Step1Png} alt="step1" width="64" />
-        </Col>
-        <Col lg="10" className="pl-0">
-          <StepDetails>
-            <div className="step-title">STEP 1</div>
-            <div className="step-subtitle">Invite the Owners to Parcel</div>
-          </StepDetails>
-        </Col>
-      </Row>
-      <Row className="align-items-center mt-4">
-        <Col lg="2" className="pr-0">
-          <Img src={Step2Png} alt="step2" width="64" />
-        </Col>
-        <Col lg="10" className="pl-0">
-          <StepDetails>
-            <div className="step-title">STEP 2</div>
-            <div className="step-subtitle">Owner Accepts the Invite</div>
-          </StepDetails>
-        </Col>
-      </Row>
-      <Row className="align-items-center mt-4">
-        <Col lg="2" className="pr-0">
-          <Img src={Step3Png} alt="step3" width="64" />
-        </Col>
-        <Col lg="10" className="pl-0">
-          <StepDetails>
-            <div className="step-title">STEP 3</div>
-            <div className="step-subtitle">
-              You Give Final Approval To The Owner
-            </div>
-          </StepDetails>
-        </Col>
-      </Row>
-    </React.Fragment>
+    <div>
+      <div className="d-flex align-items-center mt-4">
+        <Img src={Step1Png} alt="step1" width="64" />
+        <StepDetails>
+          <div className="step-title">STEP 1</div>
+          <div className="step-subtitle">Invite the Owners to Parcel</div>
+        </StepDetails>
+      </div>
+      <div className="d-flex align-items-center mt-4">
+        <Img src={Step2Png} alt="step2" width="64" />
+        <StepDetails>
+          <div className="step-title">STEP 2</div>
+          <div className="step-subtitle">Owner Accepts the Invite</div>
+        </StepDetails>
+      </div>
+      <div className="d-flex align-items-center mt-4">
+        <Img src={Step3Png} alt="step3" width="64" />
+        <StepDetails>
+          <div className="step-title">STEP 3</div>
+          <div className="step-subtitle">
+            You Give Final Approval To The Owner
+          </div>
+        </StepDetails>
+      </div>
+    </div>
   );
 
   const renderStepsForPublicOrganisation = () => (
-    <React.Fragment>
-      <Row className="align-items-center mt-5 pt-5 mb-5 pb-5">
-        {/* <Col lg="2" className="pr-0">
-          <Img src={Step3Png} alt="step1" width="64" />
-        </Col> */}
-        <Col lg="12">
-          <StepDetails>
-            <div className="step-title d-flex justify-content-center align-items-center">
-              {/* <div className="mr-2">SETUP COMPLETED</div> */}
-              <CopyButton
-                id={`invitation-link-final`}
-                tooltip="Login Link"
-                value={window.location.origin}
-              >
-                <Button
-                  type="button"
-                  style={{ minHeight: "0", height: "100%", fontSize: "12px" }}
-                  className="p-2"
-                >
-                  <FontAwesomeIcon
-                    icon={faLink}
-                    color={"#fff"}
-                    className="mx-1"
-                  />
-                  Copy Login Link
-                </Button>
-              </CopyButton>
-            </div>
-            <div className="step-subtitle mt-2 text-center">
-              Share this link with the other owners and they can login to
-              Parcel.
-            </div>
-          </StepDetails>
-        </Col>
-      </Row>
-    </React.Fragment>
+    <div className="d-flex align-items-center mt-5 pt-5 mb-5 pb-5">
+      <StepDetails>
+        <div className="step-title d-flex justify-content-center align-items-center">
+          {/* <div className="mr-2">SETUP COMPLETED</div> */}
+          <CopyButton
+            id={`invitation-link-final`}
+            tooltip="Login Link"
+            value={window.location.origin}
+          >
+            <Button
+              type="button"
+              style={{ minHeight: "0", height: "100%", fontSize: "12px" }}
+              className="p-2"
+            >
+              <FontAwesomeIcon icon={faLink} color={"#fff"} className="mx-1" />
+              Copy Login Link
+            </Button>
+          </CopyButton>
+        </div>
+        <div className="step-subtitle mt-2 text-center">
+          Share this link with the other owners and they can login to Parcel.
+        </div>
+      </StepDetails>
+    </div>
   );
 
+  // eslint-disable-next-line
   const renderInviteSteps = () => {
     return (
       <Card className="invite-owners">
         <Title className="mb-2">Owners</Title>
         <Heading>
           {isOrganisationPrivate
-            ? `To allow other owners to use Parcel, follow these simple steps`
-            : `All the owners can directly login to Parcel`}
+            ? `To allow other owners to use Multisafe, follow these simple steps`
+            : `All the owners can directly login to Multisafe`}
         </Heading>
         {loading && (
           <div
@@ -382,13 +377,8 @@ export default function InviteOwners() {
               ? renderStepsForPrivateOrganisation()
               : renderStepsForPublicOrganisation()}
 
-            <Button
-              large
-              type="button"
-              className="mt-5"
-              onClick={toggleShowOwners}
-            >
-              View All Owners
+            <Button large type="button" className="mt-5">
+              Close
             </Button>
           </React.Fragment>
         )}

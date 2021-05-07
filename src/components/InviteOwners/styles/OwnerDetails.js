@@ -7,7 +7,8 @@ export default styled.div`
   margin-bottom: 1rem;
   padding: 1.2rem 1.5rem;
   border-radius: 0.4rem;
-  background-color: #f7f7f8;
+  background-color: ${({ backgroundColor }) =>
+    backgroundColor ? backgroundColor : "#f7f7f8"};
   flex-wrap: wrap;
 
   display: flex;
@@ -45,13 +46,16 @@ export default styled.div`
   .approve-status {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: normal;
+    line-height: 1.5rem;
     text-align: right;
     color: #fff;
-    padding: 0.6rem 1.6rem 0.5rem;
+    padding: 0.6rem 1.6rem;
     border-radius: 0.2rem;
     background-color: ${({ theme }) => theme.primary};
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     &:hover {
       opacity: 0.8;
@@ -59,17 +63,17 @@ export default styled.div`
   }
 
   .you-status {
-    padding: 0.6rem 1.2rem 0.5rem;
+    padding: 0.6rem 1.2rem;
   }
 
   .highlighted-status,
   .joined-status {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: normal;
+    line-height: 1.5rem;
     text-align: right;
     color: #fff;
-    padding: 0.6rem 1.6rem 0.5rem;
+    padding: 0.6rem 1.6rem;
     border-radius: 0.2rem;
     background-color: #6cb44c;
   }
@@ -77,7 +81,7 @@ export default styled.div`
   .awaiting-status {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: normal;
+    line-height: 1.5rem;
     text-align: right;
     color: #aaaaaa;
     padding: 0.6rem 0.6rem 0.4rem;

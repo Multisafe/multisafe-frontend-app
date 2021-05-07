@@ -1,12 +1,13 @@
 import React from "react";
-import { Modal, ModalHeader } from "reactstrap";
+import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
+
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { cryptoUtils } from "parcel-sdk";
 
 import Button from "components/common/Button";
-import { Title } from "components/People/styles";
+import { EditContainer } from "./styles";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectOrganisationType,
@@ -23,20 +24,12 @@ import { useLocalStorage } from "hooks";
 export const MODAL_NAME = "edit-owner-modal";
 const safeKey = "safe";
 
-const modalStyles = `
-  .modal-content {
-    border-radius: 20px;
-    border: none;
-    padding: 20px;
-  }
-`;
-
 function EditOwnerModal(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const { show, handleHide, name, ownerAddress } = props;
 
   const { register, errors, handleSubmit, formState } = useForm({
-    mode: "all",
+    mode: "onChange",
   });
 
   useInjectSaga({ key: safeKey, saga: safeSaga });
@@ -64,45 +57,40 @@ function EditOwnerModal(props) {
   };
 
   return (
-    <Modal isOpen={show} centered>
-      <style>{modalStyles}</style>
-      <ModalHeader toggle={handleHide} style={{ borderBottom: "none" }}>
-        <Title className="mb-2">Edit Owner Name</Title>
-      </ModalHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mx-3">
-          <Input
-            type="text"
-            name="name"
-            register={register}
-            required={`Name is required`}
-            placeholder="Owner name"
-            defaultValue={name}
-          />
-          <ErrorMessage name="name" errors={errors} />
-          <div style={{ fontSize: "14px" }} className="mt-3">
-            Address: {ownerAddress}
-          </div>
-        </div>
+    <Modal isOpen={show} toggle={handleHide}>
+      <ModalHeader title={"Edit Owner"} toggle={handleHide} />
+      <ModalBody width="55rem" minHeight="auto">
+        <EditContainer>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="title">Name</div>
+            <div>
+              <Input
+                type="text"
+                name="name"
+                register={register}
+                required={`Name is required`}
+                placeholder="Owner name"
+                defaultValue={name}
+              />
+              <ErrorMessage name="name" errors={errors} />
+            </div>
 
-        <div className="d-flex justify-content-center align-items-center mt-3">
-          <div className="col-6">
-            <Button large onClick={handleHide} className="secondary">
-              Close
-            </Button>
-          </div>
-          <div className="col-6">
-            <Button
-              large
-              loading={updating}
-              disabled={!formState.isValid || updating}
-              type="submit"
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </form>
+            <div className="title mt-5">Address</div>
+            <div className="subtitle">{ownerAddress}</div>
+
+            <div className="edit-name-btn">
+              <Button
+                width="16rem"
+                loading={updating}
+                disabled={!formState.isValid || updating}
+                type="submit"
+              >
+                Save
+              </Button>
+            </div>
+          </form>
+        </EditContainer>
+      </ModalBody>
     </Modal>
   );
 }
