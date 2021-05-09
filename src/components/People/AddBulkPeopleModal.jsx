@@ -210,17 +210,28 @@ function AddBulkPeopleModal(props) {
     }
 
     return (
-      <tr key={`${address}-${idx}`} col={4}>
-        <td className={`${invalidName && "text-red"}`}>
+      <tr key={`${address}-${idx}`}>
+        <td className={`${invalidName && "text-red"}`} style={{ width: "20%" }}>
           {firstName} {lastName}
         </td>
-        <td className={`${invalidDepartment && "text-red"}`}>
+        <td
+          className={`${invalidDepartment && "text-red"}`}
+          style={{ width: "20%" }}
+        >
           {departmentName}
         </td>
-        <td className={`${invalidPayDetails && "text-red"}`}>
+        <td
+          className={`${invalidPayDetails && "text-red"}`}
+          style={{ width: "22%" }}
+        >
           {salaryAmount} {salaryToken}
         </td>
-        <td className={`${invalidAddress && "text-red"}`}>{address}</td>
+        <td
+          className={`${invalidAddress && "text-red"}`}
+          style={{ width: "38%" }}
+        >
+          {address}
+        </td>
       </tr>
     );
   };
@@ -287,43 +298,43 @@ function AddBulkPeopleModal(props) {
           )}
           <div className="csv-title">Adding {csvData.length} people</div>
         </UploadStatus>
-        <div style={{ minHeight: "100px", height: "300px", overflow: "auto" }}>
-          <Table>
-            <TableHead>
-              <tr>
-                <th style={{ width: "20%" }}>Name</th>
-                <th style={{ width: "20%" }}>Team</th>
-                <th style={{ width: "22%" }}>Disbursement</th>
-                <th style={{ width: "38%" }}>Address</th>
-              </tr>
-            </TableHead>
+        <Table>
+          <TableHead>
+            <tr>
+              <th style={{ width: "20%" }}>Name</th>
+              <th style={{ width: "20%" }}>Team</th>
+              <th style={{ width: "22%" }}>Disbursement</th>
+              <th style={{ width: "38%" }}>Address</th>
+            </tr>
+          </TableHead>
 
-            <TableBody>
-              {csvData.map(
-                (
-                  {
-                    firstName,
-                    lastName,
-                    address,
-                    salaryAmount,
-                    salaryToken,
-                    departmentName,
-                  },
-                  idx
-                ) =>
-                  renderCsvRow({
-                    firstName,
-                    lastName,
-                    address,
-                    salaryAmount,
-                    salaryToken,
-                    departmentName,
-                    idx,
-                  })
-              )}
-            </TableBody>
-          </Table>
-        </div>
+          <TableBody
+            style={{ minHeight: "10rem", height: "30rem", overflow: "auto" }}
+          >
+            {csvData.map(
+              (
+                {
+                  firstName,
+                  lastName,
+                  address,
+                  salaryAmount,
+                  salaryToken,
+                  departmentName,
+                },
+                idx
+              ) =>
+                renderCsvRow({
+                  firstName,
+                  lastName,
+                  address,
+                  salaryAmount,
+                  salaryToken,
+                  departmentName,
+                  idx,
+                })
+            )}
+          </TableBody>
+        </Table>
 
         {!invalidCsvData ? (
           <div

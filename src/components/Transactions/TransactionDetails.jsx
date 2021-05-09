@@ -32,6 +32,7 @@ import { Container, Detail } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
 import { getDecryptedDetails } from "utils/encryption";
+import { formatNumber } from "utils/number-helpers";
 
 const { TableBody, TableHead, TableRow } = Table;
 
@@ -199,8 +200,11 @@ export default function TransactionDetails() {
                                 <TokenImg token={salaryToken} />
 
                                 {salaryToken === "USD"
-                                  ? `${usd} USD`
-                                  : `${salaryAmount} ${salaryToken}`}
+                                  ? `${formatNumber(usd)} USD`
+                                  : `${formatNumber(
+                                      salaryAmount,
+                                      5
+                                    )} ${salaryToken}`}
                               </div>
                             </Detail>
                           </div>
@@ -254,8 +258,8 @@ export default function TransactionDetails() {
                         <div>
                           <TokenImg token={salaryToken} />
                           {salaryToken === "USD"
-                            ? `${usd} USD`
-                            : `${salaryAmount} ${salaryToken}`}
+                            ? `${formatNumber(usd)} USD`
+                            : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
                         </div>
                         <div>{minifyAddress(address)}</div>
                       </TableRow>

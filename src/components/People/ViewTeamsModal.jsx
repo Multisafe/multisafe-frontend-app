@@ -59,27 +59,27 @@ function ViewTeamsModal(props) {
 
   const renderTeams = () => {
     return (
-      <div style={{ minHeight: "10rem", height: "30rem", overflow: "auto" }}>
-        <Table>
-          <TableBody>
-            <TableInfo
-              style={{
-                textAlign: "center",
-                height: "5rem",
-              }}
-              onClick={showAddTeamModal}
-            >
-              <td colSpan={3}>
-                <Button iconOnly style={{ color: "#7367f0" }}>
-                  <Img src={PlusIcon} alt="plus" className="mr-2" />{" "}
-                  <span>Create New Team</span>
-                </Button>
-              </td>
-            </TableInfo>
-            {renderTeamRows()}
-          </TableBody>
-        </Table>
-      </div>
+      <Table>
+        <TableBody
+          style={{ minHeight: "10rem", height: "30rem", overflow: "auto" }}
+        >
+          <TableInfo
+            style={{
+              textAlign: "center",
+              height: "5rem",
+            }}
+            onClick={showAddTeamModal}
+          >
+            <td colSpan={3}>
+              <Button iconOnly style={{ color: "#7367f0" }}>
+                <Img src={PlusIcon} alt="plus" className="mr-2" />{" "}
+                <span>Create New Team</span>
+              </Button>
+            </td>
+          </TableInfo>
+          {renderTeamRows()}
+        </TableBody>
+      </Table>
     );
   };
 

@@ -153,7 +153,7 @@ export default function People() {
   }, [allTeams]);
 
   useEffect(() => {
-    if (encryptedPeople && encryptionKey) {
+    if (encryptedPeople && encryptionKey && allTeams && !loadingPeople) {
       const sortedDecryptedPeople = encryptedPeople
         .map(({ data, ...rest }) => {
           const {
@@ -198,12 +198,10 @@ export default function People() {
 
       // setPeopleByAlphabet(peopleByAlphabet);
 
-      const peopleByTeam = allTeams
-        ? allTeams.reduce((accumulator, { name }) => {
-            accumulator[name] = [];
-            return accumulator;
-          }, {})
-        : {};
+      const peopleByTeam = allTeams.reduce((accumulator, { name }) => {
+        accumulator[name] = [];
+        return accumulator;
+      }, {});
 
       for (let i = 0; i < sortedDecryptedPeople.length; i++) {
         const people = sortedDecryptedPeople[i];
@@ -214,7 +212,13 @@ export default function People() {
 
       setPeopleByTeam(peopleByTeam);
     }
-  }, [encryptedPeople, encryptionKey, organisationType, allTeams]);
+  }, [
+    encryptedPeople,
+    encryptionKey,
+    organisationType,
+    allTeams,
+    loadingPeople,
+  ]);
 
   const openSidebar = (peopleDetails) => {
     dispatch(togglePeopleDetails(true));
@@ -229,18 +233,21 @@ export default function People() {
     );
   };
 
-  const renderNoPeopleFound = () => (
-    <TableInfo
-      style={{
-        fontSize: "1.4rem",
-        fontWeight: "500",
-        textAlign: "center",
-        height: "10rem",
-      }}
-    >
-      <td colSpan={4}>No people found!</td>
-    </TableInfo>
-  );
+  const renderNoPeopleFound = () => {
+    console.log("NO PEOPLE");
+    return (
+      <TableInfo
+        style={{
+          fontSize: "1.4rem",
+          fontWeight: "500",
+          textAlign: "center",
+          height: "10rem",
+        }}
+      >
+        <td colSpan={4}>No people found!</td>
+      </TableInfo>
+    );
+  };
 
   const renderAddPeopleText = (teamName) => (
     <div className="d-flex align-items-center justify-content-center">
@@ -296,22 +303,22 @@ export default function People() {
         })
       }
     >
-      <td className="d-flex align-items-center">
-        <Avatar className="mr-3" firstName={firstName} lastName={lastName} />
-        <div>
-          {firstName} {lastName}
+      <td style={{ width: "25%" }}>
+        <div className="d-flex align-items-center">
+          <Avatar className="mr-3" firstName={firstName} lastName={lastName} />
+          <div>
+            {firstName} {lastName}
+          </div>
         </div>
       </td>
-      <td style={!isNameFilterApplied ? { color: "#dddcdc" } : {}}>
-        {departmentName}
-      </td>
-      <td>
+      <td style={{ width: "20%" }}>{departmentName}</td>
+      <td style={{ width: "20%" }}>
         <TokenImg token={salaryToken} />
         <span>
           {salaryAmount} {salaryToken}
         </span>
       </td>
-      <td>{address}</td>
+      <td style={{ width: "35%" }}>{address}</td>
     </tr>
   );
 
@@ -327,30 +334,29 @@ export default function People() {
   // };
 
   const renderPeopleByTeam = () => {
-    return peopleByTeam && Object.keys(peopleByTeam).length > 0
-      ? Object.keys(peopleByTeam).map((team) => (
-          <React.Fragment key={team}>
-            <TableTitle
-              style={{ height: "6rem", overflow: "visible" }}
-              className="position-relative"
-            >
-              <TeamContainer>
-                <div>{team}</div>
-                <div className="d-flex align-items-center">
-                  {!peopleByTeam[team].length && (
-                    <div className="mr-3">{renderAddPeopleText(team)}</div>
-                  )}
+    if (!peopleByTeam) return null;
+    return Object.keys(peopleByTeam).map((team) => (
+      <React.Fragment key={team}>
+        <TableTitle
+          style={{ height: "6rem", overflow: "visible" }}
+          className="position-relative"
+        >
+          <TeamContainer>
+            <div>{team}</div>
+            <div className="d-flex align-items-center">
+              {!peopleByTeam[team].length && (
+                <div className="mr-3">{renderAddPeopleText(team)}</div>
+              )}
 
-                  <ModifyTeamDropdown
-                    departmentId={teamNameToIdMap && teamNameToIdMap[team]}
-                  />
-                </div>
-              </TeamContainer>
-            </TableTitle>
-            {peopleByTeam[team].map((people) => renderRow(people))}
-          </React.Fragment>
-        ))
-      : renderNoPeopleFound();
+              <ModifyTeamDropdown
+                departmentId={teamNameToIdMap && teamNameToIdMap[team]}
+              />
+            </div>
+          </TeamContainer>
+        </TableTitle>
+        {peopleByTeam[team].map((people) => renderRow(people))}
+      </React.Fragment>
+    ));
   };
 
   const renderFilteredPeopleByTeam = () => {

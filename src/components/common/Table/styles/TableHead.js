@@ -4,6 +4,10 @@ export default styled.thead`
   width: 100%;
   background-color: #f1f0fd;
 
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+
   th {
     height: 5rem;
     font-size: 1.4rem;

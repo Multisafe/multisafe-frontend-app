@@ -18,6 +18,7 @@ import Button from "components/common/Button";
 import { MODAL_NAME as DELETE_PEOPLE_MODAL } from "./DeletePeopleModal";
 import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "./AddSinglePeopleModal";
 import { constructLabel } from "utils/tokens";
+import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 
 const sidebarStyles = {
   bmCrossButton: {
@@ -159,7 +160,7 @@ function PeopleDetailsSidebar() {
             />
             <EtherscanLink
               id="etherscan-link"
-              type="address"
+              type={ETHERSCAN_LINK_TYPES.ADDRESS}
               address={address}
             />
           </div>

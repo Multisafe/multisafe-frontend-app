@@ -58,9 +58,9 @@ export default function Assets() {
       <Table style={{ marginTop: "3rem" }}>
         <TableHead>
           <tr>
-            <th style={{ width: "40%" }}>Asset</th>
-            <th style={{ width: "30%" }}>Balance</th>
-            <th style={{ width: "30%" }}>Fiat Value</th>
+            <th>Asset</th>
+            <th>Balance</th>
+            <th>Fiat Value</th>
           </tr>
         </TableHead>
         <TableBody>{renderAssets()}</TableBody>

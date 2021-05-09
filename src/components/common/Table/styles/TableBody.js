@@ -2,10 +2,13 @@ import styled from "styled-components/macro";
 
 export default styled.tbody`
   position: relative;
-
+  display: block;
   width: 100%;
 
   tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
     font-size: 1.4rem;
     font-weight: normal;
     font-stretch: normal;

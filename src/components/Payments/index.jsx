@@ -591,54 +591,50 @@ export default function Payments(props) {
             </div>
           )}
         </div>
-        <div style={{ height: "25rem", overflow: "auto" }}>
-          <Table>
-            <TableHead>
-              <tr>
-                <th style={{ width: "30%" }}>Name</th>
-                <th style={{ width: "25%" }}>Disbursement</th>
-                <th style={{ width: "45%" }}>Address</th>
-              </tr>
-            </TableHead>
-            <TableBody>
-              {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
-              {!loadingTeammates && !people.length && renderNoPeopleFound()}
-              {!loadingTeammates &&
-                people.length > 0 &&
-                people.map(({ peopleId, data, ...rest }, idx) => {
-                  const {
-                    firstName,
-                    lastName,
-                    salaryAmount,
-                    salaryToken,
-                    address,
-                  } = getDecryptedDetails(
-                    data,
-                    encryptionKey,
-                    organisationType
-                  );
+        <Table>
+          <TableHead>
+            <tr>
+              <th style={{ width: "30%" }}>Name</th>
+              <th style={{ width: "25%" }}>Disbursement</th>
+              <th style={{ width: "45%" }}>Address</th>
+            </tr>
+          </TableHead>
+          <TableBody style={{ maxHeight: "25rem", overflow: "auto" }}>
+            {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
+            {!loadingTeammates && !people.length && renderNoPeopleFound()}
+            {!loadingTeammates &&
+              people.length > 0 &&
+              people.map(({ peopleId, data, ...rest }, idx) => {
+                const {
+                  firstName,
+                  lastName,
+                  salaryAmount,
+                  salaryToken,
+                  address,
+                } = getDecryptedDetails(data, encryptionKey, organisationType);
 
-                  const teammateDetails = {
-                    firstName,
-                    lastName,
-                    salaryToken,
-                    salaryAmount,
-                    address,
-                    peopleId,
-                    ...rest,
-                  };
-                  return (
-                    <tr
-                      key={`${address}-${idx}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleChecked(teammateDetails, idx);
-                      }}
-                      style={{
-                        backgroundColor: checked[idx] ? "#f1f0fd" : "#fff",
-                      }}
-                    >
-                      <td className="d-flex align-items-center">
+                const teammateDetails = {
+                  firstName,
+                  lastName,
+                  salaryToken,
+                  salaryAmount,
+                  address,
+                  peopleId,
+                  ...rest,
+                };
+                return (
+                  <tr
+                    key={`${address}-${idx}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleChecked(teammateDetails, idx);
+                    }}
+                    style={{
+                      backgroundColor: checked[idx] ? "#f1f0fd" : "#fff",
+                    }}
+                  >
+                    <td style={{ width: "30%" }}>
+                      <div className="d-flex align-items-center">
                         <CheckBox
                           type="checkbox"
                           id={`checkbox${idx}`}
@@ -649,20 +645,20 @@ export default function Payments(props) {
                         <div>
                           {firstName} {lastName}
                         </div>
-                      </td>
-                      <td>
-                        <TokenImg token={salaryToken} />
-                        <span>
-                          {salaryAmount} {salaryToken}{" "}
-                        </span>
-                      </td>
-                      <td>{address}</td>
-                    </tr>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </div>
+                      </div>
+                    </td>
+                    <td style={{ width: "25%" }}>
+                      <TokenImg token={salaryToken} />
+                      <span>
+                        {salaryAmount} {salaryToken}{" "}
+                      </span>
+                    </td>
+                    <td style={{ width: "45%" }}>{address}</td>
+                  </tr>
+                );
+              })}
+          </TableBody>
+        </Table>
       </div>
     );
   };

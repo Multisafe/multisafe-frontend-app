@@ -106,8 +106,18 @@ const etherscanPrefixByChainId = {
   4: `${networkNames.RINKEBY.toLowerCase()}.`,
   42: `${networkNames.KOVAN.toLowerCase()}.`,
 };
-export const getEtherscanLink = ({ chainId, type = "tx", hash, address }) => {
-  if (type === "tx") {
+
+export const ETHERSCAN_LINK_TYPES = {
+  TX: "tx",
+  ADDRESS: "address",
+};
+export const getEtherscanLink = ({
+  chainId,
+  type = ETHERSCAN_LINK_TYPES.TX,
+  hash,
+  address,
+}) => {
+  if (type === ETHERSCAN_LINK_TYPES.TX) {
     return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${hash}`;
   } else if (type === "address") {
     return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${address}`;
