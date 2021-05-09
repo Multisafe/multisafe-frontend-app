@@ -219,12 +219,14 @@ export default function SpendingLimits() {
           idx
         ) => (
           <tr key={`${delegate}-${idx}`}>
-            <td>{delegate}</td>
-            <td>
+            <td style={{ width: "45%" }}>{delegate}</td>
+            <td style={{ width: "30%" }}>
               <TokenImg token={tokenName} /> {spentAmount} of {allowanceAmount}{" "}
               {tokenName}
             </td>
-            <td>{renderResetTime(resetTimeMin, lastResetMin)}</td>
+            <td style={{ width: "25%" }}>
+              {renderResetTime(resetTimeMin, lastResetMin)}
+            </td>
           </tr>
         )
       )
