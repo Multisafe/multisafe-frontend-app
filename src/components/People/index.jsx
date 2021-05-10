@@ -234,7 +234,6 @@ export default function People() {
   };
 
   const renderNoPeopleFound = () => {
-    console.log("NO PEOPLE");
     return (
       <TableInfo
         style={{
