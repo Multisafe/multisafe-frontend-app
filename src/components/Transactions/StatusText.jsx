@@ -5,34 +5,25 @@ export default function StatusText({ status }) {
   switch (status) {
     case 0:
       return (
-        <div
-          className="d-flex justify-content-between align-items-center"
-          style={{ width: "110px" }}
-        >
+        <div className="d-flex align-items-center">
           <div>Completed</div>
-          <StatusCircle color="#3bd800" />
+          <StatusCircle color="#3bd800" className="ml-3" />
         </div>
       );
 
     case 1:
       return (
-        <div
-          className="d-flex justify-content-between align-items-center"
-          style={{ width: "110px" }}
-        >
+        <div className="d-flex align-items-center">
           <div>Pending</div>
-          <StatusCircle color="#f7e72e" />
+          <StatusCircle color="#f7e72e" className="ml-3" />
         </div>
       );
 
     case 2:
       return (
-        <div
-          className="d-flex justify-content-between align-items-center"
-          style={{ width: "110px" }}
-        >
+        <div className="d-flex align-items-center">
           <div>Failed</div>
-          <StatusCircle color="#f71ea3" />
+          <StatusCircle color="#f71ea3" className="ml-3" />
         </div>
       );
 

@@ -16,20 +16,28 @@ export default styled.div`
 
   .rejected,
   .failed {
-    background-color: #ff0a0a;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 14px;
-    text-transform: uppercase;
+    background-color: #ff4660;
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.2rem;
+    font-size: 1.4rem;
+    font-weight: 900;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
     color: #fff;
   }
 
   .pending {
-    background-color: #fdbe42;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 14px;
-    text-transform: uppercase;
+    background-color: #fcbc04;
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.2rem;
+    font-size: 1.4rem;
+    font-weight: 900;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
     color: #fff;
   }
 `;

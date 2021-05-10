@@ -30,15 +30,16 @@ export default function useSocket(props) {
                 className="arrow"
                 icon={faCheckCircle}
                 color="#3bd800"
-                style={{ fontSize: "18px" }}
+                style={{ fontSize: "1.8rem" }}
               />
             </div>
             <div className="ml-3">
               <div>Transaction Confirmed</div>
               <Button
                 iconOnly
+                style={{ minHeight: "0" }}
                 to={`/dashboard/transactions/${message.transaction[0].transactionId}`}
-                className="p-0 mt-1"
+                className="p-0 mt-2"
               >
                 View Transaction
               </Button>
@@ -59,15 +60,16 @@ export default function useSocket(props) {
                 className="arrow"
                 icon={faCheckCircle}
                 color="#3bd800"
-                style={{ fontSize: "18px" }}
+                style={{ fontSize: "1.8rem" }}
               />
             </div>
             <div className="ml-3">
               <div>Transaction Confirmed</div>
               <Button
                 iconOnly
+                style={{ minHeight: "0" }}
                 to={`/dashboard/transactions/${message.transaction.txDetails.transactionId}`}
-                className="p-0 mt-1"
+                className="p-0 mt-2"
               >
                 View Transaction
               </Button>

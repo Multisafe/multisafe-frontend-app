@@ -2,12 +2,13 @@ import styled from "styled-components/macro";
 
 export default styled.div`
   width: 100%;
-  min-height: 75px;
+  min-height: 8rem;
   position: fixed;
-  bottom: 0;
   left: 0;
-  padding: 12px 0;
-  box-shadow: 0 -3px 3px 0 rgba(0, 0, 0, 0.06);
+  right: 0;
+  bottom: 0;
+  padding: 2rem 0;
+  border-top: solid 0.1rem #dddcdc;
   background-color: #ffffff;
 
   .buttons {
@@ -19,14 +20,15 @@ export default styled.div`
   }
 
   .approve-button {
-    width: 400px;
-    margin-right: 10px;
+    margin-right: 2rem;
+    button {
+      box-shadow: 1rem 1rem 2rem 0 rgba(35, 30, 79, 0.15);
+    }
   }
   .reject-button {
-    width: 400px;
-    margin-right: 10px;
     button {
-      background-color: #ff0a0a;
+      box-shadow: 1rem 1rem 2rem 0 rgba(35, 30, 79, 0.15);
+      background-color: #ff4660;
     }
   }
 `;

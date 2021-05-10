@@ -9,22 +9,21 @@ const StyledContainer = styled(ToastContainer).attrs({
 })`
   &.Toastify__toast-container {
     position: absolute;
-    // width: 1200px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
   }
   .Toastify__toast {
-    width: 326px;
-    min-height: 40px;
-    padding: 12px;
-    border-radius: 8px;
+    width: 33rem;
+    min-height: 3rem;
+    padding: 1.2rem;
+    border-radius: 0.8rem;
     background-color: rgba(255, 255, 255, 0.9);
   }
 
   &.Toastify__toast-container--top-right {
-    top: 7em;
-    right: 2em;
+    top: 7rem;
+    right: 2rem;
   }
   .Toastify__toast--error {
   }
@@ -33,12 +32,12 @@ const StyledContainer = styled(ToastContainer).attrs({
   .Toastify__toast--success {
   }
   .Toastify__toast-body {
-    font-family: "Montserrat", sans-serif;
-    font-size: 15px;
+    font-family: "Avenir Pro", sans-serif;
+    font-size: 1.6rem;
     font-weight: 300;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.19;
+    line-height: normal;
     -webkit-letter-spacing: normal;
     -moz-letter-spacing: normal;
     -ms-letter-spacing: normal;
@@ -51,11 +50,11 @@ const StyledContainer = styled(ToastContainer).attrs({
 
   a {
     color: #7367f0;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 500;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.19;
+    line-height: normal;
     -webkit-letter-spacing: normal;
     -moz-letter-spacing: normal;
     -ms-letter-spacing: normal;

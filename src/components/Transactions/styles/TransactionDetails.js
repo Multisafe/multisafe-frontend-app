@@ -58,6 +58,7 @@ export default styled.div`
 
   .icons {
     display: flex;
+    position: relative;
   }
 
   @media (max-width: 600px) {

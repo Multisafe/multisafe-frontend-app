@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { cryptoUtils } from "parcel-sdk";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { show } from "redux-modal";
 
 import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
 import Button from "components/common/Button";
@@ -43,7 +44,6 @@ import { minifyAddress } from "components/common/Web3Utils";
 import StatusText from "./StatusText";
 import { Stepper, StepCircle } from "components/common/Stepper";
 import addresses from "constants/addresses";
-import TransactionSubmitted from "components/Payments/TransactionSubmitted";
 
 import { InfoCard } from "../People/styles";
 import { Table, TableHead, TableBody } from "components/common/Table";
@@ -61,6 +61,7 @@ import { getDecryptedDetails } from "utils/encryption";
 import { formatNumber } from "utils/number-helpers";
 import EtherscanLink from "components/common/EtherscanLink";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -129,12 +130,31 @@ export default function MultiSigTransactions() {
     }
   }, [dispatch, ownerSafeAddress, params]);
 
+  const noOfPeoplePaid = useMemo(() => {
+    return transactionDetails && transactionDetails.txDetails
+      ? transactionDetails.txDetails.addresses.length
+      : 0;
+  }, [transactionDetails]);
+
   useEffect(() => {
     if (txHashFromMetaTx) {
       setFinalTxHash(txHashFromMetaTx);
       dispatch(clearMultisigTransactionHash());
     }
   }, [dispatch, txHashFromMetaTx]);
+
+  useEffect(() => {
+    if (finalTxHash && multisigTransactionId) {
+      dispatch(
+        show(TX_SUBMITTED_MODAL, {
+          txHash: finalTxHash,
+          selectedCount: noOfPeoplePaid,
+          transactionId: multisigTransactionId,
+          clearTxHash: clearTxHash,
+        })
+      );
+    }
+  }, [dispatch, finalTxHash, multisigTransactionId, noOfPeoplePaid]);
 
   useEffect(() => {
     if (txData && transactionDetails && account) {
@@ -469,7 +489,7 @@ export default function MultiSigTransactions() {
               <div className="reject-button">
                 <Button
                   type="button"
-                  large
+                  width="15rem"
                   onClick={rejectTransaction}
                   disabled={loadingTx || updating}
                   loading={rejecting}
@@ -508,7 +528,7 @@ export default function MultiSigTransactions() {
             <div className="approve-button">
               <Button
                 type="button"
-                large
+                width="15rem"
                 onClick={approveTransaction}
                 disabled={loadingTx || updating}
                 loading={approving}
@@ -519,7 +539,7 @@ export default function MultiSigTransactions() {
             <div className="reject-button">
               <Button
                 type="button"
-                large
+                width="15rem"
                 onClick={rejectTransaction}
                 disabled={loadingTx || updating}
                 loading={rejecting}
@@ -836,20 +856,5 @@ export default function MultiSigTransactions() {
     setFinalTxHash("");
   };
 
-  const noOfPeoplePaid = useMemo(() => {
-    return transactionDetails && transactionDetails.txDetails
-      ? transactionDetails.txDetails.addresses.length
-      : 0;
-  }, [transactionDetails]);
-
-  return finalTxHash ? (
-    <TransactionSubmitted
-      txHash={finalTxHash}
-      selectedCount={noOfPeoplePaid}
-      clearTxHash={clearTxHash}
-      transactionId={multisigTransactionId}
-    />
-  ) : (
-    renderTransactionDetails()
-  );
+  return renderTransactionDetails();
 }
