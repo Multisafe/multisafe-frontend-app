@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { format } from "date-fns";
 import { cryptoUtils } from "parcel-sdk";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,7 +6,6 @@ import { show } from "redux-modal";
 
 import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
 import Button from "components/common/Button";
-import CopyButton from "components/common/Copy";
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
 import {
@@ -40,28 +38,19 @@ import {
   makeSelectOrganisationType,
 } from "store/global/selectors";
 import Loading from "components/common/Loading";
-import { minifyAddress } from "components/common/Web3Utils";
-import StatusText from "./StatusText";
 import { Stepper, StepCircle } from "components/common/Stepper";
 import addresses from "constants/addresses";
-
-import { InfoCard } from "../People/styles";
-import { Table, TableHead, TableBody } from "components/common/Table";
+import { InfoCard } from "components/People/styles";
 import {
-  Detail,
   ConfirmSection,
   FinalStatus,
   DescriptionCard,
   DisbursementCard,
-  TransactionDetails,
 } from "./styles";
-import { TRANSACTION_MODES } from "constants/transactions";
-import TokenImg from "components/common/TokenImg";
 import { getDecryptedDetails } from "utils/encryption";
-import { formatNumber } from "utils/number-helpers";
-import EtherscanLink from "components/common/EtherscanLink";
-import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
+import DisbursementDetails from "./DisbursementDetails";
+import Summary from "./Summary";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -553,212 +542,6 @@ export default function MultiSigTransactions() {
     );
   };
 
-  const renderDisbursementDetails = (paidTeammates, transactionMode) => {
-    if (!paidTeammates) return null;
-    const isMassPayout = transactionMode === TRANSACTION_MODES.MASS_PAYOUT;
-    const isQuickTransfer =
-      transactionMode === TRANSACTION_MODES.QUICK_TRANSFER;
-    const isSpendingLimit =
-      transactionMode === TRANSACTION_MODES.SPENDING_LIMITS;
-
-    if (isMassPayout) {
-      return (
-        <Table>
-          <TableHead>
-            <tr>
-              <th style={{ width: "30%" }}>Name</th>
-              <th style={{ width: "30%" }}>Disbursement</th>
-              <th style={{ width: "40%" }}>Address</th>
-            </tr>
-          </TableHead>
-          <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
-            {paidTeammates.map(
-              (
-                {
-                  firstName,
-                  lastName,
-                  address,
-                  salaryAmount,
-                  salaryToken,
-                  usd,
-                },
-                idx
-              ) => (
-                <tr key={`${idx}-${address}`}>
-                  <td style={{ width: "30%" }}>
-                    {firstName} {lastName}
-                  </td>
-                  <td style={{ width: "30%" }}>
-                    <TokenImg token={salaryToken} />
-                    {salaryToken === "USD"
-                      ? `${usd} USD`
-                      : `${salaryAmount} ${salaryToken}`}
-                  </td>
-                  <td style={{ width: "40%" }}>{address}</td>
-                </tr>
-              )
-            )}
-          </TableBody>
-        </Table>
-      );
-    } else if (isQuickTransfer) {
-      return paidTeammates.map(
-        ({ description, address, salaryAmount, salaryToken, usd }, idx) => (
-          <div key={`${idx}-${address}`}>
-            <div className="grid my-4 mx-4">
-              <Detail>
-                <div className="title">Paid To</div>
-                <div className="desc">{address}</div>
-              </Detail>
-              <Detail>
-                <div className="title">Disbursement</div>
-                <div className="desc">
-                  <TokenImg token={salaryToken} />
-
-                  {salaryToken === "USD"
-                    ? `${formatNumber(usd)} USD`
-                    : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
-                </div>
-              </Detail>
-            </div>
-            <div className="d-flex mx-4">
-              <Detail className="w-100">
-                <div className="title">Description</div>
-                <div className="desc">
-                  {description || `No description given...`}
-                </div>
-              </Detail>
-            </div>
-          </div>
-        )
-      );
-    } else if (isSpendingLimit) {
-      return paidTeammates.map(
-        ({ description, address, allowanceAmount, allowanceToken }, idx) => (
-          <div key={`${idx}-${address}`}>
-            <div className="grid my-4 mx-4">
-              <Detail>
-                <div className="title">Beneficiary</div>
-                <div className="desc">{address}</div>
-              </Detail>
-              <Detail>
-                <div className="title">Allowance</div>
-                <div className="desc">
-                  <TokenImg token={allowanceToken} />
-                  {allowanceAmount} {allowanceToken}
-                </div>
-              </Detail>
-            </div>
-            <div className="d-flex mx-4">
-              <Detail className="w-100">
-                <div className="title">Description</div>
-                <div className="desc">
-                  {description || `No description given...`}
-                </div>
-              </Detail>
-            </div>
-          </div>
-        )
-      );
-    }
-
-    return null;
-  };
-
-  const renderExecutionDetails = (txDetails, paidTeammates) => {
-    const {
-      transactionHash: txDetailsHash,
-      tokenValue,
-      tokenCurrency,
-      fiatValue,
-      // fiatCurrency,
-      transactionFees,
-      status,
-      createdOn,
-      transactionMode,
-    } = txDetails;
-
-    const isSpendingLimit =
-      transactionMode === TRANSACTION_MODES.SPENDING_LIMITS;
-    return (
-      <TransactionDetails>
-        <div className="title">Transaction Details</div>
-        <div className="detail-cards">
-          <div className="detail-card">
-            <div className="d-flex align-items-center justify-content-between">
-              <div>
-                <div className="detail-title">Transaction Hash</div>
-                <div className="detail-subtitle">
-                  {minifyAddress(txDetailsHash)}
-                </div>
-              </div>
-              <div className="icons">
-                <CopyButton
-                  id="address"
-                  tooltip="transaction hash"
-                  value={txDetailsHash}
-                  className="mr-3"
-                />
-                <EtherscanLink
-                  id="etherscan-link"
-                  type={ETHERSCAN_LINK_TYPES.TX}
-                  hash={txDetailsHash}
-                />
-              </div>
-            </div>
-          </div>
-
-          {isSpendingLimit ? (
-            <div className="detail-card">
-              <div className="detail-title">Allowance</div>
-              <div className="detail-subtitle">
-                US ${formatNumber(fiatValue)}
-              </div>
-            </div>
-          ) : (
-            <React.Fragment>
-              <div className="detail-card">
-                <div className="detail-title">Paid To</div>
-                <div className="detail-subtitle">
-                  {paidTeammates && paidTeammates.length} people
-                </div>
-              </div>
-
-              <div className="detail-card">
-                <div className="detail-title">Total Amount</div>
-                <div className="detail-subtitle">
-                  US ${formatNumber(fiatValue)} ({formatNumber(tokenValue, 5)}{" "}
-                  {tokenCurrency})
-                </div>
-              </div>
-            </React.Fragment>
-          )}
-
-          <div className="detail-card">
-            <div className="detail-title">Transaction Fees</div>
-            <div className="detail-subtitle">
-              {formatNumber(transactionFees, 5)} ETH
-            </div>
-          </div>
-
-          <div className="detail-card">
-            <div className="detail-title">Created Date & Time</div>
-            <div className="detail-subtitle">
-              {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
-            </div>
-          </div>
-
-          <div className="detail-card">
-            <div className="detail-title">Status</div>
-            <div className="detail-subtitle">
-              <StatusText status={status} />
-            </div>
-          </div>
-        </div>
-      </TransactionDetails>
-    );
-  };
-
   const renderTransactionDetails = () => {
     if (loading || updating)
       return (
@@ -843,10 +626,15 @@ export default function MultiSigTransactions() {
 
         <DisbursementCard>
           <div className="title">Disbursement Details</div>
-          {renderDisbursementDetails(paidTeammates, transactionMode)}
+          <DisbursementDetails
+            paidTeammates={paidTeammates}
+            transactionMode={transactionMode}
+          />
         </DisbursementCard>
 
-        {txDetailsHash && renderExecutionDetails(txDetails, paidTeammates)}
+        {txDetailsHash && (
+          <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
+        )}
         {renderConfirmSection()}
       </div>
     );

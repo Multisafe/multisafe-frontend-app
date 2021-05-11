@@ -4,6 +4,7 @@ export default styled.div`
   background-color: #fff;
   border-radius: 0.4rem;
   border: solid 0.1rem #dddcdc;
+  margin-top: 3rem;
 
   .title {
     font-size: 1.6rem;

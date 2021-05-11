@@ -1,7 +1,5 @@
 import React, { useEffect } from "react";
-import { format } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
 
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
@@ -13,10 +11,7 @@ import {
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import StatusText from "./StatusText";
 import { InfoCard } from "../People/styles";
-import IncomingIcon from "assets/icons/dashboard/incoming.svg";
-import OutgoingIcon from "assets/icons/dashboard/outgoing.svg";
 import ExportButton from "./ExportButton";
 import {
   Table,
@@ -25,11 +20,9 @@ import {
   TableInfo,
   TableLoader,
 } from "components/common/Table";
-import { TxRow } from "./styles";
-import { formatNumber } from "utils/number-helpers";
-import Img from "components/common/Img";
-import { TX_DIRECTION, TX_ORIGIN } from "store/transactions/constants";
-import TransactionName from "./TransactionName";
+import { TX_ORIGIN } from "store/transactions/constants";
+import GnosisTransaction from "./GnosisTransaction";
+import MultisafeTransaction from "./MultisafeTransaction";
 
 const multisigKey = "multisig";
 
@@ -41,7 +34,6 @@ export default function MultiSigTransactions() {
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const transactions = useSelector(makeSelectMultisigTransactions());
   const loading = useSelector(makeSelectFetching());
@@ -68,104 +60,7 @@ export default function MultiSigTransactions() {
     );
   };
 
-  const renderMultisafeTransaction = (transaction, idx) => {
-    const { direction, txDetails } = transaction;
-
-    const {
-      transactionId,
-      tokenValue,
-      tokenCurrency,
-      fiatValue,
-      status,
-      createdOn,
-      transactionMode,
-      to,
-    } = txDetails;
-    return (
-      <TxRow
-        key={`${transactionId}-${idx}`}
-        onClick={() => history.push(`/dashboard/transactions/${transactionId}`)}
-      >
-        <td style={{ width: "35%" }}>
-          <div className="d-flex align-items-center">
-            <Img
-              src={
-                direction === TX_DIRECTION.INCOMING
-                  ? IncomingIcon
-                  : OutgoingIcon
-              }
-              alt={direction}
-              className="direction"
-            />
-            <div>
-              <div className="name">
-                <TransactionName to={to} transactionMode={transactionMode} />
-              </div>
-              <div className="date">
-                {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
-              </div>
-            </div>
-          </div>
-        </td>
-        <td style={{ width: "30%" }}>
-          <div className="amount">
-            {/* <TokenImg token={tokenCurrency} /> */}
-            {formatNumber(tokenValue, 5)} {tokenCurrency}
-          </div>
-          <div className="usd">
-            {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
-            {formatNumber(fiatValue, 5)}
-          </div>
-        </td>
-        <td style={{ width: "25%" }}>
-          <StatusText status={status} textOnly className="status" />
-        </td>
-        <td style={{ width: "12%" }}>
-          <div className="view">View</div>
-        </td>
-      </TxRow>
-    );
-  };
-
-  const renderGnosisTransaction = (transaction, idx) => {
-    const { direction, txDetails } = transaction;
-
-    const { transactionId, status, createdOn } = txDetails;
-    return (
-      <TxRow key={`${transactionId}-${idx}`}>
-        <td style={{ width: "35%" }}>
-          <div className="d-flex align-items-center">
-            <Img
-              src={
-                direction === TX_DIRECTION.INCOMING
-                  ? IncomingIcon
-                  : OutgoingIcon
-              }
-              alt={direction}
-              className="direction"
-            />
-            <div>
-              <div className="name">Gnosis</div>
-              <div className="date">
-                {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
-              </div>
-            </div>
-          </div>
-        </td>
-        <td style={{ width: "30%" }}>
-          <div className="amount">-</div>
-        </td>
-        <td style={{ width: "23%" }}>
-          <StatusText status={status} textOnly />
-        </td>
-        <td style={{ width: "12%" }}>
-          <div className="view">View</div>
-        </td>
-      </TxRow>
-    );
-  };
-
-  const renderTransactions = () => {
+  const renderAllTransactions = () => {
     if (loading) return <TableLoader colSpan={4} />;
 
     return transactions && transactions.length > 0
@@ -174,10 +69,20 @@ export default function MultiSigTransactions() {
           if (!txDetails) return null;
 
           if (txOrigin === TX_ORIGIN.GNOSIS) {
-            return renderGnosisTransaction(transaction, idx);
+            return (
+              <GnosisTransaction
+                transaction={transaction}
+                key={`${transaction.transactionId}-${idx}`}
+              />
+            );
           }
 
-          return renderMultisafeTransaction(transaction, idx);
+          return (
+            <MultisafeTransaction
+              transaction={transaction}
+              key={`${transaction.transactionId}-${idx}`}
+            />
+          );
         })
       : renderNoTransactionsFound();
   };
@@ -204,7 +109,7 @@ export default function MultiSigTransactions() {
           </tr>
         </TableHead>
 
-        <TableBody>{renderTransactions()}</TableBody>
+        <TableBody>{renderAllTransactions()}</TableBody>
       </Table>
     </div>
   );

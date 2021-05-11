@@ -35,7 +35,7 @@ import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimit
 import { routeGenerators } from "constants/routes/generators";
 
 function* getMultisigTransactions(action) {
-  const requestURL = `${getMultisigTransactionEndpoint}?safeAddress=${action.safeAddress}`;
+  const requestURL = `${getMultisigTransactionEndpoint}?safeAddress=${action.safeAddress}&offset=0&limit=100`;
   const options = {
     method: "GET",
   };

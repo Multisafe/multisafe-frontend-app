@@ -2,6 +2,7 @@ import styled from "styled-components/macro";
 
 export default styled.tr`
   min-height: 8rem;
+  position: relative;
 
   .direction {
     margin-right: 3rem;
