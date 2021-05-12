@@ -17,7 +17,7 @@ import viewPeopleSaga from "store/view-people/saga";
 import { getAllPeople } from "store/view-people/actions";
 import {
   makeSelectPeople,
-  makeSelectLoading as makeSelectLoadingTeammates,
+  makeSelectLoading as makeSelectLoadingPeople,
 } from "store/view-people/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -27,25 +27,33 @@ import {
 } from "store/global/selectors";
 import { getDecryptedDetails } from "utils/encryption";
 import IncomingIcon from "assets/icons/dashboard/incoming.svg";
+import OutgoingIcon from "assets/icons/dashboard/outgoing.svg";
 // import CancelledIcon from "assets/icons/dashboard/cancelled.svg";
+import TeamMembersPng from "assets/images/team-members.png";
 
 import { RecentTx } from "./styles";
 import Img from "components/common/Img";
 import { TRANSACTION_MODES, TRANSACTION_STATUS } from "constants/transactions";
+import { TX_DIRECTION, TX_ORIGIN } from "store/transactions/constants";
+import Loading from "components/common/Loading";
+import Avatar from "components/common/Avatar";
+import Button from "components/common/Button";
+import TokenImg from "components/common/TokenImg";
+import { formatNumber } from "utils/number-helpers";
 
 const transactionsKey = "transactions";
 const viewPeopleKey = "viewPeople";
 
 const STATES = {
   EMPTY_STATE: "EMPTY_STATE",
-  TEAMMATES_ADDED: "TEAMMATES_ADDED",
+  PEOPLE_ADDED: "PEOPLE_ADDED",
   TRANSACTION_EXECUTED: "TRANSACTION_EXECUTED",
 };
 
 function RecentTxCard() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const [state, setState] = useState(STATES.EMPTY_STATE);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState();
   const [transactionData, setTransactionData] = useState();
 
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
@@ -58,7 +66,7 @@ function RecentTxCard() {
 
   const transactions = useSelector(makeSelectTransactions());
   const loadingTransactions = useSelector(makeSelectLoadingTransactions());
-  const loadingTeammates = useSelector(makeSelectLoadingTeammates());
+  const loadingPeople = useSelector(makeSelectLoadingPeople());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationType = useSelector(makeSelectOrganisationType());
   const people = useSelector(makeSelectPeople());
@@ -66,17 +74,21 @@ function RecentTxCard() {
   useEffect(() => {
     if (ownerSafeAddress) {
       dispatch(viewTransactions(ownerSafeAddress));
-      if (!people) dispatch(getAllPeople(ownerSafeAddress));
+      dispatch(getAllPeople(ownerSafeAddress));
     }
-  }, [dispatch, ownerSafeAddress, people]);
+  }, [dispatch, ownerSafeAddress]);
 
   useEffect(() => {
-    if (!loadingTransactions && !loadingTeammates && loading) setLoading(false);
-  }, [loadingTeammates, loadingTransactions, loading]);
+    if (!loadingTransactions && !loadingPeople) {
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+  }, [loadingPeople, loadingTransactions]);
 
   useEffect(() => {
     if (people && people.length > 0 && state !== STATES.TRANSACTION_EXECUTED) {
-      setState(STATES.TEAMMATES_ADDED);
+      setState(STATES.PEOPLE_ADDED);
     } else if (state !== STATES.TRANSACTION_EXECUTED) {
       setState(STATES.EMPTY_STATE);
     }
@@ -85,16 +97,16 @@ function RecentTxCard() {
   useEffect(() => {
     if (transactions && transactions.length > 0) {
       setState(STATES.TRANSACTION_EXECUTED);
-      setTransactionData(transactions);
+      setTransactionData(transactions.slice(0, 5));
     }
   }, [transactions]);
 
   const stepTitle = useMemo(() => {
     switch (state) {
       case STATES.EMPTY_STATE:
-        return `Add Team Members`;
-      case STATES.TEAMMATES_ADDED:
-        return `Your Teammates`;
+        return `Add People`;
+      case STATES.PEOPLE_ADDED:
+        return `Recently Added People`;
       case STATES.TRANSACTION_EXECUTED:
         return `Recent Transactions`;
       default:
@@ -105,9 +117,9 @@ function RecentTxCard() {
   const linkByState = useMemo(() => {
     switch (state) {
       case STATES.EMPTY_STATE:
-        return routeTemplates.dashboard.people;
-      case STATES.TEAMMATES_ADDED:
-        return routeTemplates.dashboard.people;
+        return null;
+      case STATES.PEOPLE_ADDED:
+        return routeTemplates.dashboard.people.root;
       case STATES.TRANSACTION_EXECUTED:
         return routeTemplates.dashboard.transactions;
       default:
@@ -151,34 +163,99 @@ function RecentTxCard() {
     }
   };
 
-  const renderTx = ({
-    createdOn,
-    fiatCurrency,
-    fiatValue,
-    tokenCurrency,
+  const renderGnosisAmounts = ({
     tokenValue,
-    transactionMode,
-    transactionId,
-    to,
-    status,
+    tokenCurrencies,
+    fiatValue,
+    direction,
   }) => {
+    return (
+      <div className="tx-amounts">
+        {tokenCurrencies && tokenCurrencies.length > 0 && tokenValue > 0 && (
+          <div className="top">
+            {formatNumber(tokenValue, 5)} {tokenCurrencies.split(", ")}
+          </div>
+        )}
+        {fiatValue > 0 && (
+          <div className="bottom">
+            {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
+            {formatNumber(fiatValue, 5)}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderMultisafeAmounts = ({
+    tokenValue,
+    tokenCurrency,
+    fiatValue,
+    direction,
+  }) => {
+    return (
+      <div className="tx-amounts">
+        <div className="top">
+          {formatNumber(tokenValue, 5)} {tokenCurrency}
+        </div>
+        <div className="bottom">
+          {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
+          {formatNumber(fiatValue, 5)}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTx = ({ direction, txDetails, txOrigin }) => {
+    if (!txDetails) return null;
+    const {
+      createdOn,
+      // fiatCurrency,
+      fiatValue,
+      tokenCurrencies,
+      tokenCurrency,
+      tokenValue,
+      transactionMode,
+      transactionId,
+      to,
+      status,
+    } = txDetails;
+    const isGnosisTx = txOrigin === TX_ORIGIN.GNOSIS;
     return (
       <div className="tx" key={transactionId}>
         <div className="tx-info">
-          <Img src={IncomingIcon} alt="tx-icon" className="mr-4" />
+          <Img
+            src={
+              direction === TX_DIRECTION.INCOMING ? IncomingIcon : OutgoingIcon
+            }
+            alt="tx-icon"
+            className="mr-4"
+          />
           <div>
-            <div className="top">{renderName(to, transactionMode)}</div>
+            <div className="top">
+              {isGnosisTx ? (
+                <span>Gnosis</span>
+              ) : (
+                renderName(to, transactionMode)
+              )}
+            </div>
             <div className="bottom">
               {format(new Date(createdOn), "dd MMM yyyy")}
             </div>
           </div>
         </div>
-        <div className="tx-amounts">
-          <div className="top">- ${parseFloat(fiatValue).toFixed(2)}</div>
-          <div className="bottom">
-            {parseFloat(tokenValue).toFixed(2)} {tokenCurrency}
-          </div>
-        </div>
+        {isGnosisTx
+          ? renderGnosisAmounts({
+              tokenValue,
+              tokenCurrencies,
+              fiatValue,
+              direction,
+            })
+          : renderMultisafeAmounts({
+              tokenValue,
+              tokenCurrency,
+              fiatValue,
+              direction,
+            })}
         <div className="tx-status">{renderStatusText(status)}</div>
       </div>
     );
@@ -187,14 +264,65 @@ function RecentTxCard() {
     <RecentTx>
       <div className="title-container">
         <div className="title">{stepTitle}</div>
-        <Link to={linkByState} className="view">
-          View All
-        </Link>
+        {linkByState && (
+          <Link to={linkByState} className="view">
+            View All
+          </Link>
+        )}
       </div>
-      <div className="tx-container">
-        {transactionData &&
-          transactionData.slice(0, 5).map((tx) => renderTx(tx))}
-      </div>
+      {loading && (
+        <div
+          className="d-flex align-items-center justify-content-center"
+          style={{ height: "30rem" }}
+        >
+          <Loading color="primary" width="3rem" height="3rem" />
+        </div>
+      )}
+      {!loading && state === STATES.TRANSACTION_EXECUTED && (
+        <div className="tx-container">
+          {transactionData && transactionData.map((tx) => renderTx(tx))}
+        </div>
+      )}
+
+      {!loading && state === STATES.EMPTY_STATE && (
+        <div className="add-people-container">
+          <Img src={TeamMembersPng} alt="teams" width="320" />
+          <div className="text">Start by adding people and teams</div>
+          <Button
+            to={routeTemplates.dashboard.people.root}
+            width="16rem"
+            className="mt-4"
+          >
+            Add People
+          </Button>
+        </div>
+      )}
+
+      {!loading &&
+        state === STATES.PEOPLE_ADDED &&
+        people &&
+        people.slice(0, 5).map((teammate) => {
+          const { firstName, lastName, salaryAmount, salaryToken } =
+            getDecryptedDetails(teammate.data, encryptionKey, organisationType);
+          return (
+            <div key={teammate.data} className="view-people-container">
+              <div className="d-flex align-items-center">
+                <Avatar
+                  firstName={firstName}
+                  lastName={lastName}
+                  className="mr-3"
+                />
+                <div className="name">
+                  {firstName} {lastName}
+                </div>
+              </div>
+              <div className="name">
+                <TokenImg token={salaryToken} /> {salaryAmount} {salaryToken}
+              </div>
+              <div className="team">{teammate.departmentName}</div>
+            </div>
+          );
+        })}
     </RecentTx>
   );
 }

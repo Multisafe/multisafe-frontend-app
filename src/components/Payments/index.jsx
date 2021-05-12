@@ -511,7 +511,7 @@ export default function Payments(props) {
     await handleMassPayout(selectedTeammates);
   };
 
-  const handleCheckAll = (e) => {
+  const handleCheckAll = () => {
     if (checked.length === people.length && checked.every((check) => check)) {
       // if all are checked, deselect all
       setIsCheckedAll(false);
@@ -587,7 +587,6 @@ export default function Payments(props) {
                 onChange={handleCheckAll}
                 label={`Select All`}
               />
-              {/* <div>Select All</div> */}
             </div>
           )}
         </div>

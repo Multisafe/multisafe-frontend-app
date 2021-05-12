@@ -85,4 +85,46 @@ export default styled(Card)`
       }
     }
   }
+
+  .add-people-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 3rem;
+
+    .text {
+      font-size: 1.4rem;
+      font-weight: 900;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      color: #373737;
+    }
+  }
+
+  .view-people-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2rem;
+    width: 100%;
+    background: #f1f0fd;
+    padding: 1.5rem;
+
+    .name,
+    .team {
+      font-size: 1.4rem;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      color: #373737;
+    }
+  }
 `;

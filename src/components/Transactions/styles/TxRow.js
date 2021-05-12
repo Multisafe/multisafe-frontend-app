@@ -35,6 +35,7 @@ export default styled.tr`
 
   .usd {
     font-weight: normal;
+    margin-bottom: 0;
   }
 
   .view {

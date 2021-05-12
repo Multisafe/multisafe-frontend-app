@@ -1,10 +1,8 @@
 import React from "react";
 
 import { Table, TableHead, TableBody } from "components/common/Table";
-import { Detail } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
-import { formatNumber } from "utils/number-helpers";
 
 export default function DisbursementDetails({
   paidTeammates,
@@ -49,63 +47,54 @@ export default function DisbursementDetails({
       </Table>
     );
   } else if (isQuickTransfer) {
-    return paidTeammates.map(
-      ({ description, address, salaryAmount, salaryToken, usd }, idx) => (
-        <div key={`${idx}-${address}`}>
-          <div className="grid my-4 mx-4">
-            <Detail>
-              <div className="title">Paid To</div>
-              <div className="desc">{address}</div>
-            </Detail>
-            <Detail>
-              <div className="title">Disbursement</div>
-              <div className="desc">
-                <TokenImg token={salaryToken} />
-
-                {salaryToken === "USD"
-                  ? `${formatNumber(usd)} USD`
-                  : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
-              </div>
-            </Detail>
-          </div>
-          <div className="d-flex mx-4">
-            <Detail className="w-100">
-              <div className="title">Description</div>
-              <div className="desc">
-                {description || `No description given...`}
-              </div>
-            </Detail>
-          </div>
-        </div>
-      )
+    return (
+      <Table>
+        <TableHead>
+          <tr>
+            <th>Paid To</th>
+            <th>Disbursement</th>
+          </tr>
+        </TableHead>
+        <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
+          {paidTeammates.map(
+            ({ address, salaryAmount, salaryToken, usd }, idx) => (
+              <tr key={`${idx}-${address}`}>
+                <td>{address}</td>
+                <td>
+                  <TokenImg token={salaryToken} />
+                  {salaryToken === "USD"
+                    ? `${usd} USD`
+                    : `${salaryAmount} ${salaryToken}`}
+                </td>
+              </tr>
+            )
+          )}
+        </TableBody>
+      </Table>
     );
   } else if (isSpendingLimit) {
-    return paidTeammates.map(
-      ({ description, address, allowanceAmount, allowanceToken }, idx) => (
-        <div key={`${idx}-${address}`}>
-          <div className="grid my-4 mx-4">
-            <Detail>
-              <div className="title">Beneficiary</div>
-              <div className="desc">{address}</div>
-            </Detail>
-            <Detail>
-              <div className="title">Allowance</div>
-              <div className="desc">
-                <TokenImg token={allowanceToken} />
-                {allowanceAmount} {allowanceToken}
-              </div>
-            </Detail>
-          </div>
-          <div className="d-flex mx-4">
-            <Detail className="w-100">
-              <div className="title">Description</div>
-              <div className="desc">
-                {description || `No description given...`}
-              </div>
-            </Detail>
-          </div>
-        </div>
-      )
+    return (
+      <Table>
+        <TableHead>
+          <tr>
+            <th>Beneficiary</th>
+            <th>Allowance</th>
+          </tr>
+        </TableHead>
+        <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
+          {paidTeammates.map(
+            ({ address, allowanceAmount, allowanceToken }, idx) => (
+              <tr key={`${idx}-${address}`}>
+                <td>{address}</td>
+                <td>
+                  <TokenImg token={allowanceToken} />
+                  {allowanceAmount} {allowanceToken}
+                </td>
+              </tr>
+            )
+          )}
+        </TableBody>
+      </Table>
     );
   }
 

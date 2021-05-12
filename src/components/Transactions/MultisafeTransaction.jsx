@@ -60,7 +60,7 @@ export default function MultisafeTransaction({ transaction }) {
           {formatNumber(fiatValue, 5)}
         </div>
       </td>
-      <td style={{ width: "25%" }}>
+      <td style={{ width: "23%" }}>
         <StatusText status={status} textOnly className="status" />
       </td>
       <td style={{ width: "12%" }}>
