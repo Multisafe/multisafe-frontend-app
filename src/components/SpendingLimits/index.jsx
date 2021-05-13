@@ -184,7 +184,16 @@ export default function SpendingLimits() {
               alt="no-spending-limit"
               className="mb-4"
             />
-            <div className="text-center">No spending limits yet!</div>
+            <div
+              className="text-center"
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                color: "#989898",
+              }}
+            >
+              No spending limits yet!
+            </div>
             <Button
               className="d-flex align-items-center mt-3"
               onClick={showNewSpendingLimitPopup}

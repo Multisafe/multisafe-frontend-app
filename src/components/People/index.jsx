@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { show } from "redux-modal";
 
 import viewTeamsReducer from "store/view-teams/reducer";
 import { getTeams } from "store/view-teams/actions";
@@ -28,9 +29,8 @@ import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
-
 import ControlledInput from "components/common/Input";
-import TeamsDropdown from "./TeamsDropdown";
+import AddTeamButton from "./AddTeamButton";
 import AddPeopleDropdown from "./AddPeopleDropdown";
 import SearchByTeamDropdown from "./SearchByTeamDropdown";
 import ExportButton from "./ExportButton";
@@ -61,7 +61,6 @@ import TokenImg from "components/common/TokenImg";
 import DeleteTeamModal from "./DeleteTeamModal";
 import AddTeamModal from "./AddTeamModal";
 import ViewTeamsModal from "./ViewTeamsModal";
-import { show } from "redux-modal";
 
 const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
@@ -433,7 +432,7 @@ export default function People() {
           </div>
         </div>
         <div className="flex">
-          <TeamsDropdown />
+          <AddTeamButton />
           <AddPeopleDropdown />
           <SearchByTeamDropdown />
           <ExportButton />

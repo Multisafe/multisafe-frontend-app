@@ -29,7 +29,7 @@ import { getDecryptedDetails } from "utils/encryption";
 import IncomingIcon from "assets/icons/dashboard/incoming.svg";
 import OutgoingIcon from "assets/icons/dashboard/outgoing.svg";
 // import CancelledIcon from "assets/icons/dashboard/cancelled.svg";
-import TeamMembersPng from "assets/images/team-members.png";
+import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 
 import { RecentTx } from "./styles";
 import Img from "components/common/Img";
@@ -286,8 +286,8 @@ function RecentTxCard() {
 
       {!loading && state === STATES.EMPTY_STATE && (
         <div className="add-people-container">
-          <Img src={TeamMembersPng} alt="teams" width="320" />
-          <div className="text">Start by adding people and teams</div>
+          <Img src={AddPeopleIcon} alt="add-people" />
+          <div className="text mt-4">Start by adding people and teams</div>
           <Button
             to={routeTemplates.dashboard.people.root}
             width="16rem"

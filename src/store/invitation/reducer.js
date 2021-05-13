@@ -23,7 +23,7 @@ export const initialState = {
   success: false,
   creating: false,
   approving: false,
-  setupCompleted: false,
+  setupCompleted: undefined,
   createdBy: "",
 };
 
