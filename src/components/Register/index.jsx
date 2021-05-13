@@ -11,7 +11,7 @@ import {
 import { show } from "redux-modal";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
-// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { Interface } from "@ethersproject/abi";
 
 import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage, useContract } from "hooks";
@@ -231,6 +231,123 @@ const Register = () => {
     if (registering) setTxLoadingStep(3); // Transaction Complete
   }, [registering]);
 
+  const completeRegister = async (proxy) => {
+    const ownerAddresses =
+      formData.owners && formData.owners.length
+        ? formData.owners.map(({ owner }) => owner)
+        : [account];
+
+    const threshold = formData.threshold ? Number(formData.threshold) : 1;
+    const organisationType = parseInt(formData.organisationType);
+
+    const creationData = gnosisSafeMasterContract.interface.encodeFunctionData(
+      "setup",
+      [
+        ownerAddresses,
+        threshold,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        ZERO_ADDRESS,
+        0,
+        ZERO_ADDRESS,
+      ]
+    );
+
+    const publicKey = getPublicKey(sign);
+    // set encryptionKey
+    const encryptionKey = cryptoUtils.getEncryptionKey(sign, proxy);
+    setEncryptionKey(encryptionKey);
+    let encryptionKeyData;
+    try {
+      encryptionKeyData = await cryptoUtils.encryptUsingSignatures(
+        encryptionKey,
+        sign
+      );
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+
+    const encryptedOwners =
+      formData.owners && formData.owners.length
+        ? formData.owners.map(({ name, owner }) => ({
+            name: cryptoUtils.encryptDataUsingEncryptionKey(
+              name,
+              encryptionKey,
+              organisationType
+            ),
+            owner,
+          }))
+        : [
+            {
+              owner: account,
+              name: cryptoUtils.encryptDataUsingEncryptionKey(
+                formData.name,
+                encryptionKey,
+                organisationType
+              ),
+            },
+          ];
+
+    const body = {
+      name: cryptoUtils.encryptDataUsingEncryptionKey(
+        formData.name,
+        encryptionKey,
+        organisationType
+      ),
+      referralId: formData.referralId,
+      safeAddress: proxy,
+      createdBy: account,
+      owners: encryptedOwners,
+      proxyData: {
+        from: account,
+        params: [GNOSIS_SAFE_ADDRESS, creationData],
+      },
+      email: "",
+      encryptionKeyData,
+      publicKey,
+      threshold,
+      organisationType,
+    };
+    dispatch(registerUser(body));
+    dispatch(setOwnerDetails(formData.name, proxy, account));
+    dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
+    dispatch(setOrganisationType(organisationType));
+  };
+
+  useEffect(() => {
+    if (library && proxyFactory && txHash) {
+      let topic = keccak256(toUtf8Bytes("ProxyCreation(address)"));
+
+      let filter = {
+        address: proxyFactory.address,
+        topics: [topic],
+      };
+
+      console.log("adding listener");
+      library.on(filter, (result) => {
+        const iface = new Interface(ProxyFactoryABI);
+        console.log(result);
+
+        if (result.transactionHash === txHash) {
+          const decodedEvents = iface.decodeEventLog(
+            "ProxyCreation",
+            result.data
+          );
+          console.log({ decodedEvents });
+          const proxy = decodedEvents.proxy;
+
+          console.log({ proxy });
+          completeRegister(proxy);
+        }
+      });
+    }
+
+    return proxyFactory && proxyFactory.removeAllListeners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [library, proxyFactory, txHash]);
+
   const onSubmit = async (values) => {
     // console.log(values);
     dispatch(updateForm(values));
@@ -313,9 +430,8 @@ const Register = () => {
           : [account];
 
       const threshold = formData.threshold ? parseInt(formData.threshold) : 1;
-      const creationData = gnosisSafeMasterContract.interface.encodeFunctionData(
-        "setup",
-        [
+      const creationData =
+        gnosisSafeMasterContract.interface.encodeFunctionData("setup", [
           ownerAddresses,
           threshold,
           ZERO_ADDRESS,
@@ -324,8 +440,7 @@ const Register = () => {
           ZERO_ADDRESS,
           0,
           ZERO_ADDRESS,
-        ]
-      );
+        ]);
 
       // Execute normal transaction
       // Create Proxy
@@ -361,7 +476,7 @@ const Register = () => {
   };
 
   const createSafeWithMetaTransaction = async () => {
-    let body;
+    // let body;
 
     if (account && sign) {
       const ownerAddresses =
@@ -370,11 +485,10 @@ const Register = () => {
           : [account];
 
       const threshold = formData.threshold ? Number(formData.threshold) : 1;
-      const organisationType = parseInt(formData.organisationType);
+      // const organisationType = parseInt(formData.organisationType);
 
-      const creationData = gnosisSafeMasterContract.interface.encodeFunctionData(
-        "setup",
-        [
+      const creationData =
+        gnosisSafeMasterContract.interface.encodeFunctionData("setup", [
           ownerAddresses,
           threshold,
           ZERO_ADDRESS,
@@ -383,8 +497,7 @@ const Register = () => {
           ZERO_ADDRESS,
           0,
           ZERO_ADDRESS,
-        ]
-      );
+        ]);
 
       // Execute Meta transaction
 
@@ -403,72 +516,72 @@ const Register = () => {
 
       dispatch(createMetaTx(metaTxBody));
 
-      proxyFactory.once("ProxyCreation", async (proxy) => {
-        if (proxy) {
-          const publicKey = getPublicKey(sign);
-          // set encryptionKey
-          const encryptionKey = cryptoUtils.getEncryptionKey(sign, proxy);
-          setEncryptionKey(encryptionKey);
-          let encryptionKeyData;
-          try {
-            encryptionKeyData = await cryptoUtils.encryptUsingSignatures(
-              encryptionKey,
-              sign
-            );
-          } catch (error) {
-            console.error(error);
-            return;
-          }
+      // proxyFactory.once("ProxyCreation", async (proxy) => {
+      //   if (proxy) {
+      //     const publicKey = getPublicKey(sign);
+      //     // set encryptionKey
+      //     const encryptionKey = cryptoUtils.getEncryptionKey(sign, proxy);
+      //     setEncryptionKey(encryptionKey);
+      //     let encryptionKeyData;
+      //     try {
+      //       encryptionKeyData = await cryptoUtils.encryptUsingSignatures(
+      //         encryptionKey,
+      //         sign
+      //       );
+      //     } catch (error) {
+      //       console.error(error);
+      //       return;
+      //     }
 
-          const encryptedOwners =
-            formData.owners && formData.owners.length
-              ? formData.owners.map(({ name, owner }) => ({
-                  name: cryptoUtils.encryptDataUsingEncryptionKey(
-                    name,
-                    encryptionKey,
-                    organisationType
-                  ),
-                  owner,
-                }))
-              : [
-                  {
-                    owner: account,
-                    name: cryptoUtils.encryptDataUsingEncryptionKey(
-                      formData.name,
-                      encryptionKey,
-                      organisationType
-                    ),
-                  },
-                ];
+      //     const encryptedOwners =
+      //       formData.owners && formData.owners.length
+      //         ? formData.owners.map(({ name, owner }) => ({
+      //             name: cryptoUtils.encryptDataUsingEncryptionKey(
+      //               name,
+      //               encryptionKey,
+      //               organisationType
+      //             ),
+      //             owner,
+      //           }))
+      //         : [
+      //             {
+      //               owner: account,
+      //               name: cryptoUtils.encryptDataUsingEncryptionKey(
+      //                 formData.name,
+      //                 encryptionKey,
+      //                 organisationType
+      //               ),
+      //             },
+      //           ];
 
-          body = {
-            name: cryptoUtils.encryptDataUsingEncryptionKey(
-              formData.name,
-              encryptionKey,
-              organisationType
-            ),
-            referralId: formData.referralId,
-            safeAddress: proxy,
-            createdBy: account,
-            owners: encryptedOwners,
-            proxyData: {
-              from: account,
-              params: [GNOSIS_SAFE_ADDRESS, creationData],
-            },
-            email: "",
-            encryptionKeyData,
-            publicKey,
-            threshold,
-            organisationType,
-          };
-          dispatch(registerUser(body));
-          dispatch(setOwnerDetails(formData.name, proxy, account));
-          dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
-          dispatch(setOrganisationType(organisationType));
-          // setLoadingTx(false);
-          // history.push("/dashboard");
-        }
-      });
+      //     body = {
+      //       name: cryptoUtils.encryptDataUsingEncryptionKey(
+      //         formData.name,
+      //         encryptionKey,
+      //         organisationType
+      //       ),
+      //       referralId: formData.referralId,
+      //       safeAddress: proxy,
+      //       createdBy: account,
+      //       owners: encryptedOwners,
+      //       proxyData: {
+      //         from: account,
+      //         params: [GNOSIS_SAFE_ADDRESS, creationData],
+      //       },
+      //       email: "",
+      //       encryptionKeyData,
+      //       publicKey,
+      //       threshold,
+      //       organisationType,
+      //     };
+      //     dispatch(registerUser(body));
+      //     dispatch(setOwnerDetails(formData.name, proxy, account));
+      //     dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
+      //     dispatch(setOrganisationType(organisationType));
+      //     // setLoadingTx(false);
+      //     // history.push("/dashboard");
+      //   }
+      // });
     }
   };
 
