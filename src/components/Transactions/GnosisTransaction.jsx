@@ -8,12 +8,12 @@ import { TxRow } from "./styles";
 import Img from "components/common/Img";
 import { TX_DIRECTION } from "store/transactions/constants";
 import { formatNumber } from "utils/number-helpers";
+import TokenImg from "components/common/TokenImg";
 
 export default function GnosisTransaction({ transaction }) {
   const { direction, txDetails } = transaction;
 
-  const { status, createdOn, tokenValue, fiatValue, tokenCurrencies } =
-    txDetails;
+  const { status, createdOn, fiatValue, tokenCurrencies } = txDetails;
   return (
     <TxRow>
       <td style={{ width: "35%" }}>
@@ -42,9 +42,11 @@ export default function GnosisTransaction({ transaction }) {
         </div>
       </td>
       <td style={{ width: "30%" }}>
-        {tokenCurrencies && tokenCurrencies.length > 0 && tokenValue > 0 && (
+        {tokenCurrencies && tokenCurrencies.length > 0 && (
           <div className="amount">
-            {formatNumber(tokenValue, 5)} {tokenCurrencies.split(", ")}
+            {tokenCurrencies.map((token) => (
+              <TokenImg token={token} key={token} />
+            ))}
           </div>
         )}
         {fiatValue > 0 && (
