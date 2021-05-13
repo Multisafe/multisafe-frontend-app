@@ -65,19 +65,18 @@ function AssetsCard() {
     );
   }, [tokenList]);
 
-  const renderAssetCard = ({ icon, name, balance, usd }) =>
-    balance > 0 ? (
-      <div className="asset-card" key={name}>
-        <div className="token-details">
-          <Img src={icon} alt={name} className="token-icon" />
-          <div>
-            <div className="token-name">{name}</div>
-            <div className="token-amount">{formatNumber(balance)}</div>
-          </div>
+  const renderAssetCard = ({ icon, name, balance, usd }) => (
+    <div className="asset-card" key={name}>
+      <div className="token-details">
+        <Img src={icon} alt={name} className="token-icon" />
+        <div>
+          <div className="token-name">{name}</div>
+          <div className="token-amount">{formatNumber(balance, 5)}</div>
         </div>
-        <div className="usd">${formatNumber(usd)}</div>
       </div>
-    ) : null;
+      <div className="usd">${formatNumber(usd)}</div>
+    </div>
+  );
   return (
     <Assets>
       <div className="title-container">

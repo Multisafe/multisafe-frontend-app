@@ -20,6 +20,7 @@ import { formatNumber } from "utils/number-helpers";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 import { Overview } from "./styles";
+import { getTokens } from "store/tokens/actions";
 
 const overviewKey = "overview";
 
@@ -42,6 +43,7 @@ export default function OverviewCard() {
   useEffect(() => {
     if (ownerSafeAddress) {
       dispatch(getOverview(ownerSafeAddress));
+      dispatch(getTokens(ownerSafeAddress));
     }
   }, [ownerSafeAddress, dispatch]);
 

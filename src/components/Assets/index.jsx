@@ -48,7 +48,7 @@ export default function Assets() {
           <div className="ml-2 mt-1">{name}</div>
         </td>
         <td>
-          {formatNumber(balance)} {name}
+          {formatNumber(balance, 5)} {name}
         </td>
         <td>
           <span>{formatNumber(usd)} USD</span>

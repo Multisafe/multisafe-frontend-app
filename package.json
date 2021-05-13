@@ -20,6 +20,7 @@
     "copy-to-clipboard": "^3.3.1",
     "csv": "^5.3.2",
     "date-fns": "^2.16.1",
+    "ethereum-qr-code": "^0.3.0",
     "fontfaceobserver": "^2.1.0",
     "immer": "^8.0.1",
     "invariant": "^2.2.4",

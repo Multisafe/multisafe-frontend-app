@@ -22,10 +22,7 @@ import { mainNavItems } from "./navItems";
 import invitationSaga from "store/invitation/saga";
 import invitationReducer from "store/invitation/reducer";
 import { getInvitations } from "store/invitation/actions";
-import {
-  makeSelectLoading,
-  makeSelectIsSetupComplete,
-} from "store/invitation/selectors";
+import { makeSelectIsSetupComplete } from "store/invitation/selectors";
 
 import { DashboardSidebar } from "./styles";
 import { routeTemplates } from "constants/routes/templates";
@@ -51,7 +48,6 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
 
   const safeOwners = useSelector(makeSelectSafeOwners());
   const isSetupComplete = useSelector(makeSelectIsSetupComplete());
-  const loadingSetupStatus = useSelector(makeSelectLoading());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const logout = () => {
@@ -107,8 +103,6 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       }`;
     }
   };
-
-  console.log({ loadingSetupStatus, isSetupComplete });
 
   return (
     <DashboardSidebar className={`${isSidebarOpen && "sidebar-responsive"}`}>

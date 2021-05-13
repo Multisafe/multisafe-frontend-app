@@ -15,6 +15,9 @@ import MassPayoutModal, {
 import QuickTransferModal, {
   MODAL_NAME as QUICK_TRANSFER_MODAL,
 } from "components/Payments/QuickTransferModal";
+import AddFundsModal, {
+  MODAL_NAME as ADD_FUNDS_MODAL,
+} from "components/AddFunds";
 import TransactionSubmittedModal from "components/Payments/TransactionSubmittedModal";
 
 import { NewTransfer } from "./styles";
@@ -32,6 +35,10 @@ export default function NewTransferDropdown() {
     dispatch(show(QUICK_TRANSFER_MODAL));
   };
 
+  const showAddFundsModal = () => {
+    dispatch(show(ADD_FUNDS_MODAL));
+  };
+
   return (
     <NewTransfer onClick={toggleDropdown}>
       <div className="text">New Transfer</div>
@@ -45,7 +52,7 @@ export default function NewTransferDropdown() {
           <Img src={PaySomeoneIcon} alt="pay-someone" className="icon" />
           <div className="name">Pay Someone</div>
         </div>
-        <div className="transfer-option">
+        <div className="transfer-option" onClick={showAddFundsModal}>
           <Img src={AddFundsIcon} alt="add-funds" className="icon" />
           <div className="name">Add Funds</div>
         </div>
@@ -53,6 +60,7 @@ export default function NewTransferDropdown() {
 
       <MassPayoutModal />
       <QuickTransferModal />
+      <AddFundsModal />
       <TransactionSubmittedModal />
     </NewTransfer>
   );

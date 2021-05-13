@@ -84,7 +84,7 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
-        if (allTokenDetails.length < 3) {
+        if (allTokenDetails.length < 4) {
           for (let i = 0; i < defaultTokenDetails.length; i++) {
             if (
               !allTokenDetails.find(
