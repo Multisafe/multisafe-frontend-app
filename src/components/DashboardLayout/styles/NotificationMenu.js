@@ -85,4 +85,23 @@ export default styled(Menu)`
       color: #7367f0;
     }
   }
+
+  .no-notifications {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 90vh;
+
+    .text {
+      font-size: 1.6rem;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      color: #989898;
+      margin-top: 3rem;
+    }
+  }
 `;

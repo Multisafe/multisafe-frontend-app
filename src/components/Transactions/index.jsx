@@ -23,6 +23,8 @@ import {
 import { TX_ORIGIN } from "store/transactions/constants";
 import GnosisTransaction from "./GnosisTransaction";
 import MultisafeTransaction from "./MultisafeTransaction";
+import Img from "components/common/Img";
+import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 
 const transactionsKey = "transactions";
 
@@ -47,13 +49,21 @@ export default function Transactions() {
     return (
       <TableInfo
         style={{
-          fontSize: "1.4rem",
-          fontWeight: "500",
           textAlign: "center",
-          height: "10rem",
+          height: "40rem",
+          fontSize: "16px",
+          fontWeight: "bold",
+          color: "#8b8b8b",
         }}
       >
-        <td colSpan={4}>No transactions found!</td>
+        <td colSpan={4}>
+          <div className="d-flex align-items-center justify-content-center">
+            <div>
+              <Img src={NoTransactionsImg} alt="no-assets" className="mb-4" />
+              <div className="text-center">No Transactions</div>
+            </div>
+          </div>
+        </td>
       </TableInfo>
     );
   };

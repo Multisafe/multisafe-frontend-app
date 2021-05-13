@@ -50,7 +50,7 @@ import { getDecryptedDetails } from "utils/encryption";
 import Img from "components/common/Img";
 import { togglePeopleDetails, setPeopleDetails } from "store/layout/actions";
 import DeletePeopleModal from "./DeletePeopleModal";
-import AddPeopleIcon from "assets/icons/dashboard/add-people-icon.svg";
+import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 import ModifyTeamDropdown from "./ModifyTeamDropdown";
 import { makeSelectTeams } from "store/view-teams/selectors";
 import AddBulkPeoplModal from "./AddBulkPeopleModal";
@@ -156,13 +156,8 @@ export default function People() {
     if (encryptedPeople && encryptionKey && allTeams && !loadingPeople) {
       const sortedDecryptedPeople = encryptedPeople
         .map(({ data, ...rest }) => {
-          const {
-            firstName,
-            lastName,
-            salaryAmount,
-            salaryToken,
-            address,
-          } = getDecryptedDetails(data, encryptionKey, organisationType);
+          const { firstName, lastName, salaryAmount, salaryToken, address } =
+            getDecryptedDetails(data, encryptionKey, organisationType);
           return {
             firstName,
             lastName,

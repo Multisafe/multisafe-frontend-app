@@ -6,6 +6,7 @@ export default styled(Card)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 44rem;
 
   .title-container {
     display: flex;
@@ -84,6 +85,26 @@ export default styled(Card)`
         text-align: left;
         color: #373737;
       }
+    }
+  }
+
+  .no-assets {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+
+    .text {
+      font-size: 1.6rem;
+      font-weight: 900;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      color: #989898;
+      margin-top: 2rem;
     }
   }
 

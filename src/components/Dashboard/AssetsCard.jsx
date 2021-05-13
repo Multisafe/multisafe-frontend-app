@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, useEffect, memo, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Doughnut } from "react-chartjs-2";
 import { useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import {
   makeSelectTokenList,
 } from "store/tokens/selectors";
 import { defaultTokenDetails } from "constants/index";
+import NoAssetsImg from "assets/icons/dashboard/empty/assets.svg";
 
 import { Assets } from "./styles";
 import { formatNumber } from "utils/number-helpers";
@@ -56,18 +57,27 @@ function AssetsCard() {
     }
   }, [tokenList]);
 
-  const renderAssetCard = ({ icon, name, balance, usd }) => (
-    <div className="asset-card" key={name}>
-      <div className="token-details">
-        <Img src={icon} alt={name} className="token-icon" />
-        <div>
-          <div className="token-name">{name}</div>
-          <div className="token-amount">{formatNumber(balance)}</div>
+  const isAssetsEmpty = useMemo(() => {
+    return (
+      tokenList &&
+      tokenList.length > 0 &&
+      tokenList.every(({ balance, usd }) => !balance && !usd)
+    );
+  }, [tokenList]);
+
+  const renderAssetCard = ({ icon, name, balance, usd }) =>
+    balance > 0 ? (
+      <div className="asset-card" key={name}>
+        <div className="token-details">
+          <Img src={icon} alt={name} className="token-icon" />
+          <div>
+            <div className="token-name">{name}</div>
+            <div className="token-amount">{formatNumber(balance)}</div>
+          </div>
         </div>
+        <div className="usd">${formatNumber(usd)}</div>
       </div>
-      <div className="usd">${formatNumber(usd)}</div>
-    </div>
-  );
+    ) : null;
   return (
     <Assets>
       <div className="title-container">
@@ -81,10 +91,16 @@ function AssetsCard() {
           className="d-flex align-items-center justify-content-center"
           style={{ height: "30rem" }}
         >
-          <Loading color="primary" width="50px" height="50px" />
+          <Loading color="primary" width="3rem" height="3rem" />
         </div>
       )}
-      {!loading && doughnutData && (
+      {!loading && isAssetsEmpty && (
+        <div className="no-assets">
+          <Img src={NoAssetsImg} alt="no-assets" />
+          <div className="text">No Assets</div>
+        </div>
+      )}
+      {!loading && !isAssetsEmpty && doughnutData && (
         <React.Fragment>
           <div className="chart-container">
             <Doughnut

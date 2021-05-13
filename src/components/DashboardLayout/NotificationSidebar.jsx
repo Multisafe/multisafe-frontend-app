@@ -23,6 +23,7 @@ import CloseIcon from "assets/icons/navbar/close.svg";
 import { makeSelectIsNotificationOpen } from "store/layout/selectors";
 import { toggleNotification } from "store/layout/actions";
 import { getDecryptedDetails } from "utils/encryption";
+import NoNotificationImg from "assets/icons/dashboard/empty/notification.svg";
 
 import { NotificationMenu } from "./styles";
 
@@ -189,7 +190,10 @@ function NotificationSidebar() {
         </div>
       )}
       {!loadingNotifications && notifications && notifications.length === 0 ? (
-        <div className="no-notifications">Nothing to see here...</div>
+        <div className="no-notifications">
+          <Img src={NoNotificationImg} alt="no-notification" />
+          <div className="text">No new notifications</div>
+        </div>
       ) : (
         notifications &&
         notifications.map((notification) => renderNotification(notification))

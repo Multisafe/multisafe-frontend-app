@@ -3,9 +3,7 @@ import styled from "styled-components/macro";
 export default styled.thead`
   width: 100%;
   background-color: #f1f0fd;
-
   display: table;
-  width: 100%;
   table-layout: fixed;
 
   th {
