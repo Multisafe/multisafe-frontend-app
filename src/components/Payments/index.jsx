@@ -4,6 +4,7 @@ import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import Big from "big.js";
 
 import Button from "components/common/Button";
 import viewTeamsReducer from "store/view-teams/reducer";
@@ -310,16 +311,21 @@ export default function Payments(props) {
   const totalAmountToPay = useMemo(() => {
     if (!selectedRows.length) return 0;
     if (prices) {
-      return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
-        // TODO use Big.js to fix precision errors
-        if (salaryToken === "USD") {
-          total += Number(salaryAmount);
-        } else {
-          total += prices[salaryToken] * salaryAmount;
-        }
+      const totalAmount = selectedRows.reduce(
+        (total, { salaryAmount, salaryToken }) => {
+          // TODO use Big.js to fix precision errors
+          if (salaryToken === "USD") {
+            total += Number(salaryAmount);
+          } else {
+            total += prices[salaryToken] * salaryAmount;
+          }
 
-        return total;
-      }, 0);
+          return total;
+        },
+        0
+      );
+
+      return new Big(totalAmount).round(2).toNumber();
     }
   }, [prices, selectedRows]);
 
@@ -788,7 +794,7 @@ export default function Payments(props) {
 
           <div>
             {!loadingTx && errorFromMetaTx && (
-              <div className="text-danger mt-3">{errorFromMetaTx}</div>
+              <ErrorText>{errorFromMetaTx}</ErrorText>
             )}
           </div>
           {renderPaymentSummary()}

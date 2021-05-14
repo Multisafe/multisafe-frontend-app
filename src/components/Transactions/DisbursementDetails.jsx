@@ -39,7 +39,7 @@ export default function DisbursementDetails({
                   <TokenImg token={salaryToken} />
 
                   {salaryToken === "USD"
-                    ? `${usd} USD (${formatNumber(
+                    ? `${formatNumber(usd)} USD (${formatNumber(
                         salaryAmount,
                         5
                       )} ${tokenCurrency})`

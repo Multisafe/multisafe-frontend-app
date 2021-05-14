@@ -69,7 +69,7 @@ function* addTransaction({ body }) {
       );
     }
   } catch (err) {
-    yield put(addTransactionError("Error in creating transaction."));
+    yield put(addTransactionError("Could not create transaction."));
   }
 }
 
