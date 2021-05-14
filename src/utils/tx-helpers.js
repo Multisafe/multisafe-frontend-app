@@ -1,5 +1,7 @@
 // import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits, formatUnits } from "@ethersproject/units";
+import Big from "big.js";
+
 // Hex helpers
 export function joinHexData(hexData) {
   return `0x${hexData
@@ -38,7 +40,7 @@ export const getAmountInWei = (tokenAmount, decimals) => {
   // return BigNumber.from(tokenAmount).mul(
   //   BigNumber.from(String(10 ** decimals))
   // );
-  return parseUnits(tokenAmount, decimals);
+  return parseUnits(Big(tokenAmount).round(decimals).toString(), decimals);
 };
 
 export const getAmountFromWei = (tokenAmount, decimals, precision) => {

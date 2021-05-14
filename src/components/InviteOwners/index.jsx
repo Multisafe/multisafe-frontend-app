@@ -45,6 +45,9 @@ import Step3Png from "assets/icons/invite/step-3.png";
 import EditOwnerModal, {
   MODAL_NAME as EDIT_OWNER_MODAL,
 } from "./EditOwnerModal";
+import InvitationStepsModal, {
+  MODAL_NAME as INVITE_STEPS_MODAL,
+} from "./InvitationStepsModal";
 import Avatar from "components/common/Avatar";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 
@@ -135,6 +138,11 @@ export default function InviteOwners() {
 
   const handleEditName = (name, ownerAddress) => {
     dispatch(show(EDIT_OWNER_MODAL, { name, ownerAddress }));
+  };
+
+  const showInvitationSteps = () => {
+    console.log("here");
+    dispatch(show(INVITE_STEPS_MODAL));
   };
 
   const renderInvitationStatus = (owner, invitationDetails, idx) => {
@@ -400,12 +408,13 @@ export default function InviteOwners() {
             owners
           </div>
         </div>
-        <Button iconOnly className="help">
+        <Button iconOnly className="help" onClick={showInvitationSteps}>
           <Img src={QuestionIcon} alt="question" />
           <div className="ml-3 text">How invitation works</div>
         </Button>
       </InfoCard>
       <OwnersContainer>{renderInviteOwners()}</OwnersContainer>
+      <InvitationStepsModal />
     </div>
   );
 }

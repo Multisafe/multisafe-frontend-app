@@ -571,6 +571,7 @@ export default function MultiSigTransactions() {
       // addresses,
       transactionHash: txDetailsHash,
       // safeAddress,
+      tokenCurrency,
       to,
       transactionMode,
       // createdBy,
@@ -629,6 +630,7 @@ export default function MultiSigTransactions() {
           <DisbursementDetails
             paidTeammates={paidTeammates}
             transactionMode={transactionMode}
+            tokenCurrency={tokenCurrency}
           />
         </DisbursementCard>
 

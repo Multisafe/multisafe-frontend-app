@@ -3,10 +3,12 @@ import React from "react";
 import { Table, TableHead, TableBody } from "components/common/Table";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
+import { formatNumber } from "utils/number-helpers";
 
 export default function DisbursementDetails({
   paidTeammates,
   transactionMode,
+  tokenCurrency,
 }) {
   if (!paidTeammates) return null;
   const isMassPayout = transactionMode === TRANSACTION_MODES.MASS_PAYOUT;
@@ -35,9 +37,13 @@ export default function DisbursementDetails({
                 </td>
                 <td style={{ width: "30%" }}>
                   <TokenImg token={salaryToken} />
+
                   {salaryToken === "USD"
-                    ? `${usd} USD`
-                    : `${salaryAmount} ${salaryToken}`}
+                    ? `${usd} USD (${formatNumber(
+                        salaryAmount,
+                        5
+                      )} ${tokenCurrency})`
+                    : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
                 </td>
                 <td style={{ width: "40%" }}>{address}</td>
               </tr>

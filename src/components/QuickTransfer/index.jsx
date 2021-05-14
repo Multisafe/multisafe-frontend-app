@@ -275,7 +275,7 @@ export default function QuickTransfer(props) {
             token: details.name,
             component: (
               <div>
-                {formatNumber(details.balance)} {details.name}
+                {formatNumber(details.balance, 5)} {details.name}
               </div>
             ),
             imgUrl: details.icon,

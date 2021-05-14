@@ -115,14 +115,8 @@ export default function Payments(props) {
   const [tokensDropdown, setTokensDropdown] = useState([]);
   const [teamsDropdown, setTeamsDropdown] = useState();
   const [tokenError, setTokenError] = useState(false);
-  const {
-    loadingTx,
-    txHash,
-    recievers,
-    massPayout,
-    txData,
-    setTxData,
-  } = useMassPayout({ tokenDetails: selectedTokenDetails });
+  const { loadingTx, txHash, recievers, massPayout, txData, setTxData } =
+    useMassPayout({ tokenDetails: selectedTokenDetails });
 
   // Reducers
   useInjectReducer({ key: viewPeopleKey, reducer: viewPeopleReducer });
@@ -268,7 +262,7 @@ export default function Payments(props) {
             token: details.name,
             component: (
               <div>
-                {formatNumber(details.balance)} {details.name}
+                {formatNumber(details.balance, 5)} {details.name}
               </div>
             ),
             imgUrl: details.icon,
@@ -674,7 +668,7 @@ export default function Payments(props) {
           <div>
             <div className="payment-title">Current Balance</div>
             <div className="payment-subtitle text-bold">
-              {`${formatNumber(selectedTokenDetails.balance)} ${
+              {`${formatNumber(selectedTokenDetails.balance, 5)} ${
                 selectedTokenDetails.name
               }`}
             </div>
@@ -687,7 +681,8 @@ export default function Payments(props) {
             <div className="payment-subtitle text-bold">
               {!insufficientBalance
                 ? `${formatNumber(
-                    selectedTokenDetails.balance - totalAmountInToken
+                    selectedTokenDetails.balance - totalAmountInToken,
+                    5
                   )} ${selectedTokenDetails.name}`
                 : `Insufficient Balance`}
             </div>
@@ -707,7 +702,7 @@ export default function Payments(props) {
             <div className="payment-title">Total Amount</div>
             <div className="payment-subtitle text-bold">
               {!isNaN(totalAmountInToken)
-                ? `${formatNumber(totalAmountInToken)} ${
+                ? `${formatNumber(totalAmountInToken, 5)} ${
                     selectedTokenDetails.name
                   }`
                 : `0`}
