@@ -141,7 +141,6 @@ export default function InviteOwners() {
   };
 
   const showInvitationSteps = () => {
-    console.log("here");
     dispatch(show(INVITE_STEPS_MODAL));
   };
 

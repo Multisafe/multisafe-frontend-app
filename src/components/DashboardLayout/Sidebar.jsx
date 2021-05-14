@@ -118,7 +118,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           <div className={`settings-dropdown ${open && "show"}`}>
             <div className="settings-option column">
               <div className="name">Safe Address</div>
-              <div className="name">{safeAddress}</div>
+              <div className="name my-1">{safeAddress}</div>
               <div className="d-flex mt-2">
                 <CopyButton
                   id="address"
