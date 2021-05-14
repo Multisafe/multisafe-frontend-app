@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
+  makeSelectOwnerName,
   makeSelectOwnerSafeAddress,
-  makeSelectSafeOwners,
 } from "store/global/selectors";
 import Img from "components/common/Img";
 import ParcelLogo from "assets/icons/parcel-logo.svg";
@@ -27,6 +27,7 @@ import { makeSelectIsSetupComplete } from "store/invitation/selectors";
 import { DashboardSidebar } from "./styles";
 import { routeTemplates } from "constants/routes/templates";
 import { useActiveWeb3React, useDropdown } from "hooks";
+import { minifyAddress } from "components/common/Web3Utils";
 
 const logoutKey = "logout";
 const invitationKey = "invitation";
@@ -43,12 +44,11 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
 
   // Sagas
   useInjectSaga({ key: invitationKey, saga: invitationSaga });
-
   useInjectSaga({ key: logoutKey, saga: logoutSaga });
 
-  const safeOwners = useSelector(makeSelectSafeOwners());
   const isSetupComplete = useSelector(makeSelectIsSetupComplete());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const ownerName = useSelector(makeSelectOwnerName());
 
   const logout = () => {
     if (onboard) {
@@ -96,14 +96,6 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
     }
   };
 
-  const renderOwnerCount = () => {
-    if (safeOwners) {
-      return `${safeOwners.length} ${
-        safeOwners.length > 1 ? "members" : "member"
-      }`;
-    }
-  };
-
   return (
     <DashboardSidebar className={`${isSidebarOpen && "sidebar-responsive"}`}>
       <div className="close-btn" onClick={closeSidebar}>
@@ -115,13 +107,21 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       <div className="settings-container">
         <div className="settings" onClick={toggleDropdown}>
           <div>
-            <div className="company-title">Parcel</div>
-            <div className="company-subtitle">{renderOwnerCount()}</div>
+            <div className="company-title">{ownerName}</div>
+            <div className="company-subtitle">
+              {minifyAddress(ownerSafeAddress)}
+            </div>
           </div>
           <div>
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
           <div className={`settings-dropdown ${open && "show"}`}>
+            <div className="settings-option">
+              <div className="icon">
+                <Img src={SettingsIcon} alt="settings" />
+              </div>
+              <div className="name">Settings</div>
+            </div>
             <Link
               to={routeTemplates.dashboard.settings}
               className="settings-option"

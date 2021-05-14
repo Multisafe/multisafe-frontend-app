@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { Row, Col } from "reactstrap";
 import { cryptoUtils } from "parcel-sdk";
 
@@ -124,28 +124,22 @@ function AddSinglePeopleModal(props) {
   }, [allTeams, isEditMode]);
 
   const onSubmit = (values) => {
-    const {
-      firstName,
-      lastName,
-      address,
-      team,
-      teamName,
-      token,
-      amount,
-    } = values;
+    const { firstName, lastName, address, team, teamName, token, amount } =
+      values;
     const tokenInfo = tokenDetails && tokenDetails[values.token.value];
     if (account && safeAddress && tokenInfo) {
-      const encryptedEmployeeDetails = cryptoUtils.encryptDataUsingEncryptionKey(
-        JSON.stringify({
-          firstName,
-          lastName,
-          salaryAmount: amount,
-          salaryToken: token.value,
-          address,
-        }),
-        encryptionKey,
-        organisationType
-      );
+      const encryptedEmployeeDetails =
+        cryptoUtils.encryptDataUsingEncryptionKey(
+          JSON.stringify({
+            firstName,
+            lastName,
+            salaryAmount: amount,
+            salaryToken: token.value,
+            address,
+          }),
+          encryptionKey,
+          organisationType
+        );
 
       const body = {
         encryptedEmployeeDetails,
@@ -250,15 +244,32 @@ function AddSinglePeopleModal(props) {
           <div className="title">Currency and Amount</div>
           <div className="d-flex">
             <div className="mr-3">
-              <Input
-                type="number"
+              <Controller
+                control={control}
                 name="amount"
-                step="0.001"
-                register={register}
-                required={"Amount is required"}
-                placeholder={"Enter Amount"}
-                style={{ width: "20rem" }}
+                rules={{
+                  required: "Amount is required",
+                  validate: (value) => {
+                    if (value <= 0) return "Please check your input";
+                    return true;
+                  },
+                }}
+                defaultValue=""
+                render={({ onChange, value }) => (
+                  <Input
+                    type="number"
+                    name="amount"
+                    step="0.001"
+                    // register={register}
+                    required={"Amount is required"}
+                    placeholder={"Enter Amount"}
+                    style={{ width: "20rem" }}
+                    onChange={onChange}
+                    value={value}
+                  />
+                )}
               />
+
               <ErrorMessage name="amount" errors={errors} />
             </div>
             <div>

@@ -61,6 +61,7 @@ import TokenImg from "components/common/TokenImg";
 import DeleteTeamModal from "./DeleteTeamModal";
 import AddTeamModal from "./AddTeamModal";
 import ViewTeamsModal from "./ViewTeamsModal";
+import { formatNumber } from "utils/number-helpers";
 
 const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
@@ -308,7 +309,7 @@ export default function People() {
       <td style={{ width: "20%" }}>
         <TokenImg token={salaryToken} />
         <span>
-          {salaryAmount} {salaryToken}
+          {formatNumber(salaryAmount, 5)} {salaryToken}
         </span>
       </td>
       <td style={{ width: "35%" }}>{address}</td>
@@ -362,7 +363,7 @@ export default function People() {
           <TeamContainer>
             <div>{teamFilter}</div>
             <div className="d-flex align-items-center">
-              {!peopleByTeam[teamFilter].length && (
+              {peopleByTeam && !peopleByTeam[teamFilter].length && (
                 <div className="mr-3">{renderAddPeopleText(teamFilter)}</div>
               )}
 

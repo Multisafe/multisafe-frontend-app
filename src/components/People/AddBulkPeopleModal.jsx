@@ -28,6 +28,7 @@ import Img from "components/common/Img";
 import UploadSuccessIcon from "assets/icons/dashboard/upload-success-icon.svg";
 import UploadFailIcon from "assets/icons/dashboard/upload-fail-icon.svg";
 import { makeSelectTokensDetails } from "store/tokens/selectors";
+import { formatNumber } from "utils/number-helpers";
 
 export const MODAL_NAME = "add-bulk-people-modal";
 const addPeopleKey = "addPeople";
@@ -133,17 +134,18 @@ function AddBulkPeopleModal(props) {
             departmentName,
           } = csvData[i];
 
-          const encryptedEmployeeDetails = cryptoUtils.encryptDataUsingEncryptionKey(
-            JSON.stringify({
-              firstName,
-              lastName,
-              salaryAmount,
-              salaryToken,
-              address,
-            }),
-            encryptionKey,
-            organisationType
-          );
+          const encryptedEmployeeDetails =
+            cryptoUtils.encryptDataUsingEncryptionKey(
+              JSON.stringify({
+                firstName,
+                lastName,
+                salaryAmount,
+                salaryToken,
+                address,
+              }),
+              encryptionKey,
+              organisationType
+            );
 
           const uniqueIndex = uniqueDepartmentsHashmap[uniqueDepartmentName];
           // this index is for each department. ex: 0 = HR, 1 = Engineering etc.
@@ -224,7 +226,7 @@ function AddBulkPeopleModal(props) {
           className={`${invalidPayDetails && "text-red"}`}
           style={{ width: "22%" }}
         >
-          {salaryAmount} {salaryToken}
+          {formatNumber(salaryAmount, 5)} {salaryToken}
         </td>
         <td
           className={`${invalidAddress && "text-red"}`}

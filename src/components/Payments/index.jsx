@@ -212,7 +212,7 @@ export default function Payments(props) {
             token: existingToken.name,
             component: (
               <div>
-                {formatNumber(existingToken.balance)} {existingToken.name}
+                {formatNumber(existingToken.balance, 5)} {existingToken.name}
               </div>
             ),
             imgUrl: existingToken.icon,
@@ -226,7 +226,7 @@ export default function Payments(props) {
               token: existingTokenDetails[0].name,
               component: (
                 <div>
-                  {formatNumber(existingTokenDetails[0].balance)}{" "}
+                  {formatNumber(existingTokenDetails[0].balance, 5)}{" "}
                   {existingTokenDetails[0].name}
                 </div>
               ),
@@ -643,7 +643,7 @@ export default function Payments(props) {
                     <td style={{ width: "25%" }}>
                       <TokenImg token={salaryToken} />
                       <span>
-                        {salaryAmount} {salaryToken}{" "}
+                        {formatNumber(salaryAmount)} {salaryToken}{" "}
                       </span>
                     </td>
                     <td style={{ width: "45%" }}>{address}</td>
@@ -681,8 +681,7 @@ export default function Payments(props) {
             <div className="payment-subtitle text-bold">
               {!insufficientBalance
                 ? `${formatNumber(
-                    selectedTokenDetails.balance - totalAmountInToken,
-                    5
+                    selectedTokenDetails.balance - totalAmountInToken
                   )} ${selectedTokenDetails.name}`
                 : `Insufficient Balance`}
             </div>
@@ -702,7 +701,7 @@ export default function Payments(props) {
             <div className="payment-title">Total Amount</div>
             <div className="payment-subtitle text-bold">
               {!isNaN(totalAmountInToken)
-                ? `${formatNumber(totalAmountInToken, 5)} ${
+                ? `${formatNumber(totalAmountInToken)} ${
                     selectedTokenDetails.name
                   }`
                 : `0`}

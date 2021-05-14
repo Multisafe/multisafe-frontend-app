@@ -317,7 +317,8 @@ function RecentTxCard() {
                 </div>
               </div>
               <div className="name">
-                <TokenImg token={salaryToken} /> {salaryAmount} {salaryToken}
+                <TokenImg token={salaryToken} /> {formatNumber(salaryAmount, 5)}{" "}
+                {salaryToken}
               </div>
               <div className="team">{teammate.departmentName}</div>
             </div>

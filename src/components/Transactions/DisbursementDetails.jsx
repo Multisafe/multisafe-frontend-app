@@ -70,7 +70,7 @@ export default function DisbursementDetails({
                   <TokenImg token={salaryToken} />
                   {salaryToken === "USD"
                     ? `${usd} USD`
-                    : `${salaryAmount} ${salaryToken}`}
+                    : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
                 </td>
               </tr>
             )
@@ -94,7 +94,7 @@ export default function DisbursementDetails({
                 <td>{address}</td>
                 <td>
                   <TokenImg token={allowanceToken} />
-                  {allowanceAmount} {allowanceToken}
+                  {formatNumber(allowanceAmount, 5)} {allowanceToken}
                 </td>
               </tr>
             )
