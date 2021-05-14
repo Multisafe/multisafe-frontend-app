@@ -48,7 +48,7 @@ export default styled.div`
     line-height: 1.29;
     letter-spacing: normal;
     text-align: right;
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
     text-transform: uppercase;
   }
 `;

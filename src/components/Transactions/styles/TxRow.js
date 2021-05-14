@@ -50,7 +50,7 @@ export default styled.tr`
     line-height: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
   }
 
   @media (max-width: 600px) {

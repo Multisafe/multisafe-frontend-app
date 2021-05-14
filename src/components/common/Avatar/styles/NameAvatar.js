@@ -11,7 +11,7 @@ export default styled.span`
   letter-spacing: 0.04rem;
   text-align: center;
   color: #000000;
-  background-color: #e3e1fc;
+  background-color: ${({ theme }) => theme.accent};
   width: 2.2rem;
   height: 2.2rem;
   display: flex;

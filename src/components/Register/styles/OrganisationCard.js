@@ -17,7 +17,7 @@ export default styled.div`
     line-height: 20px;
     display: flex;
     align-items: center;
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
   }
 
   .org-subtitle {

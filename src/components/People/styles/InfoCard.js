@@ -34,12 +34,12 @@ export default styled(Card)`
     min-height: 0;
 
     .text {
-      border-bottom: solid 0.1rem #7367f0;
+      border-bottom: solid 0.1rem ${({ theme }) => theme.primary};
       align-items: center;
       font-size: 1.2rem;
       font-weight: 900;
       text-align: left;
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
     }
 
     &:hover {

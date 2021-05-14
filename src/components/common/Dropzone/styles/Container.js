@@ -58,9 +58,9 @@ export default styled.div`
       line-height: normal;
       letter-spacing: normal;
       text-align: center;
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
       padding-bottom: 0.25rem;
-      border-bottom: 0.1rem solid #7367f0;
+      border-bottom: 0.1rem solid ${({ theme }) => theme.primary};
     }
   }
 `;

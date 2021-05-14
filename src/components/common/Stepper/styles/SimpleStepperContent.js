@@ -3,7 +3,7 @@ import styled from "styled-components/macro";
 export default styled.div`
   display: flex;
   align-items: center;
-  color: ${({ active }) => (active ? "#7367f0" : "#aaaaaa")};
+  color: ${({ active }) => (active ? "#1452f5" : "#aaaaaa")};
 
   .step-check {
     margin-right: 5px;
@@ -24,6 +24,6 @@ export default styled.div`
     height: 2px;
     flex-grow: 0;
     margin: 9px 15px;
-    background-color: ${({ active }) => (active ? "#7367f0" : "#aaaaaa")};
+    background-color: ${({ active }) => (active ? "#1452f5" : "#aaaaaa")};
   }
 `;

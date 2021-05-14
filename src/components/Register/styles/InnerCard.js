@@ -35,7 +35,7 @@ export default styled.div`
   }
 
   .connect {
-    background-color: #7367f0;
+    background-color: ${({ theme }) => theme.primary};
     color: #ffffff;
   }
 
@@ -46,7 +46,7 @@ export default styled.div`
   }
 
   .import {
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
     background-color: #fff;
   }
 

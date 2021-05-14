@@ -11,7 +11,7 @@ export default styled.div`
     line-height: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
   }
 
   .text {

@@ -10,6 +10,7 @@ export default styled.input`
   font-weight: 500;
   font-stretch: normal;
   font-style: normal;
+  line-height: 1.6;
   letter-spacing: normal;
   text-align: left;
   color: #373737;
@@ -17,7 +18,7 @@ export default styled.input`
 
   &:focus {
     outline: none;
-    border: solid 0.1rem #7367f0;
+    border: solid 0.1rem ${({ theme }) => theme.primary};
     background-color: #ffffff;
   }
 
@@ -54,7 +55,7 @@ export default styled.input`
     content: "";
     width: 1.2rem;
     height: 1.2rem;
-    background: #7367f0;
+    background: ${({ theme }) => theme.primary};
     position: absolute;
     top: 0.3rem;
     left: 0.3rem;

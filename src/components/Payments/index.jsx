@@ -623,7 +623,7 @@ export default function Payments(props) {
                       handleChecked(teammateDetails, idx);
                     }}
                     style={{
-                      backgroundColor: checked[idx] ? "#f1f0fd" : "#fff",
+                      backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
                     }}
                   >
                     <td style={{ width: "30%" }}>

@@ -9,7 +9,7 @@ export default styled.div`
     line-height: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
   }
 
   .popup-subtitle {
@@ -42,7 +42,7 @@ export default styled.div`
 
       &::before {
         content: "•";
-        color: #7367f0;
+        color: ${({ theme }) => theme.primary};
         font-weight: bold;
         display: inline-block;
         width: 1em;

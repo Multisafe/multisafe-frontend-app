@@ -5,7 +5,7 @@ export default styled.div`
   margin-right: 2rem;
   padding: 0 1.2rem;
   border-radius: 0.4rem;
-  background-color: #7367f0;
+  background-color: ${({ theme }) => theme.primary};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,7 +48,7 @@ export default styled.div`
 
     .add-people-option {
       padding: 1.5rem;
-      border-bottom: 0.1rem solid #f1f0fd;
+      border-bottom: 0.1rem solid ${({ theme }) => theme.accent};
       display: flex;
       align-items: center;
       justify-content: center;
@@ -66,7 +66,7 @@ export default styled.div`
         line-height: normal;
         letter-spacing: normal;
         text-align: center;
-        color: #7367f0;
+        color: ${({ theme }) => theme.primary};
         padding-top: 0.3rem;
       }
 

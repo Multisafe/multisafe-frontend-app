@@ -497,7 +497,7 @@ const Login = () => {
             <CircularProgress
               current={step}
               max={getStepsCountByFlow(flow)}
-              color="#7367f0"
+              color="#1452f5"
             />
           </div>
         </StepInfo>
@@ -529,7 +529,7 @@ const Login = () => {
                     onClick={() => showOrganisationInfo(info)}
                     type="button"
                   >
-                    <FontAwesomeIcon icon={faQuestionCircle} color="#7367f0" />
+                    <FontAwesomeIcon icon={faQuestionCircle} color="#1452f5" />
                   </Button>
                 </div>
                 <div className="org-subtitle">{info.subtitle}</div>
@@ -925,7 +925,7 @@ const Login = () => {
                   <div>
                     <FontAwesomeIcon
                       icon={faUserCircle}
-                      color="#7367f0"
+                      color="#1452f5"
                       style={{ fontSize: "24px" }}
                     />
                   </div>

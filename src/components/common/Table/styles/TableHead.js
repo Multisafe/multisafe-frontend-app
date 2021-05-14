@@ -2,7 +2,7 @@ import styled from "styled-components/macro";
 
 export default styled.thead`
   width: 100%;
-  background-color: #f1f0fd;
+  background-color: ${({ theme }) => theme.accent};
   display: table;
   table-layout: fixed;
 

@@ -4,7 +4,7 @@ export default styled.button`
   width: ${({ width }) => width};
   min-height: 4rem;
   padding: 1.2rem 2rem;
-  background-color: #7367f0;
+  background-color: ${({ theme }) => theme.primary};
 
   font-size: 1.4rem;
   font-weight: 900;

@@ -11,7 +11,7 @@ export default styled.div`
   }
 
   .view-tx {
-    color: #7367f0 !important;
+    color: ${({ theme }) => theme.primary} !important;
     margin: 1rem 0;
     text-align: center;
     font-size: 1.4rem;

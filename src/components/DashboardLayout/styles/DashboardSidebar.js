@@ -102,7 +102,7 @@ export default styled.div`
 
       .settings-option {
         padding: 1.5em;
-        border-bottom: 0.1em solid #f1f0fd;
+        border-bottom: 0.1em solid ${({ theme }) => theme.accent};
         display: flex;
         align-items: center;
 
@@ -155,8 +155,8 @@ export default styled.div`
       width: 100%;
       padding: 1.5em;
       border-radius: 1em;
-      background-color: #e3e1fc;
-      color: #7367f0;
+      background-color: ${({ theme }) => theme.accent};
+      color: ${({ theme }) => theme.primary};
     }
 
     .icon {
@@ -184,7 +184,7 @@ export default styled.div`
   .invite-owners {
     min-height: 5em;
     padding: 1em;
-    background-color: #7367f0;
+    background-color: ${({ theme }) => theme.primary};
     position: absolute;
     bottom: 0;
     left: 0;

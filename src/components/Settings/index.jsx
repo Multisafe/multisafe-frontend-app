@@ -38,7 +38,7 @@ const navStyles = `
   }
 
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    border-bottom: 0.8rem solid #7367f0;
+    border-bottom: 0.8rem solid #1452f5;
     border-bottom-right-radius: 0.3rem;
     border-bottom-left-radius: 0.3rem;
   }
@@ -63,7 +63,7 @@ const navStyles = `
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
     background: none;
     color: #373737;
-    border-bottom: 0.8rem solid #7367f0;
+    border-bottom: 0.8rem solid #1452f5;
   }
 `;
 

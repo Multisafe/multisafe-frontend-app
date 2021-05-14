@@ -229,16 +229,17 @@ const DelegateTransfer = () => {
 
       console.log({ signature });
 
-      const gasLimit = await allowanceModule.estimateGas.executeAllowanceTransfer(
-        safe,
-        token,
-        to,
-        amount,
-        paymentToken,
-        payment,
-        delegate,
-        signature
-      );
+      const gasLimit =
+        await allowanceModule.estimateGas.executeAllowanceTransfer(
+          safe,
+          token,
+          to,
+          amount,
+          paymentToken,
+          payment,
+          delegate,
+          signature
+        );
       console.log({ gasLimit });
       const tx = await allowanceModule.executeAllowanceTransfer(
         safe,
@@ -350,7 +351,7 @@ const DelegateTransfer = () => {
             <CircularProgress
               current={step}
               max={getStepsCount()}
-              color="#7367f0"
+              color="#1452f5"
             />
           </div>
         </StepInfo>

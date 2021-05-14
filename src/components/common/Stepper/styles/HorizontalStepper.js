@@ -69,7 +69,7 @@ export default styled.div`
       line-height: normal;
       letter-spacing: normal;
       text-align: center;
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
     }
 
     .step-bar-left {

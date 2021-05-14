@@ -5,7 +5,7 @@ export default styled.div`
   padding: 1.2rem;
   border-radius: 0.2rem;
   border: solid 0.1rem #aba4f6;
-  background-color: #f1f0fd;
+  background-color: ${({ theme }) => theme.accent};
 
   .title {
     font-size: 1.2rem;

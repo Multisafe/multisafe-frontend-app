@@ -27,7 +27,7 @@ export default styled(Card)`
     }
 
     .view {
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
     }
   }
 
@@ -47,7 +47,7 @@ export default styled(Card)`
       align-items: center;
       padding: 0.8rem;
       border-radius: 0.4rem;
-      background-color: #f1f0fd;
+      background-color: ${({ theme }) => theme.accent};
 
       .token-details {
         display: flex;

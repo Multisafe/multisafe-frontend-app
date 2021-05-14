@@ -15,7 +15,7 @@ export default styled.div`
   border: solid 0.1rem #373737;
 
   &.highlight {
-    border: solid 0.1rem #7367f0;
+    border: solid 0.1rem ${({ theme }) => theme.primary};
   }
 
   .text {
@@ -55,7 +55,7 @@ export default styled.div`
 
     .search-team-option {
       padding: 1rem;
-      border-bottom: 0.1rem solid #f1f0fd;
+      border-bottom: 0.1rem solid ${({ theme }) => theme.accent};
       display: flex;
       align-items: center;
       justify-content: center;

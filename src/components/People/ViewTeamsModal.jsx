@@ -71,7 +71,7 @@ function ViewTeamsModal(props) {
             onClick={showAddTeamModal}
           >
             <td colSpan={3}>
-              <Button iconOnly style={{ color: "#7367f0" }}>
+              <Button iconOnly style={{ color: "#1452f5" }}>
                 <Img src={PlusIcon} alt="plus" className="mr-2" />{" "}
                 <span>Create New Team</span>
               </Button>

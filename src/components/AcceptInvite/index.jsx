@@ -238,7 +238,7 @@ const AcceptInvite = () => {
             <CircularProgress
               current={step}
               max={getStepsCount()}
-              color="#7367f0"
+              color="#1452f5"
             />
           </div>
         </StepInfo>

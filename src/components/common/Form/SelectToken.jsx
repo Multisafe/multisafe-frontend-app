@@ -12,9 +12,9 @@ const inputStyles = {
     backgroundColor: "#ffffff",
     fontSize: "1.4rem",
     color: "#373737",
-    border: `solid 0.1rem ${state.isFocused ? "#7367f0" : "#dddcdc"}`,
+    border: `solid 0.1rem ${state.isFocused ? "#1452f5" : "#dddcdc"}`,
     "&:hover": {
-      borderColor: "#7367f0",
+      borderColor: "#1452f5",
     },
     boxShadow: "none",
   }),
@@ -24,7 +24,7 @@ const inputStyles = {
       width: "100%",
       overflow: "hidden",
       fontSize: "1.4rem",
-      backgroundColor: state.isFocused ? "#f1f0fd" : "#ffffff",
+      backgroundColor: state.isFocused ? "#e7eefe" : "#ffffff",
       color: "#373737",
     };
   },

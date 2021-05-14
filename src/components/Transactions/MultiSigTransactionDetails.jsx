@@ -223,7 +223,7 @@ export default function MultiSigTransactions() {
     if (approved) return "#3bd800";
     // red
     else if (rejected) return "#ff0a0a";
-    else if (account && owner === account) return "#7367f0";
+    else if (account && owner === account) return "#1452f5";
     // pending yellow
     return "#fdbe42";
   };

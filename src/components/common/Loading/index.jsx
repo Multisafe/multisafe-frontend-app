@@ -8,7 +8,7 @@ const Loading = ({
   height = "2rem",
   ...rest
 }) => {
-  const colorMapping = { primary: "#7367f0", secondary: "#fff" };
+  const colorMapping = { primary: "#1452f5", secondary: "#fff" };
   return (
     <LoadingContainer className={className} {...rest}>
       <svg

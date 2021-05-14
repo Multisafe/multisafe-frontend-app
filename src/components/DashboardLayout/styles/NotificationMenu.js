@@ -6,7 +6,7 @@ export default styled(Menu)`
     width: 100%;
     height: 6rem;
     padding: 0 3rem;
-    background-color: #e3e1fc;
+    background-color: ${({ theme }) => theme.accent};
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -36,7 +36,7 @@ export default styled(Menu)`
     width: 100%;
     display: flex;
     justify-content: space-between;
-    border-bottom: 0.1em solid #f1f0fd;
+    border-bottom: 0.1em solid ${({ theme }) => theme.accent};
 
     .dot {
       margin-right: 1rem;
@@ -82,7 +82,7 @@ export default styled(Menu)`
       font-style: normal;
       line-height: normal;
       text-align: left;
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
     }
   }
 

@@ -6,6 +6,6 @@ export default styled.div`
     left: 1rem;
     font-size: 1.2rem;
     color: #aaaaaa;
-    top: 1.1rem;
+    top: 1.3rem;
   }
 `;

@@ -21,7 +21,7 @@ export default styled.tbody`
     padding: 1.5rem;
 
     &:hover {
-      background-color: #f1f0fd;
+      background-color: ${({ theme }) => theme.accent};
       cursor: pointer;
     }
   }

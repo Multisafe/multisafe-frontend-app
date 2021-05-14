@@ -26,7 +26,7 @@ export default styled(Card)`
     }
 
     .view {
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
     }
   }
 
@@ -112,7 +112,7 @@ export default styled(Card)`
     justify-content: space-between;
     margin-top: 2rem;
     width: 100%;
-    background: #f1f0fd;
+    background: ${({ theme }) => theme.accent};
     padding: 1.5rem;
 
     .name,

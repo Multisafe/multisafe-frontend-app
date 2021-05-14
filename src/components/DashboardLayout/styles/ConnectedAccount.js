@@ -5,7 +5,7 @@ export default styled.div`
   margin-right: 3rem;
   padding: 1rem;
   border-radius: 0.4rem;
-  background-color: #f1f0fd;
+  background-color: ${({ theme }) => theme.accent};
   display: flex;
   justify-content: center;
   align-items: center;

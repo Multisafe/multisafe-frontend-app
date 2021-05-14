@@ -313,9 +313,8 @@ const Register = () => {
           : [account];
 
       const threshold = formData.threshold ? parseInt(formData.threshold) : 1;
-      const creationData = gnosisSafeMasterContract.interface.encodeFunctionData(
-        "setup",
-        [
+      const creationData =
+        gnosisSafeMasterContract.interface.encodeFunctionData("setup", [
           ownerAddresses,
           threshold,
           ZERO_ADDRESS,
@@ -324,8 +323,7 @@ const Register = () => {
           ZERO_ADDRESS,
           0,
           ZERO_ADDRESS,
-        ]
-      );
+        ]);
 
       // Execute normal transaction
       // Create Proxy
@@ -372,9 +370,8 @@ const Register = () => {
       const threshold = formData.threshold ? Number(formData.threshold) : 1;
       const organisationType = parseInt(formData.organisationType);
 
-      const creationData = gnosisSafeMasterContract.interface.encodeFunctionData(
-        "setup",
-        [
+      const creationData =
+        gnosisSafeMasterContract.interface.encodeFunctionData("setup", [
           ownerAddresses,
           threshold,
           ZERO_ADDRESS,
@@ -383,8 +380,7 @@ const Register = () => {
           ZERO_ADDRESS,
           0,
           ZERO_ADDRESS,
-        ]
-      );
+        ]);
 
       // Execute Meta transaction
 
@@ -625,7 +621,7 @@ const Register = () => {
               <CircularProgress
                 current={step}
                 max={getStepsCountByFlow(formData.flow)}
-                color="#7367f0"
+                color="#1452f5"
               />
             </div>
           )}
@@ -660,7 +656,7 @@ const Register = () => {
                     onClick={() => showOrganisationInfo(info)}
                     type="button"
                   >
-                    <FontAwesomeIcon icon={faQuestionCircle} color="#7367f0" />
+                    <FontAwesomeIcon icon={faQuestionCircle} color="#1452f5" />
                   </Button>
                 </div>
                 <div className="org-subtitle">{info.subtitle}</div>
@@ -985,7 +981,7 @@ const Register = () => {
                   <div>
                     <FontAwesomeIcon
                       icon={faUserCircle}
-                      color="#7367f0"
+                      color="#1452f5"
                       style={{ fontSize: "24px" }}
                     />
                   </div>

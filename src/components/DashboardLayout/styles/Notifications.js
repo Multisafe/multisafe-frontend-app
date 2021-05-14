@@ -22,7 +22,7 @@ export default styled.div`
     line-height: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #7367f0;
+    color: ${({ theme }) => theme.primary};
     border-bottom: solid 1px rgba(168, 168, 168, 0.2);
   }
 
@@ -94,7 +94,7 @@ export default styled.div`
       line-height: normal;
       letter-spacing: normal;
       text-align: left;
-      color: #7367f0;
+      color: ${({ theme }) => theme.primary};
     }
   }
 `;

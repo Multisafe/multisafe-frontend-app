@@ -4,14 +4,15 @@ import AvenirLTProHeavy from "assets/fonts/AvenirLTProHeavy.otf";
 import AvenirLTProMedium from "assets/fonts/AvenirLTProMedium.otf";
 
 export const lightTheme = {
-  primary: "#7367f0",
+  primary: "#1452f5",
+  accent: "#e7eefe",
   secondary: "#373737",
   body: "#FFF",
   text: "#363537",
   toggleBorder: "#FFF",
   background: "#FFF",
   logo: {
-    color: "#7367F0",
+    color: "#1452f5",
   },
   border: {
     color: "#eee",
@@ -27,14 +28,14 @@ export const lightTheme = {
   },
 };
 export const darkTheme = {
-  primary: "#7367f0",
+  primary: "#1452f5",
   secondary: "#373737",
   body: "#363537",
   text: "#FAFAFA",
   toggleBorder: "#6B8096",
   background: "#292C35",
   logo: {
-    color: "#7367F0",
+    color: "#1452f5",
   },
   border: {
     color: "#535766",

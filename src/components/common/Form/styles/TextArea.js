@@ -18,7 +18,7 @@ export default styled.textarea`
 
   &:focus {
     outline: none;
-    border: solid 0.1rem #7367f0;
+    border: solid 0.1rem ${({ theme }) => theme.primary};
     background-color: #ffffff;
   }
 

@@ -49,7 +49,7 @@ const StyledContainer = styled(ToastContainer).attrs({
   }
 
   a {
-    color: #7367f0;
+    color: #1452f5;
     font-size: 1.4rem;
     font-weight: 500;
     font-stretch: normal;
@@ -60,7 +60,7 @@ const StyledContainer = styled(ToastContainer).attrs({
     -ms-letter-spacing: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #7367f0;
+    color: #1452f5;
     &:hover {
       color: #373737;
     }

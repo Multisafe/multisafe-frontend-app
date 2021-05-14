@@ -48,7 +48,7 @@ export default styled.div`
   }
 
   .radio-toolbar input[type="radio"]:checked + label {
-    background-color: #7367f0;
+    background-color: ${({ theme }) => theme.primary};
     color: #ffffff;
     border: none;
   }
@@ -58,7 +58,7 @@ export default styled.div`
     padding: 14px;
     border-radius: 8px;
     box-shadow: 10px 10px 40px 0 rgba(113, 113, 113, 0.25);
-    background-color: #7367f0;
+    background-color: ${({ theme }) => theme.primary};
     position: absolute;
     right: 40px;
     bottom: 40px;

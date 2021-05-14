@@ -7,7 +7,7 @@ export default styled(Menu)`
     width: 100%;
     height: 6rem;
     padding: 0 3rem;
-    background-color: #e3e1fc;
+    background-color: ${({ theme }) => theme.accent};
     display: flex !important;
     justify-content: space-between;
     align-items: center;

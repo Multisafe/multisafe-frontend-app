@@ -41,7 +41,7 @@ export default styled.div`
 
     .modify-team-option {
       padding: 1rem;
-      border-bottom: 0.1rem solid #f1f0fd;
+      border-bottom: 0.1rem solid ${({ theme }) => theme.accent};
       display: flex;
       align-items: center;
       justify-content: center;

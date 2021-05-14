@@ -10,7 +10,7 @@ export default styled.div`
   cursor: pointer;
   position: relative;
   min-width: 8rem;
-  background-color: #f1f0fd;
+  background-color: ${({ theme }) => theme.accent};
 
   &:hover {
     opacity: 0.8;

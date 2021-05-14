@@ -64,7 +64,7 @@ export default styled.div`
         height: 24px;
         border-radius: 8px;
         border: solid 1px #f2f2f2;
-        background-color: #7367f0;
+        background-color: #1452f5;
         display: flex;
         justify-content: center;
         align-items: center;
