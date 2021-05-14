@@ -220,12 +220,12 @@ export default function MultiSigTransactions() {
 
   const getStatusColor = (owner, approved, rejected) => {
     // green
-    if (approved) return "#3bd800";
+    if (approved) return "#6cb44c";
     // red
-    else if (rejected) return "#ff0a0a";
+    else if (rejected) return "#ff4660";
     else if (account && owner === account) return "#1452f5";
     // pending yellow
-    return "#fdbe42";
+    return "#fcbc04";
   };
 
   const renderConfirmationStatus = (confirmations) => {

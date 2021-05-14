@@ -29,7 +29,7 @@ export default function useSocket(props) {
               <FontAwesomeIcon
                 className="arrow"
                 icon={faCheckCircle}
-                color="#3bd800"
+                color="#6cb44c"
                 style={{ fontSize: "1.8rem" }}
               />
             </div>
@@ -59,7 +59,7 @@ export default function useSocket(props) {
               <FontAwesomeIcon
                 className="arrow"
                 icon={faCheckCircle}
-                color="#3bd800"
+                color="#6cb44c"
                 style={{ fontSize: "1.8rem" }}
               />
             </div>

@@ -28,8 +28,8 @@ import NewTransferDropdown from "./NewTransferDropdown";
 
 const notificationsKey = "notifications";
 
-export default function Navbar({ isSidebarOpen, openSidebar }) {
-  const { account } = useActiveWeb3React();
+export default function Navbar({ openSidebar }) {
+  const { account, connector } = useActiveWeb3React();
 
   const dispatch = useDispatch();
 
@@ -64,7 +64,10 @@ export default function Navbar({ isSidebarOpen, openSidebar }) {
       <div className="nav-container">
         <ConnectedAccount>
           <Img src={ConnectedIcon} alt="connected" className="mr-2" />
-          <div className="text">{minifyAddress(account)}</div>
+          <div>
+            <div className="connector">{connector && connector.name}</div>
+            <div className="text">{minifyAddress(account)}</div>
+          </div>
         </ConnectedAccount>
         <NewTransferDropdown />
         {/* <CurrencyDropdown /> */}

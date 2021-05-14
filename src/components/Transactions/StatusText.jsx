@@ -34,7 +34,7 @@ export default function StatusText({ status, textOnly, ...rest }) {
       return (
         <div className="d-flex align-items-center">
           <div>Completed</div>
-          <StatusCircle color="#3bd800" className="ml-3" />
+          <StatusCircle color="#6cb44c" className="ml-3" />
         </div>
       );
 

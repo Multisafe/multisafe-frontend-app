@@ -84,7 +84,7 @@ export default styled.div`
 
     .status-card {
       .success {
-        background-color: #3bd800;
+        background-color: #6cb44c;
         padding: 10px 15px;
         border-radius: 5px;
         font-size: 14px;
@@ -94,7 +94,7 @@ export default styled.div`
 
       .rejected,
       .failed {
-        background-color: #ff0a0a;
+        background-color: #ff4660;
         padding: 10px 15px;
         border-radius: 5px;
         font-size: 14px;
@@ -103,7 +103,7 @@ export default styled.div`
       }
 
       .pending {
-        background-color: #fdbe42;
+        background-color: #fcbc04;
         padding: 10px 15px;
         border-radius: 5px;
         font-size: 14px;
