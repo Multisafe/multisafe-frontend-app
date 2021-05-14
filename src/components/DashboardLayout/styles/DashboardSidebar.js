@@ -106,6 +106,12 @@ export default styled.div`
         display: flex;
         align-items: center;
 
+        &.column {
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: flex-start;
+        }
+
         .icon {
           margin-right: 1em;
           font-size: 1.6em;
@@ -120,6 +126,10 @@ export default styled.div`
           letter-spacing: normal;
           text-align: left;
           color: #373737;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          width: 100%;
           padding-top: 0.3em;
         }
 

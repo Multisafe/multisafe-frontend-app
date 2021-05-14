@@ -23,7 +23,9 @@ import invitationSaga from "store/invitation/saga";
 import invitationReducer from "store/invitation/reducer";
 import { getInvitations } from "store/invitation/actions";
 import { makeSelectIsSetupComplete } from "store/invitation/selectors";
-
+import CopyButton from "components/common/Copy";
+import EtherscanLink from "components/common/EtherscanLink";
+import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import { DashboardSidebar } from "./styles";
 import { routeTemplates } from "constants/routes/templates";
 import { useActiveWeb3React, useDropdown } from "hooks";
@@ -47,7 +49,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
   useInjectSaga({ key: logoutKey, saga: logoutSaga });
 
   const isSetupComplete = useSelector(makeSelectIsSetupComplete());
-  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const ownerName = useSelector(makeSelectOwnerName());
 
   const logout = () => {
@@ -58,10 +60,10 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
   };
 
   useEffect(() => {
-    if (ownerSafeAddress) {
-      dispatch(getInvitations(ownerSafeAddress));
+    if (safeAddress) {
+      dispatch(getInvitations(safeAddress));
     }
-  }, [dispatch, ownerSafeAddress]);
+  }, [dispatch, safeAddress]);
 
   const renderNavItem = ({ link, href, name, icon, activeIcon }) => {
     if (link) {
@@ -108,19 +110,28 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
         <div className="settings" onClick={toggleDropdown}>
           <div>
             <div className="company-title">{ownerName}</div>
-            <div className="company-subtitle">
-              {minifyAddress(ownerSafeAddress)}
-            </div>
+            <div className="company-subtitle">{minifyAddress(safeAddress)}</div>
           </div>
           <div>
             <FontAwesomeIcon icon={faAngleDown} />
           </div>
           <div className={`settings-dropdown ${open && "show"}`}>
-            <div className="settings-option">
-              <div className="icon">
-                <Img src={SettingsIcon} alt="settings" />
+            <div className="settings-option column">
+              <div className="name">Safe Address</div>
+              <div className="name">{safeAddress}</div>
+              <div className="d-flex mt-2">
+                <CopyButton
+                  id="address"
+                  tooltip="address"
+                  value={safeAddress}
+                  className="mr-3"
+                />
+                <EtherscanLink
+                  id="etherscan-link"
+                  type={ETHERSCAN_LINK_TYPES.ADDRESS}
+                  address={safeAddress}
+                />
               </div>
-              <div className="name">Settings</div>
             </div>
             <Link
               to={routeTemplates.dashboard.settings}
@@ -150,7 +161,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           <div className="icon">
             <Img src={InviteIcon} alt="invite" />
           </div>
-          <div className="name">Invite Members</div>
+          <div className="name">Invite Owners</div>
         </Link>
       )}
     </DashboardSidebar>
