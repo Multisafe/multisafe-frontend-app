@@ -17,17 +17,20 @@ import {
   CLEAR_MULTISIG_TRANSACTION,
 } from "./action-types";
 
-export function getMultisigTransactions(safeAddress) {
+export function getMultisigTransactions(safeAddress, offset = 0, limit = 5) {
   return {
     type: GET_MULTISIG_TRANSACTIONS,
     safeAddress,
+    offset,
+    limit,
   };
 }
 
-export function getMultisigTransactionsSuccess(transactions) {
+export function getMultisigTransactionsSuccess(transactions, count) {
   return {
     type: GET_MULTISIG_TRANSACTIONS_SUCCESS,
     transactions,
+    count,
   };
 }
 

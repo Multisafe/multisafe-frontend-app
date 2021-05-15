@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import multisigReducer from "store/multisig/reducer";
@@ -7,6 +7,7 @@ import { getMultisigTransactions } from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
+  makeSelectMultisigTransactionCount,
 } from "store/multisig/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -40,12 +41,23 @@ export default function MultiSigTransactions() {
   const transactions = useSelector(makeSelectMultisigTransactions());
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const txCount = useSelector(makeSelectMultisigTransactionCount());
+  console.log({ txCount });
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getMultisigTransactions(ownerSafeAddress));
+      dispatch(getMultisigTransactions(ownerSafeAddress, 0, 5));
     }
   }, [dispatch, ownerSafeAddress]);
+
+  const getMoreTransactions = () => {
+    console.log("getting more tx", transactions);
+    if (transactions && transactions.length > 0) {
+      dispatch(
+        getMultisigTransactions(ownerSafeAddress, transactions.length + 1, 5)
+      );
+    }
+  };
 
   const renderNoTransactionsFound = () => {
     return (
@@ -119,7 +131,9 @@ export default function MultiSigTransactions() {
           </tr>
         </TableHead>
 
-        <TableBody>{renderAllTransactions()}</TableBody>
+        <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
+          {renderAllTransactions()}
+        </TableBody>
       </Table>
     </div>
   );

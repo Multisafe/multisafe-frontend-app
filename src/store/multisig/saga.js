@@ -34,15 +34,24 @@ import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTra
 import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimits/NewSpendingLimitModal";
 import { routeGenerators } from "constants/routes/generators";
 
-function* getMultisigTransactions(action) {
-  const requestURL = `${getMultisigTransactionEndpoint}?safeAddress=${action.safeAddress}&offset=0&limit=100`;
+function* getMultisigTransactions({ safeAddress, offset, limit }) {
+  // const requestURL = `${getMultisigTransactionEndpoint}?safeAddress=${action.safeAddress}&offset=0&limit=100`;
+  const requestURL = new URL(getMultisigTransactionEndpoint);
+  const params = [
+    ["safeAddress", safeAddress],
+    ["offset", offset],
+    ["limit", limit],
+  ];
+  requestURL.search = new URLSearchParams(params).toString();
   const options = {
     method: "GET",
   };
 
   try {
     const result = yield call(request, requestURL, options);
-    yield put(getMultisigTransactionsSuccess(result.transactions));
+    yield put(
+      getMultisigTransactionsSuccess(result.transactions, result.count)
+    );
   } catch (err) {
     yield put(getMultisigTransactionsError(err));
   }

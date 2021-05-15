@@ -30,6 +30,7 @@ export const initialState = {
   confirmed: false,
   transactionHash: "",
   executionAllowed: false,
+  transactionCount: 5,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -44,6 +45,7 @@ const reducer = (state = initialState, action) =>
       case GET_MULTISIG_TRANSACTIONS_SUCCESS:
         draft.fetching = false;
         draft.transactions = action.transactions;
+        draft.transactionCount = action.count;
         break;
 
       case GET_MULTISIG_TRANSACTIONS_ERROR:
