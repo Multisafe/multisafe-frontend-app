@@ -23,7 +23,7 @@ import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import ParcelLogo from "assets/images/parcel-logo-purple.png";
+import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import WelcomeImage from "assets/images/welcome-new.png";
 import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
@@ -302,7 +302,7 @@ const DelegateTransfer = () => {
       />
       <InnerCard height="260px">
         <h2 className="text-center mb-4">
-          <img src={ParcelLogo} alt="parcel" width="240" />
+          <Img src={MultisafeLogo} alt="multisafe" width="240" />
         </h2>
         <div className="mt-2 title">
           Your one stop for crypto treasury management.

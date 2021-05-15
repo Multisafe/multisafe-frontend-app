@@ -60,7 +60,7 @@ import gasPriceReducer from "store/gas/reducer";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { getGasPrice } from "store/gas/actions";
 import NoReferralModal from "./NoReferralModal";
-import ParcelLogo from "assets/images/parcel-logo-purple.png";
+import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import LightbulbIcon from "assets/icons/lightbulb.svg";
 import LoadingSafeIcon1 from "assets/images/register/loading-1.svg";
@@ -577,7 +577,7 @@ const Register = () => {
         />
         <InnerCard height="260px">
           <h2 className="text-center mb-4">
-            <img src={ParcelLogo} alt="parcel" width="240" />
+            <Img src={MultisafeLogo} alt="multisafe" width="240" />
           </h2>
           <div className="mt-2 title">
             Your one stop for crypto treasury management.

@@ -10,7 +10,7 @@ import {
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
 import Img from "components/common/Img";
-import ParcelLogo from "assets/icons/parcel-logo.svg";
+import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import InviteIcon from "assets/icons/sidebar/invite-icon.svg";
 import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
 import LogoutIcon from "assets/icons/sidebar/logout-icon.svg";
@@ -104,7 +104,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
         <FontAwesomeIcon icon={faTimesCircle} />
       </div>
       <div className="parcel-logo">
-        <Img src={ParcelLogo} alt="parcel" width="100%" />
+        <Img src={MultisafeLogo} alt="multisafe" width="100%" />
       </div>
       <div className="settings-container">
         <div className="settings" onClick={toggleDropdown}>

@@ -1,1 +1,1 @@
-export const LOGOUT_USER = "parcel/logout/LOGOUT_USER";
+export const LOGOUT_USER = "multisafe/logout/LOGOUT_USER";
