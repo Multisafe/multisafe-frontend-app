@@ -2,14 +2,12 @@ import React, { useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import Dashboard from "components/Dashboard";
-import People from "components/People";
-import Transactions from "components/Transactions";
-import Assets from "components/Assets";
-import MultiSigTransactions from "components/Transactions/MultiSigTransactions";
-import MultiSigTransactionDetails from "components/Transactions/MultiSigTransactionDetails";
-import TransactionDetails from "components/Transactions/TransactionDetails";
-import Settings from "components/Settings";
+import Dashboard from "components/Dashboard/loadable";
+import People from "components/People/loadable";
+import Transactions from "components/Transactions/loadable";
+import Assets from "components/Assets/loadable";
+import TransactionDetails from "components/TransactionDetails/loadable";
+import Settings from "components/Settings/loadable";
 import Authenticated from "components/hoc/Authenticated";
 import NotFoundPage from "pages/NotFound";
 import {
@@ -57,14 +55,12 @@ const DashboardPage = () => {
           <Route
             exact
             path={routeTemplates.dashboard.transactions}
-            component={isMultiOwner ? MultiSigTransactions : Transactions}
+            component={Transactions}
           />
           <Route
             exact
             path={routeTemplates.dashboard.transactionById}
-            component={
-              isMultiOwner ? MultiSigTransactionDetails : TransactionDetails
-            }
+            component={TransactionDetails}
           />
           <Route
             exact

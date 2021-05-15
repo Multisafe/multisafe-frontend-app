@@ -7,12 +7,12 @@ import GlobalStyle, { lightTheme, darkTheme } from "global-styles";
 import Header from "components/Header";
 import NetworkModal from "components/Connect/NetworkModal";
 
-import RegisterPage from "pages/Register";
-import LoginPage from "pages/Login";
-import DashboardPage from "./Dashboard";
-import AcceptInvitePage from "./AcceptInvite";
-import DelegateTransfer from "./DelegateTransfer";
-import NotFoundPage from "./NotFound";
+import RegisterPage from "pages/Register/loadable";
+import LoginPage from "pages/Login/loadable";
+import DashboardPage from "./Dashboard/loadable";
+import AcceptInvitePage from "./AcceptInvite/loadable";
+import DelegateTransfer from "./DelegateTransfer/loadable";
+import NotFoundPage from "./NotFound/loadable";
 import { routeTemplates } from "constants/routes/templates";
 
 export default function App() {

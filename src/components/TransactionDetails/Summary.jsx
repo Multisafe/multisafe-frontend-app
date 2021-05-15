@@ -3,7 +3,7 @@ import { format } from "date-fns";
 
 import CopyButton from "components/common/Copy";
 import { minifyAddress } from "components/common/Web3Utils";
-import StatusText from "./StatusText";
+import StatusText from "components/Transactions/StatusText";
 import { TransactionDetails } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
