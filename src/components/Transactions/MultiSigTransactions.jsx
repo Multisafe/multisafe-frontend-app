@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import multisigReducer from "store/multisig/reducer";
@@ -7,7 +7,7 @@ import { getMultisigTransactions } from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
-  makeSelectMultisigTransactionCount,
+  // makeSelectMultisigTransactionCount,
 } from "store/multisig/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -41,8 +41,7 @@ export default function MultiSigTransactions() {
   const transactions = useSelector(makeSelectMultisigTransactions());
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const txCount = useSelector(makeSelectMultisigTransactionCount());
-  console.log({ txCount });
+  // const txCount = useSelector(makeSelectMultisigTransactionCount());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -50,14 +49,14 @@ export default function MultiSigTransactions() {
     }
   }, [dispatch, ownerSafeAddress]);
 
-  const getMoreTransactions = () => {
-    console.log("getting more tx", transactions);
-    if (transactions && transactions.length > 0) {
-      dispatch(
-        getMultisigTransactions(ownerSafeAddress, transactions.length + 1, 5)
-      );
-    }
-  };
+  // const getMoreTransactions = () => {
+  //   console.log("getting more tx", transactions);
+  //   if (transactions && transactions.length > 0) {
+  //     dispatch(
+  //       getMultisigTransactions(ownerSafeAddress, transactions.length + 1, 5)
+  //     );
+  //   }
+  // };
 
   const renderNoTransactionsFound = () => {
     return (
