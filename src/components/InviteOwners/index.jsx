@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
-import { Card } from "components/common/Card";
 import Button from "components/common/Button";
 import { useLocalStorage } from "hooks";
 import invitationSaga from "store/invitation/saga";
@@ -36,12 +35,9 @@ import { useActiveWeb3React } from "hooks";
 import CopyButton from "components/common/Copy";
 import Img from "components/common/Img";
 
-import { Title, Heading, InfoCard } from "components/People/styles";
-import { OwnersContainer, OwnerDetails, StepDetails } from "./styles";
+import { InfoCard } from "components/People/styles";
+import { OwnersContainer, OwnerDetails } from "./styles";
 import QuestionIcon from "assets/icons/dashboard/question-icon.svg";
-import Step1Png from "assets/icons/invite/step-1.png";
-import Step2Png from "assets/icons/invite/step-2.png";
-import Step3Png from "assets/icons/invite/step-3.png";
 import EditOwnerModal, {
   MODAL_NAME as EDIT_OWNER_MODAL,
 } from "./EditOwnerModal";
@@ -149,17 +145,17 @@ export default function InviteOwners() {
       return (
         <div className="d-flex align-items-center">
           <div className="you-status">YOU</div>
-          <div className="highlighted-status ml-3">Member</div>
+          <div className="highlighted-status ml-3">Owner</div>
         </div>
       );
     }
 
     if (owner === createdBy) {
-      return <div className="highlighted-status">Member</div>;
+      return <div className="highlighted-status">Owner</div>;
     }
 
     if (!isOrganisationPrivate) {
-      return <div className="highlighted-status">Member</div>;
+      return <div className="highlighted-status">Owner</div>;
     }
 
     if (!invitationDetails) {
@@ -179,7 +175,7 @@ export default function InviteOwners() {
     if (invitationDetails && invitationDetails.status === 0) {
       // sent invite and awaiting confirmation
       const tooltip =
-        "This member has not yet joined the organisation.<br /> Please share the invite link with them.";
+        "This owner has not yet joined the organisation.<br /> Please share the invite link with them.";
       return (
         <div className="d-flex align-items-center">
           <div className="awaiting-status mr-3">Awaiting Confirmation</div>
@@ -224,7 +220,7 @@ export default function InviteOwners() {
 
     if (invitationDetails && invitationDetails.status === 2) {
       // completed
-      return <div className="joined-status">Member</div>;
+      return <div className="joined-status">Owner</div>;
     }
 
     return null;
@@ -302,94 +298,6 @@ export default function InviteOwners() {
           )}
         <EditOwnerModal />
       </div>
-    );
-  };
-
-  const renderStepsForPrivateOrganisation = () => (
-    <div>
-      <div className="d-flex align-items-center mt-4">
-        <Img src={Step1Png} alt="step1" width="64" />
-        <StepDetails>
-          <div className="step-title">STEP 1</div>
-          <div className="step-subtitle">Invite the Owners to Parcel</div>
-        </StepDetails>
-      </div>
-      <div className="d-flex align-items-center mt-4">
-        <Img src={Step2Png} alt="step2" width="64" />
-        <StepDetails>
-          <div className="step-title">STEP 2</div>
-          <div className="step-subtitle">Owner Accepts the Invite</div>
-        </StepDetails>
-      </div>
-      <div className="d-flex align-items-center mt-4">
-        <Img src={Step3Png} alt="step3" width="64" />
-        <StepDetails>
-          <div className="step-title">STEP 3</div>
-          <div className="step-subtitle">
-            You Give Final Approval To The Owner
-          </div>
-        </StepDetails>
-      </div>
-    </div>
-  );
-
-  const renderStepsForPublicOrganisation = () => (
-    <div className="d-flex align-items-center mt-5 pt-5 mb-5 pb-5">
-      <StepDetails>
-        <div className="step-title d-flex justify-content-center align-items-center">
-          {/* <div className="mr-2">SETUP COMPLETED</div> */}
-          <CopyButton
-            id={`invitation-link-final`}
-            tooltip="Login Link"
-            value={window.location.origin}
-          >
-            <Button
-              type="button"
-              style={{ minHeight: "0", height: "100%", fontSize: "12px" }}
-              className="p-2"
-            >
-              <FontAwesomeIcon icon={faLink} color={"#fff"} className="mx-1" />
-              Copy Login Link
-            </Button>
-          </CopyButton>
-        </div>
-        <div className="step-subtitle mt-2 text-center">
-          Share this link with the other owners and they can login to Parcel.
-        </div>
-      </StepDetails>
-    </div>
-  );
-
-  // eslint-disable-next-line
-  const renderInviteSteps = () => {
-    return (
-      <Card className="invite-owners">
-        <Title className="mb-2">Owners</Title>
-        <Heading>
-          {isOrganisationPrivate
-            ? `To allow other owners to use Multisafe, follow these simple steps`
-            : `All the owners can directly login to Multisafe`}
-        </Heading>
-        {loading && (
-          <div
-            className="d-flex align-items-center justify-content-center"
-            style={{ height: "250px" }}
-          >
-            <Loading color="primary" width="50px" height="50px" />
-          </div>
-        )}
-        {!loading && (
-          <React.Fragment>
-            {isOrganisationPrivate
-              ? renderStepsForPrivateOrganisation()
-              : renderStepsForPublicOrganisation()}
-
-            <Button large type="button" className="mt-5">
-              Close
-            </Button>
-          </React.Fragment>
-        )}
-      </Card>
     );
   };
 

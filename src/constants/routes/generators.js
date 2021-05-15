@@ -12,12 +12,6 @@ export function generatePath(template, params = {}) {
 
 export const routeGenerators = {
   dashboard: {
-    people: {
-      viewByDepartment: ({ departmentId }) =>
-        generatePath(routeTemplates.dashboard.people.viewByDepartment, {
-          departmentId,
-        }),
-    },
     transactionById: ({ transactionId }) =>
       generatePath(routeTemplates.dashboard.transactionById, {
         transactionId,

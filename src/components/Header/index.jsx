@@ -4,7 +4,6 @@ import { useLocation, useHistory } from "react-router-dom";
 import { HeaderLink, NavBar, NavBarContent, NavGroup } from "./styles";
 
 import ConnectButton from "components/Connect";
-// import DashboardHeader from "./DashboardHeader";
 import { useActiveWeb3React } from "hooks";
 import Button from "components/common/Button";
 import ParcelLogo from "assets/images/parcel-logo-purple.png";

@@ -13,7 +13,6 @@ import DashboardPage from "./Dashboard";
 import AcceptInvitePage from "./AcceptInvite";
 import DelegateTransfer from "./DelegateTransfer";
 import NotFoundPage from "./NotFound";
-import SideNavProvider from "context/SideNavContext";
 import { routeTemplates } from "constants/routes/templates";
 
 export default function App() {
@@ -22,30 +21,24 @@ export default function App() {
   return (
     <div className="app">
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <SideNavProvider>
-          <Header />
-          <Switch>
-            <Route exact path={routeTemplates.login} component={LoginPage} />
-            <Route
-              exact
-              path={routeTemplates.signup}
-              component={RegisterPage}
-            />
-            <Route
-              path={routeTemplates.dashboard.root}
-              component={DashboardPage}
-            />
-            <Route
-              path={routeTemplates.acceptInvite}
-              component={AcceptInvitePage}
-            />
-            <Route
-              path={routeTemplates.delegateTransfer}
-              component={DelegateTransfer}
-            />
-            <Route component={NotFoundPage} />
-          </Switch>
-        </SideNavProvider>
+        <Header />
+        <Switch>
+          <Route exact path={routeTemplates.login} component={LoginPage} />
+          <Route exact path={routeTemplates.signup} component={RegisterPage} />
+          <Route
+            path={routeTemplates.dashboard.root}
+            component={DashboardPage}
+          />
+          <Route
+            path={routeTemplates.acceptInvite}
+            component={AcceptInvitePage}
+          />
+          <Route
+            path={routeTemplates.delegateTransfer}
+            component={DelegateTransfer}
+          />
+          <Route component={NotFoundPage} />
+        </Switch>
         <GlobalStyle />
         <NetworkModal />
       </ThemeProvider>

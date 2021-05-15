@@ -1,6 +1,5 @@
 import { tokens } from "constants/index";
 import DAIIcon from "assets/icons/tokens/DAI-icon.png";
-import USDCIcon from "assets/icons/tokens/USDC-icon.png";
 
 export const constructLabel = ({ token, imgUrl, component: Component }) => {
   return (
@@ -15,9 +14,5 @@ export const defaultTokenOptions = [
   {
     value: tokens.DAI,
     label: constructLabel({ token: tokens.DAI, imgUrl: DAIIcon }),
-  },
-  {
-    value: "USDC",
-    label: constructLabel({ token: tokens.USDC, imgUrl: USDCIcon }),
   },
 ];

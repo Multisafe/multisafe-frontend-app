@@ -4,16 +4,12 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Dashboard from "components/Dashboard";
 import People from "components/People";
-import Payments from "components/Payments";
 import Transactions from "components/Transactions";
 import Assets from "components/Assets";
 import MultiSigTransactions from "components/Transactions/MultiSigTransactions";
 import MultiSigTransactionDetails from "components/Transactions/MultiSigTransactionDetails";
 import TransactionDetails from "components/Transactions/TransactionDetails";
 import Settings from "components/Settings";
-import InviteOwners from "components/InviteOwners";
-import SpendingLimits from "components/SpendingLimits";
-import NewSpendingLimit from "components/SpendingLimits/NewSpendingLimit";
 import Authenticated from "components/hoc/Authenticated";
 import NotFoundPage from "pages/NotFound";
 import {
@@ -60,11 +56,6 @@ const DashboardPage = () => {
           />
           <Route
             exact
-            path={routeTemplates.dashboard.payments}
-            component={Payments}
-          />
-          <Route
-            exact
             path={routeTemplates.dashboard.transactions}
             component={isMultiOwner ? MultiSigTransactions : Transactions}
           />
@@ -82,23 +73,8 @@ const DashboardPage = () => {
           />
           <Route
             exact
-            path={routeTemplates.dashboard.owners}
-            component={InviteOwners}
-          />
-          <Route
-            exact
             path={routeTemplates.dashboard.settings}
             component={Settings}
-          />
-          <Route
-            exact
-            path={routeTemplates.dashboard.spendingLimits.root}
-            component={SpendingLimits}
-          />
-          <Route
-            exact
-            path={routeTemplates.dashboard.spendingLimits.new}
-            component={NewSpendingLimit}
           />
           <Route component={NotFoundPage} />
         </Switch>
