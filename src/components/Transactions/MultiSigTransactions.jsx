@@ -45,7 +45,7 @@ export default function MultiSigTransactions() {
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getMultisigTransactions(ownerSafeAddress, 0, 5));
+      dispatch(getMultisigTransactions(ownerSafeAddress, 0, 100));
     }
   }, [dispatch, ownerSafeAddress]);
 
@@ -130,9 +130,7 @@ export default function MultiSigTransactions() {
           </tr>
         </TableHead>
 
-        <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
-          {renderAllTransactions()}
-        </TableBody>
+        <TableBody>{renderAllTransactions()}</TableBody>
       </Table>
     </div>
   );

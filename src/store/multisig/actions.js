@@ -17,7 +17,7 @@ import {
   CLEAR_MULTISIG_TRANSACTION,
 } from "./action-types";
 
-export function getMultisigTransactions(safeAddress, offset = 0, limit = 5) {
+export function getMultisigTransactions(safeAddress, offset, limit) {
   return {
     type: GET_MULTISIG_TRANSACTIONS,
     safeAddress,
