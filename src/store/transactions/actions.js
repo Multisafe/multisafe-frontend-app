@@ -59,18 +59,20 @@ export function addTransactionError(error) {
   };
 }
 
-export function viewTransactions(safeAddress) {
+export function viewTransactions(safeAddress, offset = 0, limit = 5) {
   return {
     type: VIEW_TRANSACTIONS,
     safeAddress,
+    offset,
+    limit,
   };
 }
 
-export function viewTransactionsSuccess(transactions, log) {
+export function viewTransactionsSuccess(transactions, count) {
   return {
     type: VIEW_TRANSACTIONS_SUCCESS,
     transactions,
-    log,
+    count,
   };
 }
 

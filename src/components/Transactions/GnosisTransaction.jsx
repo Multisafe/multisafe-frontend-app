@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { format } from "date-fns";
 
 import StatusText from "./StatusText";
@@ -10,12 +10,12 @@ import { TX_DIRECTION } from "store/transactions/constants";
 import { formatNumber } from "utils/number-helpers";
 import TokenImg from "components/common/TokenImg";
 
-export default function GnosisTransaction({ transaction }) {
+const GnosisTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
 
   const { status, createdOn, fiatValue, tokenCurrencies } = txDetails;
   return (
-    <TxRow>
+    <TxRow ref={ref}>
       <td style={{ width: "35%" }}>
         {/* https://getbootstrap.com/docs/4.3/utilities/stretched-link/ */}
         {/* eslint-disable-next-line jsx-a11y/anchor-has-content*/}
@@ -64,4 +64,6 @@ export default function GnosisTransaction({ transaction }) {
       </td>
     </TxRow>
   );
-}
+});
+
+export default GnosisTransaction;

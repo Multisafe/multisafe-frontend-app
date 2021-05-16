@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import multisigReducer from "store/multisig/reducer";
@@ -7,7 +7,7 @@ import { getMultisigTransactions } from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
-  // makeSelectMultisigTransactionCount,
+  makeSelectMultisigTransactionCount,
 } from "store/multisig/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -28,8 +28,12 @@ import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 
 const multisigKey = "multisig";
+const LIMIT = 10;
 
 export default function MultiSigTransactions() {
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+
   // Reducers
   useInjectReducer({ key: multisigKey, reducer: multisigReducer });
 
@@ -41,48 +45,73 @@ export default function MultiSigTransactions() {
   const transactions = useSelector(makeSelectMultisigTransactions());
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  // const txCount = useSelector(makeSelectMultisigTransactionCount());
+  const txCount = useSelector(makeSelectMultisigTransactionCount());
+
+  // for infinite scroll
+  const observer = useRef();
+
+  const lastTxElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      const options = { rootMargin: "0px 0px 640px 0px" };
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setOffset((offset) => offset + LIMIT);
+        }
+      }, options);
+
+      if (node) observer.current.observe(node);
+    },
+    [loading]
+  );
+
+  useEffect(() => {
+    setHasMore(txCount > 0);
+  }, [txCount]);
+
+  useEffect(() => {
+    if (ownerSafeAddress && hasMore && offset > 0) {
+      dispatch(getMultisigTransactions(ownerSafeAddress, offset, LIMIT));
+    }
+  }, [dispatch, ownerSafeAddress, offset, hasMore]);
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getMultisigTransactions(ownerSafeAddress, 0, 100));
+      dispatch(getMultisigTransactions(ownerSafeAddress, 0, LIMIT));
     }
   }, [dispatch, ownerSafeAddress]);
 
-  // const getMoreTransactions = () => {
-  //   console.log("getting more tx", transactions);
-  //   if (transactions && transactions.length > 0) {
-  //     dispatch(
-  //       getMultisigTransactions(ownerSafeAddress, transactions.length + 1, 5)
-  //     );
-  //   }
-  // };
-
   const renderNoTransactionsFound = () => {
     return (
-      <TableInfo
-        style={{
-          textAlign: "center",
-          height: "40rem",
-          fontSize: "16px",
-          fontWeight: "bold",
-          color: "#8b8b8b",
-        }}
-      >
-        <td colSpan={4}>
-          <div className="d-flex align-items-center justify-content-center">
-            <div>
-              <Img src={NoTransactionsImg} alt="no-assets" className="mb-4" />
-              <div className="text-center">No Transactions</div>
+      !loading &&
+      offset === 0 && (
+        <TableInfo
+          style={{
+            textAlign: "center",
+            height: "40rem",
+            fontSize: "16px",
+            fontWeight: "bold",
+            color: "#8b8b8b",
+          }}
+        >
+          <td colSpan={4}>
+            <div className="d-flex align-items-center justify-content-center">
+              <div>
+                <Img src={NoTransactionsImg} alt="no-assets" className="mb-4" />
+                <div className="text-center">No Transactions</div>
+              </div>
             </div>
-          </div>
-        </td>
-      </TableInfo>
+          </td>
+        </TableInfo>
+      )
     );
   };
 
   const renderAllTransactions = () => {
-    if (loading) return <TableLoader colSpan={4} />;
+    if (loading && offset === 0) return <TableLoader colSpan={4} />;
 
     return transactions && transactions.length > 0
       ? transactions.map((transaction, idx) => {
@@ -94,6 +123,7 @@ export default function MultiSigTransactions() {
               <GnosisTransaction
                 transaction={transaction}
                 key={`${transaction.transactionId}-${idx}`}
+                ref={idx === transactions.length - 1 ? lastTxElementRef : null}
               />
             );
           }
@@ -102,6 +132,7 @@ export default function MultiSigTransactions() {
             <MultisafeTransaction
               transaction={transaction}
               key={`${transaction.transactionId}-${idx}`}
+              ref={idx === transactions.length - 1 ? lastTxElementRef : null}
             />
           );
         })
@@ -130,7 +161,10 @@ export default function MultiSigTransactions() {
           </tr>
         </TableHead>
 
-        <TableBody>{renderAllTransactions()}</TableBody>
+        <TableBody style={{ maxHeight: "48rem", overflow: "auto" }}>
+          {renderAllTransactions()}
+          {loading && offset > 0 && <TableLoader height="8rem" colSpan={4} />}
+        </TableBody>
       </Table>
     </div>
   );

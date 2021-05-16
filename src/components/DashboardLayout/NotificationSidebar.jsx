@@ -184,9 +184,9 @@ function NotificationSidebar() {
       {loadingNotifications && (
         <div
           className="d-flex align-items-center justify-content-center"
-          style={{ height: "250px" }}
+          style={{ height: "25rem" }}
         >
-          <Loading color="primary" width="50px" height="50px" />
+          <Loading color="primary" width="3rem" height="3rem" />
         </div>
       )}
       {!loadingNotifications && notifications && notifications.length === 0 ? (

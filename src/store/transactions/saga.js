@@ -73,19 +73,25 @@ function* addTransaction({ body }) {
   }
 }
 
-function* getTransactions(action) {
-  const requestURL = `${getTransactionsEndpoint}?safeAddress=${action.safeAddress}`;
+function* getTransactions({ safeAddress, offset, limit }) {
+  // const requestURL = `${getTransactionsEndpoint}?safeAddress=${action.safeAddress}&offset=0&limit=2`;
+  const requestURL = new URL(getTransactionsEndpoint);
+  const params = [
+    ["safeAddress", safeAddress],
+    ["offset", offset],
+    ["limit", limit],
+  ];
+  requestURL.search = new URLSearchParams(params).toString();
   const options = {
     method: "GET",
   };
 
   try {
     const result = yield call(request, requestURL, options);
-    if (result.flag !== 200) {
-      // Error in payload
-      yield put(viewTransactionsError(result.log));
+    if (result.flag === 400) {
+      yield put(viewTransactionsSuccess([], 0));
     } else {
-      yield put(viewTransactionsSuccess(result.transactions, result.log));
+      yield put(viewTransactionsSuccess(result.transactions, result.count));
     }
   } catch (err) {
     yield put(viewTransactionsError(err));

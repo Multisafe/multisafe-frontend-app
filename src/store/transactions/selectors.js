@@ -13,6 +13,12 @@ const makeSelectTransactions = () =>
     (transactionsState) => transactionsState.transactions
   );
 
+const makeSelectTransactionCount = () =>
+  createSelector(
+    selectTransactions,
+    (transactionsState) => transactionsState.transactionCount
+  );
+
 const makeSelectLoading = () =>
   createSelector(
     selectTransactions,
@@ -58,4 +64,5 @@ export {
   makeSelectError,
   makeSelectTransactionDetails,
   makeSelectTransactionId,
+  makeSelectTransactionCount,
 };

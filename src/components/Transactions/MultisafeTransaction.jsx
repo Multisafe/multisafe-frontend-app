@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { format } from "date-fns";
 import { useHistory } from "react-router-dom";
 
@@ -11,7 +11,7 @@ import { TX_DIRECTION } from "store/transactions/constants";
 import { formatNumber } from "utils/number-helpers";
 import TransactionName from "./TransactionName";
 
-export default function MultisafeTransaction({ transaction }) {
+const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
 
   const history = useHistory();
@@ -30,6 +30,7 @@ export default function MultisafeTransaction({ transaction }) {
   return (
     <TxRow
       onClick={() => history.push(`/dashboard/transactions/${transactionId}`)}
+      ref={ref}
     >
       <td style={{ width: "35%" }}>
         <div className="d-flex align-items-center">
@@ -68,4 +69,6 @@ export default function MultisafeTransaction({ transaction }) {
       </td>
     </TxRow>
   );
-}
+});
+
+export default MultisafeTransaction;

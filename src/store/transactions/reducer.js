@@ -21,6 +21,7 @@ export const initialState = {
   errorInFetch: false,
   fetching: false,
   loading: false,
+  transactionCount: 1,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -49,17 +50,20 @@ const reducer = (state = initialState, action) =>
       case VIEW_TRANSACTIONS:
         draft.fetching = true;
         draft.error = false;
+        if (action.offset === 0) draft.transactions = [];
         break;
 
       case VIEW_TRANSACTIONS_SUCCESS:
         draft.fetching = false;
-        draft.transactions = action.transactions;
+        draft.transactions = [...state.transactions, ...action.transactions];
         draft.log = action.log;
+        draft.transactionCount = action.count;
         break;
 
       case VIEW_TRANSACTIONS_ERROR:
         draft.errorInFetch = action.errorInFetch;
         draft.fetching = false;
+        draft.transactions = [];
         break;
 
       case GET_TRANSACTION_BY_ID:

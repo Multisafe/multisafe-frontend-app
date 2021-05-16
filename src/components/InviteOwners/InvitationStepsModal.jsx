@@ -42,7 +42,7 @@ function InvitationStepsModal(props) {
           </div>
           <div className="steps-container">
             {invitationSteps.map(({ title, subtitle, icon }) => (
-              <div className="step">
+              <div className="step" key={title}>
                 <div>
                   <Img src={icon} alt={title} />
                 </div>

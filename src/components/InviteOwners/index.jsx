@@ -315,10 +315,12 @@ export default function InviteOwners() {
             owners
           </div>
         </div>
-        <Button iconOnly className="help" onClick={showInvitationSteps}>
-          <Img src={QuestionIcon} alt="question" />
-          <div className="ml-3 text">How invitation works</div>
-        </Button>
+        {isOrganisationPrivate && (
+          <Button iconOnly className="help" onClick={showInvitationSteps}>
+            <Img src={QuestionIcon} alt="question" />
+            <div className="ml-3 text">How invitation works</div>
+          </Button>
+        )}
       </InfoCard>
       <OwnersContainer>{renderInviteOwners()}</OwnersContainer>
       <InvitationStepsModal />

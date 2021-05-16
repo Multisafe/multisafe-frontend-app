@@ -18,7 +18,7 @@ import {
 } from "store/global/selectors";
 import { InfoCard } from "components/People/styles";
 import Loading from "components/common/Loading";
-import { DisbursementCard } from "./styles";
+import { DescriptionCard, DisbursementCard } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
@@ -53,9 +53,9 @@ export default function TransactionDetails() {
       return (
         <div
           className="d-flex align-items-center justify-content-center"
-          style={{ height: "400px" }}
+          style={{ height: "40rem" }}
         >
-          <Loading color="primary" width="50px" height="50px" />
+          <Loading color="primary" width="3rem" height="3rem" />
         </div>
       );
 
@@ -75,6 +75,17 @@ export default function TransactionDetails() {
             <div className="title mb-0">Transaction Status</div>
           </div>
         </InfoCard>
+
+        <DescriptionCard>
+          <div className="title">Description</div>
+          <div className="subtitle">
+            {paidTeammates &&
+            paidTeammates.length > 0 &&
+            paidTeammates[0].description
+              ? paidTeammates[0].description
+              : `No description given...`}
+          </div>
+        </DescriptionCard>
 
         <DisbursementCard>
           <div className="title">Disbursement Details</div>

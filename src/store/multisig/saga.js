@@ -49,9 +49,13 @@ function* getMultisigTransactions({ safeAddress, offset, limit }) {
 
   try {
     const result = yield call(request, requestURL, options);
-    yield put(
-      getMultisigTransactionsSuccess(result.transactions, result.count)
-    );
+    if (result.flag === 400) {
+      yield put(getMultisigTransactionsSuccess([], 0));
+    } else {
+      yield put(
+        getMultisigTransactionsSuccess(result.transactions, result.count)
+      );
+    }
   } catch (err) {
     yield put(getMultisigTransactionsError(err));
   }

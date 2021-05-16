@@ -1,5 +1,4 @@
-// Single owner transactions
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import transactionsReducer from "store/transactions/reducer";
@@ -8,6 +7,7 @@ import { viewTransactions } from "store/transactions/actions";
 import {
   makeSelectTransactions,
   makeSelectFetching,
+  makeSelectTransactionCount,
 } from "store/transactions/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -28,8 +28,12 @@ import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 
 const transactionsKey = "transactions";
+const LIMIT = 10;
 
 export default function Transactions() {
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
 
   useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
@@ -39,10 +43,42 @@ export default function Transactions() {
   const transactions = useSelector(makeSelectTransactions());
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const txCount = useSelector(makeSelectTransactionCount());
+
+  // for infinite scroll
+  const observer = useRef();
+
+  const lastTxElementRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      const options = { rootMargin: "0px 0px 640px 0px" };
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setOffset((offset) => offset + LIMIT);
+        }
+      }, options);
+
+      if (node) observer.current.observe(node);
+    },
+    [loading]
+  );
+
+  useEffect(() => {
+    setHasMore(txCount > 0);
+  }, [txCount]);
+
+  useEffect(() => {
+    if (ownerSafeAddress && hasMore && offset > 0) {
+      dispatch(viewTransactions(ownerSafeAddress, offset, LIMIT));
+    }
+  }, [dispatch, ownerSafeAddress, offset, hasMore]);
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(viewTransactions(ownerSafeAddress));
+      dispatch(viewTransactions(ownerSafeAddress, 0, LIMIT));
     }
   }, [dispatch, ownerSafeAddress]);
 
@@ -70,7 +106,7 @@ export default function Transactions() {
   };
 
   const renderAllTransactions = () => {
-    if (loading) return <TableLoader colSpan={4} />;
+    if (loading && offset === 0) return <TableLoader colSpan={4} />;
 
     return transactions && transactions.length > 0
       ? transactions.map((transaction, idx) => {
@@ -82,6 +118,7 @@ export default function Transactions() {
               <GnosisTransaction
                 transaction={transaction}
                 key={`${transaction.transactionId}-${idx}`}
+                ref={idx === transactions.length - 1 ? lastTxElementRef : null}
               />
             );
           }
@@ -90,6 +127,7 @@ export default function Transactions() {
             <MultisafeTransaction
               transaction={transaction}
               key={`${transaction.transactionId}-${idx}`}
+              ref={idx === transactions.length - 1 ? lastTxElementRef : null}
             />
           );
         })
@@ -117,7 +155,10 @@ export default function Transactions() {
           </tr>
         </TableHead>
 
-        <TableBody>{renderAllTransactions()}</TableBody>
+        <TableBody style={{ maxHeight: "48rem", overflow: "auto" }}>
+          {renderAllTransactions()}
+          {loading && offset > 0 && <TableLoader height="8rem" colSpan={4} />}
+        </TableBody>
       </Table>
     </div>
   );
