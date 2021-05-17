@@ -6,11 +6,11 @@ export default styled.div`
   color: ${({ active }) => (active ? "#1452f5" : "#aaaaaa")};
 
   .step-check {
-    margin-right: 5px;
+    margin-right: 0.5rem;
   }
 
   .step-text {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: 500;
     font-stretch: normal;
     font-style: normal;
@@ -20,10 +20,10 @@ export default styled.div`
     color: ${({ active }) => (active ? "#373737" : "#aaaaaa")};
   }
   .step-dash {
-    width: 55px;
-    height: 2px;
+    width: 5.5rem;
+    height: 0.2rem;
     flex-grow: 0;
-    margin: 9px 15px;
+    margin: 0.9rem 1.5rem;
     background-color: ${({ active }) => (active ? "#1452f5" : "#aaaaaa")};
   }
 `;

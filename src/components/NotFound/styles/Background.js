@@ -10,7 +10,7 @@ export default styled.div`
 
   .title,
   .subtitle {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
@@ -21,7 +21,7 @@ export default styled.div`
   }
 
   .title {
-    margin-top: 100px;
+    margin-top: 10rem;
   }
 
   .subtitle {

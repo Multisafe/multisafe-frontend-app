@@ -9,7 +9,9 @@ export default styled.div`
 
   background-size: contain;
   background-repeat: repeat;
-  min-height: ${(props) => props.minHeight};
+  min-height: ${(props) => props.minHeight || "auto"};
   display: flex;
   justify-content: center;
+  max-width: 100rem;
+  margin: 6rem auto;
 `;

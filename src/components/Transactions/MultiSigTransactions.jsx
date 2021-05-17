@@ -161,7 +161,7 @@ export default function MultiSigTransactions() {
           </tr>
         </TableHead>
 
-        <TableBody style={{ maxHeight: "48rem", overflow: "auto" }}>
+        <TableBody style={{ maxHeight: "62vh", overflow: "auto" }}>
           {renderAllTransactions()}
           {loading && offset > 0 && <TableLoader height="8rem" colSpan={4} />}
         </TableBody>

@@ -8,9 +8,9 @@ export const lightTheme = {
   accent: "#e7eefe",
   secondary: "#373737",
   body: "#FFF",
-  text: "#363537",
+  text: "#373737",
   toggleBorder: "#FFF",
-  background: "#FFF",
+  background: "#f7f7f7",
   logo: {
     color: "#1452f5",
   },
@@ -92,7 +92,6 @@ const GlobalStyle = createGlobalStyle`
   body {
     background: ${({ theme }) => theme.background};
     color: ${({ theme }) => theme.text};
-    transition: all 0.50s linear;
     font-family: 'Avenir Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: normal;
   }

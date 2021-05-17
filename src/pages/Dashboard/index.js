@@ -9,7 +9,7 @@ import Assets from "components/Assets/loadable";
 import TransactionDetails from "components/TransactionDetails/loadable";
 import Settings from "components/Settings/loadable";
 import Authenticated from "components/hoc/Authenticated";
-import NotFoundPage from "pages/NotFound";
+import NotFoundPage from "pages/NotFound/loadable";
 import {
   makeSelectIsMultiOwner,
   makeSelectOwnerSafeAddress,

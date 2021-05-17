@@ -1,29 +1,29 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  padding: 10px 36px 100px;
+  padding: 1rem 3.6rem 4rem;
 
   .title {
-    font-size: 20px;
+    font-size: 2rem;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.2;
+    line-height: normal;
     letter-spacing: normal;
     text-align: left;
     color: #373737;
-    margin-top: 20px;
+    margin-top: 2rem;
   }
 
   .subtitle {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: 300;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.19;
+    line-height: normal;
     letter-spacing: normal;
     color: #373737;
-    padding: 10px 0;
+    padding: 1rem 0;
   }
 
   .radio-toolbar input[type="radio"] {
@@ -32,17 +32,17 @@ export default styled.div`
 
   .radio-toolbar label {
     display: inline-block;
-    padding: 4px 11px;
-    font-size: 16px;
+    padding: 0.4rem 1.1rem;
+    font-size: 1.6rem;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 15px 0;
-    margin-right: 10px;
-    min-width: 133px;
-    border-radius: 8px;
-    border: solid 0.5px #aaaaaa;
+    padding: 1.5rem 0;
+    margin-right: 1rem;
+    min-width: 13rem;
+    border-radius: 0.8rem;
+    border: solid 0.05rem #aaaaaa;
     background-color: #f2f2f2;
   }
 
@@ -56,15 +56,16 @@ export default styled.div`
   }
 
   .proceed-btn {
-    width: 400px;
-    padding: 14px;
-    border-radius: 8px;
-    box-shadow: 10px 10px 40px 0 rgba(113, 113, 113, 0.25);
+    width: 40rem;
+    padding: 1rem;
+    height: 4rem;
+    border-radius: 0.4rem;
+    box-shadow: 0.1rem 0.1rem 3rem 0 rgba(113, 113, 113, 0.25);
     background-color: ${({ theme }) => theme.primary};
     position: absolute;
-    right: 40px;
-    bottom: 40px;
-    font-size: 14px;
+    right: 4rem;
+    bottom: 4rem;
+    font-size: 1.4rem;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
@@ -75,6 +76,13 @@ export default styled.div`
 
     &:hover {
       background-color: #3c3c3c;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .proceed-btn {
+      min-width: 14rem;
+      width: auto;
     }
   }
 `;

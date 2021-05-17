@@ -9,8 +9,6 @@ import { recoverAddress } from "@ethersproject/transactions";
 // import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
 import {
-  faArrowLeft,
-  faArrowRight,
   faLock,
   faQuestionCircle,
   faUserCircle,
@@ -18,10 +16,8 @@ import {
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
-import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage } from "hooks";
 import ConnectButton from "components/Connect";
-import { Card } from "components/common/Card";
 import { useInjectReducer } from "utils/injectReducer";
 import loginWizardReducer from "store/loginWizard/reducer";
 import loginReducer from "store/login/reducer";
@@ -101,9 +97,12 @@ import {
   ReviewContent,
   ReviewOwnerDetails,
 } from "components/Register/styles";
+import LeftArrowIcon from "assets/icons/left-arrow.svg";
+import RightArrowIcon from "assets/icons/right-arrow.svg";
 
 import {
   Background,
+  StyledCard,
   InnerCard,
   StepDetails,
   StepInfo,
@@ -449,8 +448,8 @@ const Login = () => {
           (!active ? (
             <ConnectButton className="mx-auto d-block mt-3 connect" />
           ) : (
-            <div className="row mt-3">
-              <div className="col-6">
+            <div className="buttons">
+              <div>
                 <Button
                   type="button"
                   className="secondary import"
@@ -460,7 +459,7 @@ const Login = () => {
                   Import Existing Safe
                 </Button>
               </div>
-              <div className="col-6">
+              <div>
                 <Button
                   type="button"
                   className="login"
@@ -479,9 +478,15 @@ const Login = () => {
     const steps = getStepsByFlow(flow);
     return (
       <div>
-        <div style={{ height: "50px", padding: "8px 32px" }}>
-          <Button iconOnly onClick={goBack} className="px-0">
-            <FontAwesomeIcon icon={faArrowLeft} color="#aaa" />
+        <div className="back-btn-container">
+          <Button
+            iconOnly
+            onClick={goBack}
+            className="p-0 back-btn"
+            style={{ color: "#373737" }}
+          >
+            <Img src={LeftArrowIcon} alt="back" />
+            <span>Back</span>
           </Button>
         </div>
         <StepInfo>
@@ -540,7 +545,7 @@ const Login = () => {
                 onClick={() => handleSelectOrganisation(info.id)}
               >
                 <Button iconOnly className="px-0" type="button">
-                  <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                  <Img src={RightArrowIcon} alt="right" />
                 </Button>
               </div>
             </OrganisationCard>
@@ -580,7 +585,7 @@ const Login = () => {
         <Button type="submit" className="proceed-btn">
           <span>Proceed</span>
           <span className="ml-3">
-            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+            <Img src={RightArrowIcon} alt="right" />
           </span>
         </Button>
       </StepDetails>
@@ -645,7 +650,7 @@ const Login = () => {
         <Button type="submit" className="mt-3 proceed-btn">
           <span>Proceed</span>
           <span className="ml-3">
-            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+            <Img src={RightArrowIcon} alt="right" />
           </span>
         </Button>
       </StepDetails>
@@ -655,13 +660,7 @@ const Login = () => {
   const renderPrivacy = () => {
     return (
       <StepDetails>
-        <Img
-          src={PrivacySvg}
-          alt="privacy"
-          className="my-2"
-          width="100px"
-          style={{ minWidth: "100px" }}
-        />
+        <Img src={PrivacySvg} alt="privacy" className="my-2" width="100" />
         <h3 className="title">We care for Your Privacy </h3>
 
         {!hasAlreadySigned ? (
@@ -686,13 +685,14 @@ const Login = () => {
               continue.
             </p>
             <Button
+              width="40rem"
               type="button"
               onClick={goNext}
               className="mx-auto d-block proceed-btn"
             >
               <span>Proceed</span>
               <span className="ml-3">
-                <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                <Img src={RightArrowIcon} alt="right" />
               </span>
             </Button>
           </React.Fragment>
@@ -831,9 +831,12 @@ const Login = () => {
         </p>
         {safeDetails &&
           safeDetails.map(
-            ({ safe, name, balance, encryptionKeyData, organisationType }) => (
+            (
+              { safe, name, balance, encryptionKeyData, organisationType },
+              idx
+            ) => (
               <Safe
-                key={safe}
+                key={`${safe}-${idx}`}
                 onClick={() =>
                   encryptionKeyData
                     ? handleSelectSafe(
@@ -881,7 +884,7 @@ const Login = () => {
 
                 <div className="select-safe">
                   <Button iconOnly className="px-0">
-                    <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                    <Img src={RightArrowIcon} alt="right" />
                   </Button>
                 </div>
               </Safe>
@@ -1015,20 +1018,16 @@ const Login = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh">
-      <Container>
-        <Card
-          className="mx-auto p-0"
-          style={{
-            minHeight: "600px",
-            width: "90%",
-            marginTop: "80px",
-          }}
-        >
-          {step !== STEPS.ZERO && renderStepHeader()}
+    <Background>
+      {step === STEPS.ZERO ? (
+        renderConnect()
+      ) : (
+        <StyledCard>
+          {renderStepHeader()}
+
           <form onSubmit={handleSubmit(onSubmit)}>{renderSteps()}</form>
-        </Card>
-      </Container>
+        </StyledCard>
+      )}
     </Background>
   );
 };
