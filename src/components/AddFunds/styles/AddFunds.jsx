@@ -20,7 +20,7 @@ export default styled.div`
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
-    letter-spacing: 0.7px;
+    letter-spacing: normal;
     text-align: center;
     color: #373737;
     margin-top: 5rem;

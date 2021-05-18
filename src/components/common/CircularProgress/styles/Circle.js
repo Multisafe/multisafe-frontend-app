@@ -14,7 +14,7 @@ export default styled.div`
     stroke: #f9f9f9;
     fill: none;
     stroke-width: 5;
-    transform: translate(10px, 10px);
+    transform: translate(1rem, 1rem);
     stroke-dasharray: 220;
     stroke-linecap: round;
   }

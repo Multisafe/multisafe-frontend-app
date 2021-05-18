@@ -52,7 +52,7 @@ export default styled.label`
   .custom-checkbox:after {
     left: 0.4rem;
     top: 0.1rem;
-    bottom: 5px;
+    bottom: 0.5rem;
     width: 0.4rem;
     height: 0.8rem;
     border: solid white;

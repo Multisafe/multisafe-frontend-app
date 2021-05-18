@@ -565,7 +565,7 @@ const Login = () => {
         />
         <p className="title">{name}</p>
         <p className="subtitle">
-          You’ll be registered with this name on Parcel.
+          You’ll be registered with this name on Multisafe.
         </p>
         <div className="mt-2">
           <Input
@@ -658,9 +658,7 @@ const Login = () => {
 
         {!hasAlreadySigned ? (
           <React.Fragment>
-            <p className="subtitle mb-5 pb-5">
-              Please sign to authorize Parcel.
-            </p>
+            <p className="subtitle mb-5 pb-5">Please sign to authorize.</p>
             <Button
               type="button"
               onClick={signTerms}
@@ -674,8 +672,7 @@ const Login = () => {
         ) : (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              You have already authorized Parcel. Simply click Proceed to
-              continue.
+              You have already authorized. Simply click Proceed to continue.
             </p>
             <Button
               width="40rem"

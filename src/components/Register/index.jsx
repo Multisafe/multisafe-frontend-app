@@ -462,8 +462,6 @@ const Register = () => {
           dispatch(setOwnerDetails(formData.name, proxy, account));
           dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
           dispatch(setOrganisationType(organisationType));
-          // setLoadingTx(false);
-          // history.push("/dashboard");
         }
       });
     }
@@ -710,7 +708,7 @@ const Register = () => {
         />
         <p className="title">{name}</p>
         <p className="subtitle">
-          You’ll be registered with this name on Parcel.
+          You’ll be registered with this name on Multisafe.
         </p>
         <div className="mt-2">
           <Input
@@ -900,7 +898,7 @@ const Register = () => {
           style={{ minWidth: "10rem" }}
         />
         <h3 className="title">We care for Your Privacy </h3>
-        <p className="subtitle">Please sign to authorize Parcel.</p>
+        <p className="subtitle">Please sign to authorize.</p>
 
         <Button
           type="button"
@@ -949,7 +947,7 @@ const Register = () => {
   const renderReview = () => {
     return loadingTx ? (
       <LoadingTransaction>
-        <div className="loading-heading">Creating account on Parcel</div>
+        <div className="loading-heading">Creating account on Multisafe</div>
         {renderLoadingImageByStep(txLoadingStep)}
         <div className="loading-title">Please do not leave this page</div>
         <div className="loading-subtitle">

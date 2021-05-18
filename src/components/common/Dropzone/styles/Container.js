@@ -20,7 +20,7 @@ export default styled.div`
   align-items: center;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 2rem;
   padding: 3rem;
   border-radius: 0.4rem;
   border: solid 0.1rem #c7c7c7;

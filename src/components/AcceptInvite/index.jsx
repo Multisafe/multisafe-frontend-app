@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { hashMessage } from "@ethersproject/hash";
 import { recoverAddress } from "@ethersproject/transactions";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
 
-import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage } from "hooks";
 import ConnectButton from "components/Connect";
-import { Card } from "components/common/Card";
 import { useInjectReducer } from "utils/injectReducer";
 import invitationReducer from "store/invitation/reducer";
 import invitationSaga from "store/invitation/saga";
@@ -28,13 +24,15 @@ import PrivacySvg from "assets/images/register/privacy.svg";
 import { MESSAGE_TO_SIGN } from "constants/index";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import TeamMembersPng from "assets/images/team-members.png";
 import { getPublicKey } from "utils/encryption";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import WelcomeImage from "assets/images/welcome-new.png";
-
+import LeftArrowIcon from "assets/icons/left-arrow.svg";
+import RightArrowIcon from "assets/icons/right-arrow.svg";
+import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 import {
   Background,
+  StyledCard,
   InnerCard,
   StepDetails,
   StepInfo,
@@ -187,7 +185,7 @@ const AcceptInvite = () => {
         width="70%"
         className="d-block mx-auto py-4"
       />
-      <InnerCard height="260px">
+      <InnerCard>
         <h2 className="text-center mb-4">
           <Img src={MultisafeLogo} alt="multisafe" width="240" />
         </h2>
@@ -199,7 +197,7 @@ const AcceptInvite = () => {
         </div>
         {loadingAccount && (
           <div className="d-flex align-items-center justify-content-center">
-            <Loading color="primary" width="50px" height="50px" />
+            <Loading color="primary" width="3rem" height="3rem" />
           </div>
         )}
         {!loadingAccount &&
@@ -222,9 +220,15 @@ const AcceptInvite = () => {
     const steps = ACCEPT_INVITE_STEPS;
     return (
       <div>
-        <div style={{ height: "50px", padding: "8px 32px" }}>
-          <Button iconOnly onClick={goBack} className="px-0">
-            <FontAwesomeIcon icon={faArrowLeft} color="#aaa" />
+        <div className="back-btn-container">
+          <Button
+            iconOnly
+            onClick={goBack}
+            className="p-0 back-btn"
+            style={{ color: "#373737" }}
+          >
+            <Img src={LeftArrowIcon} alt="back" />
+            <span>Back</span>
           </Button>
         </div>
         <StepInfo>
@@ -253,16 +257,14 @@ const AcceptInvite = () => {
           src={PrivacySvg}
           alt="privacy"
           className="my-2"
-          width="130px"
-          style={{ minWidth: "130px" }}
+          width="130"
+          style={{ minWidth: "13rem" }}
         />
         <h3 className="title">We care for Your Privacy </h3>
 
         {!hasAlreadySigned ? (
           <React.Fragment>
-            <p className="subtitle mb-5 pb-5">
-              Please sign to authorize Parcel.
-            </p>
+            <p className="subtitle mb-5 pb-5">Please sign to authorize.</p>
             <Button
               type="button"
               onClick={signTerms}
@@ -276,7 +278,7 @@ const AcceptInvite = () => {
         ) : (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              You have already authorized Parcel. Simply click Next to continue.
+              You have already authorized. Simply click Next to continue.
             </p>
             <Button
               type="button"
@@ -285,7 +287,7 @@ const AcceptInvite = () => {
             >
               <span>Proceed</span>
               <span className="ml-3">
-                <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                <Img src={RightArrowIcon} alt="right" />
               </span>
             </Button>
           </React.Fragment>
@@ -298,14 +300,14 @@ const AcceptInvite = () => {
     return (
       <StepDetails>
         <div className="text-center">
-          <img src={TeamMembersPng} alt="humans" width="350px" />
+          <img src={AddPeopleIcon} alt="people" />
         </div>
-        <h3 className="title">Accept Invite and join Parcel</h3>
+        <h3 className="title">Accept Invite and join Multisafe</h3>
 
         <p className="subtitle pb-5">
           Once you accept the invitation, one of the owners will approve you.
           <br />
-          Then, you can login and view the Parcel dashboard.
+          Then, you can login and view the Multisafe dashboard.
         </p>
 
         <Button
@@ -327,15 +329,15 @@ const AcceptInvite = () => {
       <Img
         src={WelcomeImage}
         alt="welcome"
-        height="370px"
+        height="370"
         className="d-block mx-auto"
       />
-      <InnerCard height="257px">
+      <InnerCard>
         <h2 className="text-center">Invitation Accepted</h2>
         <div className="mt-2 mb-5 text-center">
           Great! Now, one of the owners will approve you
           <br />
-          and you will be able to login to the Parcel dashboard.
+          and you will be able to login to the Multisafe dashboard.
         </div>
       </InnerCard>
     </div>
@@ -361,33 +363,18 @@ const AcceptInvite = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh">
-      <Container>
-        {!success ? (
-          <Card
-            className="mx-auto"
-            style={{
-              minHeight: "600px",
-              width: "90%",
-              marginTop: "80px",
-            }}
-          >
-            {step !== STEPS.ZERO && renderStepHeader()}
-            {renderSteps()}
-          </Card>
-        ) : (
-          <Card
-            className="mx-auto"
-            style={{
-              minHeight: "600px",
-              width: "90%",
-              marginTop: "80px",
-            }}
-          >
-            {renderSuccess()}
-          </Card>
-        )}
-      </Container>
+    <Background>
+      {success ? (
+        <StyledCard>{renderSuccess()}</StyledCard>
+      ) : step === STEPS.ZERO ? (
+        renderConnect()
+      ) : (
+        <StyledCard>
+          {renderStepHeader()}
+
+          {renderSteps()}
+        </StyledCard>
+      )}
     </Background>
   );
 };

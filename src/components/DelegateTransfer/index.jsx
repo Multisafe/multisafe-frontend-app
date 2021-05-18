@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import { Col, Row } from "reactstrap";
 import { arrayify } from "@ethersproject/bytes";
 
-import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useContract } from "hooks";
 import ConnectButton from "components/Connect";
-import { Card } from "components/common/Card";
 import { Input, ErrorMessage } from "components/common/Form";
 
 import { useInjectReducer } from "utils/injectReducer";
@@ -29,8 +25,10 @@ import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { TransactionUrl } from "components/common/Web3Utils";
 import { DEFAULT_GAS_PRICE } from "constants/index";
+import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import {
   Background,
+  StyledCard,
   InnerCard,
   StepDetails,
   StepInfo,
@@ -335,9 +333,15 @@ const DelegateTransfer = () => {
     const steps = DELEGATE_TRANSFER_STEPS;
     return (
       <div>
-        <div style={{ height: "50px", padding: "8px 32px" }}>
-          <Button iconOnly onClick={goBack} className="px-0">
-            <FontAwesomeIcon icon={faArrowLeft} color="#aaa" />
+        <div className="back-btn-container">
+          <Button
+            iconOnly
+            onClick={goBack}
+            className="p-0 back-btn"
+            style={{ color: "#373737" }}
+          >
+            <Img src={LeftArrowIcon} alt="back" />
+            <span>Back</span>
           </Button>
         </div>
         <StepInfo>
@@ -475,33 +479,18 @@ const DelegateTransfer = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh">
-      <Container>
-        {!txHash ? (
-          <Card
-            className="mx-auto"
-            style={{
-              minHeight: "600px",
-              width: "90%",
-              marginTop: "80px",
-            }}
-          >
-            {step !== STEPS.ZERO && renderStepHeader()}
-            {renderSteps()}
-          </Card>
-        ) : (
-          <Card
-            className="mx-auto"
-            style={{
-              minHeight: "600px",
-              width: "90%",
-              marginTop: "80px",
-            }}
-          >
-            {renderSuccess()}
-          </Card>
-        )}
-      </Container>
+    <Background>
+      {txHash ? (
+        <StyledCard>{renderSuccess()}</StyledCard>
+      ) : step === STEPS.ZERO ? (
+        renderConnect()
+      ) : (
+        <StyledCard>
+          {renderStepHeader()}
+
+          {renderSteps()}
+        </StyledCard>
+      )}
     </Background>
   );
 };
