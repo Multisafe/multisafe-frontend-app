@@ -1,14 +1,7 @@
-export { default as Background } from "./Background";
-export { default as InnerCard } from "./InnerCard";
-export { default as Image } from "./Image";
-export { default as FormContainer } from "./FormContainer";
-export { default as InputContainer } from "./InputContainer";
-export { default as StepDetails } from "./StepDetails";
-export { default as StepInfo } from "./StepInfo";
 export { default as NoReferral } from "./NoReferral";
+export { default as PopupContainer } from "./PopupContainer";
 export { default as OrganisationCards } from "./OrganisationCards";
 export { default as OrganisationCard } from "./OrganisationCard";
-export { default as PopupContainer } from "./PopupContainer";
 export { default as Information } from "./Information";
 export { default as ReviewContent } from "./ReviewContent";
 export { default as ReviewOwnerDetails } from "./ReviewOwnerDetails";
