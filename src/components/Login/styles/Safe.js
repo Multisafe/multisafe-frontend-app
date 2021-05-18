@@ -69,7 +69,7 @@ export default styled.div`
       width: 5.6rem;
       height: 100%;
       background-color: ${({ theme }) => theme.primary};
-      border-radius: 0 1.6rem 1.6rem 0;
+      border-radius: 0 1.5rem 1.5rem 0;
       display: flex;
       justify-content: center;
       align-items: center;

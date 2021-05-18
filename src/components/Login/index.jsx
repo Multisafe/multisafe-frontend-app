@@ -6,13 +6,7 @@ import { hashMessage } from "@ethersproject/hash";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
 import { recoverAddress } from "@ethersproject/transactions";
-// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
-
-import {
-  faLock,
-  faQuestionCircle,
-  faUserCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
@@ -54,7 +48,6 @@ import { Input, ErrorMessage } from "components/common/Form";
 import { useForm, useFieldArray } from "react-hook-form";
 import Img from "components/common/Img";
 import CompanyPng from "assets/images/register/company.png";
-// import OwnerPng from "assets/images/register/owner.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
 import { getDecryptedDetails, getPublicKey } from "utils/encryption";
@@ -99,6 +92,7 @@ import {
 } from "components/Register/styles";
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
+import QuestionIcon from "assets/icons/login/question-icon.svg";
 
 import {
   Background,
@@ -428,7 +422,7 @@ const Login = () => {
         width="70%"
         className="d-block mx-auto py-4"
       />
-      <InnerCard height="260px">
+      <InnerCard>
         <h2 className="text-center mb-4">
           <Img src={MultisafeLogo} alt="multisafe" width="240" />
         </h2>
@@ -440,7 +434,7 @@ const Login = () => {
         </div>
         {loadingAccount && (
           <div className="d-flex align-items-center justify-content-center mt-4">
-            <Loading color="primary" width="50px" height="50px" />
+            <Loading color="primary" width="3rem" height="3rem" />
           </div>
         )}
 
@@ -514,16 +508,19 @@ const Login = () => {
     return (
       <StepDetails>
         <p className="title">About You</p>
-        <p className="subtitle mb-5">Please choose what defines you the best</p>
+        <p className="subtitle mb-4">Please choose what defines you the best</p>
 
         <OrganisationCards>
           {organisationInfo.map((info) => (
-            <OrganisationCard key={info.id}>
+            <OrganisationCard
+              key={info.id}
+              onClick={() => handleSelectOrganisation(info.id)}
+            >
               <Img
                 src={info.img}
                 alt={info.name}
                 width="100%"
-                style={{ minWidth: "130px" }}
+                style={{ minWidth: "13rem" }}
               />
               <div className="px-3">
                 <div className="d-flex justify-content-between mt-3">
@@ -531,19 +528,19 @@ const Login = () => {
                   <Button
                     iconOnly
                     className="p-0"
-                    onClick={() => showOrganisationInfo(info)}
+                    onClick={(e) => {
+                      showOrganisationInfo(info);
+                      e.stopPropagation();
+                    }}
                     type="button"
                   >
-                    <FontAwesomeIcon icon={faQuestionCircle} color="#1452f5" />
+                    <Img src={QuestionIcon} alt="question" />
                   </Button>
                 </div>
                 <div className="org-subtitle">{info.subtitle}</div>
               </div>
 
-              <div
-                className="select-org"
-                onClick={() => handleSelectOrganisation(info.id)}
-              >
+              <div className="select-org">
                 <Button iconOnly className="px-0" type="button">
                   <Img src={RightArrowIcon} alt="right" />
                 </Button>
@@ -563,8 +560,8 @@ const Login = () => {
           src={CompanyPng}
           alt="company"
           className="my-4"
-          width="130px"
-          style={{ minWidth: "130px" }}
+          width="130"
+          style={{ minWidth: "13rem" }}
         />
         <p className="title">{name}</p>
         <p className="subtitle">
@@ -576,7 +573,7 @@ const Login = () => {
             register={register}
             required={required}
             placeholder={placeholder}
-            style={{ width: "400px" }}
+            style={{ width: "40rem" }}
             defaultValue={formData.name || ""}
           />
         </div>
@@ -596,7 +593,7 @@ const Login = () => {
     if (fetching) {
       return (
         <div className="d-flex align-items-center justify-content-center mt-5">
-          <Loading color="primary" width="50px" height="50px" />
+          <Loading color="primary" width="3rem" height="3rem" />
         </div>
       );
     }
@@ -606,11 +603,7 @@ const Login = () => {
         <p className="subtitle mb-3">Please enter the name of the owners</p>
         {fields.map(({ id, name, owner }, index) => {
           return (
-            <div
-              key={id}
-              className="row mb-3 align-items-baseline"
-              style={{ minHeight: "60px" }}
-            >
+            <div key={id} className="row mb-4 align-items-baseline">
               <div className="col-4 pr-0">
                 <Input
                   name={`owners[${index}].name`}
@@ -804,7 +797,7 @@ const Login = () => {
     if (getSafesLoading)
       return (
         <div className="d-flex align-items-center justify-content-center mt-5">
-          <Loading color="primary" width="50px" height="50px" />
+          <Loading color="primary" width="3rem" height="3rem" />
         </div>
       );
     if (!safes.length)
@@ -813,7 +806,7 @@ const Login = () => {
           <p className="mb-4">Oops, no safe found...</p>
           <Button
             to="/signup"
-            style={{ maxWidth: "200px" }}
+            style={{ maxWidth: "20rem" }}
             className="mx-auto mb-5"
           >
             Sign Up
@@ -920,7 +913,7 @@ const Login = () => {
               </div>
             </div>
           </div>
-          <div className="col-6">
+          <div className="col-7">
             <div className="review-heading">Owner Details</div>
             <ReviewOwnerDetails>
               {formData.owners.map(({ name, owner }, idx) => (
@@ -929,10 +922,10 @@ const Login = () => {
                     <FontAwesomeIcon
                       icon={faUserCircle}
                       color="#1452f5"
-                      style={{ fontSize: "24px" }}
+                      style={{ fontSize: "2.4rem" }}
                     />
                   </div>
-                  <div>
+                  <div className="owner-details">
                     <div className="owner-name">{name}</div>
                     <div className="owner-address">{owner}</div>
                   </div>
@@ -943,7 +936,7 @@ const Login = () => {
         </ReviewContent>
 
         <Information className="mt-4">
-          <div>You’re about to import this safe to Parcel.</div>
+          <div>You’re about to import this safe to Multisafe.</div>
         </Information>
 
         <Button

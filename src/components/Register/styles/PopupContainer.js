@@ -2,7 +2,7 @@ import styled from "styled-components/macro";
 
 export default styled.div`
   .popup-title {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
@@ -13,7 +13,7 @@ export default styled.div`
   }
 
   .popup-subtitle {
-    font-size: 12px;
+    font-size: 1.2rem;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
@@ -21,16 +21,15 @@ export default styled.div`
     letter-spacing: normal;
     text-align: left;
     color: #373737;
-    margin-top: 5px;
+    margin-top: 0.5rem;
   }
 
   .popup-list {
     list-style: none;
-    padding-left: 15px;
+    padding-left: 1.5rem;
 
     li {
-      width: 550px;
-      font-size: 12px;
+      font-size: 1.2rem;
       font-weight: 300;
       font-stretch: normal;
       font-style: normal;
@@ -38,16 +37,16 @@ export default styled.div`
       letter-spacing: normal;
       text-align: left;
       color: #373737;
-      padding-bottom: 15px;
+      padding-bottom: 1.5rem;
 
       &::before {
         content: "•";
         color: ${({ theme }) => theme.primary};
         font-weight: bold;
         display: inline-block;
-        width: 1em;
-        font-size: 16px;
-        margin-left: -1em;
+        width: 1.6rem;
+        font-size: 1.6rem;
+        margin-left: -1.6rem;
       }
     }
 

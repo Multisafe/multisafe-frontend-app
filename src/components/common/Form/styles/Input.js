@@ -1,4 +1,4 @@
-import styled from "styled-components/macro";
+import styled, { css } from "styled-components/macro";
 
 export default styled.input`
   width: 100%;
@@ -30,38 +30,52 @@ export default styled.input`
     position: absolute;
     left: -9999rem;
   }
+
   &[type="radio"]:checked + label,
   &[type="radio"]:not(:checked) + label {
     position: relative;
-    padding-left: 2.8rem;
     cursor: pointer;
     display: inline-block;
     color: #373737;
   }
   &[type="radio"]:checked + label:before,
   &[type="radio"]:not(:checked) + label:before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1.8rem;
-    height: 1.8rem;
-    border: 0.1rem solid #ddd;
-    border-radius: 100%;
-    background: #fff;
+    ${({ noRadio }) =>
+      noRadio
+        ? css`
+            display: none;
+          `
+        : css`
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.8rem;
+            height: 1.8rem;
+            border: 0.1rem solid #ddd;
+            border-radius: 100%;
+            background: #fff;
+          `}
   }
   &[type="radio"]:checked + label:after,
   &[type="radio"]:not(:checked) + label:after {
-    content: "";
-    width: 1.2rem;
-    height: 1.2rem;
-    background: ${({ theme }) => theme.primary};
-    position: absolute;
-    top: 0.3rem;
-    left: 0.3rem;
-    border-radius: 100%;
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
+    ${({ noRadio }) =>
+      noRadio
+        ? css`
+            display: none;
+          `
+        : css`
+            content: "";
+            width: 1.2rem;
+            height: 1.2rem;
+            background: ${({ theme }) => theme.primary};
+            position: absolute;
+            top: 0.3rem;
+            left: 0.3rem;
+            border-radius: 100%;
+            -webkit-transition: all 0.2s ease;
+            transition: all 0.2s ease;
+          `}
   }
   &[type="radio"]:not(:checked) + label:after {
     opacity: 0;

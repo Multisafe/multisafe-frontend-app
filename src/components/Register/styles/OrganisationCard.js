@@ -1,20 +1,21 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  width: 285px;
-  height: 250px;
+  width: 28rem;
+  height: 25rem;
   position: relative;
+  cursor: pointer;
 
   background: #ffffff;
-  border: 1px solid rgba(115, 103, 240, 0.54);
+  border: 0.1rem solid rgba(115, 103, 240, 0.54);
   box-sizing: border-box;
-  border-radius: 8px;
+  border-radius: 0.8rem;
 
   .org-title {
     font-style: normal;
     font-weight: 600;
-    font-size: 16px;
-    line-height: 20px;
+    font-size: 1.6rem;
+    line-height: normal;
     display: flex;
     align-items: center;
     color: ${({ theme }) => theme.primary};
@@ -23,12 +24,12 @@ export default styled.div`
   .org-subtitle {
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: 1.2rem;
+    line-height: normal;
     display: flex;
     align-items: center;
     color: #373737;
-    margin-top: 5px;
+    margin-top: 0.5rem;
   }
 
   .select-org {
@@ -44,9 +45,9 @@ export default styled.div`
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 40px;
+      height: 4rem;
       background-color: ${({ theme }) => theme.primary};
-      border-radius: 0 0 7px 7px;
+      border-radius: 0 0 0.7rem 0.7rem;
       display: flex;
       justify-content: center;
       align-items: center;

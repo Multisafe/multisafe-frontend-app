@@ -1,4 +1,8 @@
-import { Modal, ModalHeader, ModalBody } from "reactstrap";
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+} from "components/common/Modal/SimpleModal";
 import { connectModal as reduxModal } from "redux-modal";
 import { PopupContainer } from "./styles";
 
@@ -8,19 +12,18 @@ const OrganisationInfoModal = (props) => {
   const { handleHide, show, info } = props;
 
   return (
-    <Modal isOpen={show} centered style={{ minWidth: "700px" }}>
-      <PopupContainer>
-        <ModalHeader toggle={handleHide} style={{ borderBottom: "none" }}>
-          <div className="popup-title">{info && info.name}</div>
-          <div className="popup-subtitle">{info && info.subtitle}</div>
-        </ModalHeader>
-        <ModalBody>
+    <Modal isOpen={show} toggle={handleHide}>
+      <ModalHeader toggle={handleHide} />
+      <ModalBody>
+        <div className="title text-primary">{info && info.name}</div>
+        <div className="subtitle">{info && info.subtitle}</div>
+        <PopupContainer>
           <ul className="popup-list">
             {info &&
               info.points.map((point, index) => <li key={index}>{point}</li>)}
           </ul>
-        </ModalBody>
-      </PopupContainer>
+        </PopupContainer>
+      </ModalBody>
     </Modal>
   );
 };

@@ -41,13 +41,16 @@ export default styled.div`
     padding: 1.5rem 0;
     margin-right: 1rem;
     min-width: 13rem;
-    border-radius: 0.8rem;
-    border: solid 0.05rem #aaaaaa;
-    background-color: #f2f2f2;
+    border: solid 0.1rem #dddcdc;
+    width: 10rem;
+    text-align: center;
+    border-radius: 0.4rem;
+    background-color: #ffffff;
   }
 
   .radio-toolbar input[type="radio"]:checked + label {
-    background-color: #c3c3c3;
+    background-color: ${({ theme }) => theme.primary};
+    color: #fff;
   }
 
   .default-address {

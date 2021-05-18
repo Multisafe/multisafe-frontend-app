@@ -38,7 +38,6 @@ export default styled.div`
 
   .login,
   .import {
-    width: 100%;
     margin-top: 2rem;
   }
 
@@ -70,7 +69,7 @@ export default styled.div`
     margin-bottom: 2rem;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 978px) {
     .buttons {
       flex-direction: column;
     }

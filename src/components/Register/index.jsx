@@ -2,21 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowLeft,
-  faQuestionCircle,
-  faArrowRight,
-  faUserCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { show } from "redux-modal";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
-// import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 
-import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage, useContract } from "hooks";
 import ConnectButton from "components/Connect";
-import { Card } from "components/common/Card";
 import { useInjectReducer } from "utils/injectReducer";
 import registerWizardReducer from "store/registerWizard/reducer";
 import registerReducer from "store/register/reducer";
@@ -77,12 +69,7 @@ import {
   ORGANISATION_TYPE,
   organisationInfo,
 } from "store/register/resources";
-
 import {
-  Background,
-  InnerCard,
-  StepDetails,
-  StepInfo,
   OrganisationCards,
   OrganisationCard,
   Information,
@@ -90,11 +77,22 @@ import {
   ReviewOwnerDetails,
   LoadingTransaction,
 } from "./styles";
+import {
+  Background,
+  StyledCard,
+  InnerCard,
+  StepDetails,
+  StepInfo,
+} from "components/Login/styles";
+import LeftArrowIcon from "assets/icons/left-arrow.svg";
+import RightArrowIcon from "assets/icons/right-arrow.svg";
+import QuestionIcon from "assets/icons/login/question-icon.svg";
 import { TransactionUrl } from "components/common/Web3Utils";
 import {
   StepperContent,
   Stepper,
 } from "components/common/Stepper/SimpleStepper";
+import ErrorText from "components/common/ErrorText";
 
 const { GNOSIS_SAFE_ADDRESS, PROXY_FACTORY_ADDRESS, ZERO_ADDRESS } = addresses;
 
@@ -297,6 +295,9 @@ const Register = () => {
 
   const goBack = () => {
     dispatch(chooseStep(step - 1));
+  };
+  const goNext = () => {
+    dispatch(chooseStep(step + 1));
   };
 
   const getReviewHeading = () => {
@@ -575,7 +576,7 @@ const Register = () => {
           width="70%"
           className="d-block mx-auto py-4"
         />
-        <InnerCard height="260px">
+        <InnerCard>
           <h2 className="text-center mb-4">
             <Img src={MultisafeLogo} alt="multisafe" width="240" />
           </h2>
@@ -587,11 +588,23 @@ const Register = () => {
           </div>
           {loadingAccount && (
             <div className="d-flex align-items-center justify-content-center">
-              <Loading color="primary" width="50px" height="50px" />
+              <Loading color="primary" width="3rem" height="3rem" />
             </div>
           )}
-          {!loadingAccount && (
+          {!loadingAccount && !account && (
             <ConnectButton className="mx-auto d-block mt-3 connect" />
+          )}
+          {!loadingAccount && account && (
+            <div className="buttons">
+              <Button
+                width="40rem"
+                type="button"
+                className="login"
+                onClick={goNext}
+              >
+                Signup
+              </Button>
+            </div>
           )}
         </InnerCard>
       </div>
@@ -602,12 +615,16 @@ const Register = () => {
     const steps = getStepsByFlow(formData.flow);
     return (
       <div>
-        <div style={{ height: "50px", padding: "8px 32px" }}>
-          {step > 1 && (
-            <Button iconOnly onClick={goBack} className="px-0">
-              <FontAwesomeIcon icon={faArrowLeft} color="#aaa" />
-            </Button>
-          )}
+        <div className="back-btn-container">
+          <Button
+            iconOnly
+            onClick={goBack}
+            className="p-0 back-btn"
+            style={{ color: "#373737" }}
+          >
+            <Img src={LeftArrowIcon} alt="back" />
+            <span>Back</span>
+          </Button>
         </div>
         <StepInfo>
           <div>
@@ -640,12 +657,15 @@ const Register = () => {
 
         <OrganisationCards>
           {organisationInfo.map((info) => (
-            <OrganisationCard key={info.id}>
+            <OrganisationCard
+              key={info.id}
+              onClick={() => handleSelectOrganisation(info.id)}
+            >
               <Img
                 src={info.img}
                 alt={info.name}
                 width="100%"
-                style={{ minWidth: "130px" }}
+                style={{ minWidth: "13rem" }}
               />
               <div className="px-3">
                 <div className="d-flex justify-content-between mt-3">
@@ -653,21 +673,21 @@ const Register = () => {
                   <Button
                     iconOnly
                     className="p-0"
-                    onClick={() => showOrganisationInfo(info)}
+                    onClick={(e) => {
+                      showOrganisationInfo(info);
+                      e.stopPropagation();
+                    }}
                     type="button"
                   >
-                    <FontAwesomeIcon icon={faQuestionCircle} color="#1452f5" />
+                    <Img src={QuestionIcon} alt="question" />
                   </Button>
                 </div>
                 <div className="org-subtitle">{info.subtitle}</div>
               </div>
 
-              <div
-                className="select-org"
-                onClick={() => handleSelectOrganisation(info.id)}
-              >
+              <div className="select-org">
                 <Button iconOnly className="px-0" type="button">
-                  <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+                  <Img src={RightArrowIcon} alt="right" />
                 </Button>
               </div>
             </OrganisationCard>
@@ -685,8 +705,8 @@ const Register = () => {
           src={CompanyPng}
           alt="company"
           className="my-4"
-          width="130px"
-          style={{ minWidth: "130px" }}
+          width="130"
+          style={{ minWidth: "13rem" }}
         />
         <p className="title">{name}</p>
         <p className="subtitle">
@@ -698,7 +718,7 @@ const Register = () => {
             register={register}
             required={required}
             placeholder={placeholder}
-            style={{ width: "400px" }}
+            style={{ maxWidth: "40rem" }}
             defaultValue={formData.name || ""}
           />
         </div>
@@ -707,7 +727,7 @@ const Register = () => {
         <Button type="submit" className="proceed-btn">
           <span>Proceed</span>
           <span className="ml-3">
-            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+            <Img src={RightArrowIcon} alt="right" />
           </span>
         </Button>
       </StepDetails>
@@ -722,8 +742,8 @@ const Register = () => {
             src={OwnerPng}
             alt="owner"
             className="my-3"
-            width="100px"
-            style={{ minWidth: "100px" }}
+            width="100"
+            style={{ minWidth: "10rem" }}
           />
         )}
         <p className="subtitle">
@@ -732,8 +752,12 @@ const Register = () => {
         <div className="my-2">
           {fields.map(({ id, name, owner }, index) => {
             return (
-              <div key={id} className="row mb-3 align-items-baseline">
-                <div className="col-4">
+              <div
+                key={id}
+                className="row mb-4 align-items-baseline"
+                style={{ gridGap: "1rem 0" }}
+              >
+                <div className="col-4 pr-0">
                   <Input
                     name={`owners[${index}].name`}
                     register={register}
@@ -747,7 +771,7 @@ const Register = () => {
                       <Error>{errors["owners"][index].name.message}</Error>
                     )}
                 </div>
-                <div className="col-7">
+                <div className="col-7 pr-0">
                   <Input
                     name={`owners[${index}].owner`}
                     register={register}
@@ -765,23 +789,21 @@ const Register = () => {
                       <Error>{errors["owners"][index].owner.message}</Error>
                     )}
                 </div>
-                <div className="px-1">
+                <div className="col-1">
                   {fields.length > 1 && index === fields.length - 1 && (
-                    <div>
-                      <Button
-                        type="button"
-                        iconOnly
-                        onClick={() => remove(index)}
-                        style={{
-                          backgroundColor: "#fff",
-                          borderRadius: "6px",
-                          border: "solid 0.5px #dedede",
-                          padding: "12px",
-                        }}
-                      >
-                        <img src={DeleteSvg} alt="remove" width="18" />
-                      </Button>
-                    </div>
+                    <Button
+                      type="button"
+                      iconOnly
+                      onClick={() => remove(index)}
+                      style={{
+                        backgroundColor: "#fff",
+                        borderRadius: "0.4rem",
+                        border: "solid 0.05rem #dedede",
+                        padding: "0 1rem",
+                      }}
+                    >
+                      <Img src={DeleteSvg} alt="remove" width="16" />
+                    </Button>
                   )}
                 </div>
               </div>
@@ -795,7 +817,7 @@ const Register = () => {
               onClick={() => append({})}
               className="px-3 py-2 secondary"
             >
-              <span className="mr-2" style={{ fontSize: "24px" }}>
+              <span className="mr-2" style={{ fontSize: "2.4rem" }}>
                 +
               </span>
               <span>Add More</span>
@@ -803,7 +825,7 @@ const Register = () => {
           </div>
         </div>
 
-        <Information style={{ marginBottom: "40px" }}>
+        <Information style={{ marginBottom: "5rem" }}>
           <div>
             <Img src={LightbulbIcon} alt="lightbulb" />
           </div>
@@ -815,7 +837,7 @@ const Register = () => {
         <Button type="submit" className="proceed-btn">
           <span>Proceed</span>
           <span className="ml-3">
-            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+            <Img src={RightArrowIcon} alt="right" />
           </span>
         </Button>
       </StepDetails>
@@ -829,8 +851,8 @@ const Register = () => {
           src={ThresholdIcon}
           alt="threshold"
           className="my-0"
-          width="140px"
-          style={{ minWidth: "140px" }}
+          width="140"
+          style={{ minWidth: "14rem" }}
         />
         <p className="title">Threshold</p>
         <p className="subtitle">
@@ -838,7 +860,7 @@ const Register = () => {
         </p>
         <div
           className="row mr-4 align-items-center radio-toolbar"
-          style={{ padding: "10px 16px 0" }}
+          style={{ padding: "1rem 1.6rem 0" }}
         >
           {formData.owners.map(({ owner }, index) => (
             <Input
@@ -850,6 +872,7 @@ const Register = () => {
               defaultChecked={index === 0}
               label={index + 1}
               key={owner}
+              noRadio={true}
             />
           ))}
         </div>
@@ -858,7 +881,7 @@ const Register = () => {
         <Button type="submit" className="proceed-btn">
           <span>Proceed</span>
           <span className="ml-3">
-            <FontAwesomeIcon icon={faArrowRight} color="#fff" />
+            <Img src={RightArrowIcon} alt="right" />
           </span>
           {/* {isMetaTxEnabled ? `Proceed` : `Create Safe and Proceed`} */}
         </Button>
@@ -873,8 +896,8 @@ const Register = () => {
           src={PrivacySvg}
           alt="privacy"
           className="my-4"
-          width="100px"
-          style={{ minWidth: "100px" }}
+          width="100"
+          style={{ minWidth: "10rem" }}
         />
         <h3 className="title">We care for Your Privacy </h3>
         <p className="subtitle">Please sign to authorize Parcel.</p>
@@ -973,7 +996,7 @@ const Register = () => {
               </div>
             </div>
           </div>
-          <div className="col-6">
+          <div className="col-7">
             <div className="review-heading">Owner Details</div>
             <ReviewOwnerDetails>
               {formData.owners.map(({ name, owner }, idx) => (
@@ -982,10 +1005,10 @@ const Register = () => {
                     <FontAwesomeIcon
                       icon={faUserCircle}
                       color="#1452f5"
-                      style={{ fontSize: "24px" }}
+                      style={{ fontSize: "2.4rem" }}
                     />
                   </div>
-                  <div>
+                  <div className="owner-details">
                     <div className="owner-name">{name}</div>
                     <div className="owner-address">{owner}</div>
                   </div>
@@ -995,7 +1018,7 @@ const Register = () => {
           </div>
         </ReviewContent>
 
-        <Information className="mt-4 mb-5">
+        <Information style={{ marginBottom: "5rem" }}>
           {isMetaTxEnabled ? (
             <div>You’re about to create a new safe.</div>
           ) : (
@@ -1014,9 +1037,7 @@ const Register = () => {
         >
           <span>Create Account</span>
         </Button>
-        {errorInRegister && (
-          <div className="text-danger ml-2 my-3">{errorInRegister}</div>
-        )}
+        {errorInRegister && <ErrorText>{errorInRegister}</ErrorText>}
       </StepDetails>
     );
   };
@@ -1074,20 +1095,16 @@ const Register = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh">
-      <Container>
-        <Card
-          className="mx-auto"
-          style={{
-            minHeight: "600px",
-            width: "90%",
-            marginTop: "80px",
-          }}
-        >
-          {step !== STEPS.ZERO && !loadingTx && renderStepHeader()}
+    <Background>
+      {step === STEPS.ZERO ? (
+        renderConnect()
+      ) : (
+        <StyledCard>
+          {!loadingTx && renderStepHeader()}
+
           <form onSubmit={handleSubmit(onSubmit)}>{renderSteps()}</form>
-        </Card>
-      </Container>
+        </StyledCard>
+      )}
       <NoReferralModal />
     </Background>
   );
