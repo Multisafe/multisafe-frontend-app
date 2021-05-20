@@ -44,5 +44,6 @@ export default styled.div`
     letter-spacing: normal;
     text-align: center;
     color: #373737;
+    word-break: break-all;
   }
 `;

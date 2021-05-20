@@ -167,8 +167,8 @@ function AddSinglePeopleModal(props) {
       <AddPeopleContainer>
         <div>
           <div className="title">Personal Details</div>
-          <Row>
-            <Col lg="6" sm="12">
+          <div className="wrapper">
+            <div className="w-100">
               <Input
                 type="text"
                 name="firstName"
@@ -177,8 +177,8 @@ function AddSinglePeopleModal(props) {
                 placeholder="First Name"
               />
               <ErrorMessage name="firstName" errors={errors} />
-            </Col>
-            <Col lg="6" sm="12">
+            </div>
+            <div className="w-100">
               <Input
                 type="text"
                 name="lastName"
@@ -186,8 +186,8 @@ function AddSinglePeopleModal(props) {
                 placeholder="Last Name"
               />
               <ErrorMessage name="lastName" errors={errors} />
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
 
         <div className="mt-5">
@@ -242,7 +242,7 @@ function AddSinglePeopleModal(props) {
 
         <div className="mt-5">
           <div className="title">Currency and Amount</div>
-          <div className="d-flex">
+          <div className="wrapper">
             <div className="mr-3">
               <Controller
                 control={control}

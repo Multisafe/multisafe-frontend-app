@@ -413,7 +413,7 @@ export default function QuickTransfer(props) {
         />
       </div>
 
-      <div className="d-flex justify-content-center mt-5">
+      <div className="buttons mt-5">
         <Button
           type="button"
           width="16rem"

@@ -429,7 +429,7 @@ export default function SpendingLimits(props) {
         The allowance will automatically reset after the defined time period.
       </p>
 
-      <div className="d-flex align-items-center">
+      <div className="options">
         {resetOptions.map(({ id, value, label }, index) => (
           <Input
             name={`resetTimeMin`}

@@ -341,7 +341,7 @@ function AddBulkPeopleModal(props) {
         {!invalidCsvData ? (
           <div
             className="d-flex justify-content-end"
-            style={{ margin: "2rem 6rem" }}
+            style={{ margin: "2rem" }}
           >
             <Button
               type="button"

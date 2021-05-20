@@ -33,4 +33,18 @@ export default styled.div`
     align-items: center;
     margin-top: 4rem;
   }
+
+  .wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    grid-gap: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .wrapper {
+      flex-wrap: wrap;
+      grid-gap: 1rem;
+    }
+  }
 `;

@@ -21,12 +21,22 @@ export default styled.div`
     margin-bottom: 1.4rem;
   }
 
+  .buttons {
+    display: flex;
+    justify-content: center;
+  }
+
   @media (max-width: 978px) {
     padding: 3rem 2rem;
     .outer-flex {
       flex-direction: column;
       grid-gap: 2rem;
       align-items: flex-start;
+    }
+
+    .buttons {
+      flex-wrap: wrap-reverse;
+      grid-gap: 1rem;
     }
   }
 `;

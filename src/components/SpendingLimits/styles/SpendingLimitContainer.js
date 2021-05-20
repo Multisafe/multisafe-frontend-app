@@ -33,12 +33,22 @@ export default styled.div`
     margin-bottom: 2rem;
   }
 
+  .options {
+    display: flex;
+    align-items: center;
+  }
+
   @media (max-width: 978px) {
     padding: 3rem 2rem;
     .outer-flex {
       flex-direction: column;
       grid-gap: 2rem;
       align-items: flex-start;
+    }
+
+    .options {
+      flex-wrap: wrap;
+      grid-gap: 1rem 0;
     }
   }
 `;
