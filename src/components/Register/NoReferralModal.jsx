@@ -27,8 +27,8 @@ const NoReferralModal = () => {
             </div>
             <h4 className="title pb-3">Oops, you do not have an invite!</h4>
             <div className="subtitle">
-              This is the alpha version of Parcel, and users can join only via
-              invite link.
+              This is the alpha version of Multisafe, and users can join only
+              via invite link.
             </div>
           </div>
         </NoReferral>

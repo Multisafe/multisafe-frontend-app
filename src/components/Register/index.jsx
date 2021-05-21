@@ -51,7 +51,7 @@ import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { getGasPrice } from "store/gas/actions";
-import NoReferralModal from "./NoReferralModal";
+// import NoReferralModal from "./NoReferralModal";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import LightbulbIcon from "assets/icons/lightbulb.svg";
@@ -134,6 +134,8 @@ const Register = () => {
   const [isMetaTxEnabled, setIsMetaTxEnabled] = useState(false);
   const [txLoadingStep, setTxLoadingStep] = useState(0);
   const [signing, setSigning] = useState(false);
+  const [txHashWithoutReferral, setTxHashWithoutReferral] = useState();
+  const [confirming, setConfirming] = useState(false);
 
   const { active, account, library, connector } = useActiveWeb3React();
   // Reducers
@@ -222,8 +224,8 @@ const Register = () => {
   }, [errorInRegister]);
 
   useEffect(() => {
-    if (txHash) setTxLoadingStep(2); // Creating Wallet
-  }, [txHash]);
+    if (txHash || txHashWithoutReferral) setTxLoadingStep(2); // Creating Wallet
+  }, [txHash, txHashWithoutReferral]);
 
   useEffect(() => {
     if (registering) setTxLoadingStep(3); // Transaction Complete
@@ -333,29 +335,38 @@ const Register = () => {
         creationData
       );
 
-      const tx = await proxyFactory.createProxy(
-        GNOSIS_SAFE_ADDRESS,
-        creationData,
-        {
-          gasLimit: estimateGas,
-          gasPrice: averageGasPrice || DEFAULT_GAS_PRICE,
-        }
-      );
-
-      proxyFactory.once("ProxyCreation", async (proxy) => {
-        dispatch(
-          updateForm({
-            safeAddress: proxy,
-            creationData,
-          })
+      try {
+        setConfirming(true);
+        const tx = await proxyFactory.createProxy(
+          GNOSIS_SAFE_ADDRESS,
+          creationData,
+          {
+            gasLimit: estimateGas,
+            gasPrice: averageGasPrice || DEFAULT_GAS_PRICE,
+          }
         );
-        await registerUserToParcel();
-      });
 
-      setLoadingTx(true);
-      const result = await tx.wait();
-      setLoadingTx(false);
-      console.log("tx success", result);
+        dispatch(updateForm({ creationData }));
+
+        setLoadingTx(true);
+        setTxLoadingStep(1); // Transaction Submitted
+        setTxHashWithoutReferral(tx.hash);
+        const result = await tx.wait();
+        const { events } = result;
+        if (events) {
+          const proxy = events[0].args.proxy;
+          await registerUserToMultisafe(proxy);
+        }
+
+        setLoadingTx(false);
+        setConfirming(false);
+        console.log("tx success", result);
+      } catch (err) {
+        console.error(err);
+        setLoadingTx(false);
+        setConfirming(false);
+        setTxLoadingStep(0);
+      }
     }
   };
 
@@ -467,11 +478,8 @@ const Register = () => {
     }
   };
 
-  const registerUserToParcel = async () => {
-    const encryptionKey = cryptoUtils.getEncryptionKey(
-      sign,
-      formData.safeAddress
-    );
+  const registerUserToMultisafe = async (safeAddress) => {
+    const encryptionKey = cryptoUtils.getEncryptionKey(sign, safeAddress);
     const organisationType = parseInt(formData.organisationType);
 
     // set encryptionKey
@@ -518,7 +526,8 @@ const Register = () => {
         encryptionKey,
         organisationType
       ),
-      safeAddress: formData.safeAddress,
+      safeAddress: safeAddress,
+      referralId: "",
       createdBy: account,
       owners: encryptedOwners,
       proxyData: {
@@ -531,7 +540,7 @@ const Register = () => {
       threshold,
       organisationType,
     };
-    dispatch(setOwnerDetails(formData.name, formData.safeAddress, account));
+    dispatch(setOwnerDetails(formData.name, safeAddress, account));
     dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
     dispatch(setOrganisationType(organisationType));
     dispatch(registerUser(body));
@@ -1030,8 +1039,8 @@ const Register = () => {
         <Button
           type="submit"
           className="proceed-btn"
-          loading={loadingTx}
-          disabled={loadingTx}
+          loading={loadingTx || confirming}
+          disabled={loadingTx || confirming}
         >
           <span>Create Account</span>
         </Button>
@@ -1103,7 +1112,7 @@ const Register = () => {
           <form onSubmit={handleSubmit(onSubmit)}>{renderSteps()}</form>
         </StyledCard>
       )}
-      <NoReferralModal />
+      {/* <NoReferralModal /> */}
     </Background>
   );
 };

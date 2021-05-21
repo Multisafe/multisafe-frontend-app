@@ -448,7 +448,6 @@ const Login = () => {
                   type="button"
                   className="secondary import"
                   onClick={() => handleSelectFlow(FLOWS.IMPORT)}
-                  disabled={!formData.referralId}
                 >
                   Import Existing Safe
                 </Button>

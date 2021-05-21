@@ -14,8 +14,6 @@ import { registerEndpoint, createMetaTxEndpoint } from "constants/endpoints";
 import { networkId } from "constants/networks";
 
 export function* registerUser(action) {
-  // Select username from store
-  // const username = yield select(makeSelectUsername());
   const requestURL = registerEndpoint;
   const options = {
     method: "POST",
@@ -38,7 +36,7 @@ export function* registerUser(action) {
       if (action.redirect) yield put(push("/dashboard"));
     }
   } catch (err) {
-    yield put(registerUserError(err));
+    yield put(registerUserError(err.message));
   }
 }
 
@@ -61,7 +59,7 @@ export function* createMetaTx(action) {
       yield put(createMetaTxSuccess(result.transactionHash, result.log));
     }
   } catch (err) {
-    yield put(createMetaTxError(err));
+    yield put(createMetaTxError(err.message));
   }
 }
 
