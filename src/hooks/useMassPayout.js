@@ -249,7 +249,7 @@ export default function useMassPayout(props = {}) {
         // Metamask with ledger or trezor doesn't work with eip712
         // In this case, show a simple eth_sign signature
         if (
-          connector === "MetaMask" &&
+          connector.name === "MetaMask" &&
           err.message.includes("Not supported on this device")
         ) {
           const signature = await ethSigner(account, contractTransactionHash);
@@ -330,18 +330,19 @@ export default function useMassPayout(props = {}) {
             if (isMetaEnabled) {
               let approvedSign;
 
-              const contractTransactionHash = await proxyContract.getTransactionHash(
-                to,
-                valueWei,
-                data,
-                operation,
-                0,
-                baseGasEstimate,
-                gasPrice,
-                gasToken,
-                executor,
-                nonce
-              );
+              const contractTransactionHash =
+                await proxyContract.getTransactionHash(
+                  to,
+                  valueWei,
+                  data,
+                  operation,
+                  0,
+                  baseGasEstimate,
+                  gasPrice,
+                  gasToken,
+                  executor,
+                  nonce
+                );
 
               if (isHardwareWallet) {
                 approvedSign = await ethSigner(
@@ -406,18 +407,19 @@ export default function useMassPayout(props = {}) {
             // Multiowner
             let approvedSign;
 
-            const contractTransactionHash = await proxyContract.getTransactionHash(
-              to,
-              valueWei,
-              data,
-              operation,
-              0,
-              baseGasEstimate,
-              gasPrice,
-              gasToken,
-              executor,
-              createNonce
-            );
+            const contractTransactionHash =
+              await proxyContract.getTransactionHash(
+                to,
+                valueWei,
+                data,
+                operation,
+                0,
+                baseGasEstimate,
+                gasPrice,
+                gasToken,
+                executor,
+                createNonce
+              );
 
             if (isHardwareWallet) {
               approvedSign = await ethSigner(account, contractTransactionHash);
@@ -494,18 +496,19 @@ export default function useMassPayout(props = {}) {
         try {
           let approvedSign;
 
-          const contractTransactionHash = await proxyContract.getTransactionHash(
-            to,
-            value,
-            data,
-            operation,
-            safeTxGas,
-            baseGas,
-            gasPrice,
-            gasToken,
-            executor || ZERO_ADDRESS,
-            nonce
-          );
+          const contractTransactionHash =
+            await proxyContract.getTransactionHash(
+              to,
+              value,
+              data,
+              operation,
+              safeTxGas,
+              baseGas,
+              gasPrice,
+              gasToken,
+              executor || ZERO_ADDRESS,
+              nonce
+            );
 
           if (isHardwareWallet) {
             approvedSign = await ethSigner(account, contractTransactionHash);
@@ -618,25 +621,24 @@ export default function useMassPayout(props = {}) {
             }
           );
           const estimateResult = await estimateResponse.json();
-          const {
-            safeTxGas: finalSafeTxGas,
-            baseGas: finalBaseGas,
-          } = estimateResult;
+          const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } =
+            estimateResult;
           const gasLimit =
             Number(finalSafeTxGas) + Number(finalBaseGas) + 21000; // giving a little higher gas limit just in case
 
-          const contractTransactionHash = await proxyContract.getTransactionHash(
-            to,
-            value,
-            data,
-            operation,
-            safeTxGas,
-            baseGas,
-            gasPrice,
-            gasToken,
-            executor || ZERO_ADDRESS,
-            nonce
-          );
+          const contractTransactionHash =
+            await proxyContract.getTransactionHash(
+              to,
+              value,
+              data,
+              operation,
+              safeTxGas,
+              baseGas,
+              gasPrice,
+              gasToken,
+              executor || ZERO_ADDRESS,
+              nonce
+            );
 
           if (isMetaEnabled) {
             if (isHardwareWallet) {
