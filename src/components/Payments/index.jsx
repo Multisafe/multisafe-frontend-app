@@ -109,7 +109,6 @@ export default function Payments(props) {
   const [people, setPeople] = useState();
   const [selectedRows, setSelectedRows] = useState([]);
   const [metaTxHash, setMetaTxHash] = useState();
-  const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [isSelectedTokenUSD, setIsSelectedTokenUSD] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
@@ -346,7 +345,6 @@ export default function Payments(props) {
 
   useEffect(() => {
     if (txHash) {
-      setSubmittedTx(true);
       if (
         encryptionKey &&
         recievers &&
@@ -458,11 +456,11 @@ export default function Payments(props) {
   }, [checked]);
 
   useEffect(() => {
-    if ((metaTxHash || submittedTx) && selectedCount > 0) {
+    if (metaTxHash && singleOwnerTransactionId && selectedCount > 0) {
       handleHide();
       dispatch(
         show(TX_SUBMITTED_MODAL, {
-          txHash: txHash ? txHash : metaTxHash,
+          txHash: metaTxHash,
           selectedCount,
           transactionId: singleOwnerTransactionId,
         })
@@ -470,11 +468,9 @@ export default function Payments(props) {
     }
   }, [
     dispatch,
-    selectedCount,
     metaTxHash,
     singleOwnerTransactionId,
-    submittedTx,
-    txHash,
+    selectedCount,
     handleHide,
   ]);
 

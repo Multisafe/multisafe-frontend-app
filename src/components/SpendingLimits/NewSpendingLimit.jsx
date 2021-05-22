@@ -97,7 +97,6 @@ export default function SpendingLimits(props) {
   const { handleHide } = props;
 
   const { account } = useActiveWeb3React();
-  const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [spendingLimitDetails, setSpendingLimitDetails] = useState(null);
@@ -180,7 +179,6 @@ export default function SpendingLimits(props) {
 
   useEffect(() => {
     if (txHash) {
-      setSubmittedTx(true);
       if (
         encryptionKey &&
         spendingLimitDetails &&
@@ -314,23 +312,17 @@ export default function SpendingLimits(props) {
   }, [tokenList, tokensDropdown]);
 
   useEffect(() => {
-    if (metaTxHash || submittedTx) {
+    if (metaTxHash && singleOwnerTransactionId) {
       handleHide();
       dispatch(
         show(TX_SUBMITTED_MODAL, {
-          txHash: txHash ? txHash : metaTxHash,
+          txHash: metaTxHash,
+          selectedCount: 1,
           transactionId: singleOwnerTransactionId,
         })
       );
     }
-  }, [
-    dispatch,
-    metaTxHash,
-    singleOwnerTransactionId,
-    submittedTx,
-    txHash,
-    handleHide,
-  ]);
+  }, [dispatch, metaTxHash, singleOwnerTransactionId, handleHide]);
 
   const onSubmit = async (values) => {
     console.log({ values });

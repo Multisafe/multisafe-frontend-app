@@ -32,7 +32,7 @@ const LIMIT = 10;
 
 export default function Transactions() {
   const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false); // eslint-disable-line
 
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
 
@@ -71,10 +71,11 @@ export default function Transactions() {
   }, [txCount]);
 
   useEffect(() => {
-    if (ownerSafeAddress && hasMore && offset > 0) {
-      dispatch(viewTransactions(ownerSafeAddress, offset, LIMIT));
+    if (ownerSafeAddress) {
+      // dispatch(viewTransactions(ownerSafeAddress, offset, LIMIT)); // with pagination
+      dispatch(viewTransactions(ownerSafeAddress));
     }
-  }, [dispatch, ownerSafeAddress, offset, hasMore]);
+  }, [dispatch, ownerSafeAddress]);
 
   useEffect(() => {
     if (ownerSafeAddress) {
