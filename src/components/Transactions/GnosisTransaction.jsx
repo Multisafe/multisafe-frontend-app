@@ -34,7 +34,9 @@ const GnosisTransaction = forwardRef(({ transaction }, ref) => {
             className="direction"
           />
           <div>
-            <div className="name">Gnosis</div>
+            <div className="name">
+              {direction === TX_DIRECTION.INCOMING ? `Incoming` : `Gnosis`}
+            </div>
             <div className="date">
               {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
             </div>
