@@ -36,7 +36,7 @@ export const mainNavItems = [
     activeIcon: ActiveTransactionsIcon,
   },
   {
-    href: "https://discord.com/invite/UwRZjmMYVS",
+    href: "https://discord.gg/yHwg8DkBpf",
     name: "Support",
     icon: SupportIcon,
     activeIcon: ActiveSupportIcon,
