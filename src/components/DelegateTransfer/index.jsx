@@ -300,7 +300,7 @@ const DelegateTransfer = () => {
       />
       <InnerCard height="260px">
         <h2 className="text-center mb-4">
-          <Img src={MultisafeLogo} alt="multisafe" width="240" />
+          <Img src={MultisafeLogo} alt="multisafe" width="80" />
         </h2>
         <div className="mt-2 title">
           Your one stop for crypto treasury management.

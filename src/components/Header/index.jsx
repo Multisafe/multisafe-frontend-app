@@ -53,7 +53,7 @@ function PlainHeader() {
         <NavBarContent>
           <div className="d-flex justify-content-center align-items-center">
             <HeaderLink to="/" className="dashboard-link">
-              <Img src={MultisafeLogo} alt="multisafe" width="160" />
+              <Img src={MultisafeLogo} alt="multisafe" width="80" />
             </HeaderLink>
           </div>
           <NavGroup>

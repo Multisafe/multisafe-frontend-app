@@ -37,6 +37,7 @@ export default styled.div`
       visibility: visible;
       opacity: 1;
       height: auto;
+      z-index: 300;
     }
 
     .modify-team-option {

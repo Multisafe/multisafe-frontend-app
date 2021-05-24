@@ -27,7 +27,7 @@ export default styled.div`
     cursor: pointer;
   }
 
-  .parcel-logo {
+  .multisafe-logo {
     height: 10vh;
     display: flex;
     justify-content: center;

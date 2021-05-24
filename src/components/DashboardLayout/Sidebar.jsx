@@ -103,8 +103,8 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       <div className="close-btn" onClick={closeSidebar}>
         <FontAwesomeIcon icon={faTimesCircle} />
       </div>
-      <div className="parcel-logo">
-        <Img src={MultisafeLogo} alt="multisafe" width="100%" />
+      <div className="multisafe-logo">
+        <Img src={MultisafeLogo} alt="multisafe" width="80" />
       </div>
       <div className="settings-container">
         <div className="settings" onClick={toggleDropdown}>
