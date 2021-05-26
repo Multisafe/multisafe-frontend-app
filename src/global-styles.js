@@ -94,6 +94,7 @@ const GlobalStyle = createGlobalStyle`
     color: ${({ theme }) => theme.text};
     font-family: 'Avenir Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: normal;
+    overflow-x: hidden;
   }
 
   body.fontLoaded {

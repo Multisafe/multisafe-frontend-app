@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
@@ -7,7 +7,6 @@ import { show } from "redux-modal";
 import Button from "components/common/Button";
 import {
   Input,
-  ErrorMessage,
   TextArea,
   CurrencyInput,
   SelectToken,
@@ -60,9 +59,11 @@ import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/Transactio
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import ErrorText from "components/common/ErrorText";
-
+import DeleteSvg from "assets/icons/delete-bin.svg";
+import { Error } from "components/common/Form/styles";
 import { QuickTransferContainer } from "./styles";
+import Img from "components/common/Img";
+import ErrorText from "components/common/ErrorText";
 
 const transactionsKey = "transactions";
 const safeKey = "safe";
@@ -101,8 +102,15 @@ export default function QuickTransfer(props) {
   const { register, errors, handleSubmit, formState, control, watch } = useForm(
     {
       mode: "onChange",
+      defaultValues: {
+        receivers: [{ address: "", amount: "" }],
+      },
     }
   );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "receivers",
+  });
 
   const selectedToken = watch("token") && watch("token").value;
 
@@ -283,32 +291,38 @@ export default function QuickTransfer(props) {
     }
   }, [tokenList, tokensDropdown]);
 
+  const noOfPeoplePaid = useMemo(() => {
+    return payoutDetails && payoutDetails.length;
+  }, [payoutDetails]);
+
   useEffect(() => {
     if (metaTxHash && singleOwnerTransactionId) {
       handleHide();
       dispatch(
         show(TX_SUBMITTED_MODAL, {
           txHash: metaTxHash,
-          selectedCount: 1,
+          selectedCount: noOfPeoplePaid,
           transactionId: singleOwnerTransactionId,
         })
       );
     }
-  }, [dispatch, metaTxHash, singleOwnerTransactionId, handleHide]);
+  }, [
+    dispatch,
+    metaTxHash,
+    singleOwnerTransactionId,
+    handleHide,
+    noOfPeoplePaid,
+  ]);
 
   const onSubmit = async (values) => {
-    console.log({ selectedTokenDetails });
-    const payoutDetails = [
-      {
-        address: values.address,
-        salaryAmount: values.amount,
-        salaryToken: selectedTokenDetails.name,
-        description: values.description || "",
-        usd:
-          (selectedTokenDetails.usd / selectedTokenDetails.balance) *
-          values.amount,
-      },
-    ];
+    const payoutDetails = values.receivers.map(({ address, amount }) => ({
+      address,
+      salaryAmount: amount,
+      salaryToken: selectedTokenDetails.name,
+      description: values.description || "",
+      usd: selectedTokenDetails.usdConversionRate * amount,
+    }));
+
     setPayoutDetails(payoutDetails);
     await massPayout(
       payoutDetails,
@@ -321,23 +335,7 @@ export default function QuickTransfer(props) {
 
   const renderQuickTransfer = () => (
     <div>
-      <div className="title">Paying To</div>
-      <div className="mb-3">
-        <Input
-          type="text"
-          name="address"
-          register={register}
-          required={`Wallet Address is required`}
-          pattern={{
-            value: /^0x[a-fA-F0-9]{40}$/,
-            message: "Invalid Ethereum Address",
-          }}
-          placeholder="Wallet Address"
-        />
-        <ErrorMessage name="address" errors={errors} />
-      </div>
-
-      <div className="title mt-5">Paying From</div>
+      <div className="title">Paying From</div>
       <div className="mb-3">
         <SelectToken
           name="token"
@@ -352,46 +350,101 @@ export default function QuickTransfer(props) {
         />
       </div>
 
-      {selectedToken && (
-        <div className="mt-4">
-          <Controller
-            control={control}
-            name="amount"
-            rules={{
-              required: "Amount is required",
-              validate: (value) => {
-                if (value <= 0) return "Please check your input";
-                else if (
-                  selectedTokenDetails &&
-                  parseFloat(value) > parseFloat(selectedTokenDetails.balance)
-                )
-                  return "Insufficient balance";
+      <div className="title mt-5">Paying To</div>
+      {fields.map(({ id }, index) => (
+        <div key={id}>
+          <div className="details-row">
+            <Input
+              type="text"
+              name={`receivers[${index}].address`}
+              register={register}
+              required={`Wallet Address is required`}
+              pattern={{
+                value: /^0x[a-fA-F0-9]{40}$/,
+                message: "Invalid Ethereum Address",
+              }}
+              placeholder="Wallet Address"
+              style={{ width: "40rem" }}
+            />
 
-                return true;
-              },
-            }}
-            defaultValue=""
-            render={({ onChange, value }) => (
-              <CurrencyInput
-                type="number"
-                name="amount"
-                value={value}
-                onChange={onChange}
-                placeholder="0.00"
-                conversionRate={
-                  prices &&
-                  selectedTokenDetails &&
-                  prices[selectedTokenDetails.name]
-                }
-                tokenName={
-                  selectedTokenDetails ? selectedTokenDetails.name : ""
-                }
-              />
+            {selectedToken && (
+              <div>
+                <Controller
+                  control={control}
+                  name={`receivers[${index}].amount`}
+                  rules={{
+                    required: "Amount is required",
+                    validate: (value) => {
+                      if (value <= 0) return "Please check your input";
+                      else if (
+                        selectedTokenDetails &&
+                        parseFloat(value) >
+                          parseFloat(selectedTokenDetails.balance)
+                      )
+                        return "Insufficient balance";
+
+                      return true;
+                    },
+                  }}
+                  defaultValue=""
+                  render={({ onChange, value }) => (
+                    <CurrencyInput
+                      type="number"
+                      name={`receivers[${index}].amount`}
+                      value={value}
+                      onChange={onChange}
+                      placeholder="0.00"
+                      conversionRate={
+                        prices &&
+                        selectedTokenDetails &&
+                        prices[selectedTokenDetails.name]
+                      }
+                      tokenName={
+                        selectedTokenDetails ? selectedTokenDetails.name : ""
+                      }
+                    />
+                  )}
+                />
+              </div>
             )}
-          />
-          <ErrorMessage name="amount" errors={errors} />
+            {fields.length > 1 && index === fields.length - 1 && (
+              <Button
+                type="button"
+                iconOnly
+                onClick={() => remove(index)}
+                style={{ padding: "0 1rem" }}
+              >
+                <Img src={DeleteSvg} alt="remove" width="16" />
+              </Button>
+            )}
+          </div>
+          <div className="error-row">
+            {errors["receivers"] &&
+              errors["receivers"][index] &&
+              errors["receivers"][index].address && (
+                <Error>{errors["receivers"][index].address.message}</Error>
+              )}
+            {errors["receivers"] &&
+              errors["receivers"][index] &&
+              errors["receivers"][index].amount && (
+                <Error>{errors["receivers"][index].amount.message}</Error>
+              )}
+          </div>
         </div>
-      )}
+      ))}
+
+      <div>
+        <Button
+          type="button"
+          onClick={() => append({})}
+          className="px-3 py-2 secondary"
+        >
+          <span className="mr-2" style={{ fontSize: "2.4rem" }}>
+            +
+          </span>
+          <span>Add More</span>
+        </Button>
+      </div>
 
       <div className="title mt-5">Description (Optional)</div>
       <div>

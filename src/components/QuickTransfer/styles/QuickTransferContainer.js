@@ -26,6 +26,21 @@ export default styled.div`
     justify-content: center;
   }
 
+  .details-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .error-row {
+    display: flex;
+    align-items: center;
+    div {
+      width: 50%;
+    }
+    gap: 0 4rem;
+  }
+
   @media (max-width: 978px) {
     padding: 3rem 2rem;
     .outer-flex {
@@ -37,6 +52,11 @@ export default styled.div`
     .buttons {
       flex-wrap: wrap-reverse;
       grid-gap: 1rem;
+    }
+
+    .details-row,
+    .error-row {
+      flex-wrap: wrap;
     }
   }
 `;

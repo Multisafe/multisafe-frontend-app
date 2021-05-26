@@ -22,7 +22,6 @@ const MultiCurrencyInputField = ({
   onChange,
   value,
   tokenName,
-  selectedTokenDetails,
   ...rest
 }) => {
   const [conversionValue, setConversionValue] = useState("");
