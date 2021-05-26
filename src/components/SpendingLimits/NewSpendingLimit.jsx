@@ -61,6 +61,7 @@ import {
 import { SpendingLimitContainer } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
+import ErrorText from "components/common/ErrorText";
 
 const transactionsKey = "transactions";
 const safeKey = "safe";
@@ -458,9 +459,7 @@ export default function SpendingLimits(props) {
         </Button>
       </div>
 
-      {errorFromMetaTx && (
-        <div className="text-danger mt-3">{errorFromMetaTx}</div>
-      )}
+      {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
     </SpendingLimitContainer>
   );
 

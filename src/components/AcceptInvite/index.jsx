@@ -37,6 +37,7 @@ import {
   StepDetails,
   StepInfo,
 } from "components/Login/styles";
+import ErrorText from "components/common/ErrorText";
 
 const invitationKey = "invitation";
 
@@ -319,7 +320,7 @@ const AcceptInvite = () => {
         >
           Accept
         </Button>
-        {error && <p className="text-danger my-3">Error: {error}</p>}
+        {error && <ErrorText>{error}</ErrorText>}
       </StepDetails>
     );
   };
@@ -334,7 +335,7 @@ const AcceptInvite = () => {
       />
       <InnerCard>
         <h2 className="text-center">Invitation Accepted</h2>
-        <div className="mt-2 mb-5 text-center">
+        <div className="mt-2 mb-5 text-center subtitle">
           Great! Now, one of the owners will approve you
           <br />
           and you will be able to login to the Multisafe dashboard.

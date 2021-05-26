@@ -51,6 +51,7 @@ import { getDecryptedDetails } from "utils/encryption";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
+import ErrorText from "components/common/ErrorText";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -502,9 +503,9 @@ export default function MultiSigTransactions() {
       return (
         shouldShowConfirmSection && (
           <ConfirmSection className="d-flex justify-content-center align-items-center">
-            <div className="text-danger">
+            <ErrorText>
               You have some pending transactions. Please execute them first.
-            </div>
+            </ErrorText>
           </ConfirmSection>
         )
       );

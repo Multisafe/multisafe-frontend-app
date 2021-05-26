@@ -44,7 +44,7 @@ export const mainNavItems = [
   },
   {
     href: "https://docs.multisafe.finance/",
-    name: "Documentation",
+    name: "Docs",
     icon: DocsIcon,
     activeIcon: DocsIcon,
   },

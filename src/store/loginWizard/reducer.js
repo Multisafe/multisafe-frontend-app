@@ -18,7 +18,7 @@ export const initialState = {
   step: 0,
   form: {},
   loading: false,
-  safes: [],
+  safes: undefined,
   error: false,
   flow: "", // LOGIN or IMPORT,
   chosenSafeAddress: "",
@@ -64,6 +64,7 @@ const reducer = (state = initialState, action) =>
       case GET_SAFES_ERROR:
         draft.loading = false;
         draft.error = action.error;
+        draft.safes = [];
         break;
 
       case GET_SAFE_OWNERS:

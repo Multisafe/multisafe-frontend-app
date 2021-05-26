@@ -74,12 +74,7 @@ import {
   FLOWS as OWNER_FLOWS,
   organisationInfo,
 } from "store/register/resources";
-import {
-  FLOWS,
-  LOGIN_STEPS,
-  IMPORT_STEPS,
-  IMPORT_INDIVIDUAL_STEPS,
-} from "store/login/resources";
+import { FLOWS, LOGIN_STEPS, IMPORT_STEPS } from "store/login/resources";
 import OrganisationInfoModal, {
   MODAL_NAME as INFO_MODAL,
 } from "components/Register/InfoModal";
@@ -103,6 +98,8 @@ import {
   Safe,
   RetryText,
 } from "./styles";
+import ErrorText from "components/common/ErrorText";
+import { routeTemplates } from "constants/routes/templates";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -114,8 +111,6 @@ const getStepsByFlow = (flow) => {
       return IMPORT_STEPS;
     case FLOWS.LOGIN:
       return LOGIN_STEPS;
-    case FLOWS.IMPORT_INDIVIDUAL:
-      return IMPORT_INDIVIDUAL_STEPS;
     default:
       return LOGIN_STEPS;
   }
@@ -127,8 +122,6 @@ const getStepsCountByFlow = (flow) => {
       return Object.keys(IMPORT_STEPS).length - 1;
     case FLOWS.LOGIN:
       return Object.keys(LOGIN_STEPS).length - 1;
-    case FLOWS.IMPORT_INDIVIDUAL:
-      return Object.keys(IMPORT_INDIVIDUAL_STEPS).length - 1;
     default:
       return Object.keys(LOGIN_STEPS).length - 1;
   }
@@ -230,7 +223,7 @@ const Login = () => {
       dispatch(fetchSafes(account));
     }
     if (step === STEPS.TWO && account) {
-      if (flow === FLOWS.IMPORT || flow === FLOWS.IMPORT_INDIVIDUAL) {
+      if (flow === FLOWS.IMPORT) {
         dispatch(getSafes(account));
       } else {
         dispatch(getParcelSafes(account));
@@ -713,7 +706,7 @@ const Login = () => {
     const safeDetails = [];
 
     for (let i = 0; i < safes.length; i++) {
-      if (flow === FLOWS.IMPORT || flow === FLOWS.IMPORT_INDIVIDUAL) {
+      if (flow === FLOWS.IMPORT) {
         safeDetails.push({
           safe: safes[i],
           name: "Gnosis Safe User",
@@ -782,7 +775,7 @@ const Login = () => {
   };
 
   const handleRefetch = useCallback(() => {
-    if (flow === FLOWS.IMPORT || flow === FLOWS.IMPORT_INDIVIDUAL) {
+    if (flow === FLOWS.IMPORT) {
       dispatch(getSafes(account, 1)); // 1 => get safes from gnosis api
     } else {
       dispatch(getParcelSafes(account));
@@ -796,21 +789,55 @@ const Login = () => {
           <Loading color="primary" width="3rem" height="3rem" />
         </div>
       );
-    if (!safes.length)
+    if (safes && !safes.length) {
       return (
         <div className="text-center my-5">
-          <p className="mb-4">Oops, no safe found...</p>
-          <Button
-            to="/signup"
-            style={{ maxWidth: "20rem" }}
-            className="mx-auto mb-5"
-          >
-            Sign Up
-          </Button>
+          <p className="mb-4 subtitle">Oops, no safe found...</p>
+          {flow === FLOWS.IMPORT ? (
+            <div>
+              <p className="mb-4 subtitle">
+                If you have already imported your safe, simply Login. Or else,
+                Signup.
+              </p>
+
+              <div className="d-flex align-items-center justify-content-center mt-5">
+                <Button
+                  onClick={() => dispatch(chooseStep(STEPS.ZERO))}
+                  width="20rem"
+                  className="mr-3"
+                >
+                  Login
+                </Button>
+                <Button to={routeTemplates.signup} width="20rem">
+                  Sign Up
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <p className="mb-4 subtitle">
+                If you have an existing safe, simply Import. Or else, Signup.
+              </p>
+
+              <div className="d-flex align-items-center justify-content-center mt-5">
+                <Button
+                  onClick={() => dispatch(chooseStep(STEPS.ZERO))}
+                  width="20rem"
+                  className="mr-3"
+                >
+                  Import
+                </Button>
+                <Button to={routeTemplates.signup} width="20rem">
+                  Sign Up
+                </Button>
+              </div>
+            </div>
+          )}
 
           <RetryText onClick={handleRefetch}>Safe not loaded?</RetryText>
         </div>
       );
+    }
 
     return (
       <StepDetails>
@@ -944,9 +971,7 @@ const Login = () => {
         >
           <span>Complete Import</span>
         </Button>
-        {errorInRegister && (
-          <div className="text-danger ml-2 my-3">{errorInRegister}</div>
-        )}
+        {errorInRegister && <ErrorText>{errorInRegister}</ErrorText>}
       </StepDetails>
     );
   };

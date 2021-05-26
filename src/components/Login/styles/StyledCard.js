@@ -24,4 +24,14 @@ export default styled(Card)`
       color: #373737;
     }
   }
+
+  .subtitle {
+    font-size: 16px;
+    font-weight: 300;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.19;
+    letter-spacing: normal;
+    color: #373737;
+  }
 `;

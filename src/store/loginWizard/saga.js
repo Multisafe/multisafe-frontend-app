@@ -77,7 +77,7 @@ export function* fetchSafes(action) {
       // Fetch safes api will asynchronously call get safes
       // so that by the time the user reaches the select safe section
       // the safes are ready
-      yield put(getSafesSuccess([], "", result.log));
+      yield put(getSafesSuccess(undefined, "", result.log));
     }
   } catch (err) {
     yield put(getSafesError(err));

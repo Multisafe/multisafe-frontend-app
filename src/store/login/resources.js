@@ -11,7 +11,6 @@ export const STEPS = {
 export const FLOWS = {
   IMPORT: "IMPORT",
   LOGIN: "LOGIN",
-  IMPORT_INDIVIDUAL: "IMPORT_INDIVIDUAL",
 };
 
 export const ORGANISATION_TYPE = {
