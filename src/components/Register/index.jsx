@@ -450,11 +450,7 @@ const Register = () => {
                 ];
 
           body = {
-            name: cryptoUtils.encryptDataUsingEncryptionKey(
-              formData.name,
-              encryptionKey,
-              organisationType
-            ),
+            name: formData.name,
             referralId: formData.referralId,
             safeAddress: proxy,
             createdBy: account,

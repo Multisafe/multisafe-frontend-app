@@ -50,7 +50,7 @@ import Img from "components/common/Img";
 import CompanyPng from "assets/images/register/company.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
-import { getDecryptedDetails, getPublicKey } from "utils/encryption";
+import { getPublicKey } from "utils/encryption";
 
 import { MESSAGE_TO_SIGN } from "constants/index";
 import loginSaga from "store/login/saga";
@@ -352,11 +352,7 @@ const Login = () => {
       }
 
       const body = {
-        name: cryptoUtils.encryptDataUsingEncryptionKey(
-          formData.name,
-          encryptionKey,
-          organisationType
-        ),
+        name: formData.name,
         safeAddress: chosenSafeAddress,
         createdBy: account,
         owners: encryptedOwners,
@@ -697,7 +693,7 @@ const Login = () => {
     }
   };
 
-  const getSafeDetails = useCallback(async () => {
+  const getSafeDetails = useCallback(() => {
     if (!safes || !safes.length) {
       setSafeDetails([]);
       return;
@@ -715,20 +711,9 @@ const Login = () => {
           createdBy,
         });
       } else {
-        const encryptionKey = await getEncryptionKey(
-          safes[i].encryptionKeyData,
-          sign,
-          safes[i].organisationType
-        );
-
         safeDetails.push({
           safe: safes[i].safeAddress,
-          name: getDecryptedDetails(
-            safes[i].name,
-            encryptionKey,
-            safes[i].organisationType,
-            false
-          ),
+          name: safes[i].name,
           balance: "0",
           encryptionKeyData: safes[i].encryptionKeyData,
           createdBy,
@@ -739,7 +724,7 @@ const Login = () => {
     setSafeDetails(safeDetails);
 
     return safeDetails;
-  }, [createdBy, flow, safes, sign]);
+  }, [createdBy, flow, safes]);
 
   useEffect(() => {
     if (step === STEPS.TWO) {
