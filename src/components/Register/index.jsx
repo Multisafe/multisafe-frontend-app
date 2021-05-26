@@ -517,11 +517,7 @@ const Register = () => {
     const threshold = formData.threshold ? parseInt(formData.threshold) : 1;
 
     const body = {
-      name: cryptoUtils.encryptDataUsingEncryptionKey(
-        formData.name,
-        encryptionKey,
-        organisationType
-      ),
+      name: formData.name,
       safeAddress: safeAddress,
       referralId: "",
       createdBy: account,
