@@ -24,6 +24,7 @@ export default styled.div`
   .buttons {
     display: flex;
     justify-content: center;
+    gap: 1rem;
   }
 
   .details-row {
@@ -45,13 +46,12 @@ export default styled.div`
     padding: 3rem 2rem;
     .outer-flex {
       flex-direction: column;
-      grid-gap: 2rem;
+      gap: 2rem;
       align-items: flex-start;
     }
 
     .buttons {
       flex-wrap: wrap-reverse;
-      grid-gap: 1rem;
     }
 
     .details-row,

@@ -104,7 +104,12 @@ const MultiCurrencyInputField = ({
         </div>
         <div>
           <div className="convert">
-            <Button iconOnly type="button" onClick={handleToggleSwap}>
+            <Button
+              iconOnly
+              type="button"
+              onClick={handleToggleSwap}
+              style={{ padding: "1rem" }}
+            >
               <Img src={SwapIcon} alt="swap" />
             </Button>
           </div>

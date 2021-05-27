@@ -81,6 +81,8 @@ export default function QuickTransfer(props) {
   const [payoutDetails, setPayoutDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
+  const [insufficientBalanceError, setInsufficientBalanceError] =
+    useState(false);
 
   const { txHash, loadingTx, massPayout, txData } = useMassPayout({
     tokenDetails: selectedTokenDetails,
@@ -113,6 +115,7 @@ export default function QuickTransfer(props) {
   });
 
   const selectedToken = watch("token") && watch("token").value;
+  const watchedRecievers = watch("receivers");
 
   const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -157,6 +160,23 @@ export default function QuickTransfer(props) {
       dispatch(clearTransactionHash());
     }
   }, [dispatch, txHashFromMetaTx]);
+
+  useEffect(() => {
+    if (watchedRecievers && selectedTokenDetails) {
+      const totalAmountInToken = watchedRecievers.reduce(
+        (total, { amount }) => {
+          return amount ? total + Number(amount) : total;
+        },
+        0
+      );
+
+      if (totalAmountInToken > selectedTokenDetails.balance) {
+        setInsufficientBalanceError(true);
+      } else {
+        setInsufficientBalanceError(false);
+      }
+    }
+  }, [watchedRecievers, selectedTokenDetails]);
 
   const totalAmountToPay = useMemo(() => {
     if (payoutDetails && payoutDetails.length > 0) {
@@ -352,7 +372,7 @@ export default function QuickTransfer(props) {
 
       <div className="title mt-5">Paying To</div>
       {fields.map(({ id }, index) => (
-        <div key={id}>
+        <div key={id} className="mb-4">
           <div className="details-row">
             <Input
               type="text"
@@ -364,7 +384,7 @@ export default function QuickTransfer(props) {
                 message: "Invalid Ethereum Address",
               }}
               placeholder="Wallet Address"
-              style={{ width: "40rem" }}
+              style={{ maxWidth: "40rem" }}
             />
 
             {selectedToken && (
@@ -376,12 +396,6 @@ export default function QuickTransfer(props) {
                     required: "Amount is required",
                     validate: (value) => {
                       if (value <= 0) return "Please check your input";
-                      else if (
-                        selectedTokenDetails &&
-                        parseFloat(value) >
-                          parseFloat(selectedTokenDetails.balance)
-                      )
-                        return "Insufficient balance";
 
                       return true;
                     },
@@ -407,16 +421,18 @@ export default function QuickTransfer(props) {
                 />
               </div>
             )}
-            {fields.length > 1 && index === fields.length - 1 && (
-              <Button
-                type="button"
-                iconOnly
-                onClick={() => remove(index)}
-                style={{ padding: "0 1rem" }}
-              >
-                <Img src={DeleteSvg} alt="remove" width="16" />
-              </Button>
-            )}
+            <div style={{ minWidth: "2rem" }}>
+              {fields.length > 1 && index === fields.length - 1 && (
+                <Button
+                  type="button"
+                  iconOnly
+                  onClick={() => remove(index)}
+                  className="p-0"
+                >
+                  <Img src={DeleteSvg} alt="remove" width="16" />
+                </Button>
+              )}
+            </div>
           </div>
           <div className="error-row">
             {errors["receivers"] &&
@@ -437,14 +453,20 @@ export default function QuickTransfer(props) {
         <Button
           type="button"
           onClick={() => append({})}
-          className="px-3 py-2 secondary"
+          className="secondary"
+          width="12rem"
+          style={{ fontSize: "1.2rem" }}
         >
-          <span className="mr-2" style={{ fontSize: "2.4rem" }}>
-            +
-          </span>
-          <span>Add More</span>
+          <span className="mr-2">+</span>
+          Add More
         </Button>
       </div>
+
+      {insufficientBalanceError && (
+        <div className="mt-3">
+          <Error>Insufficient Balance</Error>
+        </div>
+      )}
 
       <div className="title mt-5">Description (Optional)</div>
       <div>
@@ -460,21 +482,22 @@ export default function QuickTransfer(props) {
       <div className="buttons mt-5">
         <Button
           type="button"
-          width="16rem"
-          className="secondary-2 mr-3"
+          className="secondary-2"
           onClick={handleHide}
+          style={{ minWidth: "16rem" }}
         >
           Close
         </Button>
         <Button
           type="submit"
-          style={{ minWidth: "18rem" }}
+          style={{ minWidth: "16rem" }}
           disabled={
             !formState.isValid ||
             loadingTx ||
             addingMultisigTx ||
             addingSingleOwnerTx ||
-            loadingSafeDetails
+            loadingSafeDetails ||
+            insufficientBalanceError
           }
           loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
         >

@@ -323,7 +323,13 @@ export default function useMassPayout(props = {}) {
             }
           );
           const estimateResult = await estimateResponse.json();
-          const { safeTxGas, baseGas, lastUsedNonce } = estimateResult;
+          const { safeTxGas, baseGas, lastUsedNonce, exception } =
+            estimateResult;
+          if (exception) {
+            throw new Error(
+              "Gas estimation error. The transaction might fail."
+            );
+          }
           const gasLimit = Number(safeTxGas) + Number(baseGas) + 21000; // giving a little higher gas limit just in case
           const nonce = lastUsedNonce === null ? 0 : lastUsedNonce + 1;
           if (!isMultiOwner) {
