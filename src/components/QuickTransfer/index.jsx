@@ -384,7 +384,7 @@ export default function QuickTransfer(props) {
                 message: "Invalid Ethereum Address",
               }}
               placeholder="Wallet Address"
-              style={{ maxWidth: "40rem" }}
+              style={{ maxWidth: "32rem" }}
             />
 
             {selectedToken && (
