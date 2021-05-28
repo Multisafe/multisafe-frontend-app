@@ -19,6 +19,7 @@ import { MODAL_NAME as DELETE_PEOPLE_MODAL } from "./DeletePeopleModal";
 import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "./AddSinglePeopleModal";
 import { constructLabel } from "utils/tokens";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import { formatNumber } from "utils/number-helpers";
 
 const sidebarStyles = {
   bmCrossButton: {
@@ -142,7 +143,7 @@ function PeopleDetailsSidebar() {
           <div className="title">Pay Amount</div>
           <div className="subtitle">
             <div>
-              {salaryAmount} {salaryToken}
+              {formatNumber(salaryAmount, 5)} {salaryToken}
             </div>
           </div>
         </div>

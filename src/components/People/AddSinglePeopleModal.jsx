@@ -62,6 +62,7 @@ function AddSinglePeopleModal(props) {
     defaultValues: defaultValues ? defaultValues : {},
   });
   const hasTeamChanged = watch("team");
+  const watchedToken = watch("token");
 
   const [teamsDropdown, setTeamsDropdown] = useState([]);
 
@@ -241,16 +242,15 @@ function AddSinglePeopleModal(props) {
         </div>
 
         <div className="mt-5">
-          <div className="title">Currency and Amount</div>
+          <div className="title">Amount and Currency</div>
           <div className="wrapper">
-            <div className="mr-3">
+            <div>
               <Controller
                 control={control}
                 name="amount"
                 rules={{
-                  required: "Amount is required",
                   validate: (value) => {
-                    if (value <= 0) return "Please check your input";
+                    if (value < 0) return "Please check your input";
                     return true;
                   },
                 }}
@@ -260,17 +260,13 @@ function AddSinglePeopleModal(props) {
                     type="number"
                     name="amount"
                     step="0.001"
-                    // register={register}
-                    required={"Amount is required"}
-                    placeholder={"Enter Amount"}
+                    placeholder={"Enter Amount (Optional)"}
                     style={{ width: "20rem" }}
                     onChange={onChange}
                     value={value}
                   />
                 )}
               />
-
-              <ErrorMessage name="amount" errors={errors} />
             </div>
             <div>
               <SelectToken
@@ -287,6 +283,7 @@ function AddSinglePeopleModal(props) {
               />
             </div>
           </div>
+          <ErrorMessage name="amount" errors={errors} />
         </div>
 
         {errorInAdd && <ErrorText>{errorInAdd}</ErrorText>}
@@ -297,7 +294,7 @@ function AddSinglePeopleModal(props) {
             type="submit"
             width="16rem"
             loading={adding || updating}
-            disabled={adding || updating}
+            disabled={adding || updating || !watchedToken}
           >
             {isEditMode ? `Save` : `Add Person`}
           </Button>

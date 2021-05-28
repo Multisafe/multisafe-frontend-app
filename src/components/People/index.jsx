@@ -307,10 +307,14 @@ export default function People() {
       </td>
       <td style={{ width: "20%" }}>{departmentName}</td>
       <td style={{ width: "20%" }}>
-        <TokenImg token={salaryToken} />
-        <span>
-          {formatNumber(salaryAmount, 5)} {salaryToken}
-        </span>
+        {salaryAmount && (
+          <React.Fragment>
+            <TokenImg token={salaryToken} />
+            <span>
+              {formatNumber(salaryAmount, 5)} {salaryToken}
+            </span>
+          </React.Fragment>
+        )}
       </td>
       <td style={{ width: "35%" }}>{address}</td>
     </tr>

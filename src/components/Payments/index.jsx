@@ -5,6 +5,7 @@ import { show } from "redux-modal";
 import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Big from "big.js";
+import { isEqual } from "lodash";
 
 import Button from "components/common/Button";
 import viewTeamsReducer from "store/view-teams/reducer";
@@ -101,6 +102,7 @@ export default function Payments(props) {
 
   const selectedTeamId = watch("team") && watch("team").value;
   const selectedToken = watch("token") && watch("token").value;
+  const watchedAmounts = watch("amounts");
 
   const { account } = useActiveWeb3React();
 
@@ -115,6 +117,7 @@ export default function Payments(props) {
   const [tokensDropdown, setTokensDropdown] = useState([]);
   const [teamsDropdown, setTeamsDropdown] = useState();
   const [tokenError, setTokenError] = useState(false);
+  const [amountError, setAmountError] = useState(false);
   const { loadingTx, txHash, recievers, massPayout, txData, setTxData } =
     useMassPayout({ tokenDetails: selectedTokenDetails });
 
@@ -306,6 +309,30 @@ export default function Payments(props) {
       );
     }
   }, [selectedToken, existingTokenDetails]);
+
+  useEffect(() => {
+    if (watchedAmounts) {
+      const newSelectedRows = selectedRows.map(({ index, ...rest }) => ({
+        ...rest,
+        salaryAmount: watchedAmounts[index],
+        index,
+      }));
+      if (!isEqual(selectedRows, newSelectedRows)) {
+        setSelectedRows(newSelectedRows);
+      }
+    }
+  }, [watchedAmounts, selectedRows]);
+
+  useEffect(() => {
+    if (
+      selectedRows &&
+      selectedRows.some(({ salaryAmount }) => salaryAmount <= 0)
+    ) {
+      setAmountError(true);
+    } else {
+      setAmountError(false);
+    }
+  }, [selectedRows]);
 
   const totalAmountToPay = useMemo(() => {
     if (!selectedRows.length) return 0;
@@ -518,9 +545,10 @@ export default function Payments(props) {
       setChecked(new Array(people.length).fill(true));
       setIsCheckedAll(true);
       if (people && people.length > 0) {
-        const allRows = people.map(({ data, peopleId }) => ({
+        const allRows = people.map(({ data, peopleId, ...rest }) => ({
           peopleId,
           ...getDecryptedDetails(data, encryptionKey, organisationType),
+          ...rest,
         }));
         setSelectedRows(allRows);
       }
@@ -615,6 +643,7 @@ export default function Payments(props) {
                   salaryAmount,
                   address,
                   peopleId,
+                  index: idx,
                   ...rest,
                 };
                 return (
@@ -644,9 +673,19 @@ export default function Payments(props) {
                     </td>
                     <td style={{ width: "25%" }}>
                       <TokenImg token={salaryToken} />
-                      <span>
-                        {formatNumber(salaryAmount)} {salaryToken}{" "}
+                      <span className="mr-2">
+                        <Input
+                          type="number"
+                          name={`amounts[${idx}]`}
+                          register={register}
+                          style={{ width: "7rem" }}
+                          placeholder="0"
+                          defaultValue={salaryAmount}
+                          onClick={(e) => e.stopPropagation()}
+                          step=".0001"
+                        />
                       </span>
+                      <span>{salaryToken}</span>
                     </td>
                     <td style={{ width: "45%" }}>{address}</td>
                   </tr>
@@ -727,7 +766,8 @@ export default function Payments(props) {
               addingTx ||
               loadingSafeDetails ||
               loadingTokens ||
-              !selectedCount
+              !selectedCount ||
+              amountError
             }
           >
             {threshold > 1 ? `Create Transaction` : `Pay Now`}
@@ -791,6 +831,9 @@ export default function Payments(props) {
           <div>
             {!loadingTx && errorFromMetaTx && (
               <ErrorText>{errorFromMetaTx}</ErrorText>
+            )}
+            {amountError && (
+              <ErrorText>Please check if the amounts are correct</ErrorText>
             )}
           </div>
           {renderPaymentSummary()}

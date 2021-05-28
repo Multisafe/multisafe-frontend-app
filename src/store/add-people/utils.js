@@ -26,7 +26,7 @@ export const isValidField = (fieldName, value, tokens) => {
       return true;
     }
     case FIELD_NAMES.AMOUNT: {
-      if (!value || isNaN(Number(value))) return false;
+      if (value < 0 || isNaN(Number(value))) return false;
       return true;
     }
     case FIELD_NAMES.TOKEN: {

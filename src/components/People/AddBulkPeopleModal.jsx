@@ -226,7 +226,11 @@ function AddBulkPeopleModal(props) {
           className={`${invalidPayDetails && "text-red"}`}
           style={{ width: "22%" }}
         >
-          {formatNumber(salaryAmount, 5)} {salaryToken}
+          {salaryAmount && (
+            <span>
+              {formatNumber(salaryAmount, 5)} {salaryToken}
+            </span>
+          )}
         </td>
         <td
           className={`${invalidAddress && "text-red"}`}
@@ -241,7 +245,7 @@ function AddBulkPeopleModal(props) {
   const renderUploadScreen = () => {
     return (
       <UploadScreen>
-        <div className="text">Add multiples teammates quickly.</div>
+        <div className="text">Add multiple people quickly.</div>
         <div className="my-4">
           <Dropzone onDrop={handleDrop} style={{ minHeight: "16rem" }} />
         </div>
@@ -267,8 +271,12 @@ function AddBulkPeopleModal(props) {
           <div className="title">Some points to remember</div>
           <ul className="points">
             <li>Please make sure the file extension is .csv</li>
-            <li>Every field except last name is a required field</li>
+            <li>
+              Last name and amount are optional fields. Rest of the fields are
+              required
+            </li>
             <li>Every team should have only one currency associated with it</li>
+            <li>You can edit these details later at anytime</li>
           </ul>
         </div>
       </UploadScreen>
