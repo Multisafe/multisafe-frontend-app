@@ -31,10 +31,10 @@ export function initOnboard(subscriptions) {
           walletName: "ledger",
           rpcUrl,
         },
-        {
-          walletName: "walletConnect",
-          infuraKey: process.env.REACT_APP_INFURA_TOKEN,
-        },
+        // {
+        //   walletName: "walletConnect",
+        //   infuraKey: process.env.REACT_APP_INFURA_TOKEN,
+        // },
         { walletName: "coinbase" },
         { walletName: "fortmatic", apiKey: "pk_test_886ADCAB855632AA" },
       ],

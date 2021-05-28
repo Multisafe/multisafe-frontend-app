@@ -111,6 +111,7 @@ const reducer = (state = initialState, action) =>
 
       case GET_TOKENS_ERROR:
         draft.loading = false;
+        draft.tokenList = defaultTokenDetails;
         draft.error = action.error;
         break;
 

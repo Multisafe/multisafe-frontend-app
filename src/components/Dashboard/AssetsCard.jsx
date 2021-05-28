@@ -60,7 +60,7 @@ function AssetsCard() {
   const isAssetsEmpty = useMemo(() => {
     return (
       tokenList &&
-      tokenList.length > 0 &&
+      tokenList.length >= 0 &&
       tokenList.every(({ balance, usd }) => !balance && !usd)
     );
   }, [tokenList]);
