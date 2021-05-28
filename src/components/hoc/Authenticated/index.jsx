@@ -18,7 +18,6 @@ export default function Authenticated({ children }) {
   useEffect(() => {
     setTimeout(() => {
       if (!authRef.current) {
-        console.log("logging out");
         if (onboard) {
           onboard.walletReset();
         }
