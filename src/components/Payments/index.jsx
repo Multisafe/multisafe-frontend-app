@@ -351,7 +351,7 @@ export default function Payments(props) {
         0
       );
 
-      return new Big(totalAmount).round(2).toNumber();
+      return totalAmount ? new Big(totalAmount).round(2).toNumber() : 0;
     }
   }, [prices, selectedRows]);
 
@@ -545,9 +545,10 @@ export default function Payments(props) {
       setChecked(new Array(people.length).fill(true));
       setIsCheckedAll(true);
       if (people && people.length > 0) {
-        const allRows = people.map(({ data, peopleId, ...rest }) => ({
+        const allRows = people.map(({ data, peopleId, ...rest }, index) => ({
           peopleId,
           ...getDecryptedDetails(data, encryptionKey, organisationType),
+          index,
           ...rest,
         }));
         setSelectedRows(allRows);
@@ -558,6 +559,8 @@ export default function Payments(props) {
   const handleChecked = (teammateDetails, index) => {
     const newChecked = [...checked];
     newChecked[index] = !checked[index];
+    setChecked(newChecked);
+
     if (
       newChecked.length === people.length &&
       newChecked.every((check) => check)
@@ -566,7 +569,6 @@ export default function Payments(props) {
     } else {
       setIsCheckedAll(false);
     }
-    setChecked(newChecked);
     // if checked, push the details, provided it doesn't already exist in the array
     // else remove the unselected details from the array
     if (

@@ -89,23 +89,6 @@ function AddSinglePeopleModal(props) {
   const errorInUpdate = useSelector(makeSelectErrorInUpdate());
 
   useEffect(() => {
-    if (
-      hasTeamChanged &&
-      hasTeamChanged.value &&
-      teamIdToDetailsMap[hasTeamChanged.value]
-    ) {
-      const { tokenInfo } = teamIdToDetailsMap[hasTeamChanged.value];
-      setValue("token", {
-        value: tokenInfo.symbol,
-        label: constructLabel({
-          token: tokenInfo.symbol,
-          imgUrl: tokenInfo.logoURI,
-        }),
-      });
-    }
-  }, [hasTeamChanged, setValue, teamIdToDetailsMap]);
-
-  useEffect(() => {
     let dropdownList = [];
     if (allTeams && allTeams.length > 0) {
       dropdownList = allTeams.map(({ departmentId, name }) => ({
@@ -215,14 +198,38 @@ function AddSinglePeopleModal(props) {
           <div className="title">Choose Team</div>
           <div className="d-flex">
             <div className="mr-3">
-              <Select
+              <Controller
                 name="team"
                 control={control}
-                required={`Team is required`}
-                width="20rem"
-                options={teamsDropdown}
-                placeholder={`Select Team...`}
-                defaultValue={null}
+                rules={{ required: true }}
+                render={({ onChange, value }) => (
+                  <Select
+                    name="team"
+                    required={`Team is required`}
+                    width="20rem"
+                    control={control}
+                    options={teamsDropdown}
+                    placeholder={`Select Team...`}
+                    defaultValue={null}
+                    value={value}
+                    onChange={(event) => {
+                      const { value } = event;
+                      if (value && teamIdToDetailsMap[value]) {
+                        const { tokenInfo } = teamIdToDetailsMap[value];
+                        console.log({ tokenInfo });
+                        const tokenDropdownValue = {
+                          value: tokenInfo.symbol,
+                          label: constructLabel({
+                            token: tokenInfo.symbol,
+                            imgUrl: tokenInfo.logoURI,
+                          }),
+                        };
+                        setValue("token", tokenDropdownValue);
+                      }
+                      onChange(event);
+                    }}
+                  />
+                )}
               />
             </div>
             {hasTeamChanged && !hasTeamChanged.value && (
