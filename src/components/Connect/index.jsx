@@ -10,6 +10,7 @@ const ConnectToWallet = ({ className, ...rest }) => {
 
   const handleClick = async () => {
     if (onboard) {
+      onboard.walletReset();
       setLoading(true);
       try {
         const walletSelected = await onboard.walletSelect();

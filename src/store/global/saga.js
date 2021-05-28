@@ -16,6 +16,7 @@ function* fetchSafeInfo(action) {
     const result = yield call(request, requestURL, options);
     yield put(getSafeInfoSuccess({ ...result }));
     if (!result.isOwner) {
+      console.log("Not an owner. logging out...");
       yield put(logoutUser());
     }
   } catch (err) {
