@@ -12,6 +12,7 @@ import request from "utils/request";
 // import { makeSelectUsername } from "containers/HomePage/selectors";
 import { registerEndpoint, createMetaTxEndpoint } from "constants/endpoints";
 import { networkId } from "constants/networks";
+import { routeGenerators } from "constants/routes/generators";
 
 export function* registerUser(action) {
   const requestURL = registerEndpoint;
@@ -33,7 +34,14 @@ export function* registerUser(action) {
       // set auth token
       localStorage.setItem("token", result.access_token);
       yield put(registerUserSuccess(result.transactionHash, result.log));
-      if (action.redirect) yield put(push("/dashboard"));
+      if (action.redirect)
+        yield put(
+          push(
+            routeGenerators.dashboard.root({
+              safeAddress: action.body.safeAddress,
+            })
+          )
+        );
     }
   } catch (err) {
     yield put(registerUserError(err.message));
