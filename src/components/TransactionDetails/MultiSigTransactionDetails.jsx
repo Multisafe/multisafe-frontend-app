@@ -554,7 +554,7 @@ export default function MultiSigTransactions() {
         </div>
       );
 
-    if (!transactionDetails || !encryptionKey) return null;
+    if (!transactionDetails) return null;
 
     const {
       // transactionHash,

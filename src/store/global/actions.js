@@ -1,5 +1,5 @@
 import {
-  SET_OWNER_ADDRESS,
+  SET_SAFE_ADDRESS,
   SET_OWNER_NAME,
   SET_OWNER_DETAILS,
   SET_OWNERS_AND_THRESHOLD,
@@ -8,6 +8,7 @@ import {
   GET_SAFE_INFO,
   GET_SAFE_INFO_SUCCESS,
   GET_SAFE_INFO_ERROR,
+  SET_READ_ONLY,
 } from "./action-types";
 
 export function setOwnerName(name) {
@@ -17,10 +18,10 @@ export function setOwnerName(name) {
   };
 }
 
-export function setOwnerAddress(address) {
+export function setSafeAddress(safeAddress) {
   return {
-    type: SET_OWNER_ADDRESS,
-    address,
+    type: SET_SAFE_ADDRESS,
+    safeAddress,
   };
 }
 
@@ -45,6 +46,13 @@ export function setOrganisationType(organisationType) {
   return {
     type: SET_ORGANISATION_TYPE,
     organisationType,
+  };
+}
+
+export function setReadOnly(isReadOnly) {
+  return {
+    type: SET_READ_ONLY,
+    isReadOnly,
   };
 }
 

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   makeSelectOwnerName,
   makeSelectOwnerSafeAddress,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import Img from "components/common/Img";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
@@ -52,6 +53,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
   const isSetupComplete = useSelector(makeSelectIsSetupComplete());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const ownerName = useSelector(makeSelectOwnerName());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   const logout = () => {
     if (onboard) {
@@ -152,6 +154,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           </div>
         </div>
       </div>
+      {isReadOnly && <div>Read Only Mode</div>}
 
       <div className="menu-items">
         {mainNavItems.map((navItem) => renderNavItem(navItem))}

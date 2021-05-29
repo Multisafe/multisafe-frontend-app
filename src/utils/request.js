@@ -17,11 +17,15 @@ function checkStatus(response) {
 
 export default function request(url, options) {
   const token = localStorage.getItem("token");
+  const authHeader = token
+    ? { Authorization: `Bearer ${token}` }
+    : { "x-api-key": "multisafe_apikey_b13ee9c2-4567-40d2-9ace-5cdce98c9e41" };
+
   const finalOptions = {
     ...options,
     headers: {
       "content-type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
+      ...authHeader,
       ...options.headers,
     },
   };

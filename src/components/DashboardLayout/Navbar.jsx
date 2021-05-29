@@ -42,8 +42,7 @@ export default function Navbar({ openSidebar }) {
   useInjectSaga({ key: notificationsKey, saga: notificationsSaga });
 
   useEffect(() => {
-    if (ownerSafeAddress && account)
-      dispatch(getNotifications(ownerSafeAddress, account));
+    if (ownerSafeAddress) dispatch(getNotifications(ownerSafeAddress, account));
   }, [dispatch, ownerSafeAddress, account]);
 
   const toggleNotifications = () => {
@@ -62,13 +61,15 @@ export default function Navbar({ openSidebar }) {
         <FontAwesomeIcon icon={faBars} />
       </div>
       <div className="nav-container">
-        <ConnectedAccount>
-          <Img src={ConnectedIcon} alt="connected" className="mr-2" />
-          <div>
-            <div className="connector">{connector && connector.name}</div>
-            <div className="text">{minifyAddress(account)}</div>
-          </div>
-        </ConnectedAccount>
+        {account && (
+          <ConnectedAccount>
+            <Img src={ConnectedIcon} alt="connected" className="mr-2" />
+            <div>
+              <div className="connector">{connector && connector.name}</div>
+              <div className="text">{minifyAddress(account)}</div>
+            </div>
+          </ConnectedAccount>
+        )}
         <NewTransferDropdown />
         {/* <CurrencyDropdown /> */}
         <NotificationBell onClick={toggleNotifications} hasSeen={hasSeen}>

@@ -1,4 +1,5 @@
 import { cryptoUtils } from "parcel-sdk";
+import { ORGANISATION_TYPE } from "store/login/resources";
 
 export const getPublicKey = (sign) => {
   const publicKey = cryptoUtils.getPublicKey(sign);
@@ -12,7 +13,10 @@ export const getDecryptedDetails = (
   organisationType,
   parse = true
 ) => {
-  if (!encryptionKey || !data || organisationType === undefined) return "";
+  if (!data || organisationType === undefined) return "";
+  if (organisationType === ORGANISATION_TYPE.PRIVATE && !encryptionKey)
+    return "";
+
   try {
     const decryptedData = cryptoUtils.decryptDataUsingEncryptionKey(
       data,

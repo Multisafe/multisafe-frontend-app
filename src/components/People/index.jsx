@@ -153,7 +153,7 @@ export default function People() {
   }, [allTeams]);
 
   useEffect(() => {
-    if (encryptedPeople && encryptionKey && allTeams && !loadingPeople) {
+    if (encryptedPeople && allTeams && !loadingPeople) {
       const sortedDecryptedPeople = encryptedPeople
         .map(({ data, ...rest }) => {
           const { firstName, lastName, salaryAmount, salaryToken, address } =

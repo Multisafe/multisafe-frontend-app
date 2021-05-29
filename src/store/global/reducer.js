@@ -1,11 +1,12 @@
 import produce from "immer";
 import {
   SET_OWNER_NAME,
-  SET_OWNER_ADDRESS,
+  SET_SAFE_ADDRESS,
   SET_OWNER_DETAILS,
   SET_OWNERS_AND_THRESHOLD,
   CLEAR_GLOBAL_STATE,
   SET_ORGANISATION_TYPE,
+  SET_READ_ONLY,
   GET_SAFE_INFO,
   GET_SAFE_INFO_SUCCESS,
   GET_SAFE_INFO_ERROR,
@@ -21,6 +22,7 @@ export const initialState = {
   isOwner: true,
   loading: false,
   error: false,
+  isReadOnly: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -31,8 +33,8 @@ const reducer = (state = initialState, action) =>
         draft.ownerName = action.name;
         break;
 
-      case SET_OWNER_ADDRESS:
-        draft.ownerSafeAddress = action.address;
+      case SET_SAFE_ADDRESS:
+        draft.ownerSafeAddress = action.safeAddress;
         break;
 
       case SET_OWNER_DETAILS:
@@ -48,6 +50,10 @@ const reducer = (state = initialState, action) =>
 
       case SET_ORGANISATION_TYPE:
         draft.organisationType = action.organisationType;
+        break;
+
+      case SET_READ_ONLY:
+        draft.isReadOnly = action.isReadOnly;
         break;
 
       case CLEAR_GLOBAL_STATE:
@@ -69,6 +75,7 @@ const reducer = (state = initialState, action) =>
         draft.threshold = action.threshold;
         draft.isOwner = action.isOwner;
         draft.organisationType = action.organisationType;
+        draft.ownerName = action.name;
         break;
       case GET_SAFE_INFO_ERROR:
         draft.loading = false;

@@ -66,9 +66,9 @@ import {
   INDIVIDUAL_REGISTER_STEPS,
   DAO_REGISTER_STEPS,
   FLOWS,
-  ORGANISATION_TYPE,
   organisationInfo,
 } from "store/register/resources";
+import { ORGANISATION_TYPE } from "store/login/resources";
 import {
   OrganisationCards,
   OrganisationCard,

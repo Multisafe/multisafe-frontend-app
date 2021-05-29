@@ -79,11 +79,6 @@ export const FLOWS = {
   DAO: "DAO",
 };
 
-export const ORGANISATION_TYPE = {
-  PRIVATE: "0",
-  PUBLIC: "1",
-};
-
 export const STEPS = {
   ZERO: 0,
   ONE: 1,

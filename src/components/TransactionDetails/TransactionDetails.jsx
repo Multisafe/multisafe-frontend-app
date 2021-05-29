@@ -59,7 +59,7 @@ export default function TransactionDetails() {
         </div>
       );
 
-    if (!transactionDetails || !encryptionKey) return null;
+    if (!transactionDetails) return null;
 
     const { to, transactionMode, tokenCurrency } = transactionDetails;
     const paidTeammates = getDecryptedDetails(

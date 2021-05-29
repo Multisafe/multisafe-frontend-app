@@ -70,11 +70,15 @@ import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import WelcomeImage from "assets/images/welcome-new.png";
 import {
   STEPS,
-  ORGANISATION_TYPE,
   FLOWS as OWNER_FLOWS,
   organisationInfo,
 } from "store/register/resources";
-import { FLOWS, LOGIN_STEPS, IMPORT_STEPS } from "store/login/resources";
+import {
+  FLOWS,
+  LOGIN_STEPS,
+  IMPORT_STEPS,
+  ORGANISATION_TYPE,
+} from "store/login/resources";
 import OrganisationInfoModal, {
   MODAL_NAME as INFO_MODAL,
 } from "components/Register/InfoModal";
