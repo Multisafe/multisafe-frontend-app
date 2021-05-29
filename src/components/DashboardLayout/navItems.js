@@ -9,29 +9,29 @@ import ActivePeopleIcon from "assets/icons/sidebar/people-icon-active.svg";
 import ActiveAssetsIcon from "assets/icons/sidebar/assets-icon-active.svg";
 import ActiveTransactionsIcon from "assets/icons/sidebar/transactions-icon-active.svg";
 import ActiveSupportIcon from "assets/icons/sidebar/support-icon-active.svg";
-import { routeTemplates } from "constants/routes/templates";
+import { routeGenerators } from "constants/routes/generators";
 
 export const mainNavItems = [
   {
-    link: routeTemplates.dashboard.root,
+    link: routeGenerators.dashboard.root,
     name: "Home",
     icon: HomeIcon,
     activeIcon: ActiveHomeIcon,
   },
   {
-    link: routeTemplates.dashboard.people.root,
+    link: routeGenerators.dashboard.people,
     name: "People",
     icon: PeopleIcon,
     activeIcon: ActivePeopleIcon,
   },
   {
-    link: routeTemplates.dashboard.assets,
+    link: routeGenerators.dashboard.assets,
     name: "Assets",
     icon: AssetsIcon,
     activeIcon: ActiveAssetsIcon,
   },
   {
-    link: routeTemplates.dashboard.transactions,
+    link: routeGenerators.dashboard.transactions,
     name: "Transactions",
     icon: TransactionsIcon,
     activeIcon: ActiveTransactionsIcon,

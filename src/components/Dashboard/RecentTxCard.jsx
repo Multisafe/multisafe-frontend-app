@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { Link } from "react-router-dom";
 
 import { useLocalStorage } from "hooks";
-import { routeTemplates } from "constants/routes/templates";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
 import { viewTransactions } from "store/transactions/actions";
@@ -40,6 +39,7 @@ import Avatar from "components/common/Avatar";
 import Button from "components/common/Button";
 import TokenImg from "components/common/TokenImg";
 import { formatNumber } from "utils/number-helpers";
+import { routeGenerators } from "constants/routes/generators";
 
 const transactionsKey = "transactions";
 const viewPeopleKey = "viewPeople";
@@ -67,16 +67,16 @@ function RecentTxCard() {
   const transactions = useSelector(makeSelectTransactions());
   const loadingTransactions = useSelector(makeSelectLoadingTransactions());
   const loadingPeople = useSelector(makeSelectLoadingPeople());
-  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationType = useSelector(makeSelectOrganisationType());
   const people = useSelector(makeSelectPeople());
 
   useEffect(() => {
-    if (ownerSafeAddress) {
-      dispatch(viewTransactions(ownerSafeAddress));
-      dispatch(getAllPeople(ownerSafeAddress));
+    if (safeAddress) {
+      dispatch(viewTransactions(safeAddress));
+      dispatch(getAllPeople(safeAddress));
     }
-  }, [dispatch, ownerSafeAddress]);
+  }, [dispatch, safeAddress]);
 
   useEffect(() => {
     if (!loadingTransactions && !loadingPeople) {
@@ -115,17 +115,17 @@ function RecentTxCard() {
   }, [state]);
 
   const linkByState = useMemo(() => {
-    switch (state) {
+    switch (state && safeAddress) {
       case STATES.EMPTY_STATE:
         return null;
       case STATES.PEOPLE_ADDED:
-        return routeTemplates.dashboard.people.root;
+        return routeGenerators.dashboard.people({ safeAddress });
       case STATES.TRANSACTION_EXECUTED:
-        return routeTemplates.dashboard.transactions;
+        return routeGenerators.dashboard.transactions({ safeAddress });
       default:
         return null;
     }
-  }, [state]);
+  }, [state, safeAddress]);
 
   const renderStatusText = (status) => {
     switch (status) {
@@ -289,7 +289,7 @@ function RecentTxCard() {
           <Img src={AddPeopleIcon} alt="add-people" />
           <div className="text mt-4">Start by adding people and teams</div>
           <Button
-            to={routeTemplates.dashboard.people.root}
+            to={routeGenerators.dashboard.people({ safeAddress })}
             width="16rem"
             className="mt-4"
           >

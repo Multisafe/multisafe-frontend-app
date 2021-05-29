@@ -1,18 +1,24 @@
 import React, { forwardRef } from "react";
 import { format } from "date-fns";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import StatusText from "./StatusText";
 import IncomingIcon from "assets/icons/dashboard/incoming.svg";
 import OutgoingIcon from "assets/icons/dashboard/outgoing.svg";
-import { TxRow } from "./styles";
 import Img from "components/common/Img";
 import { TX_DIRECTION } from "store/transactions/constants";
 import { formatNumber } from "utils/number-helpers";
 import TransactionName from "./TransactionName";
+import { routeGenerators } from "constants/routes/generators";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+
+import { TxRow } from "./styles";
 
 const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
+
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const history = useHistory();
 
@@ -29,7 +35,14 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
 
   return (
     <TxRow
-      onClick={() => history.push(`/dashboard/transactions/${transactionId}`)}
+      onClick={() =>
+        history.push(
+          routeGenerators.dashboard.transactionById({
+            safeAddress,
+            transactionId,
+          })
+        )
+      }
       ref={ref}
     >
       <td style={{ width: "35%" }}>

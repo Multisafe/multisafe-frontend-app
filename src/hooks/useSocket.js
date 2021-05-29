@@ -12,6 +12,7 @@ import { getMultisigTransactionByIdSuccess } from "store/multisig/actions";
 import { getNotificationsSuccess } from "store/notifications/actions";
 import { getTokensSuccess } from "store/tokens/actions";
 import Button from "components/common/Button";
+import { routeGenerators } from "constants/routes/generators";
 
 export default function useSocket(props) {
   const { safeAddress, isMultiOwner } = props;
@@ -21,7 +22,7 @@ export default function useSocket(props) {
 
   const showTxConfirmedToast = useCallback(
     (message) => {
-      if (!isMultiOwner) {
+      if (!isMultiOwner && safeAddress) {
         toaster.dismiss();
         showToast(
           <div className="d-flex align-items-center">
@@ -38,7 +39,10 @@ export default function useSocket(props) {
               <Button
                 iconOnly
                 style={{ minHeight: "0" }}
-                to={`/dashboard/transactions/${message.transaction[0].transactionId}`}
+                to={routeGenerators.dashboard.transactionById({
+                  safeAddress,
+                  transactionId: message.transaction[0].transactionId,
+                })}
                 className="p-0 mt-2"
               >
                 View Transaction
@@ -68,7 +72,10 @@ export default function useSocket(props) {
               <Button
                 iconOnly
                 style={{ minHeight: "0" }}
-                to={`/dashboard/transactions/${message.transaction.txDetails.transactionId}`}
+                to={routeGenerators.dashboard.transactionById({
+                  safeAddress,
+                  transactionId: message.transaction.txDetails.transactionId,
+                })}
                 className="p-0 mt-2"
               >
                 View Transaction
@@ -87,7 +94,7 @@ export default function useSocket(props) {
         );
       }
     },
-    [dispatch, isMultiOwner]
+    [dispatch, isMultiOwner, safeAddress]
   );
 
   useEffect(() => {

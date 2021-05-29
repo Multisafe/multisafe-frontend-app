@@ -13,11 +13,12 @@ import request from "utils/request";
 // import { makeSelectUsername } from "containers/HomePage/selectors";
 import { loginEndpoint } from "constants/endpoints";
 import { networkId } from "constants/networks";
+import { routeGenerators } from "constants/routes/generators";
 
-export function* loginUser(action) {
+export function* loginUser({ safeAddress }) {
   // Select username from store
   // const username = yield select(makeSelectUsername());
-  const requestURL = `${loginEndpoint}?safeAddress=${action.safeAddress}&networkId=${networkId}`;
+  const requestURL = `${loginEndpoint}?safeAddress=${safeAddress}&networkId=${networkId}`;
   const options = {
     method: "GET",
   };
@@ -42,7 +43,7 @@ export function* loginUser(action) {
       yield put(setOwnersAndThreshold(decoded.owners, decoded.threshold));
       yield put(setOrganisationType(decoded.organisationType));
       yield put(loginUserSuccess(result.transactionHash, result.log));
-      yield put(push("/dashboard"));
+      yield put(push(routeGenerators.dashboard.root({ safeAddress })));
     }
   } catch (err) {
     yield put(loginUserError(err));

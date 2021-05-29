@@ -26,10 +26,11 @@ import { makeSelectIsSetupComplete } from "store/invitation/selectors";
 import CopyButton from "components/common/Copy";
 import EtherscanLink from "components/common/EtherscanLink";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
-import { DashboardSidebar } from "./styles";
-import { routeTemplates } from "constants/routes/templates";
 import { useActiveWeb3React, useDropdown } from "hooks";
 import { minifyAddress } from "components/common/Web3Utils";
+import { routeGenerators } from "constants/routes/generators";
+
+import { DashboardSidebar } from "./styles";
 
 const logoutKey = "logout";
 const invitationKey = "invitation";
@@ -67,11 +68,11 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
 
   const renderNavItem = ({ link, href, name, icon, activeIcon }) => {
     if (link) {
-      const active = location.pathname === link;
+      const active = location.pathname === link({ safeAddress });
       return (
         <Link
           key={name}
-          to={link}
+          to={link({ safeAddress })}
           className={`menu-item ${active && "menu-item-highlighted"}`}
         >
           <div className="icon">
@@ -134,7 +135,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               </div>
             </div>
             <Link
-              to={routeTemplates.dashboard.settings}
+              to={routeGenerators.dashboard.settings({ safeAddress })}
               className="settings-option"
             >
               <div className="icon">
@@ -157,7 +158,10 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       </div>
 
       {isSetupComplete === false && (
-        <Link to={routeTemplates.dashboard.settings} className="invite-owners">
+        <Link
+          to={routeGenerators.dashboard.settings({ safeAddress })}
+          className="invite-owners"
+        >
           <div className="icon">
             <Img src={InviteIcon} alt="invite" />
           </div>

@@ -12,8 +12,19 @@ export function generatePath(template, params = {}) {
 
 export const routeGenerators = {
   dashboard: {
-    transactionById: ({ transactionId }) =>
+    root: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.root, { safeAddress }),
+    people: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.people, { safeAddress }),
+    settings: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.settings, { safeAddress }),
+    assets: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.assets, { safeAddress }),
+    transactions: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.transactions, { safeAddress }),
+    transactionById: ({ safeAddress, transactionId }) =>
       generatePath(routeTemplates.dashboard.transactionById, {
+        safeAddress,
         transactionId,
       }),
   },

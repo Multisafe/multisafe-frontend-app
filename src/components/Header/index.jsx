@@ -8,6 +8,7 @@ import { useActiveWeb3React } from "hooks";
 import Button from "components/common/Button";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import Img from "components/common/Img";
+import { routeTemplates } from "constants/routes/templates";
 
 function PlainHeader() {
   const location = useLocation();
@@ -52,7 +53,7 @@ function PlainHeader() {
       <NavBar white>
         <NavBarContent>
           <div className="d-flex justify-content-center align-items-center">
-            <HeaderLink to="/" className="dashboard-link">
+            <HeaderLink to={routeTemplates.root} className="dashboard-link">
               <Img src={MultisafeLogo} alt="multisafe" width="80" />
             </HeaderLink>
           </div>

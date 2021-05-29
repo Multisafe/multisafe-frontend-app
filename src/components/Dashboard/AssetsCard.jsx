@@ -4,7 +4,6 @@ import { Doughnut } from "react-chartjs-2";
 import { useSelector } from "react-redux";
 
 import Loading from "components/common/Loading";
-import { routeTemplates } from "constants/routes/templates";
 import Img from "components/common/Img";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
@@ -12,9 +11,11 @@ import {
 } from "store/tokens/selectors";
 import { defaultTokenDetails } from "constants/index";
 import NoAssetsImg from "assets/icons/dashboard/empty/assets.svg";
+import { formatNumber } from "utils/number-helpers";
+import { routeGenerators } from "constants/routes/generators";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 import { Assets } from "./styles";
-import { formatNumber } from "utils/number-helpers";
 
 const chartColors = [
   "#F1C40F",
@@ -31,6 +32,7 @@ function AssetsCard() {
   // Selectors
   const tokenList = useSelector(makeSelectTokenList());
   const loading = useSelector(makeSelectLoadingTokens());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const [doughnutData, setDoughnutData] = useState();
 
@@ -81,7 +83,10 @@ function AssetsCard() {
     <Assets>
       <div className="title-container">
         <div className="title">Assets</div>
-        <Link to={routeTemplates.dashboard.assets} className="view">
+        <Link
+          to={routeGenerators.dashboard.assets({ safeAddress })}
+          className="view"
+        >
           View All
         </Link>
       </div>

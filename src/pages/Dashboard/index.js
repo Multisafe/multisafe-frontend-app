@@ -49,7 +49,7 @@ const DashboardPage = () => {
           />
           <Route
             exact
-            path={routeTemplates.dashboard.people.root}
+            path={routeTemplates.dashboard.people}
             component={People}
           />
           <Route

@@ -3,7 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import formatDistance from "date-fns/formatDistance";
 
-import { makeSelectOrganisationType } from "store/global/selectors";
+import {
+  makeSelectOrganisationType,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
 import { useLocalStorage } from "hooks";
 import notificationsSaga from "store/notifications/saga";
 import notificationsReducer from "store/notifications/reducer";
@@ -26,6 +29,7 @@ import { getDecryptedDetails } from "utils/encryption";
 import NoNotificationImg from "assets/icons/dashboard/empty/notification.svg";
 
 import { NotificationMenu } from "./styles";
+import { routeGenerators } from "constants/routes/generators";
 
 const notificationsKey = "notifications";
 
@@ -65,6 +69,7 @@ function NotificationSidebar() {
   const notifications = useSelector(makeSelectNotifications());
   const loadingNotifications = useSelector(makeSelectLoading());
   const isNotificationOpen = useSelector(makeSelectIsNotificationOpen());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const dispatch = useDispatch();
 
@@ -130,7 +135,10 @@ function NotificationSidebar() {
             </div>
           </div>
           <Link
-            to={`/dashboard/transactions/${transactionId}`}
+            to={routeGenerators.dashboard.transactionById({
+              safeAddress,
+              transactionId,
+            })}
             className="notification-view"
           >
             <div onClick={closeNotifications}>View</div>

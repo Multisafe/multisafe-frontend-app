@@ -1,14 +1,15 @@
 import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
+import { useSelector } from "react-redux";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import Button from "components/common/Button";
 import { TransactionUrl } from "components/common/Web3Utils";
 import TransactionSubmittedPng from "assets/images/transaction-submitted.png";
 import { TxSubmittedContainer } from "./styles";
-import { routeTemplates } from "constants/routes/templates";
 import { routeGenerators } from "constants/routes/generators";
 import Img from "components/common/Img";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 export const MODAL_NAME = "tx-submitted-modal";
 
@@ -21,6 +22,8 @@ function TransactionSubmittedModal(props) {
     clearTxHash,
     transactionId,
   } = props;
+
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   return (
     <Modal isOpen={show} toggle={handleHide}>
@@ -48,7 +51,7 @@ function TransactionSubmittedModal(props) {
                 width="18rem"
                 type="button"
                 className="secondary"
-                to={routeTemplates.dashboard.root}
+                to={routeGenerators.dashboard.root({ safeAddress })}
                 onClick={handleHide}
               >
                 Back to Dashboard
@@ -59,6 +62,7 @@ function TransactionSubmittedModal(props) {
                 width="18rem"
                 type="button"
                 to={routeGenerators.dashboard.transactionById({
+                  safeAddress,
                   transactionId,
                 })}
                 onClick={() => {

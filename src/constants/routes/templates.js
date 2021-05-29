@@ -6,16 +6,11 @@ export const routeTemplates = {
   delegateTransfer: "/delegate-transfer",
 
   dashboard: {
-    root: "/dashboard",
-    people: {
-      root: "/dashboard/people",
-    },
-    department: {
-      new: "/dashboard/department/new",
-    },
-    settings: "/dashboard/settings",
-    transactions: "/dashboard/transactions",
-    transactionById: "/dashboard/transactions/:transactionId",
-    assets: "/dashboard/assets",
+    root: "/dashboard/:safeAddress",
+    people: "/dashboard/:safeAddress/people",
+    settings: "/dashboard/:safeAddress/settings",
+    assets: "/dashboard/:safeAddress/assets",
+    transactions: "/dashboard/:safeAddress/transactions",
+    transactionById: "/dashboard/:safeAddress/transactions/:transactionId",
   },
 };

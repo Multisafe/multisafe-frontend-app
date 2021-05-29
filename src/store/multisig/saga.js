@@ -71,7 +71,13 @@ function* getMultisigTransactionById(action) {
     const result = yield call(request, requestURL, options);
 
     if (result.flag === 400) {
-      yield put(push("/dashboard/404")); // not found
+      yield put(
+        push(
+          `${routeGenerators.dashboard.root({
+            safeAddress: action.safeAddress,
+          })}/404`
+        )
+      ); // not found
     } else {
       yield put(
         getMultisigTransactionByIdSuccess(
