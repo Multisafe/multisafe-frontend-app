@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import Dashboard from "components/Dashboard/loadable";
@@ -30,18 +30,19 @@ const DashboardPage = () => {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const { account } = useActiveWeb3React();
   useSocket({ isMultiOwner, safeAddress });
+  const params = useParams();
 
   useInjectSaga({ key: globalKey, saga: globalSaga });
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (safeAddress && account) {
-      dispatch(getSafeInfo(safeAddress, account));
-    } else if (safeAddress) {
-      dispatch(getSafeInfo(safeAddress, addresses.ZERO_ADDRESS));
+    if (params && params.safeAddress && account) {
+      dispatch(getSafeInfo(params.safeAddress, account));
+    } else if (params && params.safeAddress) {
+      dispatch(getSafeInfo(params.safeAddress, addresses.ZERO_ADDRESS));
     }
-  }, [dispatch, safeAddress, account]);
+  }, [dispatch, params, account]);
 
   return (
     <Authenticated>

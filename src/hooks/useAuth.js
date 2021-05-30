@@ -35,7 +35,7 @@ export default function useAuth() {
       setIsAuthenticated(true);
       dispatch(setReadOnly(false));
     } else {
-      if (organisationType === ORGANISATION_TYPE.PRIVATE) {
+      if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
         // No READ ONLY for private org
         setIsAuthenticated(false);
         dispatch(setReadOnly(false));
