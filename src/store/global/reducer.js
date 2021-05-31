@@ -76,6 +76,7 @@ const reducer = (state = initialState, action) =>
         draft.isOwner = action.isOwner;
         draft.organisationType = action.organisationType;
         draft.ownerName = action.name;
+        draft.ownerSafeAddress = action.safeAddress;
         break;
       case GET_SAFE_INFO_ERROR:
         draft.loading = false;

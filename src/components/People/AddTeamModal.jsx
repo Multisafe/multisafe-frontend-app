@@ -10,6 +10,7 @@ import { Input, SelectToken, ErrorMessage } from "components/common/Form";
 import Button from "components/common/Button";
 import { Information } from "components/Register/styles";
 import {
+  makeSelectIsReadOnly,
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
@@ -74,6 +75,7 @@ function AddTeamModal(props) {
   const updating = useSelector(makeSelectUpdating());
   const errorInAdd = useSelector(makeSelectErrorInAdd());
   const errorInUpdate = useSelector(makeSelectErrorInUpdate());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     if (isEditMode && safeAddress && departmentId) {
@@ -95,12 +97,8 @@ function AddTeamModal(props) {
       if (isEditMode) {
         const peopleDetails = peopleByTeam.map(
           ({ data, departmentName, ...rest }) => {
-            const {
-              firstName,
-              lastName,
-              salaryAmount,
-              address,
-            } = getDecryptedDetails(data, encryptionKey, organisationType);
+            const { firstName, lastName, salaryAmount, address } =
+              getDecryptedDetails(data, encryptionKey, organisationType);
             const encryptedData = cryptoUtils.encryptDataUsingEncryptionKey(
               JSON.stringify({
                 firstName,
@@ -172,7 +170,7 @@ function AddTeamModal(props) {
             type="submit"
             width="16rem"
             loading={adding || updating}
-            disabled={!formState.isValid || adding || updating}
+            disabled={!formState.isValid || adding || updating || isReadOnly}
           >
             {isEditMode ? `Save` : `Add Team`}
           </Button>

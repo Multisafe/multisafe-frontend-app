@@ -87,7 +87,7 @@ export default function Summary({ txDetails, paidTeammates }) {
         <div className="detail-card">
           <div className="detail-title">Created Date & Time</div>
           <div className="detail-subtitle">
-            {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+            {createdOn && format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
           </div>
         </div>
 

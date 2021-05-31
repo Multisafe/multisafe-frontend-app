@@ -21,7 +21,6 @@ import { useActiveWeb3React, useSocket } from "hooks";
 import { getSafeInfo } from "store/global/actions";
 import { useInjectSaga } from "utils/injectSaga";
 import globalSaga from "store/global/saga";
-import addresses from "constants/addresses";
 
 const globalKey = "global";
 
@@ -37,11 +36,13 @@ const DashboardPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (params && params.safeAddress && account) {
+    if (!safeAddress || safeAddress !== params.safeAddress) {
       dispatch(getSafeInfo(params.safeAddress, account));
-    } else if (params && params.safeAddress) {
-      dispatch(getSafeInfo(params.safeAddress, addresses.ZERO_ADDRESS));
     }
+  }, [dispatch, params, account, safeAddress]);
+
+  useEffect(() => {
+    dispatch(getSafeInfo(params.safeAddress, account));
   }, [dispatch, params, account]);
 
   return (

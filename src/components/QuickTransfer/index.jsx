@@ -48,6 +48,7 @@ import {
   makeSelectIsMultiOwner,
   makeSelectThreshold,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import {
@@ -137,6 +138,7 @@ export default function QuickTransfer(props) {
   );
   const organisationType = useSelector(makeSelectOrganisationType());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -497,7 +499,8 @@ export default function QuickTransfer(props) {
             addingMultisigTx ||
             addingSingleOwnerTx ||
             loadingSafeDetails ||
-            insufficientBalanceError
+            insufficientBalanceError ||
+            isReadOnly
           }
           loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
         >

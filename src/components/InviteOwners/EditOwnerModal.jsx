@@ -11,6 +11,7 @@ import { EditContainer } from "./styles";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -41,6 +42,7 @@ function EditOwnerModal(props) {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const updating = useSelector(makeSelectUpdating());
   const organisationType = useSelector(makeSelectOrganisationType());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   const onSubmit = async (values) => {
     dispatch(
@@ -82,7 +84,7 @@ function EditOwnerModal(props) {
               <Button
                 width="16rem"
                 loading={updating}
-                disabled={!formState.isValid || updating}
+                disabled={!formState.isValid || updating || isReadOnly}
                 type="submit"
               >
                 Save

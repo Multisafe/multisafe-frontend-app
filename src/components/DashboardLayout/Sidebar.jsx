@@ -109,6 +109,8 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       <div className="multisafe-logo">
         <Img src={MultisafeLogo} alt="multisafe" width="80" />
       </div>
+      {isReadOnly && <div className="read-only">Read Only</div>}
+
       <div className="settings-container">
         <div className="settings" onClick={toggleDropdown}>
           <div>
@@ -126,7 +128,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
                 <CopyButton
                   id="address"
                   tooltip="address"
-                  value={safeAddress}
+                  value={safeAddress || ""}
                   className="mr-3"
                 />
                 <EtherscanLink
@@ -154,7 +156,6 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           </div>
         </div>
       </div>
-      {isReadOnly && <div>Read Only Mode</div>}
 
       <div className="menu-items">
         {mainNavItems.map((navItem) => renderNavItem(navItem))}

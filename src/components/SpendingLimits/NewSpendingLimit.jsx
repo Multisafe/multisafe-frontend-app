@@ -51,6 +51,7 @@ import {
   makeSelectIsMultiOwner,
   makeSelectThreshold,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import {
@@ -149,6 +150,7 @@ export default function SpendingLimits(props) {
   const organisationType = useSelector(makeSelectOrganisationType());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const icons = useSelector(makeSelectTokenIcons());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -326,7 +328,6 @@ export default function SpendingLimits(props) {
   }, [dispatch, metaTxHash, singleOwnerTransactionId, handleHide]);
 
   const onSubmit = async (values) => {
-    console.log({ values });
     const spendingLimitDetails = [
       {
         address: values.address,
@@ -451,7 +452,8 @@ export default function SpendingLimits(props) {
             loadingTx ||
             addingMultisigTx ||
             addingSingleOwnerTx ||
-            loadingSafeDetails
+            loadingSafeDetails ||
+            isReadOnly
           }
           loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
         >

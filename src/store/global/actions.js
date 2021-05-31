@@ -76,6 +76,7 @@ export function getSafeInfoSuccess({
   threshold,
   isOwner,
   organisationType,
+  safeAddress,
 }) {
   return {
     type: GET_SAFE_INFO_SUCCESS,
@@ -84,6 +85,7 @@ export function getSafeInfoSuccess({
     threshold,
     isOwner,
     organisationType,
+    safeAddress,
   };
 }
 

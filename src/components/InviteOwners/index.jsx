@@ -29,6 +29,7 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectThreshold,
   makeSelectIsOrganisationPrivate,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import Loading from "components/common/Loading";
 import { useActiveWeb3React } from "hooks";
@@ -63,6 +64,7 @@ export default function InviteOwners() {
   useInjectSaga({ key: invitationKey, saga: invitationSaga });
 
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
   const threshold = useSelector(makeSelectThreshold());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const createdBy = useSelector(makeSelectCreatedBy());
@@ -164,7 +166,7 @@ export default function InviteOwners() {
           className="invite-status"
           style={{ minHeight: "0" }}
           onClick={() => inviteOwner(owner)}
-          disabled={creatingInvitation}
+          disabled={creatingInvitation || isReadOnly}
           loading={creatingInvitation}
         >
           Invite
@@ -212,6 +214,7 @@ export default function InviteOwners() {
         <div
           className="approve-status"
           onClick={() => approveOwner(owner, invitationDetails)}
+          disabled={isReadOnly}
         >
           Approve
         </div>

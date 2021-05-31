@@ -115,7 +115,7 @@ function RecentTxCard() {
   }, [state]);
 
   const linkByState = useMemo(() => {
-    switch (state && safeAddress) {
+    switch (state) {
       case STATES.EMPTY_STATE:
         return null;
       case STATES.PEOPLE_ADDED:
@@ -239,7 +239,7 @@ function RecentTxCard() {
               )}
             </div>
             <div className="bottom">
-              {format(new Date(createdOn), "dd MMM yyyy")}
+              {createdOn && format(new Date(createdOn), "dd MMM yyyy")}
             </div>
           </div>
         </div>

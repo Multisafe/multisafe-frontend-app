@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -13,7 +12,6 @@ import { getTokenList, getTokens } from "store/tokens/actions";
 import tokensReducer from "store/tokens/reducer";
 import tokensSaga from "store/tokens/saga";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { setSafeAddress } from "store/global/actions";
 
 import { LayoutContainer, Main } from "./styles";
 
@@ -29,15 +27,8 @@ export default function DashboardLayout({ children }) {
   useInjectSaga({ key: tokensKey, saga: tokensSaga });
 
   const dispatch = useDispatch();
-  const params = useParams();
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-
-  useEffect(() => {
-    if (!safeAddress && params && params.safeAddress) {
-      dispatch(setSafeAddress(params.safeAddress));
-    }
-  }, [dispatch, safeAddress, params]);
 
   useEffect(() => {
     if (safeAddress) {

@@ -1,7 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  padding: 1rem 3.6rem 4rem;
+  padding: 1rem 3.6rem 8rem;
 
   .title {
     font-size: 2rem;

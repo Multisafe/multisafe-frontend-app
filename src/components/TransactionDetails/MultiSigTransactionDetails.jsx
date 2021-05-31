@@ -36,6 +36,7 @@ import {
   makeSelectThreshold,
   makeSelectSafeOwners,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import Loading from "components/common/Loading";
 import { Stepper, StepCircle } from "components/common/Stepper";
@@ -106,6 +107,7 @@ export default function MultiSigTransactions() {
   const executionAllowed = useSelector(makeSelectMultisigExecutionAllowed());
   const multisigTransactionId = useSelector(makeSelectMultisigTransactionId());
   const organisationType = useSelector(makeSelectOrganisationType());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -520,7 +522,7 @@ export default function MultiSigTransactions() {
                 type="button"
                 width="15rem"
                 onClick={approveTransaction}
-                disabled={loadingTx || updating}
+                disabled={loadingTx || updating || isReadOnly}
                 loading={approving}
               >
                 Approve
@@ -531,7 +533,7 @@ export default function MultiSigTransactions() {
                 type="button"
                 width="15rem"
                 onClick={rejectTransaction}
-                disabled={loadingTx || updating}
+                disabled={loadingTx || updating || isReadOnly}
                 loading={rejecting}
               >
                 Reject

@@ -65,6 +65,7 @@ import {
   makeSelectThreshold,
   makeSelectIsMultiOwner,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import {
   Table,
@@ -167,6 +168,7 @@ export default function Payments(props) {
   const organisationType = useSelector(makeSelectOrganisationType());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     if (txHashFromMetaTx) {
@@ -769,7 +771,8 @@ export default function Payments(props) {
               loadingSafeDetails ||
               loadingTokens ||
               !selectedCount ||
-              amountError
+              amountError ||
+              isReadOnly
             }
           >
             {threshold > 1 ? `Create Transaction` : `Pay Now`}

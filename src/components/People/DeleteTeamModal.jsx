@@ -9,7 +9,10 @@ import {
 } from "components/common/Modal/SimpleModal";
 import Button from "components/common/Button";
 import { deleteTeam } from "store/modify-team/actions";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import {
+  makeSelectIsReadOnly,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
 import { makeSelectUpdating } from "store/modify-team/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -29,6 +32,7 @@ function DeleteTeamModal(props) {
   const dispatch = useDispatch();
 
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
   const updating = useSelector(makeSelectUpdating());
 
   const confirmDelete = () => {
@@ -58,7 +62,7 @@ function DeleteTeamModal(props) {
               width="16rem"
               onClick={confirmDelete}
               loading={updating}
-              disabled={updating}
+              disabled={updating || isReadOnly}
             >
               Yes
             </Button>

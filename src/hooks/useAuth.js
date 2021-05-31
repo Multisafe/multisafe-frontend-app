@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { hashMessage } from "@ethersproject/hash";
-import { recoverAddress } from "@ethersproject/transactions";
-import { MESSAGE_TO_SIGN } from "constants/index";
+import jwt_decode from "jwt-decode";
+import { useParams } from "react-router-dom";
+
 import { useLocalStorage, useActiveWeb3React } from "./index";
 import { setReadOnly } from "store/global/actions";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { ORGANISATION_TYPE } from "store/login/resources";
+import { logoutUser } from "store/logout/actions";
 
 export default function useAuth() {
   const [sign] = useLocalStorage("SIGNATURE");
@@ -15,37 +16,46 @@ export default function useAuth() {
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const dispatch = useDispatch();
+  const params = useParams();
 
-  const checkValidSignature = (sign, account) => {
-    if (!sign || !account) return false;
-    const msgHash = hashMessage(MESSAGE_TO_SIGN);
-    const recoveredAddress = recoverAddress(msgHash, sign);
-    if (recoveredAddress === account) {
-      return true;
-    }
-    return false;
-  };
+  const checkValidAccessToken = useCallback(
+    (accessToken) => {
+      if (!accessToken || !params) return false;
+      try {
+        const decoded = jwt_decode(accessToken);
+        if (decoded.safeAddress !== params.safeAddress) return false;
+        return true;
+      } catch (err) {
+        console.error(err);
+        dispatch(logoutUser());
+        return false;
+      }
+    },
+    [params, dispatch]
+  );
 
   useEffect(() => {
-    const isAuthenticated = checkValidSignature(sign, account);
-
-    const accessToken = localStorage.getItem("token");
-    if (isAuthenticated && accessToken) {
-      // READ and WRITE
-      setIsAuthenticated(true);
-      dispatch(setReadOnly(false));
-    } else {
-      if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
-        // No READ ONLY for private org
-        setIsAuthenticated(false);
+    if (organisationType !== undefined) {
+      const accessToken = localStorage.getItem("token");
+      const isAuthenticated = checkValidAccessToken(accessToken);
+      if (isAuthenticated) {
+        // READ and WRITE
+        setIsAuthenticated(true);
         dispatch(setReadOnly(false));
       } else {
-        // READ ONLY for DAOs
-        setIsAuthenticated(false);
-        dispatch(setReadOnly(true));
+        if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
+          // No READ ONLY for private org
+          setIsAuthenticated(false);
+          dispatch(setReadOnly(false));
+          dispatch(logoutUser());
+        } else {
+          // READ ONLY for DAOs
+          setIsAuthenticated(false);
+          dispatch(setReadOnly(true));
+        }
       }
     }
-  }, [sign, account, dispatch, organisationType]);
+  }, [sign, account, dispatch, organisationType, checkValidAccessToken]);
 
   return isAuthenticated;
 }

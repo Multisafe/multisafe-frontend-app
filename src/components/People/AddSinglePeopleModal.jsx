@@ -17,6 +17,7 @@ import Button from "components/common/Button";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import {
   makeSelectTokensDropdown,
@@ -87,6 +88,7 @@ function AddSinglePeopleModal(props) {
   const organisationType = useSelector(makeSelectOrganisationType());
   const errorInAdd = useSelector(makeSelectErrorInAdd());
   const errorInUpdate = useSelector(makeSelectErrorInUpdate());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     let dropdownList = [];
@@ -216,7 +218,6 @@ function AddSinglePeopleModal(props) {
                       const { value } = event;
                       if (value && teamIdToDetailsMap[value]) {
                         const { tokenInfo } = teamIdToDetailsMap[value];
-                        console.log({ tokenInfo });
                         const tokenDropdownValue = {
                           value: tokenInfo.symbol,
                           label: constructLabel({
@@ -301,7 +302,7 @@ function AddSinglePeopleModal(props) {
             type="submit"
             width="16rem"
             loading={adding || updating}
-            disabled={adding || updating || !watchedToken}
+            disabled={adding || updating || !watchedToken || isReadOnly}
           >
             {isEditMode ? `Save` : `Add Person`}
           </Button>

@@ -7,6 +7,7 @@ import { UploadScreen, UploadStatus } from "./styles";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectOrganisationType,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -54,6 +55,7 @@ function AddBulkPeopleModal(props) {
   const loading = useSelector(makeSelectLoading());
   const organisationType = useSelector(makeSelectOrganisationType());
   const tokenDetails = useSelector(makeSelectTokensDetails());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
     if (addBulkSuccess && success) {
@@ -355,7 +357,7 @@ function AddBulkPeopleModal(props) {
               type="button"
               width="15rem"
               onClick={onAddBulkTeammates}
-              disabled={loading || invalidCsvData}
+              disabled={loading || invalidCsvData || isReadOnly}
               loading={loading}
             >
               Confirm
