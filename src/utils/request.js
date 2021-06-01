@@ -19,7 +19,7 @@ export default function request(url, options) {
   const token = localStorage.getItem("token");
   const authHeader = token
     ? { Authorization: `Bearer ${token}` }
-    : { "x-api-key": "multisafe_apikey_b13ee9c2-4567-40d2-9ace-5cdce98c9e41" };
+    : { "x-api-key": process.env.REACT_APP_MULTISAFE_API_KEY };
 
   const finalOptions = {
     ...options,
