@@ -46,7 +46,7 @@ export default styled.div`
   .approve-status {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1.5rem;
+    line-height: 1.2;
     text-align: right;
     color: #fff;
     padding: 0.6rem 1.6rem;
@@ -70,7 +70,7 @@ export default styled.div`
   .joined-status {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1.5rem;
+    line-height: 1.2;
     text-align: right;
     color: #fff;
     padding: 0.6rem 1.6rem;
@@ -81,7 +81,7 @@ export default styled.div`
   .awaiting-status {
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1.5rem;
+    line-height: 1.2;
     text-align: right;
     color: #aaaaaa;
     padding: 0.6rem 0.6rem 0.4rem;
