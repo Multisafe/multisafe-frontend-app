@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
-import { useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Big from "big.js";
 import { isEqual } from "lodash";
@@ -144,7 +143,6 @@ export default function Payments(props) {
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   // Selectors
   const allTeams = useSelector(makeSelectTeams());
@@ -475,7 +473,6 @@ export default function Payments(props) {
     account,
     isMultiOwner,
     nonce,
-    history,
     prices,
     organisationType,
   ]);

@@ -36,7 +36,9 @@ const DashboardPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (safeAddress) dispatch(getSafeInfo(safeAddress, account));
+    if (safeAddress && account) {
+      dispatch(getSafeInfo(safeAddress, account));
+    }
   }, [dispatch, account, safeAddress]);
 
   useEffect(() => {

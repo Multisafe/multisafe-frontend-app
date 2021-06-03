@@ -10,7 +10,6 @@ import {
   makeSelectIsOwner,
 } from "store/global/selectors";
 import { ORGANISATION_TYPE } from "store/login/resources";
-import { logoutUser } from "store/logout/actions";
 
 export default function useAuth() {
   const [sign] = useLocalStorage("SIGNATURE");
@@ -30,11 +29,10 @@ export default function useAuth() {
         return true;
       } catch (err) {
         console.error(err);
-        dispatch(logoutUser());
         return false;
       }
     },
-    [params, dispatch]
+    [params]
   );
 
   useEffect(() => {

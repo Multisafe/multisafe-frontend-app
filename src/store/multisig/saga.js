@@ -110,6 +110,7 @@ function* createMultisigTransaction(action) {
     yield put(
       push(
         routeGenerators.dashboard.transactionById({
+          safeAddress: action.body.safeAddress,
           transactionId: result.transactionId,
         })
       )
