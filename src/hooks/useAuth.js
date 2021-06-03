@@ -3,17 +3,20 @@ import { useDispatch, useSelector } from "react-redux";
 import jwt_decode from "jwt-decode";
 import { useParams } from "react-router-dom";
 
-import { useLocalStorage, useActiveWeb3React } from "./index";
+import { useLocalStorage } from "./index";
 import { setReadOnly } from "store/global/actions";
-import { makeSelectOrganisationType } from "store/global/selectors";
+import {
+  makeSelectOrganisationType,
+  makeSelectIsOwner,
+} from "store/global/selectors";
 import { ORGANISATION_TYPE } from "store/login/resources";
 import { logoutUser } from "store/logout/actions";
 
 export default function useAuth() {
   const [sign] = useLocalStorage("SIGNATURE");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { account } = useActiveWeb3React();
   const organisationType = useSelector(makeSelectOrganisationType());
+  const isOwner = useSelector(makeSelectIsOwner());
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -38,7 +41,7 @@ export default function useAuth() {
     if (organisationType !== undefined) {
       const accessToken = localStorage.getItem("token");
       const isAuthenticated = checkValidAccessToken(accessToken);
-      if (isAuthenticated) {
+      if (isOwner && isAuthenticated) {
         // READ and WRITE
         setIsAuthenticated(true);
         dispatch(setReadOnly(false));
@@ -47,7 +50,6 @@ export default function useAuth() {
           // No READ ONLY for private org
           setIsAuthenticated(false);
           dispatch(setReadOnly(false));
-          dispatch(logoutUser());
         } else {
           // READ ONLY for DAOs
           setIsAuthenticated(false);
@@ -55,7 +57,7 @@ export default function useAuth() {
         }
       }
     }
-  }, [sign, account, dispatch, organisationType, checkValidAccessToken]);
+  }, [sign, dispatch, organisationType, checkValidAccessToken, isOwner]);
 
   return isAuthenticated;
 }

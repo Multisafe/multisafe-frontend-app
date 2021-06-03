@@ -110,7 +110,7 @@ function* getTransactionById(action) {
       // Error in payload
       yield put(getTransactionByIdError(result.log));
     } else {
-      yield put(getTransactionByIdSuccess(result.transaction, result.log));
+      yield put(getTransactionByIdSuccess(result.transaction[0], result.log));
     }
   } catch (err) {
     yield put(getTransactionByIdError(err));

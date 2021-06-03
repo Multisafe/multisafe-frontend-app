@@ -28,6 +28,9 @@ const makeSelectIsMultiOwner = () =>
 const makeSelectOrganisationType = () =>
   createSelector(selectGlobal, (globalState) => globalState.organisationType);
 
+const makeSelectIsOwner = () =>
+  createSelector(selectGlobal, (globalState) => globalState.isOwner);
+
 const makeSelectIsReadOnly = () =>
   createSelector(selectGlobal, (globalState) => globalState.isReadOnly);
 
@@ -54,4 +57,5 @@ export {
   makeSelectIsMultiOwner,
   makeSelectIsOrganisationPublic,
   makeSelectIsOrganisationPrivate,
+  makeSelectIsOwner,
 };

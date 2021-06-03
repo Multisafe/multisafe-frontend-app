@@ -4,6 +4,7 @@ import { faAngleDown, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import ReactTooltip from "react-tooltip";
 
 import {
   makeSelectOwnerName,
@@ -30,6 +31,7 @@ import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import { useActiveWeb3React, useDropdown } from "hooks";
 import { minifyAddress } from "components/common/Web3Utils";
 import { routeGenerators } from "constants/routes/generators";
+import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 
 import { DashboardSidebar } from "./styles";
 
@@ -109,7 +111,6 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       <div className="multisafe-logo">
         <Img src={MultisafeLogo} alt="multisafe" width="80" />
       </div>
-      {isReadOnly && <div className="read-only">Read Only</div>}
 
       <div className="settings-container">
         <div className="settings" onClick={toggleDropdown}>
@@ -147,18 +148,47 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               </div>
               <div className="name">Settings</div>
             </Link>
-            <div className="settings-option" onClick={logout}>
-              <div className="icon">
-                <Img src={LogoutIcon} alt="logout" />
+            {!isReadOnly && (
+              <div className="settings-option" onClick={logout}>
+                <div className="icon">
+                  <Img src={LogoutIcon} alt="logout" />
+                </div>
+                <div className="name">Logout</div>
               </div>
-              <div className="name">Logout</div>
-            </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="menu-items">
         {mainNavItems.map((navItem) => renderNavItem(navItem))}
+        {isReadOnly && (
+          <div className="read-only">
+            <div className="read-text">
+              <div className="mr-3">
+                <Img
+                  id={`readonly-info`}
+                  src={InfoIcon}
+                  alt="info"
+                  data-for={`readonly-info`}
+                  data-tip={`You must login to this dashboard <br />if you want to perform any operation`}
+                />
+                <ReactTooltip
+                  id={`readonly-info`}
+                  place={"top"}
+                  type={"dark"}
+                  effect={"solid"}
+                  multiline={true}
+                />
+              </div>
+
+              <div className="mt-1">Read Only</div>
+            </div>
+            <div className="login" onClick={logout}>
+              Login
+            </div>
+          </div>
+        )}
       </div>
 
       {isSetupComplete === false && (

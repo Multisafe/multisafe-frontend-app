@@ -11,21 +11,43 @@ export default styled.div`
   position: relative;
 
   .read-only {
-    margin-bottom: 1rem;
-    font-size: 1.4rem;
-    font-weight: 900;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    width: 100%;
+    padding: 1.5rem;
+    border-radius: 0.4rem;
     color: #373737;
-    background-color: #fff;
-    min-width: 12rem;
-    padding: 1rem;
-    box-shadow: 0.5rem 0.5rem 4rem 0 rgba(170, 170, 170, 0.2);
-    border: solid 0.1rem #dddcdc;
-    border-radius: 0.8rem;
+    background-color: ${({ theme }) => theme.accent};
+
+    .read-text {
+      display: flex;
+      align-items: center;
+      font-size: 1.6rem;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+    }
+
+    .login {
+      font-size: 1.4rem;
+      font-weight: 900;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: center;
+      color: ${({ theme }) => theme.primary};
+
+      &:hover {
+        cursor: pointer;
+        opacity: 0.85;
+      }
+    }
   }
 
   &.sidebar-responsive {
@@ -66,7 +88,7 @@ export default styled.div`
     align-items: center;
     margin: 1rem 0 2rem;
     padding: 0.7rem 1.5rem;
-    border-radius: 1rem;
+    border-radius: 0.4rem;
     border: solid 0.1em #dddcdc;
     background-color: #ffffff;
     cursor: pointer;
@@ -101,7 +123,7 @@ export default styled.div`
       left: 0;
       width: 100%;
       max-width: 100%;
-      border-radius: 1rem;
+      border-radius: 0.4rem;
       box-shadow: 1rem 1rem 2em 0 rgba(170, 170, 170, 0.2);
       border: solid 0.1rem #dddcdc;
       background-color: #ffffff;
@@ -182,7 +204,7 @@ export default styled.div`
     &.menu-item-highlighted {
       width: 100%;
       padding: 1.5rem;
-      border-radius: 1rem;
+      border-radius: 0.4rem;
       background-color: ${({ theme }) => theme.accent};
       color: ${({ theme }) => theme.primary};
     }
@@ -204,7 +226,7 @@ export default styled.div`
 
     &:hover {
       cursor: pointer;
-      border-radius: 1rem;
+      border-radius: 0.4rem;
       opacity: 0.85;
     }
   }

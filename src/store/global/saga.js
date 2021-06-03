@@ -2,7 +2,7 @@ import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { isAddress } from "@ethersproject/address";
 
 import { GET_SAFE_INFO } from "./action-types";
-import { getSafeInfoSuccess, getSafeInfoError, setReadOnly } from "./actions";
+import { getSafeInfoSuccess, getSafeInfoError } from "./actions";
 import request from "utils/request";
 import { getSafeInfoEndpoint } from "constants/endpoints";
 import { logoutUser } from "store/logout/actions";
@@ -19,7 +19,6 @@ function* fetchSafeInfo(action) {
   try {
     const result = yield call(request, requestURL, options);
     yield put(getSafeInfoSuccess({ ...result }));
-    yield put(setReadOnly(!result.isOwner));
   } catch (err) {
     yield put(getSafeInfoError(err));
   }
