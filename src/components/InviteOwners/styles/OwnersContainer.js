@@ -6,4 +6,7 @@ export default styled.div`
   border-radius: 0.4rem;
   border: solid 0.1rem #dddcdc;
   background-color: #ffffff;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
 `;

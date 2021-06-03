@@ -78,6 +78,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
           key={name}
           to={link({ safeAddress })}
           className={`menu-item ${active && "menu-item-highlighted"}`}
+          onClick={closeSidebar}
         >
           <div className="icon">
             <Img src={active ? activeIcon : icon} alt={name} />

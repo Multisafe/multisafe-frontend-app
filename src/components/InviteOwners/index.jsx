@@ -245,7 +245,7 @@ export default function InviteOwners() {
     const firstName = name.split(" ")[0];
     const lastName = name.split(" ")[1];
     return (
-      <div className="d-flex" key={`${owner}${idx}`}>
+      <React.Fragment key={`${owner}${idx}`}>
         <OwnerDetails backgroundColor={noBackground && "#fff"}>
           <div className="left">
             <Avatar
@@ -273,13 +273,13 @@ export default function InviteOwners() {
           </div>
           {renderInvitationStatus(owner, invitationDetails, idx)}
         </OwnerDetails>
-      </div>
+      </React.Fragment>
     );
   };
 
   const renderInviteOwners = () => {
     return (
-      <div>
+      <React.Fragment>
         {loading && (
           <div
             className="d-flex align-items-center justify-content-center"
@@ -300,7 +300,7 @@ export default function InviteOwners() {
             renderOwnerDetails(ownerDetails, idx, true)
           )}
         <EditOwnerModal />
-      </div>
+      </React.Fragment>
     );
   };
 

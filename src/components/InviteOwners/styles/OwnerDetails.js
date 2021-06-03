@@ -2,9 +2,7 @@ import styled from "styled-components/macro";
 
 export default styled.div`
   width: 100%;
-  min-height: 6rem;
   max-width: 80rem;
-  margin-bottom: 1rem;
   padding: 1.2rem 1.5rem;
   border-radius: 0.4rem;
   background-color: ${({ backgroundColor }) =>
