@@ -35,8 +35,6 @@ import {
 } from "store/transactions/actions";
 import safeReducer from "store/safe/reducer";
 import safeSaga from "store/safe/saga";
-import invitationSaga from "store/invitation/saga";
-import invitationReducer from "store/invitation/reducer";
 import { getInvitations } from "store/invitation/actions";
 import { getNonce } from "store/safe/actions";
 import {
@@ -90,7 +88,6 @@ const viewTeamsKey = "viewTeams";
 const transactionsKey = "transactions";
 const safeKey = "safe";
 const multisigKey = "multisig";
-const invitationKey = "invitation";
 const metaTxKey = "metatx";
 
 export default function Payments(props) {
@@ -130,7 +127,6 @@ export default function Payments(props) {
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
   useInjectReducer({ key: safeKey, reducer: safeReducer });
   useInjectReducer({ key: multisigKey, reducer: multisigReducer });
-  useInjectReducer({ key: invitationKey, reducer: invitationReducer });
   useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
 
   // Sagas
@@ -139,7 +135,6 @@ export default function Payments(props) {
   useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
   useInjectSaga({ key: safeKey, saga: safeSaga });
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
-  useInjectSaga({ key: invitationKey, saga: invitationSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
   const dispatch = useDispatch();

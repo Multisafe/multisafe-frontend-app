@@ -8,8 +8,6 @@ import { show } from "redux-modal";
 
 import Button from "components/common/Button";
 import { useLocalStorage } from "hooks";
-import invitationSaga from "store/invitation/saga";
-import invitationReducer from "store/invitation/reducer";
 import {
   getInvitations,
   createInvitation,
@@ -22,8 +20,6 @@ import {
   makeSelectCreating,
   makeSelectCreatedBy,
 } from "store/invitation/selectors";
-import { useInjectReducer } from "utils/injectReducer";
-import { useInjectSaga } from "utils/injectSaga";
 import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
@@ -48,20 +44,12 @@ import InvitationStepsModal, {
 import Avatar from "components/common/Avatar";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 
-const invitationKey = "invitation";
-
 export default function InviteOwners() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const [members, setMembers] = useState([]);
   const [pendingOwners, setPendingOwners] = useState([]);
 
   const { account } = useActiveWeb3React();
-
-  // Reducers
-  useInjectReducer({ key: invitationKey, reducer: invitationReducer });
-
-  // Sagas
-  useInjectSaga({ key: invitationKey, saga: invitationSaga });
 
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const isReadOnly = useSelector(makeSelectIsReadOnly());

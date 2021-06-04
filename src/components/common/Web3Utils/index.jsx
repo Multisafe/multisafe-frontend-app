@@ -119,7 +119,7 @@ export const getEtherscanLink = ({
 }) => {
   if (type === ETHERSCAN_LINK_TYPES.TX) {
     return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${hash}`;
-  } else if (type === "address") {
+  } else if (type === ETHERSCAN_LINK_TYPES.ADDRESS) {
     return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${address}`;
   }
   return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/`;

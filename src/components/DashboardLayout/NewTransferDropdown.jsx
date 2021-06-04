@@ -50,7 +50,7 @@ export default function NewTransferDropdown() {
         </div>
         <div className="transfer-option" onClick={showQuickTransferModal}>
           <Img src={PaySomeoneIcon} alt="pay-someone" className="icon" />
-          <div className="name">Pay Someone</div>
+          <div className="name">Quick Transfer</div>
         </div>
         <div className="transfer-option" onClick={showAddFundsModal}>
           <Img src={AddFundsIcon} alt="add-funds" className="icon" />

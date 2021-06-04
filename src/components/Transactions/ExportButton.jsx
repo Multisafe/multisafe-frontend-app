@@ -6,10 +6,53 @@ import { useSelector } from "react-redux";
 import Img from "components/common/Img";
 import ExportIcon from "assets/icons/dashboard/export-icon.svg";
 import { getDecryptedDetails } from "utils/encryption";
-import { makeSelectOrganisationType } from "store/global/selectors";
+import {
+  makeSelectOrganisationType,
+  makeSelectOwnerSafeAddress,
+  makeSelectSafeOwners,
+} from "store/global/selectors";
 import { useLocalStorage } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
 import { Export } from "components/People/styles";
+import { TRANSACTION_MODES } from "constants/transactions";
+import { getEtherscanLink } from "components/common/Web3Utils";
+import { networkId } from "constants/networks";
+
+const joinArray = (arr) => {
+  return arr && arr.join("\n");
+};
+
+const getStatus = (status) => {
+  switch (status) {
+    case 0:
+      return "Completed";
+
+    case 1:
+      return "Pending";
+
+    case 2:
+      return "Failed";
+
+    default:
+      return null;
+  }
+};
+
+const getTransactionMode = (transactionMode) => {
+  switch (transactionMode) {
+    case TRANSACTION_MODES.MASS_PAYOUT:
+      return "Mass Payout";
+
+    case TRANSACTION_MODES.QUICK_TRANSFER:
+      return "Quick Transfer";
+
+    case TRANSACTION_MODES.SPENDING_LIMITS:
+      return "Spending Limit";
+
+    default:
+      return "";
+  }
+};
 
 export default function ExportButton() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
@@ -17,6 +60,8 @@ export default function ExportButton() {
 
   const transactions = useSelector(makeSelectMultisigTransactions());
   const organisationType = useSelector(makeSelectOrganisationType());
+  const safeOwners = useSelector(makeSelectSafeOwners());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   useEffect(() => {
     let csvData = [];
@@ -26,49 +71,107 @@ export default function ExportButton() {
 
         if (transaction && transaction.transactionHash) {
           const {
+            createdBy,
+            safeAddress,
+            status,
             transactionId,
             to,
             createdOn,
             transactionFees,
             transactionHash,
+            transactionMode,
+            fiatValue,
+            fiatCurrency,
+            addresses,
+            tokenCurrency,
+            tokenValue,
           } = transaction;
+
           const paidTeammates = getDecryptedDetails(
             to,
             encryptionKey,
             organisationType
           );
-          for (let i = 0; i < paidTeammates.length; i++) {
-            const {
-              firstName,
-              lastName,
-              salaryAmount,
-              salaryToken,
-              address,
-            } = paidTeammates[i];
-            csvData.push({
-              "First Name": firstName,
-              "Last Name": lastName,
-              "Salary Token": salaryToken,
-              "Salary Amount": salaryAmount,
-              Address: address,
-              "Transaction Hash": transactionHash || "",
-              "Created On": format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss"),
-              "Transaction ID": transactionId,
-              "Transaction fees": transactionFees ? transactionFees : "",
-              Direction: direction,
-              Origin: txOrigin,
-            });
+
+          let createdByName = [];
+
+          let createdByOwner = safeOwners
+            ? safeOwners.find(({ owner }) => owner === createdBy)
+            : null;
+          if (createdByOwner) {
+            const isOwnerWithoutName =
+              createdByOwner.name === "0000" ? true : false;
+
+            createdByName = isOwnerWithoutName
+              ? "New Owner"
+              : getDecryptedDetails(
+                  createdByOwner.name,
+                  encryptionKey,
+                  organisationType,
+                  false
+                );
           }
+
+          let names = [];
+          let spentAmounts = [];
+          let spentCurrencies = [];
+          let spentFiatAmounts = [];
+          let spentFiatCurrencies = [];
+
+          for (let i = 0; i < paidTeammates.length; i++) {
+            const { firstName, lastName, salaryAmount, salaryToken, usd } =
+              paidTeammates[i];
+
+            names.push(`${firstName || ""} ${lastName || ""}`);
+            spentAmounts.push(salaryAmount);
+            spentCurrencies.push(
+              salaryToken === "USD" ? tokenCurrency : salaryToken
+            );
+            spentFiatAmounts.push(usd);
+            spentFiatCurrencies.push("USD");
+          }
+
+          csvData.push({
+            Date: format(new Date(createdOn), "dd/MM/yyyy"),
+            Time: format(new Date(createdOn), "HH:mm:ss"),
+            Origin: txOrigin,
+            "Transaction Type": direction,
+            "Transaction Mode": getTransactionMode(transactionMode),
+            Status: getStatus(status),
+            To: joinArray(names),
+            "Spent Amount": joinArray(spentAmounts),
+            "Spent Currency": joinArray(spentCurrencies),
+            "Spent Fiat Amount": joinArray(spentFiatAmounts),
+            "Spent Fiat Currency": joinArray(spentFiatCurrencies),
+            Address: joinArray(addresses),
+            "Total Spent Amount": tokenValue,
+            "Total Spent Currency": tokenCurrency,
+            "Total Fiat Amount": fiatValue,
+            "Total Fiat Currency": fiatCurrency,
+            "Created By Address": createdBy,
+            "Created By Name": createdByName,
+            "Transaction ID": transactionId,
+            "Transaction Hash": transactionHash || "",
+            Link: getEtherscanLink({
+              chainId: networkId,
+              hash: transactionHash || "",
+            }),
+            "Transaction fees (ETH)": transactionFees ? transactionFees : "",
+            "Safe Address": safeAddress,
+          });
         }
         setCsvData(csvData);
       }
     }
-  }, [encryptionKey, organisationType, transactions]);
+  }, [encryptionKey, organisationType, transactions, safeOwners]);
 
   return (
     <CSVLink
       data={csvData}
-      filename={`transactions-${format(Date.now(), "dd/MM/yyyy-HH:mm:ss")}.csv`}
+      filename={`${safeAddress}-transactions-${format(
+        Date.now(),
+        "dd/MM/yyyy-HH:mm:ss"
+      )}.csv`}
     >
       <Export>
         <div className="text">Export</div>
