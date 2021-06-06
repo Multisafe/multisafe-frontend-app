@@ -69,6 +69,7 @@ export default function ExportButton() {
       for (let i = 0; i < transactions.length; i++) {
         const { direction, txDetails: transaction, txOrigin } = transactions[i];
 
+        // only completed transactions
         if (transaction && transaction.transactionHash) {
           const {
             createdBy,

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { cryptoUtils } from "parcel-sdk";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
@@ -231,7 +230,7 @@ export default function MultiSigTransactions() {
     return "#fcbc04";
   };
 
-  const renderConfirmationStatus = (confirmations) => {
+  const renderConfirmationStatus = (confirmations, createdBy) => {
     if (!confirmations || !confirmations.length) return;
 
     const statuses =
@@ -243,10 +242,11 @@ export default function MultiSigTransactions() {
         if (confirmedOwner)
           return {
             ...confirmedOwner,
-            title: cryptoUtils.decryptDataUsingEncryptionKey(
+            title: getDecryptedDetails(
               confirmedOwner.ownerInfo.name,
               encryptionKey,
-              organisationType
+              organisationType,
+              false
             ),
             subtitle: getStatusText(
               confirmedOwner.approved,
@@ -260,10 +260,11 @@ export default function MultiSigTransactions() {
           };
         return {
           ownerInfo: safeOwner,
-          title: cryptoUtils.decryptDataUsingEncryptionKey(
+          title: getDecryptedDetails(
             safeOwner.name,
             encryptionKey,
-            organisationType
+            organisationType,
+            false
           ),
           subtitle: getStatusText(safeOwner.approved, safeOwner.rejected),
           backgroundColor: getStatusColor(
@@ -281,6 +282,7 @@ export default function MultiSigTransactions() {
           title={title}
           subtitle={subtitle}
           backgroundColor={backgroundColor}
+          isInitiator={createdBy && ownerInfo.owner === createdBy}
         />
       )
     );
@@ -577,7 +579,7 @@ export default function MultiSigTransactions() {
       tokenCurrency,
       to,
       transactionMode,
-      // createdBy,
+      createdBy,
     } = txDetails;
 
     const paidTeammates = getDecryptedDetails(
@@ -613,7 +615,7 @@ export default function MultiSigTransactions() {
 
         <InfoCard className="d-flex justify-content-center align-items-center mt-3">
           <Stepper count={safeOwners.length}>
-            {renderConfirmationStatus(confirmations)}
+            {renderConfirmationStatus(confirmations, createdBy)}
           </Stepper>
         </InfoCard>
 

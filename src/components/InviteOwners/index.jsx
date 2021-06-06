@@ -43,6 +43,7 @@ import InvitationStepsModal, {
 } from "./InvitationStepsModal";
 import Avatar from "components/common/Avatar";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
+import { getDecryptedDetails } from "utils/encryption";
 
 export default function InviteOwners() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
@@ -225,10 +226,11 @@ export default function InviteOwners() {
     const isOwnerWithoutName = encryptedName === "0000" ? true : false;
     const name = isOwnerWithoutName
       ? "New Owner"
-      : cryptoUtils.decryptDataUsingEncryptionKey(
+      : getDecryptedDetails(
           encryptedName,
           encryptionKey,
-          organisationType
+          organisationType,
+          false
         );
     const firstName = name.split(" ")[0];
     const lastName = name.split(" ")[1];
