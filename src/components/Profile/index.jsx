@@ -6,6 +6,7 @@ import Button from "components/common/Button";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectOwnerName,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import CopyButton from "components/common/Copy";
 import { useInjectReducer } from "utils/injectReducer";
@@ -31,6 +32,7 @@ export default function Profile() {
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationName = useSelector(makeSelectOwnerName());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
   const loading = useSelector(makeSelectLoading());
   const error = useSelector(makeSelectError());
 
@@ -93,7 +95,7 @@ export default function Profile() {
           className="primary"
           width="16rem"
           type="submit"
-          disabled={!formState.isValid || disabled || loading}
+          disabled={!formState.isValid || disabled || loading || isReadOnly}
           loading={loading}
         >
           Update
