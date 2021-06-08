@@ -66,6 +66,9 @@ export const updateNotificationsEndpoint = `${ROOT_BE_URL}/api/v1/notifications/
 export const getSafeInfoEndpoint = `${ROOT_BE_URL}/api/v1/users/getSafeInfo`;
 export const updateOwnerNameEndpoint = `${ROOT_BE_URL}/api/v1/users/updateOwnerDetails`;
 
+// ORGANISATION
+export const updateOrganisationNameEndpoint = `${ROOT_BE_URL}/api/v1/users/update/name`;
+
 // GNOSIS
 export const gnosisSafeTransactionEndpoint =
   process.env.REACT_APP_NETWORK_NAME === networkNames.MAINNET

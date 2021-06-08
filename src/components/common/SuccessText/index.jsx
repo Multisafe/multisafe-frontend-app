@@ -1,6 +1,6 @@
 import React from "react";
 
-const ErrorText = ({ children }) => {
+const SuccessText = ({ children }) => {
   return (
     <div className="text-green my-3" style={{ fontSize: "1.4rem" }}>
       {children}
@@ -8,4 +8,4 @@ const ErrorText = ({ children }) => {
   );
 };
 
-export default ErrorText;
+export default SuccessText;

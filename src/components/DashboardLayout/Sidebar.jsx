@@ -132,6 +132,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
                   tooltip="address"
                   value={safeAddress || ""}
                   className="mr-3"
+                  stopPropagation
                 />
                 <EtherscanLink
                   id="etherscan-link"

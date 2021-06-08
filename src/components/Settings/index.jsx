@@ -4,12 +4,15 @@ import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import Img from "components/common/Img";
 import OwnersIcon from "assets/icons/dashboard/owners-icon.svg";
 import SpendingLimitsIcon from "assets/icons/dashboard/spending-limits-icon.svg";
+import ProfileIcon from "assets/icons/dashboard/profile-icon.svg";
 import SpendingLimits from "components/SpendingLimits";
 import InviteOwners from "components/InviteOwners";
+import Profile from "components/Profile";
 
 const TABS = {
   OWNERS: "1",
   SPENDING_LIMITS: "2",
+  PROFILE: "3",
 };
 
 const navStyles = `
@@ -35,6 +38,10 @@ const navStyles = `
     padding: 1rem 1.8rem;
     min-width: 12rem;
     text-align: center;
+  }
+
+  .nav-tabs .nav-link {
+    border: none;
   }
 
   .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
@@ -100,6 +107,15 @@ export default function Settings() {
             <span>Spending Limits</span>
           </NavLink>
         </NavItem>
+        <NavItem>
+          <NavLink
+            className={`${activeTab === TABS.PROFILE ? "active" : ""}`}
+            onClick={() => toggleTab(TABS.PROFILE)}
+          >
+            <Img src={ProfileIcon} width="18" alt="profile" className="mr-2" />
+            <span>Profile</span>
+          </NavLink>
+        </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId={TABS.OWNERS}>
@@ -108,6 +124,11 @@ export default function Settings() {
         <TabPane tabId={TABS.SPENDING_LIMITS}>
           <div className="mt-5">
             <SpendingLimits />
+          </div>
+        </TabPane>
+        <TabPane tabId={TABS.PROFILE}>
+          <div className="mt-5">
+            <Profile />
           </div>
         </TabPane>
       </TabContent>

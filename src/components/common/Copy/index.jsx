@@ -11,6 +11,7 @@ export default function CopyButton({
   value,
   tooltip,
   children,
+  stopPropagation = false,
   ...passThrough
 }) {
   const [copied, setCopied] = useState(false);
@@ -25,10 +26,14 @@ export default function CopyButton({
   }, [copied]);
 
   // TODO: Debounce the onClickCopy function
-  const onClickCopy = useCallback(() => {
-    copy(value);
-    setCopied(true);
-  }, [value]);
+  const onClickCopy = useCallback(
+    (e) => {
+      if (stopPropagation) e.stopPropagation();
+      copy(value);
+      setCopied(true);
+    },
+    [value, stopPropagation]
+  );
 
   return (
     <div className="position-relative">
