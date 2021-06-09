@@ -37,16 +37,16 @@ export default function TransactionDetails() {
   const params = useParams();
 
   const loading = useSelector(makeSelectFetching());
-  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const transactionDetails = useSelector(makeSelectTransactionDetails());
   const organisationType = useSelector(makeSelectOrganisationType());
 
   useEffect(() => {
-    if (ownerSafeAddress) {
+    if (safeAddress) {
       const transactionId = params && params.transactionId;
-      dispatch(getTransactionById(ownerSafeAddress, transactionId));
+      dispatch(getTransactionById(safeAddress, transactionId));
     }
-  }, [dispatch, ownerSafeAddress, params]);
+  }, [dispatch, safeAddress, params]);
 
   const renderTransactionDetails = () => {
     if (loading)
