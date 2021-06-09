@@ -365,6 +365,7 @@ const Login = () => {
         publicKey,
         encryptionKeyData,
         organisationType,
+        isImported: 1,
       };
 
       dispatch(setOwnerDetails(formData.name, chosenSafeAddress, account));
@@ -947,7 +948,7 @@ const Login = () => {
           </div>
         </ReviewContent>
 
-        <Information className="mt-4">
+        <Information style={{ marginBottom: "5rem" }}>
           <div>You’re about to import this safe to Multisafe.</div>
         </Information>
 

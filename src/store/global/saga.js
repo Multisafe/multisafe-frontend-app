@@ -18,9 +18,15 @@ function* fetchSafeInfo(action) {
 
   try {
     const result = yield call(request, requestURL, options);
-    yield put(getSafeInfoSuccess({ ...result }));
+
+    if (result.flag === 145) {
+      yield put(getSafeInfoError(result.log));
+      yield put(logoutUser());
+    } else {
+      yield put(getSafeInfoSuccess({ ...result }));
+    }
   } catch (err) {
-    yield put(getSafeInfoError(err));
+    yield put(getSafeInfoError(err.message));
   }
 }
 
