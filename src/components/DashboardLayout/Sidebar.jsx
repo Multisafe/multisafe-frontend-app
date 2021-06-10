@@ -128,7 +128,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               <div className="name my-1">{safeAddress}</div>
               <div className="d-flex mt-2">
                 <CopyButton
-                  id="address"
+                  id="settings-address"
                   tooltip="address"
                   value={safeAddress || ""}
                   className="mr-3"
