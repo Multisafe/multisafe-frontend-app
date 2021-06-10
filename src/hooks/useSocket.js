@@ -41,7 +41,7 @@ export default function useSocket(props) {
                 style={{ minHeight: "0" }}
                 to={routeGenerators.dashboard.transactionById({
                   safeAddress,
-                  transactionId: message.transaction[0].transactionId,
+                  transactionId: message.transaction.transactionId,
                 })}
                 className="p-0 mt-2"
               >
@@ -49,12 +49,10 @@ export default function useSocket(props) {
               </Button>
             </div>
           </div>,
-          { toastId: `${message.transaction[0].transactionId}-txConfirmed` }
+          { toastId: `${message.transaction.transactionId}-txConfirmed` }
         );
         // repopulate transaction details
-        dispatch(
-          getTransactionByIdSuccess(message.transaction[0], message.log)
-        );
+        dispatch(getTransactionByIdSuccess(message.transaction, message.log));
       } else {
         toaster.dismiss();
         showToast(

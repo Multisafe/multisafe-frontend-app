@@ -36,16 +36,8 @@ const DashboardPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (safeAddress) {
-      dispatch(getSafeInfo(safeAddress, account));
-    }
-  }, [dispatch, account, safeAddress]);
-
-  useEffect(() => {
-    if (!safeAddress || safeAddress !== params.safeAddress) {
-      dispatch(getSafeInfo(params.safeAddress, account));
-    }
-  }, [dispatch, params, account, safeAddress]);
+    dispatch(getSafeInfo(params.safeAddress, account));
+  }, [dispatch, params.safeAddress, account]);
 
   return (
     <Authenticated>

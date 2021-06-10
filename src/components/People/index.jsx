@@ -52,7 +52,10 @@ import { togglePeopleDetails, setPeopleDetails } from "store/layout/actions";
 import DeletePeopleModal from "./DeletePeopleModal";
 import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 import ModifyTeamDropdown from "./ModifyTeamDropdown";
-import { makeSelectTeams } from "store/view-teams/selectors";
+import {
+  makeSelectTeamIdToDetailsMap,
+  makeSelectTeams,
+} from "store/view-teams/selectors";
 import AddBulkPeoplModal from "./AddBulkPeopleModal";
 import AddSinglePeopleModal, {
   MODAL_NAME as ADD_SINGLE_MODAL,
@@ -62,6 +65,7 @@ import DeleteTeamModal from "./DeleteTeamModal";
 import AddTeamModal from "./AddTeamModal";
 import ViewTeamsModal from "./ViewTeamsModal";
 import { formatNumber } from "utils/number-helpers";
+import { constructLabel } from "utils/tokens";
 
 const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
@@ -99,6 +103,7 @@ export default function People() {
   const nameFilter = useSelector(makeSelectNameFilter());
   const teamFilter = useSelector(makeSelectTeamFilter());
   const searchPeopleValue = useSelector(makeSelectSearchName());
+  const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
 
   useEffect(() => {
     if (!allTeams) dispatch(getTeams(ownerSafeAddress));
@@ -177,22 +182,6 @@ export default function People() {
 
       setAllPeople(sortedDecryptedPeople);
 
-      // const peopleByAlphabet = sortedDecryptedPeople.reduce(
-      //   (accumulator, people) => {
-      //     const alphabet = people.firstName[0].toUpperCase();
-      //     if (!accumulator[alphabet]) {
-      //       accumulator[alphabet] = [people];
-      //     } else {
-      //       accumulator[alphabet].push(people);
-      //     }
-
-      //     return accumulator;
-      //   },
-      //   {}
-      // );
-
-      // setPeopleByAlphabet(peopleByAlphabet);
-
       const peopleByTeam = allTeams.reduce((accumulator, { name }) => {
         accumulator[name] = [];
         return accumulator;
@@ -221,9 +210,21 @@ export default function People() {
   };
 
   const showAddPeopleModal = (departmentId, departmentName) => {
+    const { tokenInfo } = teamIdToDetailsMap[departmentId];
     dispatch(
       show(ADD_SINGLE_MODAL, {
-        defaultValues: { team: { value: departmentId, label: departmentName } },
+        departmentId,
+        departmentName,
+        defaultValues: {
+          team: { value: departmentId, label: departmentName },
+          token: {
+            value: tokenInfo.symbol,
+            label: constructLabel({
+              token: tokenInfo.symbol,
+              imgUrl: tokenInfo.logoURI,
+            }),
+          },
+        },
       })
     );
   };
