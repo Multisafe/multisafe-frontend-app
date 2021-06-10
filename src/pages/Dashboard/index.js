@@ -12,7 +12,7 @@ import Authenticated from "components/hoc/Authenticated";
 import NotFoundPage from "pages/NotFound/loadable";
 import {
   makeSelectIsMultiOwner,
-  makeSelectOwnerSafeAddress,
+  makeSelectIsReadOnly,
 } from "store/global/selectors";
 import { ToastMessage } from "components/common/Toast";
 import DashboardLayout from "components/DashboardLayout";
@@ -26,10 +26,10 @@ const globalKey = "global";
 
 const DashboardPage = () => {
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
-  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
   const { account } = useActiveWeb3React();
-  useSocket({ isMultiOwner, safeAddress });
   const params = useParams();
+  useSocket({ isMultiOwner, safeAddress: params.safeAddress, isReadOnly });
 
   useInjectSaga({ key: globalKey, saga: globalSaga });
 

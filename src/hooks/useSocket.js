@@ -15,7 +15,7 @@ import Button from "components/common/Button";
 import { routeGenerators } from "constants/routes/generators";
 
 export default function useSocket(props) {
-  const { safeAddress, isMultiOwner } = props;
+  const { safeAddress, isMultiOwner, isReadOnly } = props;
   const socketRef = useRef();
 
   const dispatch = useDispatch();
@@ -96,7 +96,7 @@ export default function useSocket(props) {
   );
 
   useEffect(() => {
-    if (safeAddress) {
+    if (safeAddress && !isReadOnly) {
       socketRef.current = io.connect(ROOT_BE_URL);
 
       // txConfirmed
@@ -135,7 +135,7 @@ export default function useSocket(props) {
         }
       );
     }
-  }, [safeAddress, dispatch, showTxConfirmedToast]);
+  }, [safeAddress, dispatch, showTxConfirmedToast, isReadOnly]);
 
   return socketRef;
 }
