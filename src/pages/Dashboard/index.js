@@ -13,6 +13,7 @@ import NotFoundPage from "pages/NotFound/loadable";
 import {
   makeSelectIsMultiOwner,
   makeSelectIsReadOnly,
+  makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
 import { ToastMessage } from "components/common/Toast";
 import DashboardLayout from "components/DashboardLayout";
@@ -27,6 +28,7 @@ const globalKey = "global";
 const DashboardPage = () => {
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const { account } = useActiveWeb3React();
   const params = useParams();
   useSocket({ isMultiOwner, safeAddress: params.safeAddress, isReadOnly });
@@ -36,8 +38,16 @@ const DashboardPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getSafeInfo(params.safeAddress, account));
-  }, [dispatch, params.safeAddress, account]);
+    if (safeAddress) {
+      dispatch(getSafeInfo(safeAddress, account));
+    }
+  }, [dispatch, account, safeAddress]);
+
+  useEffect(() => {
+    if (!safeAddress || safeAddress !== params.safeAddress) {
+      dispatch(getSafeInfo(params.safeAddress, account));
+    }
+  }, [dispatch, params, account, safeAddress]);
 
   return (
     <Authenticated>
