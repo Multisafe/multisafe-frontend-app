@@ -956,8 +956,8 @@ const Register = () => {
         </div>
 
         <div className="loading-hash my-3">
-          {txHash && (
-            <TransactionUrl hash={txHash}>
+          {(txHash || txHashWithoutReferral) && (
+            <TransactionUrl hash={txHash || txHashWithoutReferral}>
               View Transaction on Etherscan
             </TransactionUrl>
           )}
