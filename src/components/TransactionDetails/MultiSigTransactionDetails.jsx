@@ -116,10 +116,11 @@ export default function MultiSigTransactions() {
 
   useEffect(() => {
     const transactionId = params && params.transactionId;
-    if (ownerSafeAddress && transactionId) {
-      dispatch(getMultisigTransactionById(ownerSafeAddress, transactionId));
+    const safeAddress = params && params.safeAddress;
+    if (safeAddress && transactionId) {
+      dispatch(getMultisigTransactionById(safeAddress, transactionId));
     }
-  }, [dispatch, ownerSafeAddress, params]);
+  }, [dispatch, params]);
 
   const noOfPeoplePaid = useMemo(() => {
     return transactionDetails && transactionDetails.txDetails

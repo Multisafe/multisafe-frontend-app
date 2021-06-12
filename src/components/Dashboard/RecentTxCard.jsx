@@ -98,6 +98,8 @@ function RecentTxCard() {
     if (transactions && transactions.length > 0) {
       setState(STATES.TRANSACTION_EXECUTED);
       setTransactionData(transactions.slice(0, 5));
+    } else {
+      setState(STATES.EMPTY_STATE);
     }
   }, [transactions]);
 

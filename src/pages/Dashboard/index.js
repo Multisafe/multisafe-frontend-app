@@ -13,12 +13,17 @@ import NotFoundPage from "pages/NotFound/loadable";
 import {
   makeSelectIsMultiOwner,
   makeSelectIsReadOnly,
+  makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
 import { ToastMessage } from "components/common/Toast";
 import DashboardLayout from "components/DashboardLayout";
 import { routeTemplates } from "constants/routes/templates";
 import { useActiveWeb3React, useSocket } from "hooks";
-import { getSafeInfo, setSafeAddress } from "store/global/actions";
+import {
+  clearGlobalState,
+  getSafeInfo,
+  setSafeAddress,
+} from "store/global/actions";
 import { useInjectSaga } from "utils/injectSaga";
 import globalSaga from "store/global/saga";
 
@@ -27,6 +32,7 @@ const globalKey = "global";
 const DashboardPage = () => {
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const { account } = useActiveWeb3React();
   const params = useParams();
   useSocket({ isMultiOwner, safeAddress: params.safeAddress, isReadOnly });
@@ -36,12 +42,12 @@ const DashboardPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setSafeAddress(params.safeAddress));
-  }, [dispatch, params.safeAddress]);
-
-  useEffect(() => {
+    if (safeAddress !== params.safeAddress) {
+      dispatch(clearGlobalState());
+      dispatch(setSafeAddress(params.safeAddress));
+    }
     dispatch(getSafeInfo(params.safeAddress, account));
-  }, [dispatch, params.safeAddress, account]);
+  }, [dispatch, params.safeAddress, account, safeAddress]);
 
   return (
     <Authenticated>

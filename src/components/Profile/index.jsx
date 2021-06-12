@@ -36,10 +36,8 @@ export default function Profile() {
   const loading = useSelector(makeSelectLoading());
   const error = useSelector(makeSelectError());
 
-  const { register, handleSubmit, watch, formState, errors } = useForm({
-    defaultValues: { name: organisationName || "" },
-    mode: "onChange",
-  });
+  const { register, handleSubmit, watch, formState, errors, setValue } =
+    useForm({ mode: "onChange" });
 
   const inputName = watch("name");
 
@@ -47,6 +45,12 @@ export default function Profile() {
     if (inputName === organisationName) setDisabled(true);
     else setDisabled(false);
   }, [organisationName, inputName]);
+
+  useEffect(() => {
+    if (organisationName) {
+      setValue("name", organisationName);
+    }
+  }, [organisationName, setValue]);
 
   // Reducers
   useInjectReducer({ key: organisationKey, reducer: organisationReducer });

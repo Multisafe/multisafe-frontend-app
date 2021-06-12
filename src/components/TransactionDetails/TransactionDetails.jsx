@@ -12,10 +12,7 @@ import {
 } from "store/transactions/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import {
-  makeSelectOrganisationType,
-  makeSelectOwnerSafeAddress,
-} from "store/global/selectors";
+import { makeSelectOrganisationType } from "store/global/selectors";
 import { InfoCard } from "components/People/styles";
 import Loading from "components/common/Loading";
 import { DescriptionCard, DisbursementCard } from "./styles";
@@ -37,16 +34,14 @@ export default function TransactionDetails() {
   const params = useParams();
 
   const loading = useSelector(makeSelectFetching());
-  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const transactionDetails = useSelector(makeSelectTransactionDetails());
   const organisationType = useSelector(makeSelectOrganisationType());
 
   useEffect(() => {
-    if (safeAddress) {
-      const transactionId = params && params.transactionId;
-      dispatch(getTransactionById(safeAddress, transactionId));
-    }
-  }, [dispatch, safeAddress, params]);
+    const transactionId = params && params.transactionId;
+    const safeAddress = params && params.safeAddress;
+    dispatch(getTransactionById(safeAddress, transactionId));
+  }, [dispatch, params]);
 
   const renderTransactionDetails = () => {
     if (loading)
