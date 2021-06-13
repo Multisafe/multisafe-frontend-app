@@ -91,7 +91,7 @@ export default function People() {
   const dispatch = useDispatch();
   const allTeams = useSelector(makeSelectTeams());
   const loadingPeople = useSelector(makeSelectLoadingPeople());
-  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const encryptedPeople = useSelector(makeSelectPeople());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isNameFilterApplied = useSelector(
@@ -106,9 +106,11 @@ export default function People() {
   const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
 
   useEffect(() => {
-    if (!allTeams) dispatch(getTeams(ownerSafeAddress));
-    if (!encryptedPeople) dispatch(getAllPeople(ownerSafeAddress));
-  }, [dispatch, ownerSafeAddress, encryptedPeople, allTeams]);
+    if (safeAddress) {
+      dispatch(getTeams(safeAddress));
+      dispatch(getAllPeople(safeAddress));
+    }
+  }, [dispatch, safeAddress]);
 
   useEffect(() => {
     if (

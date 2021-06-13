@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { formatEther } from "@ethersproject/units";
 import { useActiveWeb3React } from "hooks";
-import { networkNames } from "constants/networks";
+import { networkId, networkNames } from "constants/networks";
 
 export const ChainId = () => {
   const { chainId } = useActiveWeb3React();
@@ -126,11 +126,9 @@ export const getEtherscanLink = ({
 };
 
 export const TransactionUrl = ({ hash, children, ...rest }) => {
-  const { chainId } = useActiveWeb3React();
-
   return (
     <a
-      href={getEtherscanLink({ chainId, hash })}
+      href={getEtherscanLink({ chainId: networkId, hash })}
       rel="noopener noreferrer"
       target="_blank"
       {...rest}
