@@ -6,3 +6,4 @@ export { default as DisbursementCard } from "./DisbursementCard";
 export { default as TransactionDetails } from "./TransactionDetails";
 export { default as TxRow } from "./TxRow";
 export { default as ColoredText } from "./ColoredText";
+export { default as StepperCard } from "./StepperCard";

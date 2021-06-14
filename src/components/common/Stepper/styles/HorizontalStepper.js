@@ -96,4 +96,11 @@ export default styled.div`
       }
     }
   }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    .step {
+      min-width: 10rem;
+    }
+  }
 `;

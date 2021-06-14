@@ -43,7 +43,7 @@ export function initOnboard(subscriptions) {
       { checkName: "derivationPath" },
       { checkName: "connect" },
       { checkName: "accounts" },
-      { checkName: "network" },
+      // { checkName: "network" },
       { checkName: "balance", minimumBalance: "0" },
     ],
   });

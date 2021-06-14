@@ -46,6 +46,7 @@ import {
   FinalStatus,
   DescriptionCard,
   DisbursementCard,
+  StepperCard,
 } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
@@ -614,11 +615,11 @@ export default function MultiSigTransactions() {
           )}
         </InfoCard>
 
-        <InfoCard className="d-flex justify-content-center align-items-center mt-3">
+        <StepperCard>
           <Stepper count={safeOwners.length}>
             {renderConfirmationStatus(confirmations, createdBy)}
           </Stepper>
-        </InfoCard>
+        </StepperCard>
 
         <DescriptionCard>
           <div className="title">Description</div>
