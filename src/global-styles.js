@@ -131,17 +131,6 @@ const GlobalStyle = createGlobalStyle`
     font-size: 1.6em;
   }
 
-  // Scaling/zooming depending on screen width
-  // @media (max-width: 1500px) {
-  //   #root, .modal-dialog {
-  //    zoom: 85%;
-  //  }
-
-  //  .tooltip {
-  //     zoom: 85%;
-  //   }
-  // }
-
   .text-green {
     color: #6cb44c;
   }
@@ -164,6 +153,10 @@ const GlobalStyle = createGlobalStyle`
 
   .text-bold {
     font-weight: 900 !important;
+  }
+
+  .font-size-14 {
+    font-size: 1.4rem;
   }
 `;
 

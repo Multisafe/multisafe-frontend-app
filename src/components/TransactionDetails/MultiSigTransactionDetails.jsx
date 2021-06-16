@@ -53,6 +53,12 @@ import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/Transactio
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
 import ErrorText from "components/common/ErrorText";
+import ApproveTxModal, {
+  MODAL_NAME as APPROVE_TX_MODAL,
+} from "./ApproveTxModal";
+import ExecuteTxModal, {
+  MODAL_NAME as EXECUTE_TX_MODAL,
+} from "./ExecuteTxModal";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -172,7 +178,6 @@ export default function MultiSigTransactions() {
     setTxData,
     account,
     isMetaEnabled,
-    params,
   ]);
 
   useEffect(() => {
@@ -201,10 +206,15 @@ export default function MultiSigTransactions() {
     }
   }, [confirmedStatus, ownerSafeAddress, params, dispatch]);
 
-  const renderFinalStatus = (confirmedCount, rejectedCount, isExecuted) => {
+  const renderFinalStatus = ({
+    confirmedCount,
+    rejectedCount,
+    isExecuted,
+    executor,
+  }) => {
     if (
       (confirmedCount >= threshold || rejectedCount >= threshold) &&
-      !isExecuted
+      executor
     ) {
       return <div className="pending">Transaction Submitted</div>;
     }
@@ -443,9 +453,23 @@ export default function MultiSigTransactions() {
         });
       }
       setRejecting(false);
-    } catch (error) {
-      setRejecting(false);
-    }
+    } catch (error) {}
+  };
+
+  const showApproveModal = () => {
+    dispatch(
+      show(APPROVE_TX_MODAL, {
+        updating,
+      })
+    );
+  };
+
+  const showExecuteModal = () => {
+    dispatch(
+      show(EXECUTE_TX_MODAL, {
+        updating,
+      })
+    );
   };
 
   const renderConfirmSection = () => {
@@ -482,12 +506,23 @@ export default function MultiSigTransactions() {
         shouldShowOnlyReject && (
           <ConfirmSection>
             <div className="buttons">
+              <div className="approve-button">
+                <Button
+                  type="button"
+                  width="15rem"
+                  onClick={showExecuteModal}
+                  disabled={loadingTx || updating || isReadOnly}
+                  loading={approving}
+                >
+                  Execute
+                </Button>
+              </div>
               <div className="reject-button">
                 <Button
                   type="button"
                   width="15rem"
                   onClick={rejectTransaction}
-                  disabled={loadingTx || updating}
+                  disabled={loadingTx || updating || isReadOnly}
                   loading={rejecting}
                 >
                   Reject
@@ -525,7 +560,7 @@ export default function MultiSigTransactions() {
               <Button
                 type="button"
                 width="15rem"
-                onClick={approveTransaction}
+                onClick={showApproveModal}
                 disabled={loadingTx || updating || isReadOnly}
                 loading={approving}
               >
@@ -571,6 +606,7 @@ export default function MultiSigTransactions() {
       confirmedCount,
       confirmations,
       txDetails,
+      executor,
     } = transactionDetails;
 
     const {
@@ -590,8 +626,9 @@ export default function MultiSigTransactions() {
       organisationType
     );
 
-    const isTxSubmitted =
-      confirmedCount >= threshold || rejectedCount >= threshold;
+    // const isTxSubmitted =
+    //   confirmedCount >= threshold || rejectedCount >= threshold;
+    const isTxSubmitted = executor ? true : false;
 
     return (
       <div>
@@ -610,7 +647,12 @@ export default function MultiSigTransactions() {
           </div>
           {isTxSubmitted && (
             <FinalStatus>
-              {renderFinalStatus(confirmedCount, rejectedCount, isExecuted)}
+              {renderFinalStatus({
+                confirmedCount,
+                rejectedCount,
+                isExecuted,
+                executor,
+              })}
             </FinalStatus>
           )}
         </InfoCard>
@@ -645,6 +687,8 @@ export default function MultiSigTransactions() {
           <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
         )}
         {renderConfirmSection()}
+        <ApproveTxModal />
+        <ExecuteTxModal />
       </div>
     );
   };
