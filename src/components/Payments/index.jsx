@@ -355,10 +355,12 @@ export default function Payments(props) {
     if (prices) {
       return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
         // TODO use Big.js to fix precision errors
-        if (salaryToken === "USD" && selectedTokenDetails) {
-          total += salaryAmount / prices[selectedTokenDetails.name];
-        } else {
+        if (salaryToken === selectedTokenDetails.name) {
           total += Number(salaryAmount);
+        } else {
+          total +=
+            (salaryAmount * prices[salaryToken]) /
+            prices[selectedTokenDetails.name];
         }
         return total;
       }, 0);
