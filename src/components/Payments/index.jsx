@@ -353,7 +353,6 @@ export default function Payments(props) {
   const totalAmountInToken = useMemo(() => {
     if (!selectedRows.length) return 0;
     if (prices) {
-      console.log({ price: prices[selectedTokenDetails.name] });
       return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
         // TODO use Big.js to fix precision errors
         if (salaryToken === "USD" && selectedTokenDetails) {
