@@ -24,7 +24,6 @@ import {
   makeSelectMultisigExecutionAllowed,
   makeSelectTransactionId as makeSelectMultisigTransactionId,
 } from "store/multisig/selectors";
-import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
   confirmMultisigTransaction,
@@ -33,10 +32,9 @@ import {
   getMultisigTransactionById,
 } from "store/multisig/actions";
 
-export const MODAL_NAME = "execute-tx-modal";
-const { MULTISEND_ADDRESS } = addresses;
+export const MODAL_NAME = "reject-tx-modal";
 
-function ExecuteTxModal(props) {
+function RejectTxModal(props) {
   const { show, handleHide } = props;
   const { account } = useActiveWeb3React();
 
@@ -49,11 +47,12 @@ function ExecuteTxModal(props) {
     setConfirmTxData,
     txData,
     setTxData,
-    approving,
-    setApproving,
     rejecting,
     setRejecting,
   } = useMassPayout();
+
+  const [shouldExecute, setShouldExecute] = useState(true);
+  const [showExecute, setShowExecute] = useState(false);
 
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const transactionDetails = useSelector(
@@ -91,12 +90,46 @@ function ExecuteTxModal(props) {
     isMetaEnabled,
   ]);
 
-  const executeTransaction = async () => {
+  useEffect(() => {
+    if (confirmTxData && transactionDetails) {
+      console.log({ confirmTxData, transactionDetails });
+      dispatch(
+        confirmMultisigTransaction({
+          safeAddress: ownerSafeAddress,
+          transactionId: transactionDetails.txDetails.transactionId,
+          txData: confirmTxData,
+        })
+      );
+      setConfirmTxData("");
+    }
+  }, [
+    dispatch,
+    confirmTxData,
+    transactionDetails,
+    ownerSafeAddress,
+    setConfirmTxData,
+  ]);
+
+  useEffect(() => {
+    if (transactionDetails && threshold) {
+      const { rejectedCount } = transactionDetails;
+
+      if (rejectedCount === threshold - 1) {
+        setShowExecute(true);
+      }
+    }
+  }, [transactionDetails, threshold]);
+
+  const handleToggleCheck = () => {
+    setShouldExecute((shouldExecute) => !shouldExecute);
+  };
+
+  const rejectTransaction = async () => {
     const {
       safe,
       // to,
       value,
-      data,
+      // data,
       // operation,
       gasToken,
       safeTxGas,
@@ -104,10 +137,21 @@ function ExecuteTxModal(props) {
       gasPrice,
       refundReceiver,
       nonce,
+      // executionDate,
+      // submissionDate,
+      // modified, //date
+      // blockNumber,
+      // transactionHash,
       safeTxHash,
       executor,
+      // isExecuted,
+      // isSuccessful,
+      // ethGasPrice,
+      // gasUsed,
+      // fee,
       origin,
-      confirmedCount,
+      // confirmationsRequired,
+      // signatures,
       rejectedCount,
       confirmations,
       // txDetails,
@@ -116,7 +160,7 @@ function ExecuteTxModal(props) {
     try {
       setRejecting(true);
 
-      if (rejectedCount >= threshold) {
+      if (rejectedCount === threshold - 1 && shouldExecute) {
         // submit final reject tx
         await submitMassPayout(
           {
@@ -139,35 +183,30 @@ function ExecuteTxModal(props) {
           isMetaEnabled,
           false
         );
-      } else if (confirmedCount >= threshold) {
-        setApproving(true);
-        console.log("approving");
-
-        await submitMassPayout(
-          {
-            safe: ownerSafeAddress,
-            to: MULTISEND_ADDRESS,
-            value,
-            data,
-            operation: 1,
-            gasToken,
-            safeTxGas,
-            baseGas,
-            gasPrice,
-            refundReceiver,
-            nonce,
-            safeTxHash,
-            executor,
-            origin,
-            confirmations,
-          },
-          isMetaEnabled,
-          true
-        );
+      } else {
+        // call confirm api with reject params
+        await confirmMassPayout({
+          safe,
+          to: safe,
+          value,
+          data: "0x",
+          operation: 0,
+          gasToken,
+          safeTxGas,
+          baseGas,
+          gasPrice,
+          refundReceiver,
+          nonce,
+          safeTxHash,
+          executor,
+          origin,
+          confirmations,
+        });
       }
+      setRejecting(false);
+      handleHide();
     } catch (error) {
       console.error(error);
-      setApproving(false);
       setRejecting(false);
     }
   };
@@ -176,14 +215,29 @@ function ExecuteTxModal(props) {
     <Modal toggle={handleHide} isOpen={show}>
       <ModalHeader toggle={handleHide} />
       <ModalBody>
-        <div className="title">Execute Transaction</div>
+        <div className="title">Reject Transaction</div>
         <div className="subtitle">
-          You're about to execute a transaction and will have to confirm it with
-          your currently connected wallet. Make sure you have {`<`}{" "}
-          <span className="font-bold">0.001</span> (fee price) Ether in this
-          wallet to fund this confirmation.
+          To reject this transaction, you must sign the transaction.
         </div>
+        {showExecute && (
+          <React.Fragment>
+            <div className="subtitle text-danger">
+              Rejecting this transaction executes it right away. If you want
+              approve but execute the transaction manually later, click on the
+              checkbox below.
+            </div>
 
+            <div>
+              <CheckBox
+                type="checkbox"
+                id="execute-tx"
+                checked={shouldExecute}
+                onChange={handleToggleCheck}
+                label={`Execute Transaction`}
+              />
+            </div>
+          </React.Fragment>
+        )}
         <div className="d-flex justify-content-center align-items-center mt-4">
           <div>
             <Button
@@ -197,11 +251,11 @@ function ExecuteTxModal(props) {
           <div>
             <Button
               width="16rem"
-              onClick={executeTransaction}
+              onClick={rejectTransaction}
               disabled={loadingTx || updating || isReadOnly}
-              loading={approving || rejecting}
+              loading={rejecting}
             >
-              Execute
+              Reject
             </Button>
           </div>
         </div>
@@ -210,4 +264,4 @@ function ExecuteTxModal(props) {
   );
 }
 
-export default reduxModal({ name: MODAL_NAME })(ExecuteTxModal);
+export default reduxModal({ name: MODAL_NAME })(RejectTxModal);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useSelector, useDispatch } from "react-redux";
 
-import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
+import { useActiveWeb3React, useMassPayout } from "hooks";
 import {
   Modal,
   ModalHeader,
@@ -36,8 +36,12 @@ import {
 export const MODAL_NAME = "approve-tx-modal";
 const { MULTISEND_ADDRESS } = addresses;
 
+const FINAL_DECISION = {
+  APPROVE: "APPROVE",
+  REJECT: "REJECT",
+};
 function ApproveTxModal(props) {
-  const { show, handleHide, updating } = props;
+  const { show, handleHide } = props;
   const { account } = useActiveWeb3React();
 
   const {
@@ -51,11 +55,10 @@ function ApproveTxModal(props) {
     setTxData,
     approving,
     setApproving,
-    rejecting,
-    setRejecting,
   } = useMassPayout();
 
   const [shouldExecute, setShouldExecute] = useState(true);
+  const [showExecute, setShowExecute] = useState(false);
 
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const transactionDetails = useSelector(
@@ -64,6 +67,7 @@ function ApproveTxModal(props) {
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const threshold = useSelector(makeSelectThreshold());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
+  const updating = useSelector(makeSelectUpdating());
 
   const dispatch = useDispatch();
 
@@ -93,8 +97,17 @@ function ApproveTxModal(props) {
   ]);
 
   useEffect(() => {
+    if (transactionDetails && threshold) {
+      const { confirmedCount } = transactionDetails;
+
+      if (confirmedCount === threshold - 1) {
+        setShowExecute(true);
+      }
+    }
+  }, [transactionDetails, threshold]);
+
+  useEffect(() => {
     if (confirmTxData && transactionDetails) {
-      console.log({ confirmTxData, transactionDetails });
       dispatch(
         confirmMultisigTransaction({
           safeAddress: ownerSafeAddress,
@@ -141,7 +154,6 @@ function ApproveTxModal(props) {
       setApproving(true);
 
       if (confirmedCount === threshold - 1 && shouldExecute) {
-        console.log("executing...");
         // submit final approve tx
         await submitMassPayout(
           {
@@ -165,7 +177,6 @@ function ApproveTxModal(props) {
           true
         );
       } else {
-        console.log("confirming...");
         // call confirm api
         await confirmMassPayout({
           safe: ownerSafeAddress,
@@ -198,25 +209,29 @@ function ApproveTxModal(props) {
       <ModalHeader toggle={handleHide} />
       <ModalBody>
         <div className="title">Approve Transaction</div>
-        <div className="subtitle">
+        <div className="subtitle mb-5">
           To approve this transaction, you must sign the transaction.
         </div>
-        <div className="subtitle">
-          Approving this transaction executes it right away. If you want approve
-          but execute the transaction manually later, click on the checkbox
-          below.
-        </div>
+        {showExecute && (
+          <React.Fragment>
+            <div className="subtitle text-danger mb-3">
+              Approving this transaction executes it right away. If you want
+              approve but execute the transaction manually later, click on the
+              checkbox below.
+            </div>
 
-        <div>
-          <CheckBox
-            type="checkbox"
-            id="execute-tx"
-            checked={shouldExecute}
-            onChange={handleToggleCheck}
-            label={`Execute Transaction`}
-          />
-        </div>
-        <div className="d-flex justify-content-center align-items-center mt-4">
+            <div>
+              <CheckBox
+                type="checkbox"
+                id="execute-tx"
+                checked={shouldExecute}
+                onChange={handleToggleCheck}
+                label={`Execute Transaction`}
+              />
+            </div>
+          </React.Fragment>
+        )}
+        <div className="d-flex justify-content-center align-items-center mt-5">
           <div>
             <Button
               width="16rem"

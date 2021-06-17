@@ -665,10 +665,10 @@ export default function useMassPayout(props = {}) {
                 contractTransactionHash
               );
             }
+            console.log({ confirmations });
 
             const confirmingAccounts = isApproved
               ? [
-                  { owner: account, signature: approvedSign },
                   ...confirmations.map(
                     ({ owner, signature, approved }) =>
                       approved && {
@@ -678,7 +678,6 @@ export default function useMassPayout(props = {}) {
                   ),
                 ].filter(Boolean)
               : [
-                  { owner: account, signature: approvedSign },
                   ...confirmations.map(
                     ({ owner, signature, rejected }) =>
                       rejected && {
@@ -687,6 +686,13 @@ export default function useMassPayout(props = {}) {
                       }
                   ),
                 ].filter(Boolean);
+
+            if (!confirmingAccounts.find(({ owner }) => owner === account)) {
+              confirmingAccounts.push({
+                owner: account,
+                signature: approvedSign,
+              });
+            }
 
             confirmingAccounts.sort((a, b) =>
               a.owner.toLowerCase() > b.owner.toLowerCase() ? 1 : -1
@@ -740,7 +746,6 @@ export default function useMassPayout(props = {}) {
           } else {
             const confirmingAccounts = isApproved
               ? [
-                  { owner: account, signature: autoApprovedSignature },
                   ...confirmations.map(
                     ({ owner, signature, approved }) =>
                       approved && {
@@ -750,7 +755,6 @@ export default function useMassPayout(props = {}) {
                   ),
                 ].filter(Boolean)
               : [
-                  { owner: account, signature: autoApprovedSignature },
                   ...confirmations.map(
                     ({ owner, signature, rejected }) =>
                       rejected && {
@@ -759,6 +763,14 @@ export default function useMassPayout(props = {}) {
                       }
                   ),
                 ].filter(Boolean);
+
+            if (!confirmingAccounts.find(({ owner }) => owner === account)) {
+              confirmingAccounts.push({
+                owner: account,
+                signature: autoApprovedSignature,
+              });
+            }
+
             confirmingAccounts.sort((a, b) =>
               a.owner.toLowerCase() > b.owner.toLowerCase() ? 1 : -1
             );

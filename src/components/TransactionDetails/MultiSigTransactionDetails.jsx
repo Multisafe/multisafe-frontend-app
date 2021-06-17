@@ -56,6 +56,7 @@ import ErrorText from "components/common/ErrorText";
 import ApproveTxModal, {
   MODAL_NAME as APPROVE_TX_MODAL,
 } from "./ApproveTxModal";
+import RejectTxModal, { MODAL_NAME as REJECT_TX_MODAL } from "./RejectTxModal";
 import ExecuteTxModal, {
   MODAL_NAME as EXECUTE_TX_MODAL,
 } from "./ExecuteTxModal";
@@ -214,7 +215,7 @@ export default function MultiSigTransactions() {
   }) => {
     if (
       (confirmedCount >= threshold || rejectedCount >= threshold) &&
-      executor
+      !executor
     ) {
       return <div className="pending">Transaction Submitted</div>;
     }
@@ -300,176 +301,172 @@ export default function MultiSigTransactions() {
     );
   };
 
-  const approveTransaction = async () => {
-    const {
-      // safe,
-      // to,
-      value,
-      data,
-      // operation,
-      gasToken,
-      safeTxGas,
-      baseGas,
-      gasPrice,
-      refundReceiver,
-      nonce,
-      safeTxHash,
-      executor,
-      origin,
-      confirmedCount,
-      confirmations,
-      // txDetails,
-    } = transactionDetails;
+  // const approveTransaction = async () => {
+  //   const {
+  //     // safe,
+  //     // to,
+  //     value,
+  //     data,
+  //     // operation,
+  //     gasToken,
+  //     safeTxGas,
+  //     baseGas,
+  //     gasPrice,
+  //     refundReceiver,
+  //     nonce,
+  //     safeTxHash,
+  //     executor,
+  //     origin,
+  //     confirmedCount,
+  //     confirmations,
+  //     // txDetails,
+  //   } = transactionDetails;
 
-    try {
-      setApproving(true);
+  //   try {
+  //     setApproving(true);
 
-      if (confirmedCount === threshold - 1) {
-        // submit final approve tx
-        await submitMassPayout(
-          {
-            safe: ownerSafeAddress,
-            to: MULTISEND_ADDRESS,
-            value,
-            data,
-            operation: 1,
-            gasToken,
-            safeTxGas,
-            baseGas,
-            gasPrice,
-            refundReceiver,
-            nonce,
-            safeTxHash,
-            executor,
-            origin,
-            confirmations,
-          },
-          isMetaEnabled,
-          true
-        );
-      } else {
-        // call confirm api
-        await confirmMassPayout({
-          safe: ownerSafeAddress,
-          to: MULTISEND_ADDRESS,
-          value,
-          data,
-          operation: 1,
-          gasToken,
-          safeTxGas,
-          baseGas,
-          gasPrice,
-          refundReceiver,
-          nonce,
-          safeTxHash,
-          executor,
-          origin,
-          confirmations,
-        });
-      }
-      setApproving(false);
-    } catch (error) {
-      setApproving(false);
-    }
-  };
+  //     if (confirmedCount === threshold - 1) {
+  //       // submit final approve tx
+  //       await submitMassPayout(
+  //         {
+  //           safe: ownerSafeAddress,
+  //           to: MULTISEND_ADDRESS,
+  //           value,
+  //           data,
+  //           operation: 1,
+  //           gasToken,
+  //           safeTxGas,
+  //           baseGas,
+  //           gasPrice,
+  //           refundReceiver,
+  //           nonce,
+  //           safeTxHash,
+  //           executor,
+  //           origin,
+  //           confirmations,
+  //         },
+  //         isMetaEnabled,
+  //         true
+  //       );
+  //     } else {
+  //       // call confirm api
+  //       await confirmMassPayout({
+  //         safe: ownerSafeAddress,
+  //         to: MULTISEND_ADDRESS,
+  //         value,
+  //         data,
+  //         operation: 1,
+  //         gasToken,
+  //         safeTxGas,
+  //         baseGas,
+  //         gasPrice,
+  //         refundReceiver,
+  //         nonce,
+  //         safeTxHash,
+  //         executor,
+  //         origin,
+  //         confirmations,
+  //       });
+  //     }
+  //     setApproving(false);
+  //   } catch (error) {
+  //     setApproving(false);
+  //   }
+  // };
 
-  const rejectTransaction = async () => {
-    const {
-      safe,
-      // to,
-      value,
-      // data,
-      // operation,
-      gasToken,
-      safeTxGas,
-      baseGas,
-      gasPrice,
-      refundReceiver,
-      nonce,
-      // executionDate,
-      // submissionDate,
-      // modified, //date
-      // blockNumber,
-      // transactionHash,
-      safeTxHash,
-      executor,
-      // isExecuted,
-      // isSuccessful,
-      // ethGasPrice,
-      // gasUsed,
-      // fee,
-      origin,
-      // confirmationsRequired,
-      // signatures,
-      rejectedCount,
-      confirmations,
-      // txDetails,
-    } = transactionDetails;
+  // const rejectTransaction = async () => {
+  //   const {
+  //     safe,
+  //     // to,
+  //     value,
+  //     // data,
+  //     // operation,
+  //     gasToken,
+  //     safeTxGas,
+  //     baseGas,
+  //     gasPrice,
+  //     refundReceiver,
+  //     nonce,
+  //     // executionDate,
+  //     // submissionDate,
+  //     // modified, //date
+  //     // blockNumber,
+  //     // transactionHash,
+  //     safeTxHash,
+  //     executor,
+  //     // isExecuted,
+  //     // isSuccessful,
+  //     // ethGasPrice,
+  //     // gasUsed,
+  //     // fee,
+  //     origin,
+  //     // confirmationsRequired,
+  //     // signatures,
+  //     rejectedCount,
+  //     confirmations,
+  //     // txDetails,
+  //   } = transactionDetails;
 
-    try {
-      setRejecting(true);
+  //   try {
+  //     setRejecting(true);
 
-      if (rejectedCount === threshold - 1) {
-        // submit final reject tx
-        await submitMassPayout(
-          {
-            safe,
-            to: safe,
-            value,
-            data: "0x",
-            operation: 0,
-            gasToken,
-            safeTxGas,
-            baseGas,
-            gasPrice,
-            refundReceiver,
-            nonce,
-            safeTxHash,
-            executor,
-            origin,
-            confirmations,
-          },
-          isMetaEnabled,
-          false
-        );
-      } else {
-        // call confirm api with reject params
-        await confirmMassPayout({
-          safe,
-          to: safe,
-          value,
-          data: "0x",
-          operation: 0,
-          gasToken,
-          safeTxGas,
-          baseGas,
-          gasPrice,
-          refundReceiver,
-          nonce,
-          safeTxHash,
-          executor,
-          origin,
-          confirmations,
-        });
-      }
-      setRejecting(false);
-    } catch (error) {}
-  };
+  //     if (rejectedCount === threshold - 1) {
+  //       // submit final reject tx
+  //       await submitMassPayout(
+  //         {
+  //           safe,
+  //           to: safe,
+  //           value,
+  //           data: "0x",
+  //           operation: 0,
+  //           gasToken,
+  //           safeTxGas,
+  //           baseGas,
+  //           gasPrice,
+  //           refundReceiver,
+  //           nonce,
+  //           safeTxHash,
+  //           executor,
+  //           origin,
+  //           confirmations,
+  //         },
+  //         isMetaEnabled,
+  //         false
+  //       );
+  //     } else {
+  //       // call confirm api with reject params
+  //       await confirmMassPayout({
+  //         safe,
+  //         to: safe,
+  //         value,
+  //         data: "0x",
+  //         operation: 0,
+  //         gasToken,
+  //         safeTxGas,
+  //         baseGas,
+  //         gasPrice,
+  //         refundReceiver,
+  //         nonce,
+  //         safeTxHash,
+  //         executor,
+  //         origin,
+  //         confirmations,
+  //       });
+  //     }
+  //     setRejecting(false);
+  //   } catch (error) {}
+  // };
 
   const showApproveModal = () => {
-    dispatch(
-      show(APPROVE_TX_MODAL, {
-        updating,
-      })
-    );
+    dispatch(show(APPROVE_TX_MODAL));
+  };
+
+  const showRejectModal = () => {
+    dispatch(show(REJECT_TX_MODAL));
   };
 
   const showExecuteModal = () => {
-    dispatch(
-      show(EXECUTE_TX_MODAL, {
-        updating,
-      })
-    );
+    dispatch(show(EXECUTE_TX_MODAL));
   };
 
   const renderConfirmSection = () => {
@@ -480,99 +477,68 @@ export default function MultiSigTransactions() {
       rejectedCount,
       confirmedCount,
     } = transactionDetails;
+
     const { transactionHash } = txDetails;
 
-    let shouldShowConfirmSection = !isExecuted ? true : false;
+    const isConsensusReached =
+      rejectedCount >= threshold || confirmedCount >= threshold;
 
-    // if every owner has voted, but the tx is not executed, that means there is a conflict
-    // Ex: 2:2 with 1 approve and 1 reject, 3:3 with 2 approve and 1 reject
-    // in this case, show Reject button to all the owners who previously approved
-    let shouldShowOnlyReject = false;
     const confirmedOwnersMap = {};
 
     for (let i = 0; i < confirmations.length; i++) {
       if (!confirmedOwnersMap[confirmations[i].owner])
-        confirmedOwnersMap[confirmations[i].owner] = true;
+        confirmedOwnersMap[confirmations[i].owner] = confirmations[i].approved
+          ? "APPROVED"
+          : "REJECTED";
     }
 
-    if (
-      Object.keys(confirmedOwnersMap).length === safeOwners.length &&
-      !transactionHash
-    ) {
-      shouldShowOnlyReject = confirmations.find(
-        ({ owner, approved }) => owner === account && approved
-      );
-      return (
-        shouldShowOnlyReject && (
-          <ConfirmSection>
-            <div className="buttons">
+    const isConflicted =
+      safeOwners.length === threshold &&
+      Object.keys(confirmedOwnersMap).length === threshold;
+
+    // current owner has voted and consenus is not yet reached or the tx is executed, dont show
+    const shouldShowConfirmSection =
+      isExecuted ||
+      transactionHash ||
+      (!isConflicted && confirmedOwnersMap[account] && !isConsensusReached) ||
+      (isConflicted &&
+        confirmedOwnersMap[account] === "REJECTED" &&
+        !isConsensusReached)
+        ? false
+        : true;
+
+    const shouldShowOnlyReject =
+      !isConsensusReached &&
+      shouldShowConfirmSection &&
+      isConflicted &&
+      confirmedOwnersMap[account] === "APPROVED";
+
+    if (!shouldShowConfirmSection) return null;
+
+    if (!isConsensusReached) {
+      // show approve and reject
+      return executionAllowed ? (
+        <ConfirmSection>
+          <div className="buttons">
+            {!shouldShowOnlyReject && (
               <div className="approve-button">
                 <Button
                   type="button"
                   width="15rem"
-                  onClick={showExecuteModal}
-                  disabled={loadingTx || updating || isReadOnly}
+                  onClick={showApproveModal}
+                  disabled={isReadOnly}
                   loading={approving}
                 >
-                  Execute
+                  Approve
                 </Button>
               </div>
-              <div className="reject-button">
-                <Button
-                  type="button"
-                  width="15rem"
-                  onClick={rejectTransaction}
-                  disabled={loadingTx || updating || isReadOnly}
-                  loading={rejecting}
-                >
-                  Reject
-                </Button>
-              </div>
-            </div>
-          </ConfirmSection>
-        )
-      );
-    }
-
-    if (confirmedOwnersMap[account] === true) shouldShowConfirmSection = false;
-
-    // If there is any pending transaction, don't allow to execute
-    if (
-      (rejectedCount === threshold - 1 || confirmedCount === threshold - 1) &&
-      !executionAllowed
-    ) {
-      return (
-        shouldShowConfirmSection && (
-          <ConfirmSection className="d-flex justify-content-center align-items-center">
-            <ErrorText>
-              You have some pending transactions. Please execute them first.
-            </ErrorText>
-          </ConfirmSection>
-        )
-      );
-    }
-
-    return (
-      shouldShowConfirmSection && (
-        <ConfirmSection>
-          <div className="buttons">
-            <div className="approve-button">
-              <Button
-                type="button"
-                width="15rem"
-                onClick={showApproveModal}
-                disabled={loadingTx || updating || isReadOnly}
-                loading={approving}
-              >
-                Approve
-              </Button>
-            </div>
+            )}
             <div className="reject-button">
               <Button
                 type="button"
                 width="15rem"
-                onClick={rejectTransaction}
-                disabled={loadingTx || updating || isReadOnly}
+                onClick={showRejectModal}
+                disabled={isReadOnly}
                 loading={rejecting}
               >
                 Reject
@@ -580,8 +546,150 @@ export default function MultiSigTransactions() {
             </div>
           </div>
         </ConfirmSection>
-      )
-    );
+      ) : (
+        <ConfirmSection className="d-flex justify-content-center align-items-center">
+          <ErrorText>
+            You have some pending transactions. Please execute them first.
+          </ErrorText>
+        </ConfirmSection>
+      );
+    } else {
+      return (
+        <ConfirmSection>
+          <div className="buttons">
+            <div className="approve-button">
+              <Button
+                type="button"
+                width="15rem"
+                onClick={showExecuteModal}
+                disabled={isReadOnly}
+                loading={approving}
+              >
+                Execute
+              </Button>
+            </div>
+          </div>
+        </ConfirmSection>
+      );
+    }
+
+    // if (
+    //   safeOwners.length === threshold &&
+    //   Object.keys(confirmedOwnersMap).length === threshold &&
+    //   rejectedCount !== threshold &&
+    //   confirmedCount !== threshold &&
+    //   !transactionHash
+    // ) {
+    //   console.log({ confirmedOwnersMap, confirmedCount, rejectedCount });
+    //   shouldShowOnlyReject = true;
+    //   return (
+    //     shouldShowOnlyReject && (
+    //       <ConfirmSection>
+    //         <div className="buttons">
+    //           <div className="reject-button">
+    //             <Button
+    //               type="button"
+    //               width="15rem"
+    //               onClick={showRejectModal}
+    //               disabled={isReadOnly}
+    //               loading={rejecting}
+    //             >
+    //               Reject
+    //             </Button>
+    //           </div>
+    //         </div>
+    //       </ConfirmSection>
+    //     )
+    //   );
+    // }
+
+    // if (
+    //   Object.keys(confirmedOwnersMap).length === safeOwners.length &&
+    //   !transactionHash
+    // ) {
+    //   shouldShowExecuteAndReject = confirmations.find(
+    //     ({ owner, approved }) => owner === account && approved
+    //   );
+    //   return (
+    //     shouldShowExecuteAndReject && (
+    //       <ConfirmSection>
+    //         <div className="buttons">
+    //           <div className="approve-button">
+    //             <Button
+    //               type="button"
+    //               width="15rem"
+    //               onClick={showExecuteModal}
+    //               disabled={isReadOnly}
+    //               loading={approving}
+    //             >
+    //               Execute
+    //             </Button>
+    //           </div>
+    //           <div className="reject-button">
+    //             <Button
+    //               type="button"
+    //               width="15rem"
+    //               onClick={showRejectModal}
+    //               disabled={isReadOnly}
+    //               loading={rejecting}
+    //             >
+    //               Reject
+    //             </Button>
+    //           </div>
+    //         </div>
+    //       </ConfirmSection>
+    //     )
+    //   );
+    // }
+
+    // if (confirmedOwnersMap[account] === true) shouldShowConfirmSection = false;
+
+    // // If there is any pending transaction, don't allow to execute
+    // if (
+    //   (rejectedCount === threshold - 1 || confirmedCount === threshold - 1) &&
+    //   !executionAllowed
+    // ) {
+    //   return (
+    //     shouldShowConfirmSection && (
+    //       <ConfirmSection className="d-flex justify-content-center align-items-center">
+    //         <ErrorText>
+    //           You have some pending transactions. Please execute them first.
+    //         </ErrorText>
+    //       </ConfirmSection>
+    //     )
+    //   );
+    // }
+
+    // return (
+    //   shouldShowConfirmSection && (
+    //     <ConfirmSection>
+    //       <div className="buttons">
+    //         <div className="approve-button">
+    //           <Button
+    //             type="button"
+    //             width="15rem"
+    //             onClick={showApproveModal}
+    //             disabled={isReadOnly}
+    //             loading={approving}
+    //           >
+    //             Approve
+    //           </Button>
+    //         </div>
+    //         <div className="reject-button">
+    //           <Button
+    //             type="button"
+    //             width="15rem"
+    //             onClick={showRejectModal}
+    //             disabled={isReadOnly}
+    //             loading={rejecting}
+    //           >
+    //             Reject
+    //           </Button>
+    //         </div>
+    //       </div>
+    //     </ConfirmSection>
+    // )
+    // );
   };
 
   const renderTransactionDetails = () => {
@@ -688,6 +796,7 @@ export default function MultiSigTransactions() {
         )}
         {renderConfirmSection()}
         <ApproveTxModal />
+        <RejectTxModal />
         <ExecuteTxModal />
       </div>
     );
