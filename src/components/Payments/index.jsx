@@ -357,6 +357,8 @@ export default function Payments(props) {
         // TODO use Big.js to fix precision errors
         if (salaryToken === selectedTokenDetails.name) {
           total += Number(salaryAmount);
+        } else if (salaryToken === "USD") {
+          total += salaryAmount / prices[selectedTokenDetails.name];
         } else {
           total +=
             (salaryAmount * prices[salaryToken]) /
