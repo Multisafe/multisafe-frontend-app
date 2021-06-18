@@ -16,30 +16,19 @@ import {
 } from "store/global/selectors";
 import CheckBox from "components/common/CheckBox";
 import {
-  makeSelectFetching,
-  makeSelectMultisigTransactionHash,
-  makeSelectConfirmed,
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
-  makeSelectMultisigExecutionAllowed,
-  makeSelectTransactionId as makeSelectMultisigTransactionId,
 } from "store/multisig/selectors";
 import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
   confirmMultisigTransaction,
   submitMultisigTransaction,
-  clearMultisigTransactionHash,
-  getMultisigTransactionById,
 } from "store/multisig/actions";
 
 export const MODAL_NAME = "approve-tx-modal";
 const { MULTISEND_ADDRESS } = addresses;
 
-const FINAL_DECISION = {
-  APPROVE: "APPROVE",
-  REJECT: "REJECT",
-};
 function ApproveTxModal(props) {
   const { show, handleHide } = props;
   const { account } = useActiveWeb3React();
@@ -196,8 +185,6 @@ function ApproveTxModal(props) {
           confirmations,
         });
       }
-      setApproving(false);
-      handleHide();
     } catch (error) {
       console.error(error);
       setApproving(false);

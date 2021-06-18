@@ -18,6 +18,7 @@ import {
   confirmMultisigTransactionError,
   submitMultisigTransactionSuccess,
   submitMultisigTransactionError,
+  getMultisigTransactionById,
   getMultisigTransactionByIdError,
   getMultisigTransactionByIdSuccess,
 } from "./actions";
@@ -61,7 +62,7 @@ function* getMultisigTransactions({ safeAddress, offset, limit }) {
   }
 }
 
-function* getMultisigTransactionById(action) {
+function* fetchMultisigTransactionById(action) {
   const requestURL = `${getMultisigTransactionByIdEndpoint}?safeAddress=${action.safeAddress}&transactionId=${action.transactionId}`;
   const options = {
     method: "GET",
@@ -139,6 +140,12 @@ function* confirmMultisigTransaction(action) {
     yield put(
       confirmMultisigTransactionSuccess(result.transactionId, result.log)
     );
+    yield put(
+      getMultisigTransactionById(
+        action.body.safeAddress,
+        action.body.transactionId
+      )
+    );
   } catch (err) {
     yield put(confirmMultisigTransactionError(err));
   }
@@ -174,7 +181,10 @@ function* watchGetMultisigTransactions() {
 }
 
 function* watchGetMultisigTransactionById() {
-  yield takeLatest(GET_MULTISIG_TRANSACTION_BY_ID, getMultisigTransactionById);
+  yield takeLatest(
+    GET_MULTISIG_TRANSACTION_BY_ID,
+    fetchMultisigTransactionById
+  );
 }
 
 function* watchCreateMultisigTransaction() {

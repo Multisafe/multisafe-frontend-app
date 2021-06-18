@@ -533,7 +533,6 @@ export default function useMassPayout(props = {}) {
               contractTransactionHash
             );
           }
-          console.log({ approvedSign, contractTransactionHash });
 
           const txData = {
             // POST to gnosis
@@ -665,7 +664,6 @@ export default function useMassPayout(props = {}) {
                 contractTransactionHash
               );
             }
-            console.log({ confirmations });
 
             const confirmingAccounts = isApproved
               ? [

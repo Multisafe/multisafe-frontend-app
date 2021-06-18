@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useSelector, useDispatch } from "react-redux";
 
-import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
+import { useActiveWeb3React, useMassPayout } from "hooks";
 import {
   Modal,
   ModalHeader,
@@ -14,24 +14,13 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectThreshold,
 } from "store/global/selectors";
-import CheckBox from "components/common/CheckBox";
 import {
-  makeSelectFetching,
-  makeSelectMultisigTransactionHash,
-  makeSelectConfirmed,
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
-  makeSelectMultisigExecutionAllowed,
-  makeSelectTransactionId as makeSelectMultisigTransactionId,
 } from "store/multisig/selectors";
 import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
-import {
-  confirmMultisigTransaction,
-  submitMultisigTransaction,
-  clearMultisigTransactionHash,
-  getMultisigTransactionById,
-} from "store/multisig/actions";
+import { submitMultisigTransaction } from "store/multisig/actions";
 
 export const MODAL_NAME = "execute-tx-modal";
 const { MULTISEND_ADDRESS } = addresses;
@@ -44,9 +33,6 @@ function ExecuteTxModal(props) {
     txHash,
     loadingTx,
     submitMassPayout,
-    confirmMassPayout,
-    confirmTxData,
-    setConfirmTxData,
     txData,
     setTxData,
     approving,
@@ -141,7 +127,6 @@ function ExecuteTxModal(props) {
         );
       } else if (confirmedCount >= threshold) {
         setApproving(true);
-        console.log("approving");
 
         await submitMassPayout(
           {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useSelector, useDispatch } from "react-redux";
 
-import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
+import { useActiveWeb3React, useMassPayout } from "hooks";
 import {
   Modal,
   ModalHeader,
@@ -16,20 +16,13 @@ import {
 } from "store/global/selectors";
 import CheckBox from "components/common/CheckBox";
 import {
-  makeSelectFetching,
-  makeSelectMultisigTransactionHash,
-  makeSelectConfirmed,
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
-  makeSelectMultisigExecutionAllowed,
-  makeSelectTransactionId as makeSelectMultisigTransactionId,
 } from "store/multisig/selectors";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
   confirmMultisigTransaction,
   submitMultisigTransaction,
-  clearMultisigTransactionHash,
-  getMultisigTransactionById,
 } from "store/multisig/actions";
 
 export const MODAL_NAME = "reject-tx-modal";
@@ -92,7 +85,6 @@ function RejectTxModal(props) {
 
   useEffect(() => {
     if (confirmTxData && transactionDetails) {
-      console.log({ confirmTxData, transactionDetails });
       dispatch(
         confirmMultisigTransaction({
           safeAddress: ownerSafeAddress,
@@ -127,31 +119,16 @@ function RejectTxModal(props) {
   const rejectTransaction = async () => {
     const {
       safe,
-      // to,
       value,
-      // data,
-      // operation,
       gasToken,
       safeTxGas,
       baseGas,
       gasPrice,
       refundReceiver,
       nonce,
-      // executionDate,
-      // submissionDate,
-      // modified, //date
-      // blockNumber,
-      // transactionHash,
       safeTxHash,
       executor,
-      // isExecuted,
-      // isSuccessful,
-      // ethGasPrice,
-      // gasUsed,
-      // fee,
       origin,
-      // confirmationsRequired,
-      // signatures,
       rejectedCount,
       confirmations,
       // txDetails,
@@ -203,8 +180,6 @@ function RejectTxModal(props) {
           confirmations,
         });
       }
-      setRejecting(false);
-      handleHide();
     } catch (error) {
       console.error(error);
       setRejecting(false);
