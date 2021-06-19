@@ -250,8 +250,8 @@ function PeopleDetailsSidebar() {
         </div>
       </div>
       {renderInfo()}
-      <div className="pay-now-button">
-        <Button className="mr-3" width={"14rem"} onClick={handlePayNow}>
+      <div className="pay-button">
+        <Button width={"21rem"} onClick={handlePayNow}>
           Pay Now
         </Button>
       </div>
