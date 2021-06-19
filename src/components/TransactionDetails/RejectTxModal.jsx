@@ -24,6 +24,7 @@ import {
   confirmMultisigTransaction,
   submitMultisigTransaction,
 } from "store/multisig/actions";
+import { Information } from "components/Register/styles";
 
 export const MODAL_NAME = "reject-tx-modal";
 
@@ -191,14 +192,15 @@ function RejectTxModal(props) {
       <ModalHeader toggle={handleHide} />
       <ModalBody>
         <div className="title">Reject Transaction</div>
-        <div className="subtitle">
-          To reject this transaction, you must sign the transaction.
+        <div className="subtitle mb-5">
+          You're about to reject a transaction and will have to confirm it with
+          your currently connected wallet.
         </div>
         {showExecute && (
           <React.Fragment>
-            <div className="subtitle text-danger">
-              Rejecting this transaction executes it right away. If you want
-              approve but execute the transaction manually later, click on the
+            <div className="subtitle text-danger mb-4">
+              Rejecting this transaction executes it right away. If you want to
+              reject but execute the transaction manually later, click on the
               checkbox below.
             </div>
 
@@ -211,6 +213,11 @@ function RejectTxModal(props) {
                 label={`Execute Transaction`}
               />
             </div>
+
+            <Information className="my-5">
+              Make sure you have sufficient Ether in this wallet to fund this
+              confirmation.
+            </Information>
           </React.Fragment>
         )}
         <div className="d-flex justify-content-center align-items-center mt-4">

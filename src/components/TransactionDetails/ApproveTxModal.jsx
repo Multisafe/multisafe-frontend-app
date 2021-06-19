@@ -25,6 +25,7 @@ import {
   confirmMultisigTransaction,
   submitMultisigTransaction,
 } from "store/multisig/actions";
+import { Information } from "components/Register/styles";
 
 export const MODAL_NAME = "approve-tx-modal";
 const { MULTISEND_ADDRESS } = addresses;
@@ -197,12 +198,13 @@ function ApproveTxModal(props) {
       <ModalBody>
         <div className="title">Approve Transaction</div>
         <div className="subtitle mb-5">
-          To approve this transaction, you must sign the transaction.
+          You're about to approve a transaction and will have to confirm it with
+          your currently connected wallet.
         </div>
         {showExecute && (
           <React.Fragment>
-            <div className="subtitle text-danger mb-3">
-              Approving this transaction executes it right away. If you want
+            <div className="subtitle text-danger mb-4">
+              Approving this transaction executes it right away. If you want to
               approve but execute the transaction manually later, click on the
               checkbox below.
             </div>
@@ -216,6 +218,11 @@ function ApproveTxModal(props) {
                 label={`Execute Transaction`}
               />
             </div>
+
+            <Information className="my-5">
+              Make sure you have sufficient Ether in this wallet to fund this
+              confirmation.
+            </Information>
           </React.Fragment>
         )}
         <div className="d-flex justify-content-center align-items-center mt-5">

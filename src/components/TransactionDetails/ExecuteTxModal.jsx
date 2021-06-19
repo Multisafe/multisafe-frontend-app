@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -21,6 +21,9 @@ import {
 import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { submitMultisigTransaction } from "store/multisig/actions";
+import { Information } from "components/Register/styles";
+import LinkIcon from "assets/icons/dashboard/link-icon.svg";
+import Img from "components/common/Img";
 
 export const MODAL_NAME = "execute-tx-modal";
 const { MULTISEND_ADDRESS } = addresses;
@@ -28,6 +31,7 @@ const { MULTISEND_ADDRESS } = addresses;
 function ExecuteTxModal(props) {
   const { show, handleHide } = props;
   const { account } = useActiveWeb3React();
+  const [isOnChainRejection, setIsOnChainRejection] = useState();
 
   const {
     txHash,
@@ -156,17 +160,56 @@ function ExecuteTxModal(props) {
     }
   };
 
+  useEffect(() => {
+    if (transactionDetails && threshold) {
+      const { rejectedCount } = transactionDetails;
+
+      if (rejectedCount >= threshold) {
+        setIsOnChainRejection(true);
+      } else {
+        setIsOnChainRejection(false);
+      }
+    }
+  }, [transactionDetails, threshold]);
+
   return (
     <Modal toggle={handleHide} isOpen={show}>
       <ModalHeader toggle={handleHide} />
       <ModalBody>
         <div className="title">Execute Transaction</div>
-        <div className="subtitle">
+        <div className="subtitle mb-5">
           You're about to execute a transaction and will have to confirm it with
-          your currently connected wallet. Make sure you have {`<`}{" "}
-          <span className="font-bold">0.001</span> (fee price) Ether in this
-          wallet to fund this confirmation.
+          your currently connected wallet.
         </div>
+
+        {isOnChainRejection && (
+          <div>
+            <div className="subtitle text-danger mb-0">
+              This is an on-chain rejection that doesn't send any funds.
+            </div>
+            <div className="subtitle mt-2 mb-4">
+              <a
+                href="https://help.gnosis-safe.io/en/articles/4738501-why-do-i-need-to-pay-for-cancelling-a-transaction"
+                rel="noopener noreferrer"
+                target="_blank"
+                className="d-flex align-items-center"
+              >
+                <span className="mt-1">
+                  Why do I need to pay for rejecting a transaction?
+                </span>
+
+                <span className="ml-2">
+                  <Img src={LinkIcon} alt="link" width="12" />
+                </span>
+              </a>
+            </div>
+          </div>
+        )}
+
+        <Information className="mb-5">
+          Make sure you have sufficient Ether in this wallet to fund this
+          confirmation.
+        </Information>
 
         <div className="d-flex justify-content-center align-items-center mt-4">
           <div>

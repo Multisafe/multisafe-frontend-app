@@ -102,6 +102,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   a {
+    color: ${({ theme }) => theme.primary};
     &:hover, &:focus {
       text-decoration: none;
       color: inherit;
