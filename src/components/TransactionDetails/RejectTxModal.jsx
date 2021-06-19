@@ -199,9 +199,9 @@ function RejectTxModal(props) {
         {showExecute && (
           <React.Fragment>
             <div className="subtitle text-danger mb-4">
-              Rejecting this transaction executes it right away. If you want to
-              reject but execute the transaction manually later, click on the
-              checkbox below.
+              This is an on-chain rejection that doesn't send any funds. If you
+              want to reject but execute the transaction manually later, click
+              on the checkbox below.
             </div>
 
             <div>
