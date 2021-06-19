@@ -556,6 +556,8 @@ export default function useMassPayout(props = {}) {
         } catch (err) {
           setLoadingTx(false);
           console.log(err.message);
+          setApproving(false);
+          setRejecting(false);
         }
       } catch (err) {
         setLoadingTx(false);
@@ -826,6 +828,8 @@ export default function useMassPayout(props = {}) {
         } catch (err) {
           setLoadingTx(false);
           console.log(err.message);
+          setApproving(false);
+          setRejecting(false);
         }
       } catch (err) {
         setLoadingTx(false);

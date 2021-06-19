@@ -100,9 +100,8 @@ function ExecuteTxModal(props) {
     } = transactionDetails;
 
     try {
-      setRejecting(true);
-
       if (rejectedCount >= threshold) {
+        setRejecting(true);
         // submit final reject tx
         await submitMassPayout(
           {
