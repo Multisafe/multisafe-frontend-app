@@ -75,7 +75,7 @@ const metaTxKey = "metatx";
 export default function QuickTransfer(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
-  const { handleHide } = props;
+  const { handleHide, defaultValues } = props;
   const { account } = useActiveWeb3React();
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
@@ -367,7 +367,7 @@ export default function QuickTransfer(props) {
           options={tokensDropdown}
           isSearchable
           placeholder={`Select Currency...`}
-          defaultValue={null}
+          defaultValue={defaultValues ? defaultValues.token : null}
           isLoading={loadingTokens}
         />
       </div>
@@ -387,6 +387,11 @@ export default function QuickTransfer(props) {
               }}
               placeholder="Wallet Address"
               style={{ maxWidth: "32rem" }}
+              defaultValue={
+                defaultValues && defaultValues.receivers[index]
+                  ? defaultValues.receivers[index].address
+                  : ""
+              }
             />
 
             {selectedToken && (
@@ -402,7 +407,11 @@ export default function QuickTransfer(props) {
                       return true;
                     },
                   }}
-                  defaultValue=""
+                  defaultValue={
+                    defaultValues && defaultValues.receivers[index]
+                      ? defaultValues.receivers[index].amount
+                      : ""
+                  }
                   render={({ onChange, value }) => (
                     <CurrencyInput
                       type="number"
@@ -478,6 +487,7 @@ export default function QuickTransfer(props) {
           placeholder="Paid 500 DAI to John Doe..."
           rows="3"
           cols="50"
+          defaultValue={defaultValues ? defaultValues.description : ""}
         />
       </div>
 

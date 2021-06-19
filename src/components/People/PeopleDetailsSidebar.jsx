@@ -11,7 +11,10 @@ import {
 import { togglePeopleDetails } from "store/layout/actions";
 import Avatar from "components/common/Avatar";
 import CopyButton from "components/common/Copy";
-import { makeSelectTokensDetails } from "store/tokens/selectors";
+import {
+  makeSelectTokenList,
+  makeSelectTokensDetails,
+} from "store/tokens/selectors";
 import { PeopleDetails } from "./styles";
 import EtherscanLink from "components/common/EtherscanLink";
 import Button from "components/common/Button";
@@ -20,6 +23,7 @@ import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "./AddSinglePeopleModal";
 import { constructLabel } from "utils/tokens";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import { formatNumber } from "utils/number-helpers";
+import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
 
 const sidebarStyles = {
   bmCrossButton: {
@@ -56,6 +60,7 @@ function PeopleDetailsSidebar() {
   const isPeopleDetailsOpen = useSelector(makeSelectIsPeopleDetailsOpen());
   const peopleDetails = useSelector(makeSelectPeopleDetails());
   const tokenDetails = useSelector(makeSelectTokensDetails());
+  const tokenList = useSelector(makeSelectTokenList());
 
   const dispatch = useDispatch();
 
@@ -69,6 +74,63 @@ function PeopleDetailsSidebar() {
 
   const handleDelete = () => {
     dispatch(show(DELETE_PEOPLE_MODAL, { peopleId: peopleDetails.peopleId }));
+  };
+
+  const handlePayNow = () => {
+    const {
+      firstName,
+      lastName,
+      departmentName,
+      salaryAmount,
+      salaryToken,
+      address,
+    } = peopleDetails;
+
+    const token =
+      salaryToken !== "USD"
+        ? tokenList
+            .filter((details) => details.name === salaryToken)
+            .map((details) => ({
+              value: details.name,
+              label: constructLabel({
+                token: details.name,
+                component: (
+                  <div>
+                    {formatNumber(details.balance, 5)} {details.name}
+                  </div>
+                ),
+                imgUrl: details.icon,
+              }),
+            }))[0]
+        : {
+            value: tokenList[0].name,
+            label: constructLabel({
+              token: tokenList[0].name,
+              component: (
+                <div>
+                  {formatNumber(tokenList[0].balance, 5)} {tokenList[0].name}
+                </div>
+              ),
+              imgUrl: tokenList[0].icon,
+            }),
+          };
+
+    const description =
+      `Paying ${salaryAmount} ${salaryToken} to ${firstName} ${lastName} (${departmentName}).`
+        .replace(/\s+/g, " ")
+        .trim();
+
+    closeSidebar();
+    dispatch(
+      show(QUICK_TRANSFER_MODAL, {
+        defaultValues: {
+          receivers: [{ address, amount: salaryAmount }],
+          tokenName: salaryToken,
+          token,
+          description,
+        },
+      })
+    );
   };
 
   const handleEdit = () => {
@@ -188,6 +250,11 @@ function PeopleDetailsSidebar() {
         </div>
       </div>
       {renderInfo()}
+      <div className="pay-now-button">
+        <Button className="mr-3" width={"14rem"} onClick={handlePayNow}>
+          Pay Now
+        </Button>
+      </div>
       <div className="modify-buttons">
         <Button className="mr-3" width={"10rem"} onClick={handleEdit}>
           Edit
