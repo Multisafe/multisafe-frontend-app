@@ -57,6 +57,7 @@ function DataSharingModal(props) {
           <div>
             <Button
               width="16rem"
+              className={!isDataSharingAllowed ? "primary" : "secondary-2"}
               onClick={() => handleToggleDataSharing(isDataSharingAllowed)}
               loading={updating}
               disabled={updating}

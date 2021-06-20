@@ -45,8 +45,6 @@ export default function Profile() {
   const error = useSelector(makeSelectError());
   const isDataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
 
-  console.log({ isDataSharingAllowed });
-
   const { register, handleSubmit, watch, formState, errors, setValue } =
     useForm({ mode: "onChange" });
 
@@ -158,6 +156,7 @@ export default function Profile() {
       <div className="mt-4">
         <Button
           type="button"
+          className={!isDataSharingAllowed ? "primary" : "secondary-2"}
           onClick={showDataSharingModal}
           disabled={isReadOnly}
         >
