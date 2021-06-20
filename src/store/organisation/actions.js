@@ -2,9 +2,6 @@ import {
   MODIFY_ORGANISATION_NAME,
   MODIFY_ORGANISATION_NAME_SUCCESS,
   MODIFY_ORGANISATION_NAME_ERROR,
-  GET_DATA_SHARING,
-  GET_DATA_SHARING_SUCCESS,
-  GET_DATA_SHARING_ERROR,
   TOGGLE_DATA_SHARING,
   TOGGLE_DATA_SHARING_SUCCESS,
   TOGGLE_DATA_SHARING_ERROR,
@@ -33,32 +30,10 @@ export function modifyOrganisationNameError(error) {
   };
 }
 
-export function getDataSharing(safeAddress) {
-  return {
-    type: GET_DATA_SHARING,
-    safeAddress,
-  };
-}
-
-export function getDataSharingSuccess(isEnabled, log) {
-  return {
-    type: GET_DATA_SHARING_SUCCESS,
-    isEnabled,
-    log,
-  };
-}
-
-export function getDataSharingError(error) {
-  return {
-    type: GET_DATA_SHARING_ERROR,
-    error,
-  };
-}
-
-export function toggleDataSharing(isEnabled, safeAddress) {
+export function toggleDataSharing(isDataSharingAllowed, safeAddress) {
   return {
     type: TOGGLE_DATA_SHARING,
-    isEnabled,
+    isDataSharingAllowed,
     safeAddress,
   };
 }

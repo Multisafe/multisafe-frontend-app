@@ -9,10 +9,21 @@ const makeSelectLoading = () =>
     (organisationState) => organisationState.loading
   );
 
+const makeSelectUpdating = () =>
+  createSelector(
+    selectOrganisation,
+    (organisationState) => organisationState.updating
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectOrganisation,
     (organisationState) => organisationState.error
   );
 
-export { selectOrganisation, makeSelectLoading, makeSelectError };
+export {
+  selectOrganisation,
+  makeSelectLoading,
+  makeSelectUpdating,
+  makeSelectError,
+};

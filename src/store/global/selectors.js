@@ -46,6 +46,9 @@ const makeSelectIsOrganisationPublic = () =>
     (globalState) => globalState.organisationType === 1
   );
 
+const makeSelectIsDataSharingAllowed = () =>
+  createSelector(selectGlobal, (globalState) => globalState.dataSharingAllowed);
+
 export {
   makeSelectOwnerName,
   makeSelectOwnerSafeAddress,
@@ -58,4 +61,5 @@ export {
   makeSelectIsOrganisationPublic,
   makeSelectIsOrganisationPrivate,
   makeSelectIsOwner,
+  makeSelectIsDataSharingAllowed,
 };

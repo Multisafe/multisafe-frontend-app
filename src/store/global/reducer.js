@@ -10,6 +10,7 @@ import {
   GET_SAFE_INFO,
   GET_SAFE_INFO_SUCCESS,
   GET_SAFE_INFO_ERROR,
+  SET_DATA_SHARING,
 } from "./action-types";
 
 export const initialState = {
@@ -23,6 +24,7 @@ export const initialState = {
   loading: false,
   error: false,
   isReadOnly: false,
+  dataSharingAllowed: undefined,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -56,6 +58,10 @@ const reducer = (state = initialState, action) =>
         draft.isReadOnly = action.isReadOnly;
         break;
 
+      case SET_DATA_SHARING:
+        draft.dataSharingAllowed = action.dataSharingAllowed;
+        break;
+
       case CLEAR_GLOBAL_STATE:
         draft.ownerName = "";
         draft.ownerSafeAddress = "";
@@ -77,6 +83,7 @@ const reducer = (state = initialState, action) =>
         draft.organisationType = action.organisationType;
         draft.ownerName = action.name;
         draft.ownerSafeAddress = action.safeAddress;
+        draft.dataSharingAllowed = action.dataSharingAllowed;
         break;
       case GET_SAFE_INFO_ERROR:
         draft.loading = false;

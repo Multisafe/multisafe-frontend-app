@@ -9,6 +9,7 @@ import {
   GET_SAFE_INFO_SUCCESS,
   GET_SAFE_INFO_ERROR,
   SET_READ_ONLY,
+  SET_DATA_SHARING,
 } from "./action-types";
 
 export function setOwnerName(name) {
@@ -56,6 +57,13 @@ export function setReadOnly(isReadOnly) {
   };
 }
 
+export function setDataSharingAllowed(dataSharingAllowed) {
+  return {
+    type: SET_DATA_SHARING,
+    dataSharingAllowed,
+  };
+}
+
 export function clearGlobalState() {
   return {
     type: CLEAR_GLOBAL_STATE,
@@ -77,6 +85,7 @@ export function getSafeInfoSuccess({
   isOwner,
   organisationType,
   safeAddress,
+  dataSharingAllowed,
 }) {
   return {
     type: GET_SAFE_INFO_SUCCESS,
@@ -86,6 +95,7 @@ export function getSafeInfoSuccess({
     isOwner,
     organisationType,
     safeAddress,
+    dataSharingAllowed,
   };
 }
 

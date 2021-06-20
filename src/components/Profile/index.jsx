@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import ReactTooltip from "react-tooltip";
+import { show } from "redux-modal";
 
 import Button from "components/common/Button";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectOwnerName,
   makeSelectIsReadOnly,
+  makeSelectIsDataSharingAllowed,
 } from "store/global/selectors";
 import CopyButton from "components/common/Copy";
 import { useInjectReducer } from "utils/injectReducer";
@@ -25,21 +27,25 @@ import { ErrorMessage, Input } from "components/common/Form";
 import EtherscanLink from "components/common/EtherscanLink";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import ErrorText from "components/common/ErrorText";
-import CheckBox from "components/common/CheckBox";
 import Img from "components/common/Img";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
+import DataSharingModal, {
+  MODAL_NAME as DATA_SHARING_MODAL,
+} from "./DataSharingModal";
 
 const organisationKey = "organisation";
 
 export default function Profile() {
   const [disabled, setDisabled] = useState();
-  const [checkedDataSharing, setCheckedDataSharing] = useState();
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationName = useSelector(makeSelectOwnerName());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const loading = useSelector(makeSelectLoading());
   const error = useSelector(makeSelectError());
+  const isDataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
+
+  console.log({ isDataSharingAllowed });
 
   const { register, handleSubmit, watch, formState, errors, setValue } =
     useForm({ mode: "onChange" });
@@ -65,8 +71,8 @@ export default function Profile() {
 
   const dispatch = useDispatch();
 
-  const toggleChecked = () => {
-    setCheckedDataSharing((checkedDataSharing) => !checkedDataSharing);
+  const showDataSharingModal = () => {
+    dispatch(show(DATA_SHARING_MODAL));
   };
 
   const onSubmit = (values) => {
@@ -129,7 +135,10 @@ export default function Profile() {
           src={InfoIcon}
           alt="info"
           data-for={`data-sharing`}
-          data-tip={`If data sharing is enabled, all your data (such as people and transactions)<br /> will be publicly visible even outside MultiSafe`}
+          data-tip={`
+          If data sharing is enabled, all your data (such as people, transaction history etc.)
+          <br /> 
+          will be publicly visible even outside MultiSafe`}
         />
         <ReactTooltip
           id={`data-sharing`}
@@ -140,17 +149,24 @@ export default function Profile() {
         />
       </div>
       <div className="subtitle">
-        Enable or disable data sharing for your organisation
+        Data sharing for your organisation is currently{" "}
+        <span className="text-bold">
+          {isDataSharingAllowed ? "enabled" : "disabled"}
+        </span>
       </div>
-      <div className="data-sharing">
-        <CheckBox
-          type="checkbox"
-          id="allCheckbox"
-          checked={checkedDataSharing}
-          onChange={toggleChecked}
-          label={`Enable Data Sharing`}
-        />
+
+      <div className="mt-4">
+        <Button
+          type="button"
+          onClick={showDataSharingModal}
+          disabled={isReadOnly}
+        >
+          {!isDataSharingAllowed
+            ? `Enable Data Sharing`
+            : `Disable Data Sharing`}
+        </Button>
       </div>
+      <DataSharingModal />
     </div>
   );
 

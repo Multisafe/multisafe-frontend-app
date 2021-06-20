@@ -68,6 +68,7 @@ export const updateOwnerNameEndpoint = `${ROOT_BE_URL}/api/v1/users/updateOwnerD
 
 // ORGANISATION
 export const updateOrganisationNameEndpoint = `${ROOT_BE_URL}/api/v1/users/update/name`;
+export const organisationPermissionsEndpoint = `${ROOT_BE_URL}/api/v1/users/permissions`;
 
 // GNOSIS
 export const gnosisSafeTransactionEndpoint =

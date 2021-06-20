@@ -6,6 +6,7 @@ export const SET_OWNERS_AND_THRESHOLD =
 export const SET_ORGANISATION_TYPE = "multisafe/global/SET_ORGANISATION_TYPE";
 export const CLEAR_GLOBAL_STATE = "multisafe/global/CLEAR_GLOBAL_STATE";
 export const SET_READ_ONLY = "multisafe/global/SET_READ_ONLY";
+export const SET_DATA_SHARING = "multisafe/global/SET_DATA_SHARING";
 
 export const GET_SAFE_INFO = "multisafe/global/GET_SAFE_INFO";
 export const GET_SAFE_INFO_SUCCESS = "multisafe/global/GET_SAFE_INFO_SUCCESS";
