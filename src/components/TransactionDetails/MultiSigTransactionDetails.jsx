@@ -179,7 +179,7 @@ export default function MultiSigTransactions() {
     return "#fcbc04";
   };
 
-  const renderConfirmationStatus = (confirmations, createdBy) => {
+  const renderConfirmationStatus = ({ confirmations, createdBy, executor }) => {
     if (!confirmations || !confirmations.length) return;
 
     const statuses =
@@ -232,6 +232,7 @@ export default function MultiSigTransactions() {
           subtitle={subtitle}
           backgroundColor={backgroundColor}
           isInitiator={createdBy && ownerInfo.owner === createdBy}
+          isExecutor={executor && ownerInfo.owner === executor}
         />
       )
     );
@@ -370,6 +371,7 @@ export default function MultiSigTransactions() {
       confirmedCount,
       confirmations,
       txDetails,
+      executor,
     } = transactionDetails;
 
     const {
@@ -417,7 +419,7 @@ export default function MultiSigTransactions() {
 
         <StepperCard>
           <Stepper count={safeOwners.length}>
-            {renderConfirmationStatus(confirmations, createdBy)}
+            {renderConfirmationStatus({ confirmations, createdBy, executor })}
           </Stepper>
         </StepperCard>
 

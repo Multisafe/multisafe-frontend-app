@@ -12,10 +12,23 @@ export function StepCircle({
   title,
   subtitle,
   isInitiator,
+  isExecutor,
   titleColor,
   stepStyles = {},
   ...rest
 }) {
+  const renderInitiatorAndExecutor = (isInitiator, isExecutor) => {
+    let text = "";
+    if (isInitiator && isExecutor) {
+      text = "Initiator/Executor";
+    } else if (isInitiator) {
+      text = "Initiator";
+    } else if (isExecutor) {
+      text = "Executor";
+    }
+
+    return text && <div className="step-text">{text}</div>;
+  };
   return (
     <div className="step" style={stepStyles} {...rest}>
       <div className="step-container">
@@ -37,7 +50,7 @@ export function StepCircle({
       <div className="step-info-text">
         <div className="step-title">{title}</div>
         <div className="step-subtitle">{subtitle}</div>
-        {isInitiator && <div className="step-text">Initiator</div>}
+        {renderInitiatorAndExecutor(isInitiator, isExecutor)}
       </div>
     </div>
   );
