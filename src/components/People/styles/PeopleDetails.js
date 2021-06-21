@@ -76,10 +76,18 @@ export default styled(Menu)`
     }
   }
 
+  .pay-button {
+    width: 100%;
+    padding: 0 3rem;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+  }
+
   .modify-buttons {
     display: flex !important;
     justify-content: center;
     align-items: center;
-    margin-top: 30rem;
+    margin-top: 2rem;
   }
 `;

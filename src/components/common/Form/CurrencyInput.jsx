@@ -30,18 +30,20 @@ const MultiCurrencyInputField = ({
 
   const handleUsdValueChange = (value) => {
     setConversionValue(value);
-    const tokenValue = value
-      ? Big(value).div(Big(conversionRate)).toString()
-      : "";
+    const tokenValue =
+      value && conversionRate
+        ? Big(value).div(Big(conversionRate)).toString()
+        : "";
     onChange(tokenValue);
   };
 
   const handleTokenValueChange = (value) => {
     setSwapped(false);
 
-    const newConversionValue = value
-      ? Big(value).mul(Big(conversionRate)).toString()
-      : "";
+    const newConversionValue =
+      value && conversionRate
+        ? Big(value).mul(Big(conversionRate)).toString()
+        : "";
     setConversionValue(newConversionValue);
     onChange(value);
   };
@@ -50,9 +52,10 @@ const MultiCurrencyInputField = ({
     if (!value) {
       setConversionValue("");
     } else {
-      const newConversionValue = value
-        ? Big(value).mul(Big(conversionRate)).toString()
-        : "";
+      const newConversionValue =
+        value && conversionRate
+          ? Big(value).mul(Big(conversionRate)).toString()
+          : "";
       if (!conversionValue) setConversionValue(newConversionValue);
     }
   }, [value, conversionRate, conversionValue]);
@@ -69,16 +72,18 @@ const MultiCurrencyInputField = ({
 
     if (swap) {
       onChange(conversionValue);
-      const newConversionValue = conversionValue
-        ? Big(conversionValue).mul(Big(conversionRate)).toString()
-        : "";
+      const newConversionValue =
+        conversionValue && conversionRate
+          ? Big(conversionValue).mul(Big(conversionRate)).toString()
+          : "";
       setConversionValue(newConversionValue);
     } else {
       setConversionValue(value);
 
-      const tokenValue = value
-        ? Big(value).div(Big(conversionRate)).toString()
-        : "";
+      const tokenValue =
+        value && conversionRate
+          ? Big(value).div(Big(conversionRate)).toString()
+          : "";
       onChange(tokenValue);
     }
     setSwapped(swap);

@@ -10,6 +10,12 @@ export default styled.div`
   display: flex;
   flex-direction: column;
 
+  .name-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .title {
     font-size: 1.4rem;
     font-weight: 900;
@@ -22,6 +28,13 @@ export default styled.div`
     margin-bottom: 1rem;
   }
 
+  .subtitle {
+    font-size: 1.4rem;
+    font-weight: normal;
+    text-align: left;
+    color: #373737;
+  }
+
   .address {
     display: flex;
     align-items-center;
@@ -32,5 +45,14 @@ export default styled.div`
     letter-spacing: normal;
     color: #989898;
     word-break: break-all;
+  }
+
+  .data-sharing {
+    font-size: 1.4rem;
+    font-weight: normal;
+    text-align: left;
+    color: #373737;
+    display: flex;
+    margin-top: 2rem;
   }
 `;

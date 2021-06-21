@@ -8,13 +8,16 @@ import { setReadOnly } from "store/global/actions";
 import {
   makeSelectOrganisationType,
   makeSelectIsOwner,
+  makeSelectIsDataSharingAllowed,
 } from "store/global/selectors";
 import { ORGANISATION_TYPE } from "store/login/resources";
+import { logoutUser } from "store/logout/actions";
 
 export default function useAuth() {
   const [sign] = useLocalStorage("SIGNATURE");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const organisationType = useSelector(makeSelectOrganisationType());
+  const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
   const isOwner = useSelector(makeSelectIsOwner());
 
   const dispatch = useDispatch();
@@ -48,6 +51,8 @@ export default function useAuth() {
           // No READ ONLY for private org
           setIsAuthenticated(false);
           dispatch(setReadOnly(false));
+        } else if (!dataSharingAllowed) {
+          dispatch(logoutUser());
         } else {
           // READ ONLY for DAOs
           setIsAuthenticated(false);
@@ -55,7 +60,14 @@ export default function useAuth() {
         }
       }
     }
-  }, [sign, dispatch, organisationType, checkValidAccessToken, isOwner]);
+  }, [
+    sign,
+    dispatch,
+    organisationType,
+    checkValidAccessToken,
+    dataSharingAllowed,
+    isOwner,
+  ]);
 
   return isAuthenticated;
 }
