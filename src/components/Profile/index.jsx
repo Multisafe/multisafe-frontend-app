@@ -10,6 +10,7 @@ import {
   makeSelectOwnerName,
   makeSelectIsReadOnly,
   makeSelectIsDataSharingAllowed,
+  makeSelectIsOrganisationPublic,
 } from "store/global/selectors";
 import CopyButton from "components/common/Copy";
 import { useInjectReducer } from "utils/injectReducer";
@@ -44,6 +45,7 @@ export default function Profile() {
   const loading = useSelector(makeSelectLoading());
   const error = useSelector(makeSelectError());
   const isDataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
+  const isOrganisationPublic = useSelector(makeSelectIsOrganisationPublic());
 
   const { register, handleSubmit, watch, formState, errors, setValue } =
     useForm({ mode: "onChange" });
@@ -178,7 +180,7 @@ export default function Profile() {
         </div>
       </InfoCard>
       <ProfileContainer>{renderOrganisationDetails()}</ProfileContainer>
-      <ProfileContainer>{renderShareData()}</ProfileContainer>
+      {isOrganisationPublic && <ProfileContainer>{renderShareData()}</ProfileContainer>}
     </div>
   );
 }
