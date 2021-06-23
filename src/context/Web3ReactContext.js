@@ -28,7 +28,7 @@ export default function Web3ReactProvider({ children }) {
           setWallet(wallet);
           console.log(`${wallet.name} is connected`);
 
-          const ethersProvider = new Web3Provider(wallet.provider);
+          const ethersProvider = new Web3Provider(wallet.provider, "any");
 
           // provider = ethersProvider;
           setProvider(ethersProvider);
@@ -46,9 +46,8 @@ export default function Web3ReactProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    const previouslySelectedWallet = window.localStorage.getItem(
-      "selectedWallet"
-    );
+    const previouslySelectedWallet =
+      window.localStorage.getItem("selectedWallet");
 
     if (previouslySelectedWallet && onboard) {
       onboard.walletSelect(previouslySelectedWallet);

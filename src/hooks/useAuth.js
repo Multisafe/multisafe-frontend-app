@@ -42,10 +42,15 @@ export default function useAuth() {
     if (organisationType !== undefined) {
       const accessToken = localStorage.getItem("token");
       const isAuthenticated = checkValidAccessToken(accessToken);
-      if (isOwner && isAuthenticated) {
-        // READ and WRITE
+      if (isAuthenticated) {
         setIsAuthenticated(true);
-        dispatch(setReadOnly(false));
+        if (isOwner) {
+          // READ and WRITE
+          dispatch(setReadOnly(false));
+        } else {
+          // READ ONLY
+          dispatch(setReadOnly(true));
+        }
       } else {
         if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
           // No READ ONLY for private org
