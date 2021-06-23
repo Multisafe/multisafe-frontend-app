@@ -42,6 +42,7 @@ export default function useAuth() {
     if (organisationType !== undefined) {
       const accessToken = localStorage.getItem("token");
       const isAuthenticated = checkValidAccessToken(accessToken);
+      console.log({ dataSharingAllowed, isAuthenticated, isOwner });
       if (isAuthenticated) {
         setIsAuthenticated(true);
         if (isOwner) {
@@ -57,6 +58,7 @@ export default function useAuth() {
           setIsAuthenticated(false);
           dispatch(setReadOnly(false));
         } else if (!dataSharingAllowed) {
+          console.log("logging out...");
           dispatch(logoutUser());
         } else {
           // READ ONLY for DAOs
