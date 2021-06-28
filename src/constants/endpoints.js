@@ -70,6 +70,9 @@ export const updateOwnerNameEndpoint = `${ROOT_BE_URL}/api/v1/users/updateOwnerD
 export const updateOrganisationNameEndpoint = `${ROOT_BE_URL}/api/v1/users/update/name`;
 export const organisationPermissionsEndpoint = `${ROOT_BE_URL}/api/v1/users/permissions`;
 
+// STATS
+export const getAdminStatsEndpoint = `${ROOT_BE_URL}/api/v1/admin/stats/get`;
+
 // GNOSIS
 export const gnosisSafeTransactionEndpoint =
   process.env.REACT_APP_NETWORK_NAME === networkNames.MAINNET

@@ -4,6 +4,7 @@ export const routeTemplates = {
   signup: "/signup",
   acceptInvite: "/accept-invite",
   delegateTransfer: "/delegate-transfer",
+  adminStats: "/admin/stats",
 
   dashboard: {
     root: "/dashboard/:safeAddress",
