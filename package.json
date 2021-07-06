@@ -2,7 +2,7 @@
   "name": "multisafe-frontend-app",
   "version": "0.1.0",
   "private": true,
-  "homepage" : "./",
+  "homepage": "./",
   "dependencies": {
     "@ethersproject/experimental": "^5.0.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
@@ -48,6 +48,7 @@
     "react-tooltip": "^4.2.17",
     "react-window": "^1.8.6",
     "reactstrap": "^8.6.0",
+    "recharts": "^2.0.9",
     "redux": "^4.0.5",
     "redux-modal": "^4.0.0",
     "redux-persist": "4.10.2",

@@ -7,18 +7,13 @@ import overviewReducer from "store/overview/reducer";
 import overviewSaga from "store/overview/saga";
 import { getOverview } from "store/overview/actions";
 import {
-  makeSelectLoading as makeSelectLoadingOverview,
-  makeSelectMoneyIn,
-  makeSelectMoneyOut,
-} from "store/overview/selectors";
-import {
   makeSelectTotalBalance,
   makeSelectLoading as makeSelectLoadingTokens,
 } from "store/tokens/selectors";
 import Loading from "components/common/Loading";
 import { formatNumber } from "utils/number-helpers";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-
+import PortfolioGraph from "./PortfolioGraph";
 import { Overview } from "./styles";
 import { getTokens } from "store/tokens/actions";
 
@@ -35,10 +30,7 @@ export default function OverviewCard() {
 
   const totalBalance = useSelector(makeSelectTotalBalance());
   const loadingTokens = useSelector(makeSelectLoadingTokens());
-  const loadingOverview = useSelector(makeSelectLoadingOverview());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const moneyIn = useSelector(makeSelectMoneyIn());
-  const moneyOut = useSelector(makeSelectMoneyOut());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -70,21 +62,8 @@ export default function OverviewCard() {
           {loadingTokens && renderLoading()}
         </div>
       </div>
-      <div className="right">
-        <div className="money-in">
-          <div className="heading">Money in last month</div>
-          <div className="value-container">
-            <span className="plus">+</span> ${formatNumber(moneyIn)}
-            {loadingOverview && renderLoading()}
-          </div>
-        </div>
-        <div className="money-out">
-          <div className="heading">Money out last month</div>
-          <div className="value-container grey">
-            <span className="minus">-</span> ${formatNumber(moneyOut)}
-            {loadingOverview && renderLoading()}
-          </div>
-        </div>
+      <div className="graph">
+        <PortfolioGraph />
       </div>
     </Overview>
   );
