@@ -5,6 +5,7 @@ import { makeSelectOwnerName } from "store/global/selectors";
 
 import OverviewCard from "./OverviewCard";
 import ExpensesCard from "./ExpensesCard";
+import AssetsCard from "./AssetsCard";
 import RecentTxCard from "./RecentTxCard";
 
 import { Greeting, CardsGrid } from "./styles";
@@ -19,6 +20,7 @@ export default function Dashboard() {
         <OverviewCard />
         <ExpensesCard />
         <RecentTxCard />
+        <AssetsCard />
       </CardsGrid>
     </div>
   );

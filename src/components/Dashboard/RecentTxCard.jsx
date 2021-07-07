@@ -97,7 +97,7 @@ function RecentTxCard() {
   useEffect(() => {
     if (transactions && transactions.length > 0) {
       setState(STATES.TRANSACTION_EXECUTED);
-      setTransactionData(transactions.slice(0, 5));
+      setTransactionData(transactions.slice(0, 3));
     } else {
       setState(STATES.EMPTY_STATE);
     }

@@ -6,6 +6,7 @@ export default styled(Card)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 30rem;
 
   .title-container {
     display: flex;
@@ -33,6 +34,7 @@ export default styled(Card)`
   .tx-container {
     width: 100%;
     margin-top: 2rem;
+    overflow-y: auto;
 
     .tx:last-child {
       border-bottom: none;

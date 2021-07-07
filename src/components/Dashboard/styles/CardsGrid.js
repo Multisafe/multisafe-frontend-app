@@ -3,18 +3,20 @@ import styled from "styled-components/macro";
 export default styled.div`
   display: grid;
   grid-gap: 3rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 50% 50%;
   grid-template-rows: auto auto;
   grid-template-areas:
     "overview overview"
-    "expenses recent-tx";
+    "expenses recent-tx"
+    "expenses assets";
 
-  @media (max-width: 600px) {
+  @media (max-width: 978px) {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     grid-template-areas:
       "overview"
       "expenses"
-      "recent-tx";
+      "recent-tx"
+      "assets";
   }
 `;

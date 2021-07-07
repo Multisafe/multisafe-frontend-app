@@ -24,7 +24,7 @@ const data = [
   {
     name: "Jun 18 - Jun 25",
     moneyIn: 0,
-    moneyOut: -9800,
+    moneyOut: -7800,
   },
   {
     name: "Jun 25 - Jul 2",

@@ -33,13 +33,11 @@ export default styled(Card)`
 
   .money-in-out {
     display: flex;
+    flex-wrap: wrap;
     margin-top: 3rem;
     justify-content: space-between;
     width: 100%;
-
-    .money-out {
-      margin-left: 3rem;
-    }
+    gap: 3rem;
 
     .heading {
       font-size: 1.4rem;
@@ -95,11 +93,6 @@ export default styled(Card)`
       flex-direction: column;
       justify-content: start;
       grid-gap: 1rem 0;
-      align-items: center;
-
-      .money-out {
-        margin-left: 0;
-      }
     }
   }
 `;

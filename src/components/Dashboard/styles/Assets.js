@@ -6,7 +6,7 @@ export default styled(Card)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 44rem;
+  min-height: 13rem;
 
   .title-container {
     display: flex;
@@ -36,6 +36,7 @@ export default styled(Card)`
   }
 
   .assets-container {
+    margin-top: 1rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1.5rem;
