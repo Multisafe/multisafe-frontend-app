@@ -103,6 +103,7 @@ function ExpensesCard() {
       {!loading && !isAssetsEmpty && expenseData && (
         <React.Fragment>
           <ExpensesGraph />
+          <div className="divider" />
           {renderMoneyInOut()}
         </React.Fragment>
       )}

@@ -8,12 +8,12 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { formatNumber } from "utils/number-helpers";
-import { ExpensesLabel } from "./styles";
+import { ExpensesLabel, ExpensesLegend } from "./styles";
 
 const data = [
   {
     name: "Jun 7 - Jun 11",
-    moneyIn: 4000,
+    moneyIn: 9000,
     moneyOut: -2400,
   },
   {
@@ -23,7 +23,7 @@ const data = [
   },
   {
     name: "Jun 18 - Jun 25",
-    moneyIn: 2000,
+    moneyIn: 0,
     moneyOut: -9800,
   },
   {
@@ -33,8 +33,18 @@ const data = [
   },
   {
     name: "Jul 2 - Jul 9",
-    moneyIn: 1890,
-    moneyOut: -4800,
+    moneyIn: 0,
+    moneyOut: 0,
+  },
+  {
+    name: "Jul 9 - Jul 16",
+    moneyIn: 7090,
+    moneyOut: -1800,
+  },
+  {
+    name: "Jul 16 - Jul 23",
+    moneyIn: 3000,
+    moneyOut: -800,
   },
 ];
 
@@ -43,14 +53,18 @@ const CustomTooltip = ({ active, payload }) => {
     return (
       <ExpensesLabel>
         <p className="label">{`${payload[0].payload.name}`}</p>
-        <p className="label">{`Money In : +$${formatNumber(
-          payload[0].value,
-          2
-        )}`}</p>
-        <p className="label">{`Money Out : -$${formatNumber(
-          Math.abs(payload[1].value),
-          2
-        )}`}</p>
+        <p className="label">
+          Money In{" "}
+          <span style={{ color: "#74c251" }} className="ml-2">
+            + ${formatNumber(payload[0].value, 2)}
+          </span>
+        </p>
+        <p className="label">
+          Money Out
+          <span style={{ color: "#ff4660" }} className="ml-2">
+            - ${formatNumber(Math.abs(payload[1].value), 2)}
+          </span>
+        </p>
       </ExpensesLabel>
     );
   }
@@ -59,20 +73,40 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 export default function ExpensesGraph() {
+  const renderLegend = (props) => {
+    const { payload } = props;
+    return (
+      <ExpensesLegend>
+        {payload.map((entry, index) => {
+          const isMoneyIn = entry.value === "moneyIn";
+
+          return (
+            <div className="legend-item" key={`item-${index}`}>
+              <div
+                className={`${isMoneyIn ? "green-circle" : "red-circle"}`}
+              ></div>
+              <div>{isMoneyIn ? "Money In" : "Money Out"}</div>
+            </div>
+          );
+        })}
+      </ExpensesLegend>
+    );
+  };
+
   return (
-    <ResponsiveContainer maxHeight="28rem" width="90%">
+    <ResponsiveContainer maxHeight="28rem" width="100%">
       <BarChart
-        barGap={"30"}
+        barGap={"15"}
         data={data}
         margin={{
-          top: 50,
+          top: 10,
           right: 0,
           left: 0,
-          bottom: 5,
+          bottom: 0,
         }}
       >
         <Tooltip content={<CustomTooltip />} cursor={{ fill: "#fafafa" }} />
-        <Legend />
+        <Legend content={renderLegend} />
         <ReferenceLine y={0} stroke="#f5f5f5" />
         <Bar dataKey="moneyIn" fill="#74c251" radius={[5, 5, 0, 0]} />
         <Bar dataKey="moneyOut" fill="#ff4660" radius={[5, 5, 0, 0]} />

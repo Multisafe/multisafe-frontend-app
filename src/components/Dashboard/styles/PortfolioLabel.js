@@ -1,7 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  width: 18rem;
+  min-width: 18rem;
   min-height: 4rem;
   flex-grow: 0;
   padding: 1rem 2rem;
@@ -16,4 +16,9 @@ export default styled.div`
   letter-spacing: normal;
   text-align: left;
   color: #989898;
+
+  .separator {
+    color: #dddcdc;
+    padding: 0 0.2rem;
+  }
 `;

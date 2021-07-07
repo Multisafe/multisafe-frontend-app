@@ -42,7 +42,7 @@ export default function useAuth() {
     if (organisationType !== undefined) {
       const accessToken = localStorage.getItem("token");
       const isAuthenticated = checkValidAccessToken(accessToken);
-      console.log({ dataSharingAllowed, isAuthenticated, isOwner });
+
       if (isAuthenticated) {
         setIsAuthenticated(true);
         if (isOwner) {

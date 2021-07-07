@@ -38,10 +38,10 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <PortfolioLabel>
-        <p className="label">{`${payload[0].payload.name} : $${formatNumber(
-          payload[0].value,
-          2
-        )}`}</p>
+        <p className="label">
+          {payload[0].payload.name} <span className="separator">|</span> $
+          {formatNumber(payload[0].value, 2)}
+        </p>
       </PortfolioLabel>
     );
   }

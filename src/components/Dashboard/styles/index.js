@@ -5,4 +5,5 @@ export { default as Assets } from "./Assets";
 export { default as RecentTx } from "./RecentTx";
 export { default as PortfolioLabel } from "./PortfolioLabel";
 export { default as ExpensesLabel } from "./ExpensesLabel";
+export { default as ExpensesLegend } from "./ExpensesLegend";
 export { default as Expense } from "./Expense";
