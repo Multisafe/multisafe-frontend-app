@@ -5,7 +5,7 @@ import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 import overviewReducer from "store/overview/reducer";
 import overviewSaga from "store/overview/saga";
-import { getOverview } from "store/overview/actions";
+import { getOverview, getPortfolioHistory } from "store/overview/actions";
 import {
   makeSelectTotalBalance,
   makeSelectLoading as makeSelectLoadingTokens,
@@ -36,6 +36,7 @@ export default function OverviewCard() {
     if (ownerSafeAddress) {
       dispatch(getOverview(ownerSafeAddress));
       dispatch(getTokens(ownerSafeAddress));
+      dispatch(getPortfolioHistory(ownerSafeAddress));
     }
   }, [ownerSafeAddress, dispatch]);
 

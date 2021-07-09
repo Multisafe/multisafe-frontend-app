@@ -114,7 +114,8 @@ export default styled(Card)`
     justify-content: space-between;
     margin-top: 2rem;
     width: 100%;
-    background: ${({ theme }) => theme.accent};
+    // background: ${({ theme }) => theme.accent};
+    border-bottom: 0.1rem solid #dddcdc;
     padding: 1.5rem;
 
     .name,
@@ -128,5 +129,9 @@ export default styled(Card)`
       text-align: center;
       color: #373737;
     }
+  }
+
+  .view-people-container:last-child {
+    border-bottom: none;
   }
 `;

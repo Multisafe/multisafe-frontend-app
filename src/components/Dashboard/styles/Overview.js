@@ -6,6 +6,7 @@ export default styled(Card)`
   padding: 0;
   // display: grid;
   // grid-template-columns: 1fr 1fr;
+  min-height: 18.9rem;
   .left {
     padding: 2.2rem 3rem 1rem;
     .total-balance {

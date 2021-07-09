@@ -1,38 +1,14 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts";
-import { formatNumber } from "utils/number-helpers";
-import { PortfolioLabel } from "./styles";
 
-const data = [
-  {
-    name: "Jul 3 2021",
-    value: 4000,
-  },
-  {
-    name: "Jul 4 2021",
-    value: 3000,
-  },
-  {
-    name: "Jul 5 2021",
-    value: 2000,
-  },
-  {
-    name: "Jul 6 2021",
-    value: 2780,
-  },
-  {
-    name: "Jul 7 2021",
-    value: 1890,
-  },
-  {
-    name: "Jul 8 2021",
-    value: 2390,
-  },
-  {
-    name: "Jul 9 2021",
-    value: 3490,
-  },
-];
+import {
+  makeSelectLoadingPortfolio,
+  makeSelectPortfolioGraphData,
+} from "store/overview/selectors";
+import { formatNumber } from "utils/number-helpers";
+
+import { PortfolioLabel, EmptyPortfolio } from "./styles";
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -50,26 +26,42 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 export default function PortfolioGraph() {
-  return (
-    <ResponsiveContainer height={80}>
-      <AreaChart
-        data={data}
-        margin={{
-          top: 5,
-          right: 0,
-          left: 0,
-          bottom: 0,
-        }}
-      >
-        <Area
-          type="monotone"
-          dataKey="value"
-          stroke="#1452f5"
-          fill="#e7eefe"
-          strokeWidth="2"
-        />
-        <Tooltip content={<CustomTooltip />} />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
+  const portfolioGraphData = useSelector(makeSelectPortfolioGraphData());
+  const loadingPortfolio = useSelector(makeSelectLoadingPortfolio());
+
+  const renderGraph = () => {
+    if (loadingPortfolio) return null;
+
+    if (!loadingPortfolio && portfolioGraphData && !portfolioGraphData.length)
+      return (
+        <EmptyPortfolio>
+          <div className="line" />
+        </EmptyPortfolio>
+      );
+
+    return (
+      <ResponsiveContainer height={80}>
+        <AreaChart
+          data={portfolioGraphData}
+          margin={{
+            top: 5,
+            right: 0,
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="#1452f5"
+            fill="#e7eefe"
+            strokeWidth="2"
+          />
+          <Tooltip content={<CustomTooltip />} />
+        </AreaChart>
+      </ResponsiveContainer>
+    );
+  };
+
+  return renderGraph();
 }

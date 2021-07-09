@@ -11,7 +11,7 @@ export default styled.div`
     "expenses assets";
 
   @media (max-width: 978px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
     grid-template-rows: auto auto auto auto;
     grid-template-areas:
       "overview"

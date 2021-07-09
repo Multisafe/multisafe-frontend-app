@@ -53,12 +53,12 @@ export const createInvitationsEndpoint = `${ROOT_BE_URL}/api/v1/invitation/creat
 // TOKEN PRICES
 export const getTokenPricesEndpoint = `${ROOT_BE_URL}/api/v1/tokenPrices/usd`;
 
-// tokens
+// TOKENS
 export const getTokensEndpoint = `${ROOT_BE_URL}/api/v1/tokens/get`;
 export const addCustomTokenEndpoint = `${ROOT_BE_URL}/api/v1/tokens/add`;
 export const getTokenListEndpoint = `${ROOT_BE_URL}/api/v1/tokens/getTokensList`;
 
-// notifications
+// NOTIFICATIONS
 export const getNotificationsEndpoint = `${ROOT_BE_URL}/api/v1/notifications/get`;
 export const updateNotificationsEndpoint = `${ROOT_BE_URL}/api/v1/notifications/update`;
 
@@ -69,6 +69,7 @@ export const updateOwnerNameEndpoint = `${ROOT_BE_URL}/api/v1/users/updateOwnerD
 // ORGANISATION
 export const updateOrganisationNameEndpoint = `${ROOT_BE_URL}/api/v1/users/update/name`;
 export const organisationPermissionsEndpoint = `${ROOT_BE_URL}/api/v1/users/permissions`;
+export const portfolioHistoryEndpoint = `${ROOT_BE_URL}/api/v1/users/portfolio/history`;
 
 // GNOSIS
 export const gnosisSafeTransactionEndpoint =

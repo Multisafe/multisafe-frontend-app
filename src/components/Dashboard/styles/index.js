@@ -7,3 +7,4 @@ export { default as PortfolioLabel } from "./PortfolioLabel";
 export { default as ExpensesLabel } from "./ExpensesLabel";
 export { default as ExpensesLegend } from "./ExpensesLegend";
 export { default as Expense } from "./Expense";
+export { default as EmptyPortfolio } from "./EmptyPortfolio";
