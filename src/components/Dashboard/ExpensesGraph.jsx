@@ -1,3 +1,4 @@
+import Img from "components/common/Img";
 import React, { useState, useEffect } from "react";
 import {
   PieChart,
@@ -9,7 +10,9 @@ import {
 } from "recharts";
 
 import { formatNumber } from "utils/number-helpers";
-import { ExpensesLegend, PortfolioLabel } from "./styles";
+import ExpensesIcon from "assets/icons/dashboard/empty/expenses.svg";
+
+import { EmptyExpenses, ExpensesLegend, PortfolioLabel } from "./styles";
 
 const COLORS = ["#687fdc", "#cad2f3"];
 
@@ -66,7 +69,7 @@ export default function ExpensesGraph({ moneyIn, moneyOut }) {
     );
   };
 
-  return chartData ? (
+  return chartData && chartData.length ? (
     <ResponsiveContainer maxHeight="28rem" width="100%">
       <PieChart>
         <Pie
@@ -74,7 +77,7 @@ export default function ExpensesGraph({ moneyIn, moneyOut }) {
           cx="50%"
           cy="50%"
           labelLine={false}
-          outerRadius={100}
+          // outerRadius={80}
           fill="#8884d8"
           dataKey="value"
         >
@@ -87,6 +90,9 @@ export default function ExpensesGraph({ moneyIn, moneyOut }) {
       </PieChart>
     </ResponsiveContainer>
   ) : (
-    <div>No Income/Expenses in last 30 days</div>
+    <EmptyExpenses>
+      <Img src={ExpensesIcon} alt="no-expense" width="200" />
+      <div className="text mt-4">No Income and Expense</div>
+    </EmptyExpenses>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, memo, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { show } from "redux-modal";
 
 import Loading from "components/common/Loading";
 import Img from "components/common/Img";
@@ -9,15 +10,18 @@ import {
   makeSelectTokenList,
 } from "store/tokens/selectors";
 import { defaultTokenDetails } from "constants/index";
-import NoAssetsImg from "assets/icons/dashboard/empty/assets.svg";
 import { formatNumber } from "utils/number-helpers";
 import { routeGenerators } from "constants/routes/generators";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import { MODAL_NAME as ADD_FUNDS_MODAL } from "components/AddFunds";
+import AddFundsIcon from "assets/icons/navbar/add-funds.svg";
 
 import { Assets } from "./styles";
 
 function AssetsCard() {
   const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
+
+  const dispatch = useDispatch();
 
   // Selectors
   const tokenList = useSelector(makeSelectTokenList());
@@ -26,9 +30,13 @@ function AssetsCard() {
 
   useEffect(() => {
     if (tokenList && tokenList.length > 0) {
-      setTokenDetails(tokenList.slice(0, 2));
+      setTokenDetails(tokenList.slice(0, 3));
     }
   }, [tokenList]);
+
+  const showAddFundsModal = () => {
+    dispatch(show(ADD_FUNDS_MODAL));
+  };
 
   const isAssetsEmpty = useMemo(() => {
     return (
@@ -43,11 +51,12 @@ function AssetsCard() {
       <div className="token-details">
         <Img src={icon} alt={name} className="token-icon" />
         <div>
-          <div className="token-name">{name}</div>
-          <div className="token-amount">{formatNumber(balance, 5)}</div>
+          <div className="token-name">
+            {formatNumber(balance, 5)} {name}
+          </div>
+          <div className="token-amount">${formatNumber(usd)}</div>
         </div>
       </div>
-      <div className="usd">${formatNumber(usd)}</div>
     </div>
   );
   return (
@@ -64,15 +73,18 @@ function AssetsCard() {
       {loading && (
         <div
           className="d-flex align-items-center justify-content-center"
-          style={{ height: "30rem" }}
+          style={{ height: "6rem" }}
         >
           <Loading color="primary" width="3rem" height="3rem" />
         </div>
       )}
       {!loading && isAssetsEmpty && (
         <div className="no-assets">
-          <Img src={NoAssetsImg} alt="no-assets" />
-          <div className="text">No Assets</div>
+          <div className="text">No assets to show right now</div>
+          <div className="add-funds" onClick={showAddFundsModal}>
+            <Img src={AddFundsIcon} alt="add-funds" className="icon" />
+            <div className="name">Add Funds</div>
+          </div>
         </div>
       )}
       {!loading && !isAssetsEmpty && (

@@ -948,7 +948,7 @@ const Register = () => {
   const renderReview = () => {
     return loadingTx ? (
       <LoadingTransaction>
-        <div className="loading-heading">Creating account on Multisafe</div>
+        <div className="loading-heading">Creating account on MultiSafe</div>
         {renderLoadingImageByStep(txLoadingStep)}
         <div className="loading-title">Please do not leave this page</div>
         <div className="loading-subtitle">
