@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { makeSelectOwnerName } from "store/global/selectors";
 
 import OverviewCard from "./OverviewCard";
+import ExpensesCard from "./ExpensesCard";
 import AssetsCard from "./AssetsCard";
 import RecentTxCard from "./RecentTxCard";
 
@@ -17,8 +18,9 @@ export default function Dashboard() {
       <Greeting>Hey, {ownerName}</Greeting>
       <CardsGrid>
         <OverviewCard />
-        <AssetsCard />
+        <ExpensesCard />
         <RecentTxCard />
+        <AssetsCard />
       </CardsGrid>
     </div>
   );

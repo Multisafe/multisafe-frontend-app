@@ -12,6 +12,18 @@ const makeSelectMoneyIn = () =>
 const makeSelectMoneyOut = () =>
   createSelector(selectOverview, (overviewState) => overviewState.moneyOut);
 
+const makeSelectPortfolioGraphData = () =>
+  createSelector(
+    selectOverview,
+    (overviewState) => overviewState.portfolioGraphData
+  );
+
+const makeSelectLoadingPortfolio = () =>
+  createSelector(
+    selectOverview,
+    (overviewState) => overviewState.loadingPortfolio
+  );
+
 const makeSelectError = () =>
   createSelector(selectOverview, (overviewState) => overviewState.error);
 
@@ -20,5 +32,7 @@ export {
   makeSelectMoneyIn,
   makeSelectMoneyOut,
   makeSelectLoading,
+  makeSelectPortfolioGraphData,
+  makeSelectLoadingPortfolio,
   makeSelectError,
 };

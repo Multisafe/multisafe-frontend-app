@@ -97,7 +97,7 @@ function RecentTxCard() {
   useEffect(() => {
     if (transactions && transactions.length > 0) {
       setState(STATES.TRANSACTION_EXECUTED);
-      setTransactionData(transactions.slice(0, 5));
+      setTransactionData(transactions.slice(0, 3));
     } else {
       setState(STATES.EMPTY_STATE);
     }
@@ -303,7 +303,7 @@ function RecentTxCard() {
       {!loading &&
         state === STATES.PEOPLE_ADDED &&
         people &&
-        people.slice(0, 5).map((teammate) => {
+        people.slice(0, 3).map((teammate) => {
           const { firstName, lastName, salaryAmount, salaryToken } =
             getDecryptedDetails(teammate.data, encryptionKey, organisationType);
           return (
