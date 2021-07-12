@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
@@ -43,6 +41,9 @@ import InvitationStepsModal, {
 } from "./InvitationStepsModal";
 import Avatar from "components/common/Avatar";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
+import EditIcon from "assets/icons/dashboard/edit-icon.svg";
+import ReplaceIcon from "assets/icons/dashboard/replace-icon.svg";
+import DeleteIcon from "assets/icons/dashboard/trash-icon.svg";
 import { getDecryptedDetails } from "utils/encryption";
 
 export default function InviteOwners() {
@@ -134,9 +135,9 @@ export default function InviteOwners() {
   const renderInvitationStatus = (owner, invitationDetails, idx) => {
     if (owner === account) {
       return (
-        <div className="d-flex align-items-center">
+        <div className="flex-gap">
           <div className="you-status">YOU</div>
-          <div className="highlighted-status ml-3">Owner</div>
+          <div className="highlighted-status">Owner</div>
         </div>
       );
     }
@@ -248,20 +249,36 @@ export default function InviteOwners() {
               }}
             />
             <div className="details">
-              <div className="name">
-                {name}
-                <FontAwesomeIcon
-                  icon={faEdit}
-                  color="#8b8b8b"
-                  className="ml-2 cursor-pointer"
-                  onClick={() => handleEditName(name, owner)}
-                  style={{ fontSize: "1.2rem" }}
-                />
-              </div>
+              <div className="name">{name}</div>
               <div className="address">Address: {owner}</div>
             </div>
           </div>
-          {renderInvitationStatus(owner, invitationDetails, idx)}
+          <div className="right">
+            {renderInvitationStatus(owner, invitationDetails, idx)}
+            <div className="flex-gap ml-3">
+              <Button
+                iconOnly
+                className="action-icon p-0"
+                onClick={() => handleEditName(name, owner)}
+              >
+                <Img src={EditIcon} alt="edit" width="12" />
+              </Button>
+              <Button
+                iconOnly
+                className="action-icon p-0 ml-3"
+                onClick={() => {}}
+              >
+                <Img src={ReplaceIcon} alt="replace" width="12" />
+              </Button>
+              <Button
+                iconOnly
+                className="action-icon p-0 ml-3"
+                onClick={() => {}}
+              >
+                <Img src={DeleteIcon} alt="delete" width="12" />
+              </Button>
+            </div>
+          </div>
         </OwnerDetails>
       </React.Fragment>
     );
@@ -282,12 +299,12 @@ export default function InviteOwners() {
         {!loading &&
           pendingOwners &&
           pendingOwners.map((ownerDetails, idx) =>
-            renderOwnerDetails(ownerDetails, idx)
+            renderOwnerDetails(ownerDetails, idx, true)
           )}
         {!loading &&
           members &&
           members.map((ownerDetails, idx) =>
-            renderOwnerDetails(ownerDetails, idx, true)
+            renderOwnerDetails(ownerDetails, idx, false)
           )}
         <EditOwnerModal />
       </React.Fragment>
@@ -298,8 +315,10 @@ export default function InviteOwners() {
     <div>
       <InfoCard className="mt-5">
         <div>
-          <div className="title">Members</div>
-          <div className="subtitle">List of all owners of the safe</div>
+          <div className="title">Manage Safe Owners</div>
+          <div className="subtitle">
+            Add, remove and replace owners or rename existing owners.
+          </div>
           <div className="subtitle mt-2">
             Every transaction requires the confirmation of{" "}
             <span className="text-bold">
