@@ -18,17 +18,17 @@ export default styled.div`
     align-items: center;
     gap: 1rem;
 
-    .green-circle {
+    .income-circle {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: #6cb44c;
+      background: #687fdc;
     }
-    .red-circle {
+    .expense-circle {
       width: 1rem;
       height: 1rem;
       border-radius: 50%;
-      background: #ff4660;
+      background: #cad2f3;
     }
   }
 `;

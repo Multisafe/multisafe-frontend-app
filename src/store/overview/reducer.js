@@ -16,7 +16,7 @@ export const initialState = {
   moneyOut: 0,
   error: false,
   loadingPortfolio: false,
-  portfolioGraphData: undefined,
+  portfolioGraphData: [],
 };
 
 /* eslint-disable default-case, no-param-reassign */

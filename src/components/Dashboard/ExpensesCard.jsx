@@ -9,7 +9,6 @@ import {
 } from "store/tokens/selectors";
 import NoAssetsImg from "assets/icons/dashboard/empty/assets.svg";
 import { formatNumber } from "utils/number-helpers";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import ExpensesGraph from "./ExpensesGraph";
 
 import { useInjectReducer } from "utils/injectReducer";
@@ -31,7 +30,6 @@ function ExpensesCard() {
   // Selectors
   const tokenList = useSelector(makeSelectTokenList());
   const loading = useSelector(makeSelectLoadingTokens());
-  const safeAddress = useSelector(makeSelectOwnerSafeAddress()); // eslint-disable-line
 
   // Reducers
   useInjectReducer({ key: overviewKey, reducer: overviewReducer });
@@ -84,7 +82,8 @@ function ExpensesCard() {
   return (
     <Expense>
       <div className="title-container">
-        <div className="title">Spending Overview</div>
+        <div className="title">Income and Expenses</div>
+        <div className="last-30">Last 30 days</div>
       </div>
       {loading && (
         <div
@@ -102,7 +101,7 @@ function ExpensesCard() {
       )}
       {!loading && !isAssetsEmpty && expenseData && (
         <React.Fragment>
-          <ExpensesGraph />
+          <ExpensesGraph moneyIn={moneyIn} moneyOut={moneyOut} />
           <div className="divider" />
           {renderMoneyInOut()}
         </React.Fragment>
