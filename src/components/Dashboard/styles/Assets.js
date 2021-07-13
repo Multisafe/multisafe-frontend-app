@@ -5,8 +5,7 @@ export default styled(Card)`
   grid-area: assets;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-height: 44rem;
+  min-height: 13rem;
 
   .title-container {
     display: flex;
@@ -36,9 +35,10 @@ export default styled(Card)`
   }
 
   .assets-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-gap: 1.5rem;
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem 3rem;
+    flex-wrap: wrap;
     width: 100%;
 
     .asset-card {
@@ -46,8 +46,6 @@ export default styled(Card)`
       justify-content: space-between;
       align-items: center;
       padding: 0.8rem;
-      border-radius: 0.4rem;
-      background-color: ${({ theme }) => theme.accent};
 
       .token-details {
         display: flex;
@@ -92,8 +90,8 @@ export default styled(Card)`
     display: flex;
     flex-direction: column;
     height: 100%;
-    justify-content: center;
-    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
 
     .text {
       font-size: 1.6rem;
@@ -102,14 +100,39 @@ export default styled(Card)`
       font-style: normal;
       line-height: normal;
       letter-spacing: normal;
-      text-align: center;
+      text-align: left;
       color: #989898;
-      margin-top: 2rem;
+    }
+
+    .add-funds {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+
+      .name {
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        -webkit-letter-spacing: normal;
+        -moz-letter-spacing: normal;
+        -ms-letter-spacing: normal;
+        letter-spacing: normal;
+        text-align: left;
+        color: #1452f5;
+        padding-top: 0.3rem;
+      }
+      &:hover {
+        opacity: 0.7;
+      }
     }
   }
 
   @media (max-width: 600px) {
     .assets-container {
+      display: grid;
       grid-template-columns: 1fr;
     }
   }

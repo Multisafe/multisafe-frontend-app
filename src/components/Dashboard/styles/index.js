@@ -3,3 +3,8 @@ export { default as CardsGrid } from "./CardsGrid";
 export { default as Overview } from "./Overview";
 export { default as Assets } from "./Assets";
 export { default as RecentTx } from "./RecentTx";
+export { default as PortfolioLabel } from "./PortfolioLabel";
+export { default as ExpensesLegend } from "./ExpensesLegend";
+export { default as Expense } from "./Expense";
+export { default as EmptyPortfolio } from "./EmptyPortfolio";
+export { default as EmptyExpenses } from "./EmptyExpenses";
