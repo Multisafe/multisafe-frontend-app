@@ -37,7 +37,12 @@ import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 
 const gasPriceKey = "gas";
 
-const { MULTISEND_ADDRESS, ZERO_ADDRESS, ALLOWANCE_MODULE_ADDRESS } = addresses;
+const {
+  MULTISEND_ADDRESS,
+  ZERO_ADDRESS,
+  ALLOWANCE_MODULE_ADDRESS,
+  SENTINEL_ADDRESS,
+} = addresses;
 
 export default function useMassPayout(props = {}) {
   const { tokenDetails } = props;
@@ -965,6 +970,42 @@ export default function useMassPayout(props = {}) {
     });
   };
 
+  const replaceSafeOwner = async ({
+    oldOwner,
+    newOwner,
+    safeOwners,
+    isMultiOwner,
+    createNonce,
+    isMetaEnabled,
+  }) => {
+    const transactions = [];
+
+    // 1. get prevOwner
+    const oldOwnerIndex = safeOwners.findIndex((addr) => addr === oldOwner);
+    const prevOwnerAddress =
+      oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
+
+    console.log({ prevOwnerAddress, oldOwner, newOwner });
+
+    transactions.push({
+      operation: 0, // CALL
+      to: proxyContract.address,
+      value: 0,
+      data: proxyContract.interface.encodeFunctionData("swapOwner", [
+        prevOwnerAddress,
+        oldOwner,
+        newOwner,
+      ]),
+    });
+
+    await executeBatchTransactions({
+      transactions,
+      isMultiOwner,
+      createNonce,
+      isMetaEnabled,
+    });
+  };
+
   return {
     loadingTx,
     txHash,
@@ -981,5 +1022,6 @@ export default function useMassPayout(props = {}) {
     approving,
     rejecting,
     createSpendingLimit,
+    replaceSafeOwner,
   };
 }

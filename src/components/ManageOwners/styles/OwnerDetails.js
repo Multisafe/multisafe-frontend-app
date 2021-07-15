@@ -103,6 +103,7 @@ export default styled.div`
 
   @media (max-width: 600px) {
     grid-gap: 1rem;
+    max-width: 30rem;
 
     .left {
       width: 100%;

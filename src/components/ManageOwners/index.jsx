@@ -36,6 +36,9 @@ import QuestionIcon from "assets/icons/dashboard/question-icon.svg";
 import EditOwnerModal, {
   MODAL_NAME as EDIT_OWNER_MODAL,
 } from "./EditOwnerModal";
+import ReplaceOwnerModal, {
+  MODAL_NAME as REPLACE_OWNER_MODAL,
+} from "./ReplaceOwnerModal";
 import InvitationStepsModal, {
   MODAL_NAME as INVITE_STEPS_MODAL,
 } from "./InvitationStepsModal";
@@ -46,7 +49,7 @@ import ReplaceIcon from "assets/icons/dashboard/replace-icon.svg";
 import DeleteIcon from "assets/icons/dashboard/trash-icon.svg";
 import { getDecryptedDetails } from "utils/encryption";
 
-export default function InviteOwners() {
+export default function ManageOwners() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const [members, setMembers] = useState([]);
   const [pendingOwners, setPendingOwners] = useState([]);
@@ -124,8 +127,12 @@ export default function InviteOwners() {
     );
   };
 
-  const handleEditName = (name, ownerAddress) => {
-    dispatch(show(EDIT_OWNER_MODAL, { name, ownerAddress }));
+  const handleEditName = (ownerName, ownerAddress) => {
+    dispatch(show(EDIT_OWNER_MODAL, { ownerName, ownerAddress }));
+  };
+
+  const handleReplaceOwner = (ownerName, ownerAddress) => {
+    dispatch(show(REPLACE_OWNER_MODAL, { ownerName, ownerAddress }));
   };
 
   const showInvitationSteps = () => {
@@ -266,7 +273,7 @@ export default function InviteOwners() {
               <Button
                 iconOnly
                 className="action-icon p-0 ml-3"
-                onClick={() => {}}
+                onClick={() => handleReplaceOwner(name, owner)}
               >
                 <Img src={ReplaceIcon} alt="replace" width="12" />
               </Button>
@@ -307,6 +314,7 @@ export default function InviteOwners() {
             renderOwnerDetails(ownerDetails, idx, false)
           )}
         <EditOwnerModal />
+        <ReplaceOwnerModal />
       </React.Fragment>
     );
   };

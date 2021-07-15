@@ -13,7 +13,7 @@ import {
   gnosisSafeTransactionEndpoint,
   updateOwnerNameEndpoint,
 } from "constants/endpoints";
-import { MODAL_NAME as EDIT_OWNER_MODAL } from "components/InviteOwners/EditOwnerModal";
+import { MODAL_NAME as EDIT_OWNER_MODAL } from "components/ManageOwners/EditOwnerModal";
 import { getInvitations } from "store/invitation/actions";
 
 function* getTransactionNonce(action) {

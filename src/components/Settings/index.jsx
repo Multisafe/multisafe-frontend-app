@@ -6,7 +6,7 @@ import OwnersIcon from "assets/icons/dashboard/owners-icon.svg";
 import SpendingLimitsIcon from "assets/icons/dashboard/spending-limits-icon.svg";
 import ProfileIcon from "assets/icons/dashboard/profile-icon.svg";
 import SpendingLimits from "components/SpendingLimits";
-import InviteOwners from "components/InviteOwners";
+import ManageOwners from "components/ManageOwners";
 import Profile from "components/Profile";
 
 const TABS = {
@@ -119,7 +119,7 @@ export default function Settings() {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId={TABS.OWNERS}>
-          <InviteOwners />
+          <ManageOwners />
         </TabPane>
         <TabPane tabId={TABS.SPENDING_LIMITS}>
           <div className="mt-5">
