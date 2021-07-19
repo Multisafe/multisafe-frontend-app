@@ -5,7 +5,7 @@ import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
 import Button from "components/common/Button";
-import { Input, ErrorMessage } from "components/common/Form";
+import { Select } from "components/common/Form";
 import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
@@ -42,14 +42,14 @@ import {
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
   makeSelectSafeOwners,
+  makeSelectThreshold,
 } from "store/global/selectors";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import ErrorText from "components/common/ErrorText";
 import Avatar from "components/common/Avatar";
-import { STEPS } from "store/login/resources";
 
-import { ReplaceContainer, OwnerDetails } from "./styles";
+import { DeleteContainer, OwnerDetails } from "./styles";
 
 const transactionsKey = "transactions";
 const safeKey = "safe";
@@ -62,13 +62,15 @@ export default function ReplaceOwner(props) {
   const { handleHide, ownerName, ownerAddress } = props;
 
   const { account } = useActiveWeb3React();
-  const [replaceOwnerDetails, setReplacedOwnerDetails] = useState(null);
+  const [deletedOwnerDetails, setDeletedOwnerDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
-  const [step, setStep] = useState(STEPS.ZERO);
-  const [newOwnerName, setNewOwnerName] = useState("");
-  const [newOwnerAddress, setNewOwnerAddress] = useState("");
+  const [thresholdOptions, setThresholdOptions] = useState();
 
-  const { txHash, loadingTx, replaceSafeOwner, txData } = useMassPayout();
+  const { handleSubmit, formState, control, setValue } = useForm({
+    mode: "onChange",
+  });
+
+  const { txHash, loadingTx, deleteSafeOwner, txData } = useMassPayout();
   // Reducers
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
   useInjectReducer({ key: safeKey, reducer: safeReducer });
@@ -81,14 +83,11 @@ export default function ReplaceOwner(props) {
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
-  const { register, errors, handleSubmit, formState } = useForm({
-    mode: "onChange",
-  });
-
   const dispatch = useDispatch();
 
   // Selectors
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const threshold = useSelector(makeSelectThreshold());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
   const addingMultisigTx = useSelector(makeSelectAddTxLoading());
@@ -112,6 +111,24 @@ export default function ReplaceOwner(props) {
   }, [ownerSafeAddress, dispatch]);
 
   useEffect(() => {
+    if (safeOwners) {
+      const newOptions = [];
+
+      const defaultThreshold =
+        threshold > safeOwners.length - 1 ? safeOwners.length - 1 : threshold;
+
+      for (let i = 0; i < safeOwners.length - 1; i++)
+        newOptions.push({ value: i + 1, label: i + 1 });
+
+      setThresholdOptions(newOptions);
+      setValue("threshold", {
+        value: defaultThreshold,
+        label: defaultThreshold,
+      });
+    }
+  }, [safeOwners, threshold, dispatch, setValue]);
+
+  useEffect(() => {
     if (txHashFromMetaTx) {
       setMetaTxHash(txHashFromMetaTx);
       dispatch(clearTransactionHash());
@@ -120,9 +137,9 @@ export default function ReplaceOwner(props) {
 
   useEffect(() => {
     if (txHash) {
-      if (encryptionKey && replaceOwnerDetails && ownerSafeAddress) {
+      if (encryptionKey && deletedOwnerDetails && ownerSafeAddress) {
         const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(replaceOwnerDetails),
+          JSON.stringify(deletedOwnerDetails),
           encryptionKey,
           organisationType
         );
@@ -133,19 +150,19 @@ export default function ReplaceOwner(props) {
             safeAddress: ownerSafeAddress,
             createdBy: ownerSafeAddress,
             transactionHash: txHash,
-            tokenValue: 0,
-            tokenCurrency: "",
-            fiatValue: 0,
-            addresses: [],
-            transactionMode: TRANSACTION_MODES.REPLACE_SAFE_OWNER,
-            metaData: replaceOwnerDetails[0],
+            // tokenValue: 0,
+            // tokenCurrency: "",
+            // fiatValue: 0,
+            // addresses: [],
+            transactionMode: TRANSACTION_MODES.DELETE_SAFE_OWNER,
+            metaData: deletedOwnerDetails[0],
           })
         );
       }
     } else if (txData) {
-      if (encryptionKey && replaceOwnerDetails && ownerSafeAddress) {
+      if (encryptionKey && deletedOwnerDetails && ownerSafeAddress) {
         const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(replaceOwnerDetails),
+          JSON.stringify(deletedOwnerDetails),
           encryptionKey,
           organisationType
         );
@@ -158,12 +175,8 @@ export default function ReplaceOwner(props) {
               safeAddress: ownerSafeAddress,
               createdBy: account,
               txData,
-              tokenValue: 0,
-              tokenCurrency: "",
-              fiatValue: 0,
-              addresses: [],
-              transactionMode: TRANSACTION_MODES.REPLACE_SAFE_OWNER,
-              metaData: replaceOwnerDetails[0],
+              transactionMode: TRANSACTION_MODES.DELETE_SAFE_OWNER,
+              metaData: deletedOwnerDetails[0],
             })
           );
         } else {
@@ -174,14 +187,9 @@ export default function ReplaceOwner(props) {
               safeAddress: ownerSafeAddress,
               createdBy: account,
               txData,
-              tokenValue: "",
-              tokenCurrency: "",
-              fiatValue: "",
-              fiatCurrency: "",
-              addresses: [],
-              transactionMode: TRANSACTION_MODES.REPLACE_SAFE_OWNER,
+              transactionMode: TRANSACTION_MODES.DELETE_SAFE_OWNER,
               nonce: nonce,
-              metaData: replaceOwnerDetails[0],
+              metaData: deletedOwnerDetails[0],
             })
           );
         }
@@ -190,7 +198,7 @@ export default function ReplaceOwner(props) {
   }, [
     txHash,
     encryptionKey,
-    replaceOwnerDetails,
+    deletedOwnerDetails,
     dispatch,
     ownerSafeAddress,
     txData,
@@ -214,129 +222,37 @@ export default function ReplaceOwner(props) {
   }, [dispatch, metaTxHash, singleOwnerTransactionId, handleHide]);
 
   const onSubmit = async (values) => {
-    if (step === STEPS.ZERO) {
-      setNewOwnerName(values.name);
-      setNewOwnerAddress(values.address);
-      setStep((step) => step + 1);
-    } else {
-      const replaceOwnerDetails = [
-        {
-          oldOwner: {
-            name: cryptoUtils.encryptDataUsingEncryptionKey(
-              ownerName,
-              encryptionKey,
-              organisationType
-            ),
-            address: ownerAddress,
-          },
-          newOwner: {
-            name: cryptoUtils.encryptDataUsingEncryptionKey(
-              newOwnerName,
-              encryptionKey,
-              organisationType
-            ),
-            address: newOwnerAddress,
-          },
-          description: `Replaced safe owner ${ownerName} (${ownerAddress}) with new owner ${newOwnerName} (${newOwnerAddress}) `,
+    const deletedOwnerDetails = [
+      {
+        deletedOwner: {
+          name: cryptoUtils.encryptDataUsingEncryptionKey(
+            ownerName,
+            encryptionKey,
+            organisationType
+          ),
+          address: ownerAddress,
         },
-      ];
-      setReplacedOwnerDetails(replaceOwnerDetails);
+        description: `Removing owner from the Safe`,
+      },
+    ];
+    setDeletedOwnerDetails(deletedOwnerDetails);
 
-      await replaceSafeOwner({
-        oldOwner: ownerAddress,
-        newOwner: newOwnerAddress,
-        safeOwners: safeOwners.map(({ owner }) => owner),
-        isMultiOwner,
-        createNonce: nonce,
-        isMetaEnabled,
-      });
-    }
-  };
-
-  const renderReplaceOwnerDetails = () => {
-    const firstName = ownerName && ownerName.split(" ")[0];
-    const lastName = ownerName && ownerName.split(" ")[1];
-    return (
-      <ReplaceContainer>
-        <div className="title">Current Owner</div>
-
-        <OwnerDetails>
-          <div className="left">
-            <Avatar
-              firstName={firstName}
-              lastName={lastName}
-              style={{
-                fontSize: "1.2rem",
-                width: "3rem",
-                height: "3rem",
-              }}
-            />
-            <div className="details">
-              <div className="name">{ownerName}</div>
-              <div className="address">Address: {ownerAddress}</div>
-            </div>
-          </div>
-        </OwnerDetails>
-
-        <div className="title mt-5">New Owner</div>
-        <div className="mb-3">
-          <Input
-            type="text"
-            name="name"
-            register={register}
-            required={`Name is required`}
-            placeholder="Owner Name"
-            defaultValue={newOwnerName}
-          />
-          <ErrorMessage name="name" errors={errors} />
-        </div>
-
-        <div className="title mb-2 mt-5">Address</div>
-        <div className="mb-3">
-          <Input
-            type="text"
-            name="address"
-            register={register}
-            required={`Address is required`}
-            pattern={{
-              value: /^0x[a-fA-F0-9]{40}$/,
-              message: "Invalid Ethereum Address",
-            }}
-            placeholder="Owner Address"
-            defaultValue={newOwnerAddress}
-          />
-          <ErrorMessage name="address" errors={errors} />
-        </div>
-
-        <div className="buttons">
-          <Button
-            type="button"
-            className="secondary-2"
-            onClick={handleHide}
-            style={{ minWidth: "16rem" }}
-          >
-            Close
-          </Button>
-          <Button
-            type="submit"
-            style={{ minWidth: "16rem" }}
-            disabled={!formState.isValid}
-          >
-            Next
-          </Button>
-        </div>
-      </ReplaceContainer>
-    );
+    await deleteSafeOwner({
+      owner: ownerAddress,
+      safeOwners: safeOwners.map(({ owner }) => owner),
+      newThreshold: values.threshold.value,
+      isMultiOwner,
+      createNonce: nonce,
+      isMetaEnabled,
+    });
   };
 
   const renderReview = () => {
     const firstName = ownerName && ownerName.split(" ")[0];
     const lastName = ownerName && ownerName.split(" ")[1];
-    const newFirstName = newOwnerName && newOwnerName.split(" ")[0];
-    const newLastName = newOwnerName && newOwnerName.split(" ")[1];
     return (
-      <ReplaceContainer>
-        <div className="title">Removing Owner</div>
+      <DeleteContainer>
+        <div className="title">Review the Owner</div>
 
         <OwnerDetails backgroundColor="rgba(255, 70, 96, 0.1)">
           <div className="left">
@@ -356,39 +272,41 @@ export default function ReplaceOwner(props) {
           </div>
         </OwnerDetails>
 
-        <div className="title mt-5">New Owner</div>
+        <div className="title mt-5">New Threshold</div>
+        <div className="subtitle">
+          Any transaction requires the confirmation of:
+        </div>
 
-        <OwnerDetails>
-          <div className="left">
-            <Avatar
-              firstName={newFirstName}
-              lastName={newLastName}
-              style={{
-                fontSize: "1.2rem",
-                width: "3rem",
-                height: "3rem",
-              }}
-            />
-            <div className="details">
-              <div className="name">{newOwnerName}</div>
-              <div className="address">Address: {newOwnerAddress}</div>
-            </div>
+        <div className="threshold-select">
+          <Select
+            name="threshold"
+            control={control}
+            required={`Threshold is required`}
+            width="8rem"
+            options={thresholdOptions}
+            placeholder={`Select Threshold...`}
+            defaultValue={{ value: 0, label: 0 }}
+          />
+          <div className="subtitle mb-0">
+            out of {safeOwners.length - 1} owners.
           </div>
-        </OwnerDetails>
+        </div>
 
         <div className="buttons">
           <Button
             type="button"
             className="secondary-2"
-            onClick={() => setStep((step) => step - 1)}
+            onClick={handleHide}
             style={{ minWidth: "16rem" }}
           >
-            Back
+            Close
           </Button>
           <Button
             type="submit"
             style={{ minWidth: "16rem" }}
+            className="danger"
             disabled={
+              !formState.isValid ||
               loadingTx ||
               addingMultisigTx ||
               addingSingleOwnerTx ||
@@ -397,21 +315,18 @@ export default function ReplaceOwner(props) {
             }
             loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
           >
-            Confirm
+            Delete
           </Button>
         </div>
 
         {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
-      </ReplaceContainer>
+      </DeleteContainer>
     );
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {step === STEPS.ZERO && renderReplaceOwnerDetails()}
-        {step === STEPS.ONE && renderReview()}
-      </form>
+      <form onSubmit={handleSubmit(onSubmit)}>{renderReview()}</form>
     </div>
   );
 }

@@ -39,6 +39,9 @@ import EditOwnerModal, {
 import ReplaceOwnerModal, {
   MODAL_NAME as REPLACE_OWNER_MODAL,
 } from "./ReplaceOwnerModal";
+import DeleteOwnerModal, {
+  MODAL_NAME as DELETE_OWNER_MODAL,
+} from "./DeleteOwnerModal";
 import InvitationStepsModal, {
   MODAL_NAME as INVITE_STEPS_MODAL,
 } from "./InvitationStepsModal";
@@ -133,6 +136,10 @@ export default function ManageOwners() {
 
   const handleReplaceOwner = (ownerName, ownerAddress) => {
     dispatch(show(REPLACE_OWNER_MODAL, { ownerName, ownerAddress }));
+  };
+
+  const handleDeleteOwner = (ownerName, ownerAddress) => {
+    dispatch(show(DELETE_OWNER_MODAL, { ownerName, ownerAddress }));
   };
 
   const showInvitationSteps = () => {
@@ -280,7 +287,7 @@ export default function ManageOwners() {
               <Button
                 iconOnly
                 className="action-icon p-0 ml-3"
-                onClick={() => {}}
+                onClick={() => handleDeleteOwner(name, owner)}
               >
                 <Img src={DeleteIcon} alt="delete" width="12" />
               </Button>
@@ -315,6 +322,7 @@ export default function ManageOwners() {
           )}
         <EditOwnerModal />
         <ReplaceOwnerModal />
+        <DeleteOwnerModal />
       </React.Fragment>
     );
   };

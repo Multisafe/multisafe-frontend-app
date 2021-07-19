@@ -980,8 +980,11 @@ export default function useMassPayout(props = {}) {
   }) => {
     const transactions = [];
 
-    // 1. get prevOwner
+    // get prevOwner
     const oldOwnerIndex = safeOwners.findIndex((addr) => addr === oldOwner);
+
+    if (oldOwnerIndex < 0) return;
+
     const prevOwnerAddress =
       oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
 
@@ -995,6 +998,45 @@ export default function useMassPayout(props = {}) {
         prevOwnerAddress,
         oldOwner,
         newOwner,
+      ]),
+    });
+
+    await executeBatchTransactions({
+      transactions,
+      isMultiOwner,
+      createNonce,
+      isMetaEnabled,
+    });
+  };
+
+  const deleteSafeOwner = async ({
+    owner,
+    safeOwners,
+    newThreshold,
+    isMultiOwner,
+    createNonce,
+    isMetaEnabled,
+  }) => {
+    const transactions = [];
+
+    // get prevOwner
+    const oldOwnerIndex = safeOwners.findIndex((addr) => addr === owner);
+
+    if (oldOwnerIndex < 0) return;
+
+    const prevOwnerAddress =
+      oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
+
+    console.log({ prevOwnerAddress, owner, newThreshold });
+
+    transactions.push({
+      operation: 0, // CALL
+      to: proxyContract.address,
+      value: 0,
+      data: proxyContract.interface.encodeFunctionData("removeOwner", [
+        prevOwnerAddress,
+        owner,
+        newThreshold,
       ]),
     });
 
@@ -1023,5 +1065,6 @@ export default function useMassPayout(props = {}) {
     rejecting,
     createSpendingLimit,
     replaceSafeOwner,
+    deleteSafeOwner,
   };
 }

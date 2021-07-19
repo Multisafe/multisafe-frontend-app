@@ -32,7 +32,7 @@ import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 
 import { RecentTx } from "./styles";
 import Img from "components/common/Img";
-import { TRANSACTION_MODES, TRANSACTION_STATUS } from "constants/transactions";
+import { TRANSACTION_STATUS } from "constants/transactions";
 import { TX_DIRECTION, TX_ORIGIN } from "store/transactions/constants";
 import Loading from "components/common/Loading";
 import Avatar from "components/common/Avatar";
@@ -40,6 +40,7 @@ import Button from "components/common/Button";
 import TokenImg from "components/common/TokenImg";
 import { formatNumber } from "utils/number-helpers";
 import { routeGenerators } from "constants/routes/generators";
+import TransactionName from "components/Transactions/TransactionName";
 
 const transactionsKey = "transactions";
 const viewPeopleKey = "viewPeople";
@@ -142,29 +143,6 @@ function RecentTxCard() {
     }
   };
 
-  const renderName = (to, transactionMode) => {
-    if (transactionMode === TRANSACTION_MODES.QUICK_TRANSFER) {
-      return "Quick Transfer";
-    } else if (transactionMode === TRANSACTION_MODES.SPENDING_LIMITS) {
-      return "New Spending Limit";
-    } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
-      const payeeDetails = getDecryptedDetails(
-        to,
-        encryptionKey,
-        organisationType
-      );
-
-      if (!payeeDetails) return "";
-
-      const { firstName, lastName } = payeeDetails[0];
-      const firstPersonName = `${firstName} ${lastName}`;
-
-      return payeeDetails.length === 1
-        ? `${firstPersonName}`
-        : `${firstPersonName} and ${payeeDetails.length - 1} more`;
-    }
-  };
-
   const renderGnosisAmounts = ({
     tokenValue,
     tokenCurrencies,
@@ -237,7 +215,7 @@ function RecentTxCard() {
               {isGnosisTx ? (
                 <span>Gnosis</span>
               ) : (
-                renderName(to, transactionMode)
+                <TransactionName to={to} transactionMode={transactionMode} />
               )}
             </div>
             <div className="bottom">
