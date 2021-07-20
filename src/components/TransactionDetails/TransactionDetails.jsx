@@ -56,7 +56,7 @@ export default function TransactionDetails() {
 
     if (!transactionDetails) return null;
 
-    const { to, transactionMode, tokenCurrency } = transactionDetails;
+    const { to, transactionMode, tokenCurrency, metaData } = transactionDetails;
     const paidTeammates = getDecryptedDetails(
       to,
       encryptionKey,
@@ -83,11 +83,11 @@ export default function TransactionDetails() {
         </DescriptionCard>
 
         <DisbursementCard>
-          <div className="title">Disbursement Details</div>
           <DisbursementDetails
             paidTeammates={paidTeammates}
             transactionMode={transactionMode}
             tokenCurrency={tokenCurrency}
+            metaData={metaData}
           />
         </DisbursementCard>
 

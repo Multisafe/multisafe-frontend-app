@@ -133,10 +133,6 @@ export default function ReplaceOwner(props) {
             safeAddress: ownerSafeAddress,
             createdBy: ownerSafeAddress,
             transactionHash: txHash,
-            tokenValue: 0,
-            tokenCurrency: "",
-            fiatValue: 0,
-            addresses: [],
             transactionMode: TRANSACTION_MODES.REPLACE_SAFE_OWNER,
             metaData: replaceOwnerDetails[0],
           })
@@ -158,10 +154,6 @@ export default function ReplaceOwner(props) {
               safeAddress: ownerSafeAddress,
               createdBy: account,
               txData,
-              tokenValue: 0,
-              tokenCurrency: "",
-              fiatValue: 0,
-              addresses: [],
               transactionMode: TRANSACTION_MODES.REPLACE_SAFE_OWNER,
               metaData: replaceOwnerDetails[0],
             })
@@ -174,11 +166,6 @@ export default function ReplaceOwner(props) {
               safeAddress: ownerSafeAddress,
               createdBy: account,
               txData,
-              tokenValue: "",
-              tokenCurrency: "",
-              fiatValue: "",
-              fiatCurrency: "",
-              addresses: [],
               transactionMode: TRANSACTION_MODES.REPLACE_SAFE_OWNER,
               nonce: nonce,
               metaData: replaceOwnerDetails[0],
@@ -237,7 +224,7 @@ export default function ReplaceOwner(props) {
             ),
             address: newOwnerAddress,
           },
-          description: `Replaced safe owner ${ownerName} (${ownerAddress}) with new owner ${newOwnerName} (${newOwnerAddress}) `,
+          description: `Replacing owner of the Safe`,
         },
       ];
       setReplacedOwnerDetails(replaceOwnerDetails);

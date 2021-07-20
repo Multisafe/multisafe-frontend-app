@@ -4,7 +4,7 @@ import { connectModal as reduxModal } from "redux-modal";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import DeleteOwner from "./DeleteOwner";
 
-export const MODAL_NAME = "replace-owner-modal";
+export const MODAL_NAME = "delete-owner-modal";
 
 function DeleteOwnerModal(props) {
   const { show, handleHide, ...rest } = props;

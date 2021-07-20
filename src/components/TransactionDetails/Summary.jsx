@@ -24,41 +24,11 @@ export default function Summary({ txDetails, paidTeammates }) {
     transactionMode,
   } = txDetails;
 
-  const isSpendingLimit = transactionMode === TRANSACTION_MODES.SPENDING_LIMITS;
-  return (
-    <TransactionDetails>
-      <div className="title">Transaction Details</div>
-      <div className="detail-cards">
-        <div className="detail-card">
-          <div className="d-flex align-items-center justify-content-between">
-            <div>
-              <div className="detail-title">Transaction Hash</div>
-              <div className="detail-subtitle">
-                {minifyAddress(txDetailsHash)}
-              </div>
-            </div>
-            <div className="icons">
-              <CopyButton
-                id="address"
-                tooltip="transaction hash"
-                value={txDetailsHash}
-                className="mr-3"
-              />
-              <EtherscanLink
-                id="etherscan-link"
-                type={ETHERSCAN_LINK_TYPES.TX}
-                hash={txDetailsHash}
-              />
-            </div>
-          </div>
-        </div>
-
-        {isSpendingLimit ? (
-          <div className="detail-card">
-            <div className="detail-title">Allowance</div>
-            <div className="detail-subtitle">US ${formatNumber(fiatValue)}</div>
-          </div>
-        ) : (
+  const renderOptionalCards = () => {
+    switch (transactionMode) {
+      case TRANSACTION_MODES.MASS_PAYOUT:
+      case TRANSACTION_MODES.QUICK_TRANSFER:
+        return (
           <React.Fragment>
             <div className="detail-card">
               <div className="detail-title">Paid To</div>
@@ -75,12 +45,64 @@ export default function Summary({ txDetails, paidTeammates }) {
               </div>
             </div>
           </React.Fragment>
+        );
+
+      case TRANSACTION_MODES.SPENDING_LIMITS:
+        return (
+          <div className="detail-card">
+            <div className="detail-title">Allowance</div>
+            <div className="detail-subtitle">US ${formatNumber(fiatValue)}</div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <TransactionDetails>
+      <div className="title">Transaction Summary</div>
+      <div className="detail-cards">
+        {txDetailsHash ? (
+          <div className="detail-card">
+            <div className="d-flex align-items-center justify-content-between">
+              <div>
+                <div className="detail-title">Transaction Hash</div>
+                <div className="detail-subtitle">
+                  {minifyAddress(txDetailsHash)}
+                </div>
+              </div>
+              <div className="icons">
+                <CopyButton
+                  id="address"
+                  tooltip="transaction hash"
+                  value={txDetailsHash}
+                  className="mr-3"
+                />
+                <EtherscanLink
+                  id="etherscan-link"
+                  type={ETHERSCAN_LINK_TYPES.TX}
+                  hash={txDetailsHash}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="detail-card">
+            <div className="detail-title">Transaction Hash</div>
+            <div className="detail-subtitle">-</div>
+          </div>
         )}
+
+        {renderOptionalCards()}
 
         <div className="detail-card">
           <div className="detail-title">Transaction Fees</div>
           <div className="detail-subtitle">
-            {formatNumber(transactionFees, 5)} ETH
+            {transactionFees > 0
+              ? `${formatNumber(transactionFees, 5)} ETH`
+              : `-`}
           </div>
         </div>
 

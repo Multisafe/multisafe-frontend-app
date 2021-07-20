@@ -16,9 +16,9 @@ export default function TransactionName({ to, transactionMode }) {
   } else if (transactionMode === TRANSACTION_MODES.SPENDING_LIMITS) {
     return "New Spending Limit";
   } else if (transactionMode === TRANSACTION_MODES.REPLACE_SAFE_OWNER) {
-    return "Owner Replaced";
+    return "Replace Owner";
   } else if (transactionMode === TRANSACTION_MODES.DELETE_SAFE_OWNER) {
-    return "Owner Removed";
+    return "Remove Owner";
   } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
     const payeeDetails = getDecryptedDetails(
       to,

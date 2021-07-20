@@ -65,14 +65,18 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
         </div>
       </td>
       <td style={{ width: "30%" }}>
-        <div className="amount">
-          {/* <TokenImg token={tokenCurrency} /> */}
-          {formatNumber(tokenValue, 5)} {tokenCurrency}
-        </div>
-        <div className="usd">
-          {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
-          {formatNumber(fiatValue, 5)}
-        </div>
+        {tokenValue > 0 && (
+          <div className="amount">
+            {/* <TokenImg token={tokenCurrency} /> */}
+            {formatNumber(tokenValue, 5)} {tokenCurrency}
+          </div>
+        )}
+        {fiatValue > 0 && (
+          <div className="usd">
+            {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
+            {formatNumber(fiatValue, 5)}
+          </div>
+        )}
       </td>
       <td style={{ width: "23%" }}>
         <StatusText status={status} textOnly className="status" />

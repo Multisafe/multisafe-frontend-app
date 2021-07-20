@@ -380,6 +380,7 @@ export default function MultiSigTransactions() {
       to,
       transactionMode,
       createdBy,
+      metaData,
     } = txDetails;
 
     const paidTeammates = getDecryptedDetails(
@@ -435,17 +436,15 @@ export default function MultiSigTransactions() {
         </DescriptionCard>
 
         <DisbursementCard>
-          <div className="title">Disbursement Details</div>
           <DisbursementDetails
             paidTeammates={paidTeammates}
             transactionMode={transactionMode}
             tokenCurrency={tokenCurrency}
+            metaData={metaData}
           />
         </DisbursementCard>
 
-        {txDetailsHash && (
-          <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
-        )}
+        <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
         {renderConfirmSection()}
         <ApproveTxModal />
         <RejectTxModal />

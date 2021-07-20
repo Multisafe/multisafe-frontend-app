@@ -282,7 +282,7 @@ export default function ManageOwners() {
                 className="action-icon p-0 ml-3"
                 onClick={() => handleReplaceOwner(name, owner)}
               >
-                <Img src={ReplaceIcon} alt="replace" width="12" />
+                <Img src={ReplaceIcon} alt="replace" width="20" />
               </Button>
               <Button
                 iconOnly
