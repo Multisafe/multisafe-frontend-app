@@ -6,6 +6,7 @@ export default styled.div`
   border: solid 0.1rem #dddcdc;
   padding: 2rem 3rem;
   margin-top: 3rem;
+  margin-bottom: 8rem;
 
   .title {
     font-size: 1.6rem;
