@@ -111,7 +111,7 @@ export default function DisbursementDetails({
   const renderDeleteOwnerDetails = () => {
     if (!metaData) return null;
 
-    const { deletedOwner } = metaData;
+    const { deletedOwner, newThreshold, ownersCount } = metaData;
     if (!deletedOwner) return null;
 
     const { name, address } = deletedOwner;
@@ -129,14 +129,15 @@ export default function DisbursementDetails({
       <Table>
         <TableHead>
           <tr>
-            <th>Owner Name</th>
-            <th>Address</th>
-            <th>Action Taken</th>
+            <th style={{ width: "25%" }}>Owner Name</th>
+            <th style={{ width: "35%" }}>Address</th>
+            <th style={{ width: "20%" }}>Threshold</th>
+            <th style={{ width: "20%" }}>Action Taken</th>
           </tr>
         </TableHead>
         <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
           <tr style={{ backgroundColor: "#ffecef" }}>
-            <td>
+            <td style={{ width: "25%" }}>
               <div className="d-flex align-items-center">
                 <Avatar
                   className="mr-3"
@@ -148,8 +149,12 @@ export default function DisbursementDetails({
                 </div>
               </div>
             </td>
-            <td>{address}</td>
-            <td style={{ color: "#ff4660" }}>Remove</td>
+            <td style={{ width: "35%" }}>{address}</td>
+            <td style={{ width: "20%" }}>
+              {newThreshold} out of {ownersCount}
+            </td>
+
+            <td style={{ color: "#ff4660", width: "20%" }}>Remove</td>
           </tr>
         </TableBody>
       </Table>
@@ -231,6 +236,61 @@ export default function DisbursementDetails({
     );
   };
 
+  const renderAddOwnerDetails = () => {
+    if (!metaData) return null;
+    const { newOwner, newThreshold, ownersCount } = metaData;
+
+    if (!newOwner) return null;
+
+    const { name: newName, address: newOwnerAddress } = newOwner;
+
+    const newOwnerName = getDecryptedDetails(
+      newName,
+      encryptionKey,
+      organisationType,
+      false
+    );
+
+    const newFirstName = newOwnerName.split(" ")[0];
+    const newLastName = newOwnerName.split(" ")[1];
+
+    return (
+      <Table>
+        <TableHead>
+          <tr>
+            <th style={{ width: "25%" }}>Owner Name</th>
+            <th style={{ width: "35%" }}>Address</th>
+            <th style={{ width: "20%" }}>Threshold</th>
+            <th style={{ width: "20%" }}>Action Taken</th>
+          </tr>
+        </TableHead>
+        <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
+          <tr>
+            <td style={{ width: "25%" }}>
+              <div className="d-flex align-items-center">
+                <Avatar
+                  className="mr-3"
+                  firstName={newFirstName}
+                  lastName={newLastName}
+                />
+                <div>
+                  {newFirstName} {newLastName}
+                </div>
+              </div>
+            </td>
+            <td style={{ width: "35%" }}>{newOwnerAddress}</td>
+            <td style={{ width: "20%" }}>
+              {newThreshold} out of {ownersCount}
+            </td>
+            <td className="text-primary" style={{ width: "20%" }}>
+              Add
+            </td>
+          </tr>
+        </TableBody>
+      </Table>
+    );
+  };
+
   const renderTransactionDetails = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
@@ -243,6 +303,8 @@ export default function DisbursementDetails({
         return renderDeleteOwnerDetails();
       case TRANSACTION_MODES.REPLACE_SAFE_OWNER:
         return renderReplaceOwnerDetails();
+      case TRANSACTION_MODES.ADD_SAFE_OWNER:
+        return renderAddOwnerDetails();
 
       default:
         return null;

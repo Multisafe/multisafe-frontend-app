@@ -5,7 +5,7 @@ import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
 import Button from "components/common/Button";
-import { Select } from "components/common/Form";
+import { Input, ErrorMessage, Select } from "components/common/Form";
 import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
@@ -48,29 +48,35 @@ import { TRANSACTION_MODES } from "constants/transactions";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import ErrorText from "components/common/ErrorText";
 import Avatar from "components/common/Avatar";
+import { STEPS } from "store/login/resources";
 
-import { DeleteContainer, OwnerDetails } from "./styles";
+import { DeleteContainer, ReplaceContainer, OwnerDetails } from "./styles";
 
 const transactionsKey = "transactions";
 const safeKey = "safe";
 const multisigKey = "multisig";
 const metaTxKey = "metatx";
 
-export default function DeleteOwner(props) {
+export default function AddOwner(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
-  const { handleHide, ownerName, ownerAddress } = props;
+  const { handleHide } = props;
 
   const { account } = useActiveWeb3React();
-  const [deletedOwnerDetails, setDeletedOwnerDetails] = useState(null);
+  const [newOwnerDetails, setNewOwnerDetails] = useState(null);
   const [metaTxHash, setMetaTxHash] = useState();
   const [thresholdOptions, setThresholdOptions] = useState();
+  const [step, setStep] = useState(STEPS.ZERO);
+  const [newOwnerName, setNewOwnerName] = useState("");
+  const [newOwnerAddress, setNewOwnerAddress] = useState("");
+  const [newThreshold, setNewThreshold] = useState(1);
 
-  const { handleSubmit, formState, control, setValue } = useForm({
-    mode: "onChange",
-  });
+  const { register, errors, handleSubmit, formState, control, setValue } =
+    useForm({
+      mode: "onChange",
+    });
 
-  const { txHash, loadingTx, deleteSafeOwner, txData } = useMassPayout();
+  const { txHash, loadingTx, addSafeOwner, txData } = useMassPayout();
   // Reducers
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
   useInjectReducer({ key: safeKey, reducer: safeReducer });
@@ -114,10 +120,9 @@ export default function DeleteOwner(props) {
     if (safeOwners) {
       const newOptions = [];
 
-      const defaultThreshold =
-        threshold > safeOwners.length - 1 ? safeOwners.length - 1 : threshold;
+      const defaultThreshold = threshold;
 
-      for (let i = 0; i < safeOwners.length - 1; i++)
+      for (let i = 0; i < safeOwners.length + 1; i++)
         newOptions.push({ value: i + 1, label: i + 1 });
 
       setThresholdOptions(newOptions);
@@ -137,9 +142,9 @@ export default function DeleteOwner(props) {
 
   useEffect(() => {
     if (txHash) {
-      if (encryptionKey && deletedOwnerDetails && ownerSafeAddress) {
+      if (encryptionKey && newOwnerDetails && ownerSafeAddress) {
         const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(deletedOwnerDetails),
+          JSON.stringify(newOwnerDetails),
           encryptionKey,
           organisationType
         );
@@ -150,15 +155,15 @@ export default function DeleteOwner(props) {
             safeAddress: ownerSafeAddress,
             createdBy: ownerSafeAddress,
             transactionHash: txHash,
-            transactionMode: TRANSACTION_MODES.DELETE_SAFE_OWNER,
-            metaData: deletedOwnerDetails[0],
+            transactionMode: TRANSACTION_MODES.ADD_SAFE_OWNER,
+            metaData: newOwnerDetails[0],
           })
         );
       }
     } else if (txData) {
-      if (encryptionKey && deletedOwnerDetails && ownerSafeAddress) {
+      if (encryptionKey && newOwnerDetails && ownerSafeAddress) {
         const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(deletedOwnerDetails),
+          JSON.stringify(newOwnerDetails),
           encryptionKey,
           organisationType
         );
@@ -171,8 +176,8 @@ export default function DeleteOwner(props) {
               safeAddress: ownerSafeAddress,
               createdBy: account,
               txData,
-              transactionMode: TRANSACTION_MODES.DELETE_SAFE_OWNER,
-              metaData: deletedOwnerDetails[0],
+              transactionMode: TRANSACTION_MODES.ADD_SAFE_OWNER,
+              metaData: newOwnerDetails[0],
             })
           );
         } else {
@@ -183,9 +188,9 @@ export default function DeleteOwner(props) {
               safeAddress: ownerSafeAddress,
               createdBy: account,
               txData,
-              transactionMode: TRANSACTION_MODES.DELETE_SAFE_OWNER,
+              transactionMode: TRANSACTION_MODES.ADD_SAFE_OWNER,
               nonce: nonce,
-              metaData: deletedOwnerDetails[0],
+              metaData: newOwnerDetails[0],
             })
           );
         }
@@ -194,7 +199,7 @@ export default function DeleteOwner(props) {
   }, [
     txHash,
     encryptionKey,
-    deletedOwnerDetails,
+    newOwnerDetails,
     dispatch,
     ownerSafeAddress,
     txData,
@@ -218,57 +223,71 @@ export default function DeleteOwner(props) {
   }, [dispatch, metaTxHash, singleOwnerTransactionId, handleHide]);
 
   const onSubmit = async (values) => {
-    const deletedOwnerDetails = [
-      {
-        deletedOwner: {
-          name: cryptoUtils.encryptDataUsingEncryptionKey(
-            ownerName,
-            encryptionKey,
-            organisationType
-          ),
-          address: ownerAddress,
+    if (step === STEPS.ZERO) {
+      setNewOwnerName(values.name);
+      setNewOwnerAddress(values.address);
+      setNewThreshold(values.threshold.value);
+      setStep((step) => step + 1);
+    } else {
+      const addOwnerDetails = [
+        {
+          newOwner: {
+            name: cryptoUtils.encryptDataUsingEncryptionKey(
+              newOwnerName,
+              encryptionKey,
+              organisationType
+            ),
+            address: newOwnerAddress,
+          },
+          newThreshold,
+          ownersCount: safeOwners.length + 1,
+          description: `Adding owner to the Safe`,
         },
-        newThreshold: values.threshold.value,
-        ownersCount: safeOwners.length - 1,
-        description: `Removing owner from the Safe`,
-      },
-    ];
-    setDeletedOwnerDetails(deletedOwnerDetails);
+      ];
+      setNewOwnerDetails(addOwnerDetails);
 
-    await deleteSafeOwner({
-      owner: ownerAddress,
-      safeOwners: safeOwners.map(({ owner }) => owner),
-      newThreshold: values.threshold.value,
-      isMultiOwner,
-      createNonce: nonce,
-      isMetaEnabled,
-    });
+      await addSafeOwner({
+        owner: newOwnerAddress,
+        newThreshold: newThreshold,
+        isMultiOwner,
+        createNonce: nonce,
+        isMetaEnabled,
+      });
+    }
   };
 
-  const renderReview = () => {
-    const firstName = ownerName && ownerName.split(" ")[0];
-    const lastName = ownerName && ownerName.split(" ")[1];
+  const renderNewOwnerDetails = () => {
     return (
       <DeleteContainer>
-        <div className="title">Review the Owner</div>
+        <div className="title">New Owner</div>
+        <div className="mb-3">
+          <Input
+            type="text"
+            name="name"
+            register={register}
+            required={`Name is required`}
+            placeholder="Owner Name"
+            defaultValue={newOwnerName}
+          />
+          <ErrorMessage name="name" errors={errors} />
+        </div>
 
-        <OwnerDetails backgroundColor="rgba(255, 70, 96, 0.1)">
-          <div className="left">
-            <Avatar
-              firstName={firstName}
-              lastName={lastName}
-              style={{
-                fontSize: "1.2rem",
-                width: "3rem",
-                height: "3rem",
-              }}
-            />
-            <div className="details">
-              <div className="name">{ownerName}</div>
-              <div className="address">Address: {ownerAddress}</div>
-            </div>
-          </div>
-        </OwnerDetails>
+        <div className="title mb-2 mt-5">Address</div>
+        <div className="mb-3">
+          <Input
+            type="text"
+            name="address"
+            register={register}
+            required={`Address is required`}
+            pattern={{
+              value: /^0x[a-fA-F0-9]{40}$/,
+              message: "Invalid Ethereum Address",
+            }}
+            placeholder="Owner Address"
+            defaultValue={newOwnerAddress}
+          />
+          <ErrorMessage name="address" errors={errors} />
+        </div>
 
         <div className="title mt-5">New Threshold</div>
         <div className="subtitle">
@@ -283,10 +302,10 @@ export default function DeleteOwner(props) {
             width="6rem"
             options={thresholdOptions}
             placeholder={`Select Threshold...`}
-            defaultValue={{ value: 0, label: 0 }}
+            defaultValue={{ value: newThreshold, label: newThreshold }}
           />
           <div className="subtitle mb-0">
-            out of {safeOwners.length - 1} owners.
+            out of {safeOwners.length + 1} owners.
           </div>
         </div>
 
@@ -302,18 +321,9 @@ export default function DeleteOwner(props) {
           <Button
             type="submit"
             style={{ minWidth: "16rem" }}
-            className="danger"
-            disabled={
-              !formState.isValid ||
-              loadingTx ||
-              addingMultisigTx ||
-              addingSingleOwnerTx ||
-              loadingSafeDetails ||
-              isReadOnly
-            }
-            loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
+            disabled={!formState.isValid}
           >
-            Delete
+            Next
           </Button>
         </div>
 
@@ -322,9 +332,74 @@ export default function DeleteOwner(props) {
     );
   };
 
+  const renderReview = () => {
+    const newFirstName = newOwnerName && newOwnerName.split(" ")[0];
+    const newLastName = newOwnerName && newOwnerName.split(" ")[1];
+    return (
+      <ReplaceContainer>
+        <div className="title">Review the Owner</div>
+
+        <OwnerDetails>
+          <div className="left">
+            <Avatar
+              firstName={newFirstName}
+              lastName={newLastName}
+              style={{
+                fontSize: "1.2rem",
+                width: "3rem",
+                height: "3rem",
+              }}
+            />
+            <div className="details">
+              <div className="name">{newOwnerName}</div>
+              <div className="address">Address: {newOwnerAddress}</div>
+              <div className="address mt-2">
+                Threshold:
+                <span className="text-bold">
+                  {" "}
+                  {newThreshold} out of {safeOwners.length + 1} owners
+                </span>
+              </div>
+            </div>
+          </div>
+        </OwnerDetails>
+
+        <div className="buttons">
+          <Button
+            type="button"
+            className="secondary-2"
+            onClick={() => setStep((step) => step - 1)}
+            style={{ minWidth: "16rem" }}
+          >
+            Back
+          </Button>
+          <Button
+            type="submit"
+            style={{ minWidth: "16rem" }}
+            disabled={
+              loadingTx ||
+              addingMultisigTx ||
+              addingSingleOwnerTx ||
+              loadingSafeDetails ||
+              isReadOnly
+            }
+            loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
+          >
+            Confirm
+          </Button>
+        </div>
+
+        {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
+      </ReplaceContainer>
+    );
+  };
+
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>{renderReview()}</form>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {step === STEPS.ZERO && renderNewOwnerDetails()}
+        {step === STEPS.ONE && renderReview()}
+      </form>
     </div>
   );
 }

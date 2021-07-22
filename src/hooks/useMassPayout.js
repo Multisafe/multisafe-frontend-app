@@ -1048,6 +1048,33 @@ export default function useMassPayout(props = {}) {
     });
   };
 
+  const addSafeOwner = async ({
+    owner,
+    newThreshold,
+    isMultiOwner,
+    createNonce,
+    isMetaEnabled,
+  }) => {
+    const transactions = [];
+
+    transactions.push({
+      operation: 0, // CALL
+      to: proxyContract.address,
+      value: 0,
+      data: proxyContract.interface.encodeFunctionData(
+        "addOwnerWithThreshold",
+        [owner, newThreshold]
+      ),
+    });
+
+    await executeBatchTransactions({
+      transactions,
+      isMultiOwner,
+      createNonce,
+      isMetaEnabled,
+    });
+  };
+
   return {
     loadingTx,
     txHash,
@@ -1066,5 +1093,6 @@ export default function useMassPayout(props = {}) {
     createSpendingLimit,
     replaceSafeOwner,
     deleteSafeOwner,
+    addSafeOwner,
   };
 }

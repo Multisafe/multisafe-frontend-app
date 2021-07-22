@@ -42,6 +42,7 @@ import ReplaceOwnerModal, {
 import DeleteOwnerModal, {
   MODAL_NAME as DELETE_OWNER_MODAL,
 } from "./DeleteOwnerModal";
+import AddOwnerModal, { MODAL_NAME as ADD_OWNER_MODAL } from "./AddOwnerModal";
 import InvitationStepsModal, {
   MODAL_NAME as INVITE_STEPS_MODAL,
 } from "./InvitationStepsModal";
@@ -50,6 +51,7 @@ import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 import EditIcon from "assets/icons/dashboard/edit-icon.svg";
 import ReplaceIcon from "assets/icons/dashboard/replace-icon.svg";
 import DeleteIcon from "assets/icons/dashboard/trash-icon.svg";
+import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
 import { getDecryptedDetails } from "utils/encryption";
 
 export default function ManageOwners() {
@@ -140,6 +142,10 @@ export default function ManageOwners() {
 
   const handleDeleteOwner = (ownerName, ownerAddress) => {
     dispatch(show(DELETE_OWNER_MODAL, { ownerName, ownerAddress }));
+  };
+
+  const handleAddOwner = () => {
+    dispatch(show(ADD_OWNER_MODAL));
   };
 
   const showInvitationSteps = () => {
@@ -301,12 +307,20 @@ export default function ManageOwners() {
   const renderInviteOwners = () => {
     return (
       <React.Fragment>
+        {isOrganisationPrivate && (
+          <div className="help-container">
+            <Button iconOnly className="help" onClick={showInvitationSteps}>
+              <Img src={QuestionIcon} alt="question" />
+              <div className="ml-3 text">How invitation works</div>
+            </Button>
+          </div>
+        )}
         {loading && (
           <div
             className="d-flex align-items-center justify-content-center"
-            style={{ height: "250px" }}
+            style={{ height: "25rem" }}
           >
-            <Loading color="primary" width="50px" height="50px" />
+            <Loading color="primary" width="3rem" height="3rem" />
           </div>
         )}
 
@@ -323,6 +337,7 @@ export default function ManageOwners() {
         <EditOwnerModal />
         <ReplaceOwnerModal />
         <DeleteOwnerModal />
+        <AddOwnerModal />
       </React.Fragment>
     );
   };
@@ -333,7 +348,8 @@ export default function ManageOwners() {
         <div>
           <div className="title">Manage Safe Owners</div>
           <div className="subtitle">
-            Add, remove and replace owners or rename existing owners.
+            Add, remove, replace{isOrganisationPrivate && `, invite`} or rename
+            owners.
           </div>
           <div className="subtitle mt-2">
             Every transaction requires the confirmation of{" "}
@@ -343,12 +359,14 @@ export default function ManageOwners() {
             owners
           </div>
         </div>
-        {isOrganisationPrivate && (
-          <Button iconOnly className="help" onClick={showInvitationSteps}>
-            <Img src={QuestionIcon} alt="question" />
-            <div className="ml-3 text">How invitation works</div>
-          </Button>
-        )}
+
+        <Button
+          className="d-flex align-items-center mt-3"
+          onClick={handleAddOwner}
+        >
+          <Img src={PlusIcon} alt="plus" className="mr-3" />
+          <div>Add Owner</div>
+        </Button>
       </InfoCard>
       <OwnersContainer>{renderInviteOwners()}</OwnersContainer>
       <InvitationStepsModal />
