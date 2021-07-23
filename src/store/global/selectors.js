@@ -49,6 +49,9 @@ const makeSelectIsOrganisationPublic = () =>
 const makeSelectIsDataSharingAllowed = () =>
   createSelector(selectGlobal, (globalState) => globalState.dataSharingAllowed);
 
+const makeSelectGasMode = () =>
+  createSelector(selectGlobal, (globalState) => globalState.gasMode);
+
 export {
   makeSelectOwnerName,
   makeSelectOwnerSafeAddress,
@@ -62,4 +65,5 @@ export {
   makeSelectIsOrganisationPrivate,
   makeSelectIsOwner,
   makeSelectIsDataSharingAllowed,
+  makeSelectGasMode,
 };

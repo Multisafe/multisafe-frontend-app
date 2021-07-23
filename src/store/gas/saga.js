@@ -1,10 +1,16 @@
 import { call, put, takeLatest } from "redux-saga/effects";
+import { BigNumber } from "@ethersproject/bignumber";
+
 import { GET_GAS_PRICE } from "./action-types";
 import { getGasPriceSuccess, getGasPriceError } from "./actions";
 import request from "utils/request";
 import { ethGasStationEndpoint } from "constants/endpoints";
 import { ONE_GWEI } from "constants/index";
-import { BigNumber } from "@ethersproject/bignumber";
+import { GAS_MODES } from "./constants";
+
+function getGasInGwei(value) {
+  return BigNumber.from(String(value)).mul(BigNumber.from(ONE_GWEI));
+}
 
 export function* getGasPrices() {
   const requestURL = `${ethGasStationEndpoint}`;
@@ -16,15 +22,9 @@ export function* getGasPrices() {
     const result = yield call(request, requestURL, options);
     yield put(
       getGasPriceSuccess({
-        slow: BigNumber.from(String(result["average"])).mul(
-          BigNumber.from(ONE_GWEI)
-        ),
-        average: BigNumber.from(String(result["fast"])).mul(
-          BigNumber.from(ONE_GWEI)
-        ),
-        fast: BigNumber.from(String(result["fastest"])).mul(
-          BigNumber.from(ONE_GWEI)
-        ),
+        [GAS_MODES.STANDARD]: getGasInGwei(result["average"]),
+        [GAS_MODES.FAST]: getGasInGwei(result["fast"]),
+        [GAS_MODES.INSTANT]: getGasInGwei(result["fastest"]),
       })
     );
   } catch (err) {

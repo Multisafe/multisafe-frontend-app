@@ -11,7 +11,9 @@ import {
   GET_SAFE_INFO_SUCCESS,
   GET_SAFE_INFO_ERROR,
   SET_DATA_SHARING,
+  SET_GAS_MODE,
 } from "./action-types";
+import { GAS_MODES } from "store/gas/constants";
 
 export const initialState = {
   ownerName: "",
@@ -25,6 +27,7 @@ export const initialState = {
   error: false,
   isReadOnly: false,
   dataSharingAllowed: undefined,
+  gasMode: GAS_MODES.FAST,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -60,6 +63,10 @@ const reducer = (state = initialState, action) =>
 
       case SET_DATA_SHARING:
         draft.dataSharingAllowed = action.dataSharingAllowed;
+        break;
+
+      case SET_GAS_MODE:
+        draft.gasMode = action.gasMode;
         break;
 
       case CLEAR_GLOBAL_STATE:

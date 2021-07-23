@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { arrayify } from "@ethersproject/bytes";
 import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
@@ -27,12 +27,9 @@ import ERC20ABI from "constants/abis/ERC20.json";
 import MultiSendABI from "constants/abis/MultiSend.json";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { getGasPrice } from "store/gas/actions";
-import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
 import { useInjectReducer } from "utils/injectReducer";
-import { useInjectSaga } from "utils/injectSaga";
-import { makeSelectAverageGasPrice } from "store/gas/selectors";
+import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 
 const gasPriceKey = "gas";
@@ -54,12 +51,8 @@ export default function useMassPayout(props = {}) {
 
   useInjectReducer({ key: gasPriceKey, reducer: gasPriceReducer });
 
-  useInjectSaga({ key: gasPriceKey, saga: gasPriceSaga });
-
-  const dispatch = useDispatch();
-
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const averageGasPrice = useSelector(makeSelectAverageGasPrice());
+  const selectedGasPrice = useSelector(makeSelectSelectedGasPriceInWei());
 
   // contracts
   const proxyContract = useContract(ownerSafeAddress, GnosisSafeABI, true);
@@ -71,12 +64,6 @@ export default function useMassPayout(props = {}) {
 
   const customToken = useContract(ZERO_ADDRESS, ERC20ABI, true);
   const multiSend = useContract(MULTISEND_ADDRESS, MultiSendABI);
-
-  useEffect(() => {
-    if (!averageGasPrice)
-      // get gas prices
-      dispatch(getGasPrice());
-  }, [dispatch, averageGasPrice]);
 
   useEffect(() => {
     if (connector) {
@@ -402,7 +389,7 @@ export default function useMassPayout(props = {}) {
                 autoApprovedSignature,
                 {
                   gasLimit,
-                  gasPrice: averageGasPrice || DEFAULT_GAS_PRICE,
+                  gasPrice: selectedGasPrice || DEFAULT_GAS_PRICE,
                 }
               );
               setTxHash(tx.hash);
@@ -797,7 +784,7 @@ export default function useMassPayout(props = {}) {
               signatureBytes,
               {
                 gasLimit,
-                gasPrice: averageGasPrice || DEFAULT_GAS_PRICE,
+                gasPrice: selectedGasPrice || DEFAULT_GAS_PRICE,
               }
             );
             setTxHash(tx.hash);
