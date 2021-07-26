@@ -281,23 +281,59 @@ export default function ManageOwners() {
                 className="action-icon p-0"
                 onClick={() => handleEditName(name, owner)}
               >
-                <Img src={EditIcon} alt="edit" width="12" />
+                <Img
+                  src={EditIcon}
+                  alt="edit"
+                  width="12"
+                  data-for={"edit-owner"}
+                  data-tip={"Edit"}
+                />
               </Button>
               <Button
                 iconOnly
                 className="action-icon p-0 ml-3"
                 onClick={() => handleReplaceOwner(name, owner)}
               >
-                <Img src={ReplaceIcon} alt="replace" width="20" />
+                <Img
+                  src={ReplaceIcon}
+                  alt="replace"
+                  width="20"
+                  data-for={"replace-owner"}
+                  data-tip={"Replace"}
+                />
               </Button>
               <Button
                 iconOnly
                 className="action-icon p-0 ml-3"
                 onClick={() => handleDeleteOwner(name, owner)}
               >
-                <Img src={DeleteIcon} alt="delete" width="12" />
+                <Img
+                  src={DeleteIcon}
+                  alt="delete"
+                  width="12"
+                  data-for={"delete-owner"}
+                  data-tip={"Delete"}
+                />
               </Button>
             </div>
+            <ReactTooltip
+              id={"edit-owner"}
+              place={"top"}
+              type={"dark"}
+              effect={"solid"}
+            />
+            <ReactTooltip
+              id={"replace-owner"}
+              place={"top"}
+              type={"dark"}
+              effect={"solid"}
+            />
+            <ReactTooltip
+              id={"delete-owner"}
+              place={"top"}
+              type={"dark"}
+              effect={"solid"}
+            />
           </div>
         </OwnerDetails>
       </React.Fragment>

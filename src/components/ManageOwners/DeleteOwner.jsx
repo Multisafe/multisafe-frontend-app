@@ -49,6 +49,7 @@ import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/Transactio
 import ErrorText from "components/common/ErrorText";
 import Avatar from "components/common/Avatar";
 
+import { Information } from "components/Register/styles";
 import { DeleteContainer, OwnerDetails } from "./styles";
 
 const transactionsKey = "transactions";
@@ -289,6 +290,10 @@ export default function DeleteOwner(props) {
             out of {safeOwners.length - 1} owners.
           </div>
         </div>
+
+        <Information className="mt-5">
+          You are about to create an on-chain transaction.
+        </Information>
 
         <div className="buttons">
           <Button

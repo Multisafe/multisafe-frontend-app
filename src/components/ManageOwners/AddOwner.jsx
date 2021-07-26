@@ -50,6 +50,7 @@ import ErrorText from "components/common/ErrorText";
 import Avatar from "components/common/Avatar";
 import { STEPS } from "store/login/resources";
 
+import { Information } from "components/Register/styles";
 import { DeleteContainer, ReplaceContainer, OwnerDetails } from "./styles";
 
 const transactionsKey = "transactions";
@@ -363,6 +364,10 @@ export default function AddOwner(props) {
             </div>
           </div>
         </OwnerDetails>
+
+        <Information className="mt-5">
+          You are about to create an on-chain transaction.
+        </Information>
 
         <div className="buttons">
           <Button

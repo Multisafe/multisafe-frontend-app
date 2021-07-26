@@ -32,7 +32,7 @@ export default styled.div`
     display: flex;
     justify-content: center;
     gap: 1rem;
-    margin-top: 8rem;
+    margin-top: 5rem;
   }
 
   @media (max-width: 978px) {
