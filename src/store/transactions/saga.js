@@ -21,34 +21,9 @@ import {
 
 function* addTransaction({ body }) {
   const requestURL = `${createTransactionEndpoint}`;
-  const {
-    to,
-    safeAddress,
-    createdBy,
-    transactionHash,
-    txData,
-    tokenValue,
-    tokenCurrency,
-    fiatValue,
-    addresses,
-    fiatCurrency,
-    transactionMode,
-  } = body;
   const options = {
     method: "POST",
-    body: JSON.stringify({
-      to,
-      safeAddress,
-      createdBy,
-      transactionHash,
-      txData,
-      tokenValue,
-      tokenCurrency,
-      fiatValue,
-      addresses,
-      fiatCurrency,
-      transactionMode,
-    }),
+    body: JSON.stringify(body),
     headers: {
       "content-type": "application/json",
     },
