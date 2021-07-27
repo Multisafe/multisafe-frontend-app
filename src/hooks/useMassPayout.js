@@ -988,8 +988,6 @@ export default function useMassPayout(props = {}) {
     const prevOwnerAddress =
       oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
 
-    console.log({ prevOwnerAddress, oldOwner, newOwner });
-
     transactions.push({
       operation: 0, // CALL
       to: proxyContract.address,
@@ -1026,8 +1024,6 @@ export default function useMassPayout(props = {}) {
 
     const prevOwnerAddress =
       oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
-
-    console.log({ prevOwnerAddress, owner, newThreshold });
 
     transactions.push({
       operation: 0, // CALL
