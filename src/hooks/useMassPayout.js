@@ -242,6 +242,40 @@ function useBatchTransaction() {
     }
   };
 
+  const getAppropriateSignature = async ({
+    to,
+    value,
+    data,
+    operation,
+    safeTxGas,
+    baseGas,
+    gasPrice,
+    gasToken,
+    refundReceiver,
+    nonce,
+    contractTransactionHash,
+  }) => {
+    let approvedSign;
+    if (isHardwareWallet) {
+      approvedSign = await ethSigner(account, contractTransactionHash);
+    } else {
+      approvedSign = await eip712Signer(
+        to,
+        value,
+        data,
+        operation,
+        safeTxGas,
+        baseGas,
+        gasPrice,
+        gasToken,
+        refundReceiver,
+        nonce,
+        contractTransactionHash
+      );
+    }
+    return approvedSign;
+  };
+
   const executeBatchTransactions = async ({
     transactions,
     isMultiOwner,
@@ -327,26 +361,19 @@ function useBatchTransaction() {
                   nonce
                 );
 
-              if (isHardwareWallet) {
-                approvedSign = await ethSigner(
-                  account,
-                  contractTransactionHash
-                );
-              } else {
-                approvedSign = await eip712Signer(
-                  to,
-                  valueWei,
-                  data,
-                  operation,
-                  0, // set gasLimit as 0 for sign
-                  baseGasEstimate,
-                  gasPrice,
-                  gasToken,
-                  refundReceiver,
-                  nonce,
-                  contractTransactionHash
-                );
-              }
+              approvedSign = await getAppropriateSignature({
+                to,
+                value: valueWei,
+                data,
+                operation,
+                safeTxGas: 0,
+                baseGas: baseGasEstimate,
+                gasPrice,
+                gasToken,
+                refundReceiver,
+                nonce,
+                contractTransactionHash,
+              });
 
               setTxData({
                 to: ownerSafeAddress,
@@ -404,24 +431,19 @@ function useBatchTransaction() {
                 createNonce
               );
 
-            if (isHardwareWallet) {
-              approvedSign = await ethSigner(account, contractTransactionHash);
-            } else {
-              // Create new tx
-              approvedSign = await eip712Signer(
-                to,
-                valueWei,
-                data,
-                operation,
-                0, // set gasLimit as 0 for sign
-                baseGasEstimate,
-                gasPrice,
-                gasToken,
-                refundReceiver,
-                createNonce,
-                contractTransactionHash
-              );
-            }
+            approvedSign = await getAppropriateSignature({
+              to,
+              value: valueWei,
+              data,
+              operation,
+              safeTxGas: 0,
+              baseGas: baseGasEstimate,
+              gasPrice,
+              gasToken,
+              refundReceiver,
+              nonce: createNonce,
+              contractTransactionHash,
+            });
 
             setTxData({
               // safe: ownerSafeAddress,
@@ -465,9 +487,7 @@ function useBatchTransaction() {
     setRejecting,
     approving,
     rejecting,
-    ethSigner,
-    eip712Signer,
-    isHardwareWallet,
+    getAppropriateSignature,
   };
 }
 
@@ -487,9 +507,7 @@ export default function useMassPayout(props = {}) {
     setRejecting,
     approving,
     rejecting,
-    ethSigner,
-    eip712Signer,
-    isHardwareWallet,
+    getAppropriateSignature,
   } = useBatchTransaction();
 
   const [confirmTxData, setConfirmTxData] = useState("");
@@ -566,23 +584,19 @@ export default function useMassPayout(props = {}) {
               nonce
             );
 
-          if (isHardwareWallet) {
-            approvedSign = await ethSigner(account, contractTransactionHash);
-          } else {
-            approvedSign = await eip712Signer(
-              to,
-              value,
-              data,
-              operation,
-              safeTxGas,
-              baseGas,
-              gasPrice,
-              gasToken,
-              refundReceiver,
-              nonce,
-              contractTransactionHash
-            );
-          }
+          approvedSign = await getAppropriateSignature({
+            to,
+            value,
+            data,
+            operation,
+            safeTxGas,
+            baseGas,
+            gasPrice,
+            gasToken,
+            refundReceiver,
+            nonce,
+            contractTransactionHash,
+          });
 
           const txData = {
             // POST to gnosis
@@ -699,23 +713,19 @@ export default function useMassPayout(props = {}) {
             );
 
           if (isMetaEnabled) {
-            if (isHardwareWallet) {
-              approvedSign = await ethSigner(account, contractTransactionHash);
-            } else {
-              approvedSign = await eip712Signer(
-                to,
-                value,
-                data,
-                operation,
-                safeTxGas,
-                baseGas,
-                gasPrice,
-                gasToken,
-                refundReceiver,
-                nonce,
-                contractTransactionHash
-              );
-            }
+            approvedSign = await getAppropriateSignature({
+              to,
+              value,
+              data,
+              operation,
+              safeTxGas,
+              baseGas,
+              gasPrice,
+              gasToken,
+              refundReceiver,
+              nonce,
+              contractTransactionHash,
+            });
 
             const confirmingAccounts = isApproved
               ? [
