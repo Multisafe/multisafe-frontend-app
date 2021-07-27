@@ -44,44 +44,22 @@ const {
   SENTINEL_ADDRESS,
 } = addresses;
 
-export default function useMassPayout(props = {}) {
-  const { tokenDetails } = props;
+function useBatchTransaction() {
   const { account, library, connector } = useActiveWeb3React();
 
   const [loadingTx, setLoadingTx] = useState(false);
   const [txHash, setTxHash] = useState("");
   const [txData, setTxData] = useState("");
-  const [confirmTxData, setConfirmTxData] = useState("");
-  const [recievers, setRecievers] = useState();
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [isHardwareWallet, setIsHardwareWallet] = useState(false);
-
-  useInjectReducer({ key: gasPriceKey, reducer: gasPriceReducer });
-
-  useInjectSaga({ key: gasPriceKey, saga: gasPriceSaga });
-
-  const dispatch = useDispatch();
 
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const averageGasPrice = useSelector(makeSelectAverageGasPrice());
 
   // contracts
   const proxyContract = useContract(ownerSafeAddress, GnosisSafeABI, true);
-  const allowanceModule = useContract(
-    ALLOWANCE_MODULE_ADDRESS,
-    AllowanceModuleABI,
-    true
-  );
-
-  const customToken = useContract(ZERO_ADDRESS, ERC20ABI, true);
   const multiSend = useContract(MULTISEND_ADDRESS, MultiSendABI);
-
-  useEffect(() => {
-    if (!averageGasPrice)
-      // get gas prices
-      dispatch(getGasPrice());
-  }, [dispatch, averageGasPrice]);
 
   useEffect(() => {
     if (connector) {
@@ -109,12 +87,6 @@ export default function useMassPayout(props = {}) {
         )
       ),
     ]);
-  };
-
-  const getERC20Contract = (contractAddress) => {
-    if (contractAddress && customToken)
-      return customToken.attach(contractAddress);
-    return customToken;
   };
 
   let signTypedData = async function (account, typedData) {
@@ -479,6 +451,79 @@ export default function useMassPayout(props = {}) {
         console.error(err);
       }
     }
+  };
+
+  return {
+    executeBatchTransactions,
+    loadingTx,
+    setLoadingTx,
+    txHash,
+    setTxHash,
+    txData,
+    setTxData,
+    setApproving,
+    setRejecting,
+    approving,
+    rejecting,
+    ethSigner,
+    eip712Signer,
+    isHardwareWallet,
+  };
+}
+
+export default function useMassPayout(props = {}) {
+  const { tokenDetails } = props;
+  const { account, library } = useActiveWeb3React();
+
+  const {
+    executeBatchTransactions,
+    loadingTx,
+    setLoadingTx,
+    txHash,
+    setTxHash,
+    txData,
+    setTxData,
+    setApproving,
+    setRejecting,
+    approving,
+    rejecting,
+    ethSigner,
+    eip712Signer,
+    isHardwareWallet,
+  } = useBatchTransaction();
+
+  const [confirmTxData, setConfirmTxData] = useState("");
+  const [recievers, setRecievers] = useState();
+
+  useInjectReducer({ key: gasPriceKey, reducer: gasPriceReducer });
+
+  useInjectSaga({ key: gasPriceKey, saga: gasPriceSaga });
+
+  const dispatch = useDispatch();
+
+  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const averageGasPrice = useSelector(makeSelectAverageGasPrice());
+
+  // contracts
+  const proxyContract = useContract(ownerSafeAddress, GnosisSafeABI, true);
+  const allowanceModule = useContract(
+    ALLOWANCE_MODULE_ADDRESS,
+    AllowanceModuleABI,
+    true
+  );
+
+  const customToken = useContract(ZERO_ADDRESS, ERC20ABI, true);
+
+  useEffect(() => {
+    if (!averageGasPrice)
+      // get gas prices
+      dispatch(getGasPrice());
+  }, [dispatch, averageGasPrice]);
+
+  const getERC20Contract = (contractAddress) => {
+    if (contractAddress && customToken)
+      return customToken.attach(contractAddress);
+    return customToken;
   };
 
   const confirmMassPayout = async ({
