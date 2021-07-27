@@ -55,6 +55,7 @@ import RejectTxModal, { MODAL_NAME as REJECT_TX_MODAL } from "./RejectTxModal";
 import ExecuteTxModal, {
   MODAL_NAME as EXECUTE_TX_MODAL,
 } from "./ExecuteTxModal";
+import { getDecryptedOwnerName } from "store/invitation/utils";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -188,15 +189,19 @@ export default function MultiSigTransactions() {
         const confirmedOwner = confirmations.find(
           (c) => c.owner === safeOwner.owner
         );
-        if (confirmedOwner)
+
+        let name;
+
+        if (confirmedOwner) {
+          name = getDecryptedOwnerName({
+            encryptedName: confirmedOwner.ownerInfo.name,
+            encryptionKey,
+            organisationType,
+          });
+
           return {
             ...confirmedOwner,
-            title: getDecryptedDetails(
-              confirmedOwner.ownerInfo.name,
-              encryptionKey,
-              organisationType,
-              false
-            ),
+            title: name,
             subtitle: getStatusText(
               confirmedOwner.approved,
               confirmedOwner.rejected
@@ -207,14 +212,17 @@ export default function MultiSigTransactions() {
               confirmedOwner.rejected
             ),
           };
-        return {
-          ownerInfo: safeOwner,
-          title: getDecryptedDetails(
-            safeOwner.name,
+        } else {
+          name = getDecryptedOwnerName({
+            encryptedName: safeOwner.name,
             encryptionKey,
             organisationType,
-            false
-          ),
+          });
+        }
+
+        return {
+          ownerInfo: safeOwner,
+          title: name,
           subtitle: getStatusText(safeOwner.approved, safeOwner.rejected),
           backgroundColor: getStatusColor(
             safeOwner.owner,

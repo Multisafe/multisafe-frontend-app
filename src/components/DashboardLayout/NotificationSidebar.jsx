@@ -25,7 +25,7 @@ import Loading from "components/common/Loading";
 import CloseIcon from "assets/icons/navbar/close.svg";
 import { makeSelectIsNotificationOpen } from "store/layout/selectors";
 import { toggleNotification } from "store/layout/actions";
-import { getDecryptedDetails } from "utils/encryption";
+import { getDecryptedOwnerName } from "store/invitation/utils";
 import NoNotificationImg from "assets/icons/dashboard/empty/notification.svg";
 
 import { NotificationMenu } from "./styles";
@@ -104,6 +104,16 @@ function NotificationSidebar() {
     dispatch(toggleNotification(false));
   };
 
+  const renderName = (encryptedName) => {
+    const name = getDecryptedOwnerName({
+      encryptedName,
+      encryptionKey,
+      organisationType,
+    });
+
+    return name;
+  };
+
   const renderNotification = ({
     notificationId,
     data,
@@ -120,14 +130,7 @@ function NotificationSidebar() {
             <div className="content">
               <div className="notification-heading">{data.headline}</div>
               <div className="notification-description">
-                {data.name &&
-                  getDecryptedDetails(
-                    data.name,
-                    encryptionKey,
-                    organisationType,
-                    false
-                  )}{" "}
-                {data.message}
+                {renderName(data.name)} {data.message}
               </div>
               <div className="notification-date">
                 {formatDistance(new Date(), new Date(createdOn))} ago
