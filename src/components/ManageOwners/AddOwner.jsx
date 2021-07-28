@@ -354,7 +354,7 @@ export default function AddOwner(props) {
             <div className="details">
               <div className="name">{newOwnerName}</div>
               <div className="address">Address: {newOwnerAddress}</div>
-              <div className="address mt-2">
+              <div className="address">
                 Threshold:
                 <span className="text-bold">
                   {" "}

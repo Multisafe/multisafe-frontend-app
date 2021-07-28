@@ -144,9 +144,7 @@ export default function DisbursementDetails({
                   firstName={firstName}
                   lastName={lastName}
                 />
-                <div>
-                  {firstName} {lastName}
-                </div>
+                <div>{ownerName}</div>
               </div>
             </td>
             <td style={{ width: "35%" }}>{address}</td>
@@ -193,43 +191,43 @@ export default function DisbursementDetails({
       <Table>
         <TableHead>
           <tr>
-            <th>Owner Name</th>
-            <th>Address</th>
-            <th>Action Taken</th>
+            <th style={{ width: "30%" }}>Owner Name</th>
+            <th style={{ width: "45%" }}>Address</th>
+            <th style={{ width: "25%" }}>Action Taken</th>
           </tr>
         </TableHead>
         <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
           <tr style={{ backgroundColor: "#ffecef" }}>
-            <td>
+            <td style={{ width: "30%" }}>
               <div className="d-flex align-items-center">
                 <Avatar
                   className="mr-3"
                   firstName={oldFirstName}
                   lastName={oldLastName}
                 />
-                <div>
-                  {oldFirstName} {oldLastName}
-                </div>
+                <div>{oldOwnerName}</div>
               </div>
             </td>
-            <td>{oldOwnerAddress}</td>
-            <td className="text-red">Remove</td>
+            <td style={{ width: "45%" }}>{oldOwnerAddress}</td>
+            <td className="text-red" style={{ width: "25%" }}>
+              Remove
+            </td>
           </tr>
           <tr>
-            <td>
+            <td style={{ width: "30%" }}>
               <div className="d-flex align-items-center">
                 <Avatar
                   className="mr-3"
                   firstName={newFirstName}
                   lastName={newLastName}
                 />
-                <div>
-                  {newFirstName} {newLastName}
-                </div>
+                <div>{newOwnerName}</div>
               </div>
             </td>
-            <td>{newOwnerAddress}</td>
-            <td className="text-primary">Add</td>
+            <td style={{ width: "45%" }}>{newOwnerAddress}</td>
+            <td className="text-primary" style={{ width: "25%" }}>
+              Add
+            </td>
           </tr>
         </TableBody>
       </Table>
@@ -273,9 +271,7 @@ export default function DisbursementDetails({
                   firstName={newFirstName}
                   lastName={newLastName}
                 />
-                <div>
-                  {newFirstName} {newLastName}
-                </div>
+                <div>{newOwnerName}</div>
               </div>
             </td>
             <td style={{ width: "35%" }}>{newOwnerAddress}</td>

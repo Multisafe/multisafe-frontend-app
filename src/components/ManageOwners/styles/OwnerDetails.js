@@ -50,6 +50,7 @@ export default styled.div`
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 0.4rem;
     }
   }
 
