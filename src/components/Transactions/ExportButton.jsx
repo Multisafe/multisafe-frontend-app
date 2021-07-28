@@ -19,6 +19,7 @@ import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getEtherscanLink } from "components/common/Web3Utils";
 import { networkId } from "constants/networks";
+import { getDecryptedOwnerName } from "store/invitation/utils";
 
 const joinArray = (arr) => {
   return arr && arr.join("\n");
@@ -107,23 +108,17 @@ export default function ExportButton() {
             organisationType
           );
 
-          let createdByName = [];
+          let createdByName = "";
 
           let createdByOwner = safeOwners
             ? safeOwners.find(({ owner }) => owner === createdBy)
             : null;
           if (createdByOwner) {
-            const isOwnerWithoutName =
-              createdByOwner.name === "0000" ? true : false;
-
-            createdByName = isOwnerWithoutName
-              ? "New Owner"
-              : getDecryptedDetails(
-                  createdByOwner.name,
-                  encryptionKey,
-                  organisationType,
-                  false
-                );
+            createdByName = getDecryptedOwnerName({
+              encryptedName: createdByOwner.name,
+              encryptionKey,
+              organisationType,
+            });
           }
 
           let names = [];

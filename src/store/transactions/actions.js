@@ -24,6 +24,7 @@ export function addTransaction({
   addresses,
   fiatCurrency = "USD",
   transactionMode = TRANSACTION_MODES.MASS_PAYOUT,
+  ...rest
 }) {
   return {
     type: ADD_TRANSACTION,
@@ -39,6 +40,7 @@ export function addTransaction({
       addresses,
       fiatCurrency,
       transactionMode,
+      ...rest,
     },
   };
 }

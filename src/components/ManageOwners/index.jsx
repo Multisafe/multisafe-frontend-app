@@ -52,7 +52,7 @@ import EditIcon from "assets/icons/dashboard/edit-icon.svg";
 import ReplaceIcon from "assets/icons/dashboard/replace-icon.svg";
 import DeleteIcon from "assets/icons/dashboard/trash-icon.svg";
 import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
-import { getDecryptedDetails } from "utils/encryption";
+import { getDecryptedOwnerName } from "store/invitation/utils";
 
 export default function ManageOwners() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
@@ -244,15 +244,12 @@ export default function ManageOwners() {
     idx,
     noBackground = false
   ) => {
-    const isOwnerWithoutName = encryptedName === "0000" ? true : false;
-    const name = isOwnerWithoutName
-      ? "New Owner"
-      : getDecryptedDetails(
-          encryptedName,
-          encryptionKey,
-          organisationType,
-          false
-        );
+    const name = getDecryptedOwnerName({
+      encryptedName,
+      encryptionKey,
+      organisationType,
+    });
+
     const firstName = name.split(" ")[0];
     const lastName = name.split(" ")[1];
     return (
