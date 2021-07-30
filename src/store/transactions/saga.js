@@ -1,4 +1,6 @@
 import { takeLatest, put, call, fork } from "redux-saga/effects";
+import { hide } from "redux-modal";
+
 import {
   ADD_TRANSACTION,
   GET_TRANSACTION_BY_ID,
@@ -18,6 +20,9 @@ import {
   getTransactionsEndpoint,
   getTransactionByIdEndpoint,
 } from "constants/endpoints";
+import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
+import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
+import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimits/NewSpendingLimitModal";
 
 function* addTransaction({ body }) {
   const requestURL = `${createTransactionEndpoint}`;
@@ -42,6 +47,9 @@ function* addTransaction({ body }) {
           result.log
         )
       );
+      yield put(hide(MASS_PAYOUT_MODAL));
+      yield put(hide(QUICK_TRANSFER_MODAL));
+      yield put(hide(NEW_SPENDING_LIMIT_MODAL));
     }
   } catch (err) {
     yield put(addTransactionError("Could not create transaction."));

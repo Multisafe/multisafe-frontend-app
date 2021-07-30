@@ -8,7 +8,7 @@ export function getDecryptedOwnerName({
   encryptionKey,
   organisationType,
 }) {
-  if (!encryptionKey || !encryptedName) return NEW_OWNER;
+  if (!encryptionKey || !encryptedName) return "";
 
   const isOwnerWithoutName = encryptedName === ZEROES ? true : false;
 
