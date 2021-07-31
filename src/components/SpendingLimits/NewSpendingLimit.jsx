@@ -12,7 +12,7 @@ import {
 } from "components/common/Form";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import { useMassPayout, useLocalStorage } from "hooks";
+import { useLocalStorage, useSpendingLimits } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -68,7 +68,7 @@ export default function SpendingLimits(props) {
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
 
-  const { loadingTx, createSpendingLimit } = useMassPayout();
+  const { loadingTx, createSpendingLimit } = useSpendingLimits();
 
   const { register, errors, handleSubmit, formState, control, watch } = useForm(
     {

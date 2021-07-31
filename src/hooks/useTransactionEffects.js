@@ -27,12 +27,17 @@ import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/Transactio
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
+import gasPriceSaga from "store/gas/saga";
+import gasPriceReducer from "store/gas/reducer";
+import { getGasPrice } from "store/gas/actions";
+import { makeSelectAverageGasPrice } from "store/gas/selectors";
 
 // reducer/saga keys
 const transactionsKey = "transactions";
 const safeKey = "safe";
 const multisigKey = "multisig";
 const metaTxKey = "metatx";
+const gasPriceKey = "gas";
 
 export default function useTransactionEffects({
   txHash,
@@ -46,12 +51,14 @@ export default function useTransactionEffects({
   useInjectReducer({ key: safeKey, reducer: safeReducer });
   useInjectReducer({ key: multisigKey, reducer: multisigReducer });
   useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
+  useInjectReducer({ key: gasPriceKey, reducer: gasPriceReducer });
 
   // Sagas
   useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
   useInjectSaga({ key: safeKey, saga: safeSaga });
   useInjectSaga({ key: multisigKey, saga: multisigSaga });
   useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
+  useInjectSaga({ key: gasPriceKey, saga: gasPriceSaga });
 
   const dispatch = useDispatch();
 
@@ -62,6 +69,7 @@ export default function useTransactionEffects({
     makeSelectSingleOwnerTransactionId()
   );
   const multisigNonce = useSelector(makeSelectNonce());
+  const averageGasPrice = useSelector(makeSelectAverageGasPrice());
 
   useEffect(() => {
     if (safeAddress) {
@@ -69,6 +77,12 @@ export default function useTransactionEffects({
       dispatch(getMetaTxEnabled(safeAddress));
     }
   }, [safeAddress, dispatch]);
+
+  useEffect(() => {
+    if (!averageGasPrice)
+      // get gas prices
+      dispatch(getGasPrice());
+  }, [dispatch, averageGasPrice]);
 
   useEffect(() => {
     if (baseRequestBody) {

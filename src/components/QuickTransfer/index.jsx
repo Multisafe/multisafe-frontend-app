@@ -143,8 +143,6 @@ export default function QuickTransfer(props) {
       usd: selectedTokenDetails.usdConversionRate * amount,
     }));
 
-    // setPayoutDetails(receivers);
-
     const totalAmountToPay = receivers.reduce(
       (total, { usd }) => (total += usd),
       0

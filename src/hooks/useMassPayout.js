@@ -1,14 +1,5 @@
-/*
- * useMassPayout hook
- * the massPayout function takes two params:
- * an array of objects, `recievers` with the keys:
- * address, salaryToken("DAI"/"USDC" etc), salaryAmount(in ETH, "10"/"500" etc.)
- * and the token to pay them from ("DAI"/"USDC" etc)
- * [{address: String, salaryToken: String, salaryAmount: String}]
- */
-
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
 
@@ -23,19 +14,11 @@ import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE, tokens } from "constants/index";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import ERC20ABI from "constants/abis/ERC20.json";
-import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { getGasPrice } from "store/gas/actions";
-import gasPriceSaga from "store/gas/saga";
-import gasPriceReducer from "store/gas/reducer";
-import { useInjectReducer } from "utils/injectReducer";
-import { useInjectSaga } from "utils/injectSaga";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 
-const gasPriceKey = "gas";
-
-const { ZERO_ADDRESS, ALLOWANCE_MODULE_ADDRESS, SENTINEL_ADDRESS } = addresses;
+const { ZERO_ADDRESS } = addresses;
 
 export default function useMassPayout() {
   const { account, library } = useActiveWeb3React();
@@ -59,30 +42,12 @@ export default function useMassPayout() {
 
   useTransactionEffects({ txHash, txData, baseRequestBody });
 
-  useInjectReducer({ key: gasPriceKey, reducer: gasPriceReducer });
-
-  useInjectSaga({ key: gasPriceKey, saga: gasPriceSaga });
-
-  const dispatch = useDispatch();
-
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const averageGasPrice = useSelector(makeSelectAverageGasPrice());
 
   // contracts
   const proxyContract = useContract(ownerSafeAddress, GnosisSafeABI, true);
-  const allowanceModule = useContract(
-    ALLOWANCE_MODULE_ADDRESS,
-    AllowanceModuleABI,
-    true
-  );
-
   const customToken = useContract(ZERO_ADDRESS, ERC20ABI, true);
-
-  useEffect(() => {
-    if (!averageGasPrice)
-      // get gas prices
-      dispatch(getGasPrice());
-  }, [dispatch, averageGasPrice]);
 
   const getERC20Contract = (contractAddress) => {
     if (contractAddress && customToken)
@@ -497,171 +462,9 @@ export default function useMassPayout() {
     await executeBatchTransactions({ transactions });
   };
 
-  const createSpendingLimit = async ({
-    delegate,
-    tokenDetails,
-    tokenAmount,
-    resetTimeMin,
-    baseRequestBody,
-  }) => {
-    const transactions = [];
-
-    setBaseRequestBody(baseRequestBody);
-    // 1. enableModule
-    const allModules = await proxyContract.getModules();
-
-    const isAllowanceModuleEnabled =
-      allModules &&
-      allModules.find((module) => module === ALLOWANCE_MODULE_ADDRESS)
-        ? true
-        : false;
-
-    if (!isAllowanceModuleEnabled) {
-      transactions.push({
-        operation: 0, // CALL
-        to: proxyContract.address,
-        value: 0,
-        data: proxyContract.interface.encodeFunctionData("enableModule", [
-          ALLOWANCE_MODULE_ADDRESS,
-        ]),
-      });
-    }
-
-    const transferAmount = getAmountInWei(tokenAmount, tokenDetails.decimals);
-
-    // 2. addDelegate
-    // 3. setAllowance
-    transactions.push(
-      {
-        operation: 0, // CALL
-        to: allowanceModule.address,
-        value: 0,
-        data: allowanceModule.interface.encodeFunctionData("addDelegate", [
-          delegate,
-        ]),
-      },
-      {
-        operation: 0, // CALL
-        to: allowanceModule.address,
-        value: 0,
-        data: allowanceModule.interface.encodeFunctionData("setAllowance", [
-          delegate,
-          tokenDetails.address || ZERO_ADDRESS,
-          transferAmount,
-          resetTimeMin,
-          0, // resetBaseMin
-        ]),
-      }
-    );
-
-    await executeBatchTransactions({ transactions });
-  };
-
-  const replaceSafeOwner = async ({
-    oldOwner,
-    newOwner,
-    safeOwners,
-    isMultiOwner,
-    createNonce,
-    isMetaEnabled,
-  }) => {
-    const transactions = [];
-
-    // get prevOwner
-    const oldOwnerIndex = safeOwners.findIndex((addr) => addr === oldOwner);
-
-    if (oldOwnerIndex < 0) return;
-
-    const prevOwnerAddress =
-      oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
-
-    transactions.push({
-      operation: 0, // CALL
-      to: proxyContract.address,
-      value: 0,
-      data: proxyContract.interface.encodeFunctionData("swapOwner", [
-        prevOwnerAddress,
-        oldOwner,
-        newOwner,
-      ]),
-    });
-
-    await executeBatchTransactions({
-      transactions,
-      // isMultiOwner,
-      createNonce,
-      isMetaEnabled,
-    });
-  };
-
-  const deleteSafeOwner = async ({
-    owner,
-    safeOwners,
-    newThreshold,
-    isMultiOwner,
-    createNonce,
-    isMetaEnabled,
-  }) => {
-    const transactions = [];
-
-    // get prevOwner
-    const oldOwnerIndex = safeOwners.findIndex((addr) => addr === owner);
-
-    if (oldOwnerIndex < 0) return;
-
-    const prevOwnerAddress =
-      oldOwnerIndex === 0 ? SENTINEL_ADDRESS : safeOwners[oldOwnerIndex - 1];
-
-    transactions.push({
-      operation: 0, // CALL
-      to: proxyContract.address,
-      value: 0,
-      data: proxyContract.interface.encodeFunctionData("removeOwner", [
-        prevOwnerAddress,
-        owner,
-        newThreshold,
-      ]),
-    });
-
-    await executeBatchTransactions({
-      transactions,
-      // isMultiOwner,
-      createNonce,
-      isMetaEnabled,
-    });
-  };
-
-  const addSafeOwner = async ({
-    owner,
-    newThreshold,
-    isMultiOwner,
-    createNonce,
-    isMetaEnabled,
-  }) => {
-    const transactions = [];
-
-    transactions.push({
-      operation: 0, // CALL
-      to: proxyContract.address,
-      value: 0,
-      data: proxyContract.interface.encodeFunctionData(
-        "addOwnerWithThreshold",
-        [owner, newThreshold]
-      ),
-    });
-
-    await executeBatchTransactions({
-      transactions,
-      // isMultiOwner,
-      createNonce,
-      isMetaEnabled,
-    });
-  };
-
   return {
     loadingTx,
     txHash,
-    // receivers,
     massPayout,
     submitMassPayout,
     txData,
@@ -673,9 +476,5 @@ export default function useMassPayout() {
     setRejecting,
     approving,
     rejecting,
-    createSpendingLimit,
-    replaceSafeOwner,
-    deleteSafeOwner,
-    addSafeOwner,
   };
 }

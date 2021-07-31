@@ -54,12 +54,6 @@ export default function useBatchTransaction() {
   const proxyContract = useContract(safeAddress, GnosisSafeABI, true);
   const multiSend = useContract(MULTISEND_ADDRESS, MultiSendABI);
 
-  // useEffect(() => {
-  //   if (safeAddress) {
-  //     dispatch(getMetaTxEnabled(safeAddress));
-  //   }
-  // }, [safeAddress, dispatch]);
-
   useEffect(() => {
     if (connector) {
       if (connector.name === "Ledger" || connector.name === "Trezor") {
