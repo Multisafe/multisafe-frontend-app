@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
@@ -68,7 +68,6 @@ const DECISIONS = {
 
 export default function MultiSigTransactions() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const [finalTxHash, setFinalTxHash] = useState();
 
   const { account } = useActiveWeb3React();
 
@@ -89,7 +88,7 @@ export default function MultiSigTransactions() {
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const threshold = useSelector(makeSelectThreshold());
-  const txHashFromMetaTx = useSelector(makeSelectMultisigTransactionHash());
+  const multisigTxHash = useSelector(makeSelectMultisigTransactionHash());
   const updating = useSelector(makeSelectUpdating());
   const transactionDetails = useSelector(
     makeSelectMultisigTransactionDetails()
@@ -119,29 +118,22 @@ export default function MultiSigTransactions() {
   }, [transactionDetails]);
 
   useEffect(() => {
-    if (txHashFromMetaTx) {
-      setFinalTxHash(txHashFromMetaTx);
-      dispatch(clearMultisigTransactionHash());
-    }
-  }, [dispatch, txHashFromMetaTx]);
-
-  useEffect(() => {
-    if (finalTxHash && multisigTransactionId) {
+    if (multisigTxHash && multisigTransactionId) {
       dispatch(
         show(TX_SUBMITTED_MODAL, {
-          txHash: finalTxHash,
+          txHash: multisigTxHash,
           selectedCount: noOfPeoplePaid,
           transactionId: multisigTransactionId,
-          clearTxHash: clearTxHash,
         })
       );
       dispatch(
         getMultisigTransactionById(ownerSafeAddress, multisigTransactionId)
       );
+      dispatch(clearMultisigTransactionHash());
     }
   }, [
     dispatch,
-    finalTxHash,
+    multisigTxHash,
     multisigTransactionId,
     noOfPeoplePaid,
     ownerSafeAddress,
@@ -433,7 +425,7 @@ export default function MultiSigTransactions() {
         </InfoCard>
 
         <StepperCard>
-          <Stepper count={safeOwners.length}>
+          <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
             {renderConfirmationStatus({
               confirmations,
               createdBy,
@@ -470,10 +462,6 @@ export default function MultiSigTransactions() {
         <ExecuteTxModal />
       </div>
     );
-  };
-
-  const clearTxHash = () => {
-    setFinalTxHash("");
   };
 
   return renderTransactionDetails();

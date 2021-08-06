@@ -27,6 +27,7 @@ export default function useMassPayout() {
       return customToken.attach(contractAddress);
     return customToken;
   };
+
   const massPayout = async ({ receivers, tokenDetails, baseRequestBody }) => {
     setBaseRequestBody(baseRequestBody);
     if (!tokenDetails) return;
@@ -74,8 +75,6 @@ export default function useMassPayout() {
         return tx;
       }, []);
     }
-
-    console.log({ receivers, transactions });
 
     await executeBatchTransactions({ transactions });
   };

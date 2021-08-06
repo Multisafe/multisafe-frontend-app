@@ -25,6 +25,7 @@ export const initialState = {
   error: false,
   isReadOnly: false,
   dataSharingAllowed: undefined,
+  success: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -74,6 +75,7 @@ const reducer = (state = initialState, action) =>
 
       case GET_SAFE_INFO:
         draft.loading = true;
+        draft.success = false;
         break;
       case GET_SAFE_INFO_SUCCESS:
         draft.loading = false;
@@ -84,10 +86,12 @@ const reducer = (state = initialState, action) =>
         draft.ownerName = action.name;
         draft.ownerSafeAddress = action.safeAddress;
         draft.dataSharingAllowed = action.dataSharingAllowed;
+        draft.success = true;
         break;
       case GET_SAFE_INFO_ERROR:
         draft.loading = false;
         draft.error = action.error;
+        draft.success = false;
         break;
     }
   });

@@ -52,6 +52,15 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.SPENDING_LIMITS:
       return "Spending Limit";
 
+    case TRANSACTION_MODES.DELETE_SAFE_OWNER:
+      return "Removed Owner";
+
+    case TRANSACTION_MODES.REPLACE_SAFE_OWNER:
+      return "Replaced Owner";
+
+    case TRANSACTION_MODES.ADD_SAFE_OWNER:
+      return "Added Owner";
+
     default:
       return "";
   }

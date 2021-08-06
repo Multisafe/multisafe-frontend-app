@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { logoutUser } from "store/logout/actions";
 import { useActiveWeb3React } from "hooks";
-import { makeSelectIsReadOnly } from "store/global/selectors";
+import {
+  makeSelectIsReadOnly,
+  makeSelectSafeInfoSuccess,
+} from "store/global/selectors";
 
 export default function Authenticated({ children }) {
   const { onboard } = useActiveWeb3React();
@@ -14,20 +17,20 @@ export default function Authenticated({ children }) {
   const history = useHistory();
   const dispatch = useDispatch();
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const success = useSelector(makeSelectSafeInfoSuccess());
 
   authRef.current = isAuthenticated || isReadOnly;
 
   useEffect(() => {
     setTimeout(() => {
-      if (!authRef.current) {
+      if (success && !authRef.current) {
         if (onboard) {
           onboard.walletReset();
         }
         dispatch(logoutUser());
       }
-      return children;
-    }, 3500);
-  }, [children, history, dispatch, onboard]);
+    }, 5000);
+  }, [children, history, dispatch, onboard, success]);
 
   return children;
 }
