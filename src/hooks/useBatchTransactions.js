@@ -18,17 +18,12 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectIsMultiOwner,
 } from "store/global/selectors";
-import { useInjectReducer } from "utils/injectReducer";
-import { useInjectSaga } from "utils/injectSaga";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
-import metaTxReducer from "store/metatx/reducer";
-import metaTxSaga from "store/metatx/saga";
 import { makeSelectNonce } from "store/safe/selectors";
 
 const { MULTISEND_ADDRESS, ZERO_ADDRESS } = addresses;
-const metaTxKey = "metatx";
 
 export default function useBatchTransaction() {
   const { account, library, connector } = useActiveWeb3React();
@@ -39,10 +34,6 @@ export default function useBatchTransaction() {
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [isHardwareWallet, setIsHardwareWallet] = useState(false);
-
-  useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
-
-  useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const averageGasPrice = useSelector(makeSelectAverageGasPrice());

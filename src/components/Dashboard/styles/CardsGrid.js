@@ -3,7 +3,7 @@ import styled from "styled-components/macro";
 export default styled.div`
   display: grid;
   grid-gap: 3rem;
-  grid-template-columns: 50% 50%;
+  grid-template-columns: 50% auto;
   grid-template-rows: auto auto;
   grid-template-areas:
     "overview overview"

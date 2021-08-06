@@ -180,12 +180,17 @@ export default function MultiSigTransactions() {
     return "#fcbc04";
   };
 
-  const renderConfirmationStatus = ({ confirmations, createdBy, executor }) => {
+  const renderConfirmationStatus = ({
+    confirmations,
+    createdBy,
+    executor,
+    currentSafeOwners,
+  }) => {
     if (!confirmations || !confirmations.length) return;
 
     const statuses =
-      safeOwners &&
-      safeOwners.map((safeOwner) => {
+      currentSafeOwners &&
+      currentSafeOwners.map((safeOwner) => {
         const confirmedOwner = confirmations.find(
           (c) => c.owner === safeOwner.owner
         );
@@ -389,6 +394,7 @@ export default function MultiSigTransactions() {
       transactionMode,
       createdBy,
       metaData,
+      safeOwners: currentSafeOwners,
     } = txDetails;
 
     const paidTeammates = getDecryptedDetails(
@@ -428,7 +434,12 @@ export default function MultiSigTransactions() {
 
         <StepperCard>
           <Stepper count={safeOwners.length}>
-            {renderConfirmationStatus({ confirmations, createdBy, executor })}
+            {renderConfirmationStatus({
+              confirmations,
+              createdBy,
+              executor,
+              currentSafeOwners,
+            })}
           </Stepper>
         </StepperCard>
 
