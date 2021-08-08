@@ -1,4 +1,3 @@
-export { default as NoReferral } from "./NoReferral";
 export { default as PopupContainer } from "./PopupContainer";
 export { default as OrganisationCards } from "./OrganisationCards";
 export { default as OrganisationCard } from "./OrganisationCard";

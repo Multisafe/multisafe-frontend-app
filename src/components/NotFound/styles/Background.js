@@ -1,8 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  min-height: 92vh;
-  background-color: #f2f2f2;
+  min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;

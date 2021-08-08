@@ -67,7 +67,6 @@ import { registerUser } from "store/register/actions";
 import Loading from "components/common/Loading";
 import TeamPng from "assets/images/user-team.png";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
-import WelcomeImage from "assets/images/welcome-new.png";
 import {
   STEPS,
   FLOWS as OWNER_FLOWS,
@@ -411,7 +410,7 @@ const Login = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={WelcomeImage}
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
         alt="welcome"
         width="70%"
         className="d-block mx-auto py-4"

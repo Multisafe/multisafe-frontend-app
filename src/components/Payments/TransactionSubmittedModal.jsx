@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import Button from "components/common/Button";
 import { TransactionUrl } from "components/common/Web3Utils";
-import TransactionSubmittedPng from "assets/images/transaction-submitted.png";
 import { TxSubmittedContainer } from "./styles";
 import { routeGenerators } from "constants/routes/generators";
 import Img from "components/common/Img";
@@ -31,7 +30,13 @@ function TransactionSubmittedModal(props) {
       <ModalBody width="55rem" minHeight="auto">
         <TxSubmittedContainer>
           <div className="text-center">
-            <Img src={TransactionSubmittedPng} alt="submitted" width="150" />
+            <Img
+              src={
+                "https://images.multisafe.finance/landing-page/transaction-submitted.png"
+              }
+              alt="submitted"
+              width="150"
+            />
           </div>
 
           <div className="process-text">

@@ -20,7 +20,6 @@ import Img from "components/common/Img";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
-import WelcomeImage from "assets/images/welcome-new.png";
 import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { TransactionUrl } from "components/common/Web3Utils";
@@ -293,7 +292,7 @@ const DelegateTransfer = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={WelcomeImage}
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
         alt="welcome"
         width="70%"
         className="d-block mx-auto py-4"
@@ -447,7 +446,7 @@ const DelegateTransfer = () => {
   const renderSuccess = () => (
     <div>
       <Img
-        src={WelcomeImage}
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
         alt="welcome"
         height="370px"
         className="d-block mx-auto"
