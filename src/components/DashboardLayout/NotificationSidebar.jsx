@@ -7,7 +7,7 @@ import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import notificationsSaga from "store/notifications/saga";
 import notificationsReducer from "store/notifications/reducer";
 import {
@@ -63,7 +63,7 @@ const notificationStyles = {
 };
 
 function NotificationSidebar() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const organisationType = useSelector(makeSelectOrganisationType());
   const notifications = useSelector(makeSelectNotifications());

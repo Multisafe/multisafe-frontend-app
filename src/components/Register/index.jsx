@@ -7,7 +7,12 @@ import { show } from "redux-modal";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
 
-import { useActiveWeb3React, useLocalStorage, useContract } from "hooks";
+import {
+  useActiveWeb3React,
+  useLocalStorage,
+  useContract,
+  useEncryptionKey,
+} from "hooks";
 import ConnectButton from "components/Connect";
 import { useInjectReducer } from "utils/injectReducer";
 import registerWizardReducer from "store/registerWizard/reducer";
@@ -126,7 +131,7 @@ const getStepsCountByFlow = (flow) => {
 
 const Register = () => {
   const [sign, setSign] = useLocalStorage("SIGNATURE");
-  const setEncryptionKey = useLocalStorage("ENCRYPTION_KEY")[1];
+  const [, setEncryptionKey] = useEncryptionKey();
   const [loadingTx, setLoadingTx] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [isMetaTxEnabled, setIsMetaTxEnabled] = useState(false);
@@ -414,7 +419,7 @@ const Register = () => {
           const publicKey = getPublicKey(sign);
           // set encryptionKey
           const encryptionKey = cryptoUtils.getEncryptionKey(sign, proxy);
-          setEncryptionKey(encryptionKey);
+          setEncryptionKey(encryptionKey, proxy);
           let encryptionKeyData;
           try {
             encryptionKeyData = await cryptoUtils.encryptUsingSignatures(
@@ -477,7 +482,7 @@ const Register = () => {
     const organisationType = parseInt(formData.organisationType);
 
     // set encryptionKey
-    setEncryptionKey(encryptionKey);
+    setEncryptionKey(encryptionKey, safeAddress);
     const encryptedOwners =
       formData.owners && formData.owners.length
         ? formData.owners.map(({ name, owner }) => ({

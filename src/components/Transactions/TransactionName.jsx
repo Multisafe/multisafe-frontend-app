@@ -3,11 +3,11 @@ import { useSelector } from "react-redux";
 
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getDecryptedDetails } from "utils/encryption";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 
 export default function TransactionName({ to, transactionMode }) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const organisationType = useSelector(makeSelectOrganisationType());
 

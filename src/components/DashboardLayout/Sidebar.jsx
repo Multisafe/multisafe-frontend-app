@@ -32,6 +32,7 @@ import { useActiveWeb3React, useDropdown } from "hooks";
 import { minifyAddress } from "components/common/Web3Utils";
 import { routeGenerators } from "constants/routes/generators";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
+import SwitchAccounts from "./SwitchAccounts";
 
 import { DashboardSidebar } from "./styles";
 
@@ -150,6 +151,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               </div>
               <div className="name">Settings</div>
             </Link>
+            <SwitchAccounts />
             {!isReadOnly && (
               <div className="settings-option" onClick={logout}>
                 <div className="icon">

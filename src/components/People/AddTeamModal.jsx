@@ -28,7 +28,7 @@ import {
 } from "store/add-team/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useActiveWeb3React, useLocalStorage } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import {
   makeSelectUpdating,
   makeSelectError as makeSelectErrorInUpdate,
@@ -47,7 +47,7 @@ const addTeamKey = "addTeam";
 const modifyTeamKey = "modifyTeam";
 
 function AddTeamModal(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const { show, handleHide, isEditMode, defaultValues, departmentId } = props;
   const { register, handleSubmit, errors, formState, control } = useForm({
     mode: "onChange",

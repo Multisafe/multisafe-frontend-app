@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
 
-import { useActiveWeb3React, useLocalStorage } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import Button from "components/common/Button";
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
@@ -67,7 +67,7 @@ const DECISIONS = {
 };
 
 export default function MultiSigTransactions() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { account } = useActiveWeb3React();
 

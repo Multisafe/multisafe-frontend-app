@@ -12,7 +12,7 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectSafeOwners,
 } from "store/global/selectors";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
 import { makeSelectTransactions } from "store/transactions/selectors";
 import { Export } from "components/People/styles";
@@ -67,7 +67,7 @@ const getTransactionMode = (transactionMode) => {
 };
 
 export default function ExportButton() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const [csvData, setCsvData] = useState([]);
 
   const multisigTransactions = useSelector(makeSelectMultisigTransactions());

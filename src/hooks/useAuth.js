@@ -42,50 +42,57 @@ export default function useAuth() {
 
   useEffect(() => {
     if (success) {
-      const accessToken = localStorage.getItem("token");
-      const isAuthenticated = checkValidAccessToken(accessToken);
-
-      // TODO: refactor if/else
-      if (isAuthenticated) {
+      if (isOwner) {
         setIsAuthenticated(true);
-        if (isOwner) {
-          // READ and WRITE
-          dispatch(setReadOnly(false));
-        } else if (
-          !isOwner &&
-          organisationType === Number(ORGANISATION_TYPE.PRIVATE)
-        ) {
-          // No READ ONLY for private org
-          setIsAuthenticated(false);
-          dispatch(setReadOnly(false));
-        } else {
-          // READ ONLY
-          dispatch(setReadOnly(true));
-        }
+        dispatch(setReadOnly(false));
       } else {
-        if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
-          // No READ ONLY for private org
-          setIsAuthenticated(false);
-          dispatch(setReadOnly(false));
-        } else if (!dataSharingAllowed) {
-          console.log("logging out...");
-          dispatch(logoutUser());
-        } else {
-          // READ ONLY for DAOs
-          setIsAuthenticated(false);
+        setIsAuthenticated(false);
+        if (dataSharingAllowed) {
           dispatch(setReadOnly(true));
+        } else {
+          // if (organisationType === ORGANISATION_TYPE.PRIVATE)
+          //   dispatch(logoutUser());
+          dispatch(setReadOnly(false));
         }
       }
+
+      // const accessToken = localStorage.getItem("token");
+      // const isAuthenticated = checkValidAccessToken(accessToken);
+      // const isAuthenticated = true;
+
+      // TODO: refactor if/else
+      // if (isAuthenticated) {
+      //   setIsAuthenticated(true);
+      //   if (isOwner) {
+      //     // READ and WRITE
+      //     dispatch(setReadOnly(false));
+      //   } else if (
+      //     !isOwner &&
+      //     organisationType === Number(ORGANISATION_TYPE.PRIVATE)
+      //   ) {
+      //     // No READ ONLY for private org
+      //     setIsAuthenticated(false);
+      //     dispatch(setReadOnly(false));
+      //   } else {
+      //     // READ ONLY
+      //     dispatch(setReadOnly(true));
+      //   }
+      // } else {
+      //   if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
+      //     // No READ ONLY for private org
+      //     setIsAuthenticated(false);
+      //     dispatch(setReadOnly(false));
+      //   } else if (!dataSharingAllowed) {
+      //     console.log("logging out...");
+      //     dispatch(logoutUser());
+      //   } else {
+      //     // READ ONLY for DAOs
+      //     setIsAuthenticated(false);
+      //     dispatch(setReadOnly(true));
+      //   }
+      // }
     }
-  }, [
-    sign,
-    dispatch,
-    organisationType,
-    checkValidAccessToken,
-    dataSharingAllowed,
-    isOwner,
-    success,
-  ]);
+  }, [dispatch, dataSharingAllowed, isOwner, success, organisationType]);
 
   return isAuthenticated;
 }

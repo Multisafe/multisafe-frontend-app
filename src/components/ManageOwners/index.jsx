@@ -5,7 +5,7 @@ import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
 import Button from "components/common/Button";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import {
   getInvitations,
   createInvitation,
@@ -55,7 +55,7 @@ import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
 import { getDecryptedOwnerName } from "store/invitation/utils";
 
 export default function ManageOwners() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const [members, setMembers] = useState([]);
   const [pendingOwners, setPendingOwners] = useState([]);
 

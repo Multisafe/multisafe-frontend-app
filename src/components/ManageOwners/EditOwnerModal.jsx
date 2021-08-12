@@ -20,13 +20,13 @@ import safeReducer from "store/safe/reducer";
 import { updateOwnerName } from "store/safe/actions";
 import { makeSelectUpdating } from "store/safe/selectors";
 import { Input, ErrorMessage } from "components/common/Form";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 
 export const MODAL_NAME = "edit-owner-modal";
 const safeKey = "safe";
 
 function EditOwnerModal(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const { show, handleHide, ownerName, ownerAddress } = props;
 
   const { register, errors, handleSubmit, formState } = useForm({

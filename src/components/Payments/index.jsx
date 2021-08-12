@@ -32,7 +32,7 @@ import {
 } from "store/tokens/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
+import { useActiveWeb3React, useEncryptionKey, useMassPayout } from "hooks";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectThreshold,
@@ -61,7 +61,7 @@ const viewPeopleKey = "viewPeople";
 const viewTeamsKey = "viewTeams";
 
 export default function Payments() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const { register, handleSubmit, control, setValue, watch } = useForm({
     mode: "onChange",
   });

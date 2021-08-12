@@ -10,7 +10,7 @@ import {
   CurrencyInput,
   SelectToken,
 } from "components/common/Form";
-import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
+import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -40,7 +40,7 @@ import { Error } from "components/common/Form/styles";
 import { QuickTransferContainer } from "./styles";
 
 export default function QuickTransfer(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { handleHide, defaultValues } = props;
   const { account } = useActiveWeb3React();

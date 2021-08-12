@@ -40,7 +40,7 @@ import {
 } from "store/modify-people/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useActiveWeb3React, useLocalStorage } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import {
   makeSelectTeamIdToDetailsMap,
   makeSelectTeams,
@@ -54,7 +54,7 @@ const modifyPeopleKey = "modifyPeople";
 
 function AddSinglePeopleModal(props) {
   const { show, handleHide, isEditMode, defaultValues, peopleId } = props;
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { account } = useActiveWeb3React();
 

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
 import { getTransactionById } from "store/transactions/actions";
@@ -23,7 +23,7 @@ import Summary from "./Summary";
 const transactionsKey = "transactions";
 
 export default function TransactionDetails() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
 

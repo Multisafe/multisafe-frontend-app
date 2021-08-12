@@ -8,11 +8,11 @@ import ExportIcon from "assets/icons/dashboard/export-icon.svg";
 import { Export } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
 import { makeSelectOrganisationType } from "store/global/selectors";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectPeople } from "store/view-people/selectors";
 
 export default function ExportButton() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const [csvData, setCsvData] = useState([]);
 
   const teammates = useSelector(makeSelectPeople());
@@ -28,13 +28,8 @@ export default function ExportButton() {
           encryptionKey,
           organisationType
         );
-        const {
-          firstName,
-          lastName,
-          salaryAmount,
-          salaryToken,
-          address,
-        } = teammateDetails;
+        const { firstName, lastName, salaryAmount, salaryToken, address } =
+          teammateDetails;
         csvData.push({
           "First Name": firstName,
           "Last Name": lastName,

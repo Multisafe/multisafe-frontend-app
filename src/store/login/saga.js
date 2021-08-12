@@ -31,18 +31,19 @@ export function* loginUser({ safeAddress }) {
       // Error in payload
       yield put(loginUserError(result.log));
     } else {
-      localStorage.setItem("token", result.access_token);
-      let decoded;
-      try {
-        decoded = jwt_decode(result.access_token);
-      } catch (err) {
-        yield put(loginUserError(`Invalid JWT token.`));
-        return;
-      }
+      console.log({ result });
+      // localStorage.setItem("token", result.access_token);
+      // let decoded;
+      // try {
+      //   decoded = jwt_decode(result.access_token);
+      // } catch (err) {
+      //   yield put(loginUserError(`Invalid JWT token.`));
+      //   return;
+      // }
 
-      yield put(setOwnersAndThreshold(decoded.owners, decoded.threshold));
-      yield put(setOrganisationType(decoded.organisationType));
-      yield put(loginUserSuccess(result.transactionHash, result.log));
+      // yield put(setOwnersAndThreshold(decoded.owners, decoded.threshold));
+      // yield put(setOrganisationType(decoded.organisationType));
+      yield put(loginUserSuccess(result.safeAddress, result.log));
       yield put(push(routeGenerators.dashboard.root({ safeAddress })));
     }
   } catch (err) {

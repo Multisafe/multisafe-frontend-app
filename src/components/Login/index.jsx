@@ -10,7 +10,7 @@ import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "parcel-sdk";
 import { show } from "redux-modal";
 
-import { useActiveWeb3React, useLocalStorage } from "hooks";
+import { useActiveWeb3React, useEncryptionKey, useLocalStorage } from "hooks";
 import ConnectButton from "components/Connect";
 import { useInjectReducer } from "utils/injectReducer";
 import loginWizardReducer from "store/loginWizard/reducer";
@@ -132,7 +132,7 @@ const getStepsCountByFlow = (flow) => {
 
 const Login = () => {
   const [sign, setSign] = useLocalStorage("SIGNATURE");
-  const [encryptionKey, setEncryptionKey] = useLocalStorage("ENCRYPTION_KEY"); // eslint-disable-line
+  const [, setEncryptionKey] = useEncryptionKey();
   const [hasAlreadySigned, setHasAlreadySigned] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [safeDetails, setSafeDetails] = useState([]);
@@ -314,7 +314,7 @@ const Login = () => {
         chosenSafeAddress
       );
       // set encryptionKey
-      setEncryptionKey(encryptionKey);
+      setEncryptionKey(encryptionKey, chosenSafeAddress);
 
       const organisationType = parseInt(formData.organisationType);
 
@@ -752,7 +752,7 @@ const Login = () => {
         sign,
         organisationType
       );
-      setEncryptionKey(encryptionKey);
+      setEncryptionKey(encryptionKey, safe);
     }
 
     dispatch(loginUser(safe));

@@ -5,7 +5,7 @@ import { Table, TableHead, TableBody } from "components/common/Table";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
 import { formatNumber } from "utils/number-helpers";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { getDecryptedDetails } from "utils/encryption";
 import Avatar from "components/common/Avatar";
@@ -16,7 +16,7 @@ export default function DisbursementDetails({
   tokenCurrency,
   metaData,
 }) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const renderMassPayoutDetails = () => (

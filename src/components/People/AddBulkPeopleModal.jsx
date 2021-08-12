@@ -14,7 +14,7 @@ import { useInjectSaga } from "utils/injectSaga";
 import { cryptoUtils } from "parcel-sdk";
 
 import addPeopleReducer from "store/add-people/reducer";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { addBulkPeople } from "store/add-people/actions";
 import addPeopleSaga from "store/add-people/saga";
 import {
@@ -36,7 +36,7 @@ const addPeopleKey = "addPeople";
 
 function AddBulkPeopleModal(props) {
   const { show, handleHide } = props;
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const [success, setSuccess] = useState(false);
   const [csvData, setCSVData] = useState();

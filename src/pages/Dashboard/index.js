@@ -46,7 +46,9 @@ const DashboardPage = () => {
       dispatch(clearGlobalState());
       dispatch(setSafeAddress(params.safeAddress));
     }
-    dispatch(getSafeInfo(params.safeAddress, account));
+
+    if (safeAddress && safeAddress === params.safeAddress)
+      dispatch(getSafeInfo(safeAddress, account));
   }, [dispatch, params.safeAddress, account, safeAddress]);
 
   return (

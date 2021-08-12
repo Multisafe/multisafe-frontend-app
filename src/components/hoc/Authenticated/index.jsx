@@ -29,7 +29,7 @@ export default function Authenticated({ children }) {
         }
         dispatch(logoutUser());
       }
-    }, 5000);
+    }, 3500);
   }, [children, history, dispatch, onboard, success]);
 
   return children;
