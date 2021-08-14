@@ -28,6 +28,7 @@ export const initialState = {
   isReadOnly: false,
   dataSharingAllowed: undefined,
   gasMode: GAS_MODES.FAST,
+  success: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -70,17 +71,20 @@ const reducer = (state = initialState, action) =>
         break;
 
       case CLEAR_GLOBAL_STATE:
-        draft.ownerName = "";
-        draft.ownerSafeAddress = "";
-        draft.createdBy = "";
-        draft.owners = [];
-        draft.threshold = 0;
-        draft.organisationType = undefined;
-        draft.isOwner = true;
-        break;
+        // draft.ownerName = "";
+        // draft.ownerSafeAddress = "";
+        // draft.createdBy = "";
+        // draft.owners = [];
+        // draft.threshold = 0;
+        // draft.organisationType = undefined;
+        // draft.isOwner = true;
+        // draft.gasMode = GAS_MODES.FAST;
+        return initialState;
+      // break;
 
       case GET_SAFE_INFO:
         draft.loading = true;
+        draft.success = false;
         break;
       case GET_SAFE_INFO_SUCCESS:
         draft.loading = false;
@@ -91,10 +95,12 @@ const reducer = (state = initialState, action) =>
         draft.ownerName = action.name;
         draft.ownerSafeAddress = action.safeAddress;
         draft.dataSharingAllowed = action.dataSharingAllowed;
+        draft.success = true;
         break;
       case GET_SAFE_INFO_ERROR:
         draft.loading = false;
         draft.error = action.error;
+        draft.success = false;
         break;
     }
   });

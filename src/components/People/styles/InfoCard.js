@@ -27,26 +27,6 @@ export default styled(Card)`
     align-items: center;
   }
 
-  .help {
-    display: flex;
-    padding: 0;
-    align-items: center;
-    min-height: 0;
-
-    .text {
-      border-bottom: solid 0.1rem ${({ theme }) => theme.primary};
-      align-items: center;
-      font-size: 1.2rem;
-      font-weight: 900;
-      text-align: left;
-      color: ${({ theme }) => theme.primary};
-    }
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
-
   @media (max-width: 978px) {
     height: auto;
     flex-wrap: wrap;

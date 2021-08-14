@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useSelector, useDispatch } from "react-redux";
 
-import { useActiveWeb3React, useMassPayout } from "hooks";
+import { useActiveWeb3React, useMultisigActions } from "hooks";
 import {
   Modal,
   ModalHeader,
@@ -45,7 +45,7 @@ function ApproveTxModal(props) {
     setTxData,
     approving,
     setApproving,
-  } = useMassPayout();
+  } = useMultisigActions();
 
   const [shouldExecute, setShouldExecute] = useState(true);
   const [showExecute, setShowExecute] = useState(false);

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
-import { show } from "redux-modal";
 import { useForm } from "react-hook-form";
 import Big from "big.js";
 import { isEqual } from "lodash";
@@ -22,33 +21,10 @@ import {
   makeSelectPeopleByTeam,
   makeSelectLoadingPeopleByTeam,
 } from "store/view-people/selectors";
-import transactionsReducer from "store/transactions/reducer";
-import transactionsSaga from "store/transactions/saga";
-import {
-  makeSelectMetaTransactionHash,
-  makeSelectError as makeSelectErrorInCreateTx,
-  makeSelectTransactionId as makeSelectSingleOwnerTransactionId,
-} from "store/transactions/selectors";
-import {
-  addTransaction,
-  clearTransactionHash,
-} from "store/transactions/actions";
-import safeReducer from "store/safe/reducer";
-import safeSaga from "store/safe/saga";
+import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
 import { getInvitations } from "store/invitation/actions";
-import { getNonce } from "store/safe/actions";
-import {
-  makeSelectNonce,
-  makeSelectLoading as makeSelectLoadingSafeDetails,
-} from "store/safe/selectors";
-import { createMultisigTransaction } from "store/multisig/actions";
-import multisigSaga from "store/multisig/saga";
-import multisigReducer from "store/multisig/reducer";
+import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
 import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
-import metaTxReducer from "store/metatx/reducer";
-import metaTxSaga from "store/metatx/saga";
-import { getMetaTxEnabled } from "store/metatx/actions";
-import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
@@ -60,7 +36,6 @@ import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectThreshold,
-  makeSelectIsMultiOwner,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
 } from "store/global/selectors";
@@ -80,22 +55,16 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "./TransactionSubmittedModal";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
 const viewTeamsKey = "viewTeams";
-const transactionsKey = "transactions";
-const safeKey = "safe";
-const multisigKey = "multisig";
-const metaTxKey = "metatx";
 
-export default function Payments(props) {
+export default function Payments() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const { register, handleSubmit, control, setValue, watch } = useForm({
     mode: "onChange",
   });
-  const { handleHide } = props;
 
   const selectedTeamId = watch("team") && watch("team").value;
   const selectedToken = watch("token") && watch("token").value;
@@ -107,7 +76,6 @@ export default function Payments(props) {
   const [isCheckedAll, setIsCheckedAll] = useState(false);
   const [people, setPeople] = useState();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [metaTxHash, setMetaTxHash] = useState();
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [isSelectedTokenUSD, setIsSelectedTokenUSD] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
@@ -115,27 +83,16 @@ export default function Payments(props) {
   const [teamsDropdown, setTeamsDropdown] = useState();
   const [tokenError, setTokenError] = useState(false);
   const [amountError, setAmountError] = useState(false);
-  const { loadingTx, txHash, recievers, massPayout, txData, setTxData } =
-    useMassPayout({ tokenDetails: selectedTokenDetails });
+
+  const { loadingTx, massPayout } = useMassPayout();
 
   // Reducers
   useInjectReducer({ key: viewPeopleKey, reducer: viewPeopleReducer });
-  useInjectReducer({
-    key: viewTeamsKey,
-    reducer: viewTeamsReducer,
-  });
-  useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
-  useInjectReducer({ key: safeKey, reducer: safeReducer });
-  useInjectReducer({ key: multisigKey, reducer: multisigReducer });
-  useInjectReducer({ key: metaTxKey, reducer: metaTxReducer });
+  useInjectReducer({ key: viewTeamsKey, reducer: viewTeamsReducer });
 
   // Sagas
   useInjectSaga({ key: viewPeopleKey, saga: viewPeopleSaga });
   useInjectSaga({ key: viewTeamsKey, saga: viewTeamsSaga });
-  useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
-  useInjectSaga({ key: safeKey, saga: safeSaga });
-  useInjectSaga({ key: multisigKey, saga: multisigSaga });
-  useInjectSaga({ key: metaTxKey, saga: metaTxSaga });
 
   const dispatch = useDispatch();
 
@@ -146,35 +103,19 @@ export default function Payments(props) {
   const teammates = useSelector(makeSelectPeopleByTeam());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const prices = useSelector(makeSelectPrices());
-  const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
   const addingTx = useSelector(makeSelectAddTxLoading());
-  const nonce = useSelector(makeSelectNonce());
   const threshold = useSelector(makeSelectThreshold());
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
   const tokenList = useSelector(makeSelectTokenList());
   const loadingTokens = useSelector(makeSelectLoadingTokens());
-  const singleOwnerTransactionId = useSelector(
-    makeSelectSingleOwnerTransactionId()
-  );
   const organisationType = useSelector(makeSelectOrganisationType());
-  const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
-    if (txHashFromMetaTx) {
-      setMetaTxHash(txHashFromMetaTx);
-      dispatch(clearTransactionHash());
-    }
-  }, [dispatch, txHashFromMetaTx]);
-
-  useEffect(() => {
     if (ownerSafeAddress) {
       dispatch(getInvitations(ownerSafeAddress));
-      dispatch(getNonce(ownerSafeAddress));
-      dispatch(getMetaTxEnabled(ownerSafeAddress));
     }
   }, [ownerSafeAddress, dispatch]);
 
@@ -369,144 +310,35 @@ export default function Payments(props) {
     }
   }, [prices, selectedRows, selectedTokenDetails]);
 
-  useEffect(() => {
-    if (txHash) {
-      if (
-        encryptionKey &&
-        recievers &&
-        ownerSafeAddress &&
-        totalAmountToPay &&
-        selectedTokenDetails &&
-        account
-      ) {
-        const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(recievers),
-          encryptionKey,
-          organisationType
-        );
-        // const to = selectedTeammates;
-
-        dispatch(
-          addTransaction({
-            to,
-            safeAddress: ownerSafeAddress,
-            createdBy: account,
-            transactionHash: txHash,
-            tokenValue: recievers.reduce(
-              (total, { salaryAmount }) => (total += parseFloat(salaryAmount)),
-              0
-            ),
-            tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
-            addresses: recievers.map(({ address }) => address),
-          })
-        );
-      }
-    } else if (txData) {
-      if (
-        encryptionKey &&
-        recievers &&
-        ownerSafeAddress &&
-        totalAmountToPay &&
-        selectedTokenDetails &&
-        account
-      ) {
-        const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(recievers),
-          encryptionKey,
-          organisationType
-        );
-        if (!isMultiOwner) {
-          // threshold = 1 or single owner
-          dispatch(
-            addTransaction({
-              to,
-              safeAddress: ownerSafeAddress,
-              createdBy: account,
-              txData,
-              tokenValue: recievers.reduce(
-                (total, { salaryAmount }) =>
-                  (total += parseFloat(salaryAmount)),
-                0
-              ),
-              tokenCurrency: selectedTokenDetails.name,
-              fiatValue: totalAmountToPay,
-              addresses: recievers.map(({ address }) => address),
-            })
-          );
-          setTxData(undefined);
-        } else {
-          // threshold > 1
-          dispatch(
-            createMultisigTransaction({
-              to,
-              safeAddress: ownerSafeAddress,
-              createdBy: account,
-              txData,
-              tokenValue: recievers.reduce(
-                (total, { salaryAmount }) =>
-                  (total += parseFloat(salaryAmount)),
-                0
-              ),
-              tokenCurrency: selectedTokenDetails.name,
-              fiatValue: totalAmountToPay,
-              fiatCurrency: "USD",
-              addresses: recievers.map(({ address }) => address),
-              nonce: nonce,
-              transactionMode: TRANSACTION_MODES.MASS_PAYOUT,
-            })
-          );
-        }
-      }
-    }
-  }, [
-    txHash,
-    encryptionKey,
-    recievers,
-    dispatch,
-    ownerSafeAddress,
-    totalAmountToPay,
-    selectedTokenDetails,
-    txData,
-    setTxData,
-    account,
-    isMultiOwner,
-    nonce,
-    prices,
-    organisationType,
-  ]);
-
   const selectedCount = useMemo(() => {
     return checked.filter(Boolean).length;
   }, [checked]);
 
-  useEffect(() => {
-    if (metaTxHash && singleOwnerTransactionId && selectedCount > 0) {
-      handleHide();
-      dispatch(
-        show(TX_SUBMITTED_MODAL, {
-          txHash: metaTxHash,
-          selectedCount,
-          transactionId: singleOwnerTransactionId,
-        })
-      );
-    }
-  }, [
-    dispatch,
-    metaTxHash,
-    singleOwnerTransactionId,
-    selectedCount,
-    handleHide,
-  ]);
-
-  const handleMassPayout = async (selectedTeammates) => {
-    await massPayout(
-      selectedTeammates,
-      selectedTokenDetails.name,
-      isMultiOwner,
-      nonce,
-      isMetaEnabled
+  const handleMassPayout = async (receivers) => {
+    const to = cryptoUtils.encryptDataUsingEncryptionKey(
+      JSON.stringify(receivers),
+      encryptionKey,
+      organisationType
     );
+    const baseRequestBody = {
+      to,
+      safeAddress: ownerSafeAddress,
+      createdBy: account,
+      tokenValue: receivers.reduce(
+        (total, { salaryAmount }) => (total += parseFloat(salaryAmount)),
+        0
+      ),
+      tokenCurrency: selectedTokenDetails.name,
+      fiatValue: totalAmountToPay,
+      fiatCurrency: "USD",
+      addresses: receivers.map(({ address }) => address),
+      transactionMode: TRANSACTION_MODES.MASS_PAYOUT,
+    };
+    await massPayout({
+      receivers,
+      tokenDetails: selectedTokenDetails,
+      baseRequestBody,
+    });
   };
 
   const onSubmit = async (values) => {

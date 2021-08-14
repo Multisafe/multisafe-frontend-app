@@ -18,6 +18,20 @@ export default styled.div`
     align-items: center;
   }
 
+  .right,
+  .flex-gap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .action-icon {
+    margin: auto;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
   .details {
     margin-left: 2rem;
     .name {
@@ -36,6 +50,7 @@ export default styled.div`
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      margin-top: 0.4rem;
     }
   }
 
@@ -89,6 +104,7 @@ export default styled.div`
 
   @media (max-width: 600px) {
     grid-gap: 1rem;
+    max-width: 30rem;
 
     .left {
       width: 100%;

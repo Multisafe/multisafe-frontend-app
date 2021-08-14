@@ -15,6 +15,12 @@ export default function TransactionName({ to, transactionMode }) {
     return "Quick Transfer";
   } else if (transactionMode === TRANSACTION_MODES.SPENDING_LIMITS) {
     return "New Spending Limit";
+  } else if (transactionMode === TRANSACTION_MODES.REPLACE_SAFE_OWNER) {
+    return "Replace Owner";
+  } else if (transactionMode === TRANSACTION_MODES.DELETE_SAFE_OWNER) {
+    return "Remove Owner";
+  } else if (transactionMode === TRANSACTION_MODES.ADD_SAFE_OWNER) {
+    return "Add Owner";
   } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
     const payeeDetails = getDecryptedDetails(
       to,

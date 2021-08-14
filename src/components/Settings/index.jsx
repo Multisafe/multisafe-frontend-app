@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import Img from "components/common/Img";
 import OwnersIcon from "assets/icons/dashboard/owners-icon.svg";
 import SpendingLimitsIcon from "assets/icons/dashboard/spending-limits-icon.svg";
 import ProfileIcon from "assets/icons/dashboard/profile-icon.svg";
 import SpendingLimits from "components/SpendingLimits";
-import InviteOwners from "components/InviteOwners";
+import ManageOwners from "components/ManageOwners";
 import Profile from "components/Profile";
+import { getSafeInfo } from "store/global/actions";
+import { useActiveWeb3React } from "hooks";
 
 const TABS = {
   OWNERS: "1",
@@ -76,6 +80,16 @@ const navStyles = `
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState(TABS.OWNERS);
+  const { account } = useActiveWeb3React();
+
+  const dispatch = useDispatch();
+  const params = useParams();
+
+  useEffect(() => {
+    if (account) {
+      dispatch(getSafeInfo(params.safeAddress, account));
+    }
+  }, [dispatch, account, params.safeAddress]);
 
   const toggleTab = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -119,7 +133,7 @@ export default function Settings() {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId={TABS.OWNERS}>
-          <InviteOwners />
+          <ManageOwners />
         </TabPane>
         <TabPane tabId={TABS.SPENDING_LIMITS}>
           <div className="mt-5">

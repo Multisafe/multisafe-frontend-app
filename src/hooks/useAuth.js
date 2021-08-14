@@ -9,6 +9,7 @@ import {
   makeSelectOrganisationType,
   makeSelectIsOwner,
   makeSelectIsDataSharingAllowed,
+  makeSelectSafeInfoSuccess,
 } from "store/global/selectors";
 import { ORGANISATION_TYPE } from "store/login/resources";
 import { logoutUser } from "store/logout/actions";
@@ -19,6 +20,7 @@ export default function useAuth() {
   const organisationType = useSelector(makeSelectOrganisationType());
   const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
   const isOwner = useSelector(makeSelectIsOwner());
+  const success = useSelector(makeSelectSafeInfoSuccess());
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -39,14 +41,22 @@ export default function useAuth() {
   );
 
   useEffect(() => {
-    if (organisationType !== undefined) {
+    if (success) {
       const accessToken = localStorage.getItem("token");
       const isAuthenticated = checkValidAccessToken(accessToken);
 
+      // TODO: refactor if/else
       if (isAuthenticated) {
         setIsAuthenticated(true);
         if (isOwner) {
           // READ and WRITE
+          dispatch(setReadOnly(false));
+        } else if (
+          !isOwner &&
+          organisationType === Number(ORGANISATION_TYPE.PRIVATE)
+        ) {
+          // No READ ONLY for private org
+          setIsAuthenticated(false);
           dispatch(setReadOnly(false));
         } else {
           // READ ONLY
@@ -74,6 +84,7 @@ export default function useAuth() {
     checkValidAccessToken,
     dataSharingAllowed,
     isOwner,
+    success,
   ]);
 
   return isAuthenticated;

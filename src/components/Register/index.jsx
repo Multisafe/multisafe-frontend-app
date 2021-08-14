@@ -51,14 +51,12 @@ import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { getGasPrice } from "store/gas/actions";
-// import NoReferralModal from "./NoReferralModal";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import LightbulbIcon from "assets/icons/lightbulb.svg";
 import LoadingSafeIcon1 from "assets/images/register/loading-1.svg";
 import LoadingSafeIcon2 from "assets/images/register/loading-2.svg";
 import LoadingSafeIcon3 from "assets/images/register/loading-3.svg";
-import WelcomeImage from "assets/images/welcome-new.png";
 import OrganisationInfoModal, { MODAL_NAME as INFO_MODAL } from "./InfoModal";
 import {
   STEPS,
@@ -570,7 +568,7 @@ const Register = () => {
     return (
       <div>
         <Img
-          src={WelcomeImage}
+          src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
           alt="welcome"
           width="70%"
           className="d-block mx-auto py-4"
@@ -1104,7 +1102,6 @@ const Register = () => {
           <form onSubmit={handleSubmit(onSubmit)}>{renderSteps()}</form>
         </StyledCard>
       )}
-      {/* <NoReferralModal /> */}
     </Background>
   );
 };

@@ -1,4 +1,6 @@
 import { takeLatest, put, call, fork } from "redux-saga/effects";
+import { hide } from "redux-modal";
+
 import {
   ADD_TRANSACTION,
   GET_TRANSACTION_BY_ID,
@@ -18,37 +20,18 @@ import {
   getTransactionsEndpoint,
   getTransactionByIdEndpoint,
 } from "constants/endpoints";
+import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
+import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
+import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimits/NewSpendingLimitModal";
+import { MODAL_NAME as ADD_OWNER_MODAL } from "components/ManageOwners/AddOwnerModal";
+import { MODAL_NAME as REPLACE_OWNER_MODAL } from "components/ManageOwners/ReplaceOwnerModal";
+import { MODAL_NAME as DELETE_OWNER_MODAL } from "components/ManageOwners/DeleteOwnerModal";
 
 function* addTransaction({ body }) {
   const requestURL = `${createTransactionEndpoint}`;
-  const {
-    to,
-    safeAddress,
-    createdBy,
-    transactionHash,
-    txData,
-    tokenValue,
-    tokenCurrency,
-    fiatValue,
-    addresses,
-    fiatCurrency,
-    transactionMode,
-  } = body;
   const options = {
     method: "POST",
-    body: JSON.stringify({
-      to,
-      safeAddress,
-      createdBy,
-      transactionHash,
-      txData,
-      tokenValue,
-      tokenCurrency,
-      fiatValue,
-      addresses,
-      fiatCurrency,
-      transactionMode,
-    }),
+    body: JSON.stringify(body),
     headers: {
       "content-type": "application/json",
     },
@@ -67,6 +50,12 @@ function* addTransaction({ body }) {
           result.log
         )
       );
+      yield put(hide(MASS_PAYOUT_MODAL));
+      yield put(hide(QUICK_TRANSFER_MODAL));
+      yield put(hide(NEW_SPENDING_LIMIT_MODAL));
+      yield put(hide(ADD_OWNER_MODAL));
+      yield put(hide(REPLACE_OWNER_MODAL));
+      yield put(hide(DELETE_OWNER_MODAL));
     }
   } catch (err) {
     yield put(addTransactionError("Could not create transaction."));

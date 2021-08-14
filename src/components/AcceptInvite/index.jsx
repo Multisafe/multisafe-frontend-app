@@ -26,7 +26,6 @@ import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
 import { getPublicKey } from "utils/encryption";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
-import WelcomeImage from "assets/images/welcome-new.png";
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
 import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
@@ -181,7 +180,7 @@ const AcceptInvite = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={WelcomeImage}
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
         alt="welcome"
         width="70%"
         className="d-block mx-auto py-4"
@@ -328,7 +327,7 @@ const AcceptInvite = () => {
   const renderSuccess = () => (
     <div>
       <Img
-        src={WelcomeImage}
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
         alt="welcome"
         height="370"
         className="d-block mx-auto"

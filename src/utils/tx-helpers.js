@@ -36,16 +36,13 @@ export function standardizeTransaction(tx) {
   };
 }
 
-export const getAmountInWei = (tokenAmount, decimals) => {
-  // return BigNumber.from(tokenAmount).mul(
-  //   BigNumber.from(String(10 ** decimals))
-  // );
-  return parseUnits(Big(tokenAmount).round(decimals).toString(), decimals);
+export const getAmountInWei = (amount, decimals) => {
+  return parseUnits(Big(amount).round(decimals).toString(), decimals);
 };
 
-export const getAmountFromWei = (tokenAmount, decimals, precision) => {
+export const getAmountFromWei = (amount, decimals, precision) => {
   if (precision) {
-    return parseFloat(formatUnits(tokenAmount, decimals)).toFixed(precision);
+    return parseFloat(formatUnits(amount, decimals)).toFixed(precision);
   }
-  return parseFloat(formatUnits(tokenAmount, decimals));
+  return parseFloat(formatUnits(amount, decimals));
 };

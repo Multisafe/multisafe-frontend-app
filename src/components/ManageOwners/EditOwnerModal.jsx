@@ -27,7 +27,7 @@ const safeKey = "safe";
 
 function EditOwnerModal(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const { show, handleHide, name, ownerAddress } = props;
+  const { show, handleHide, ownerName, ownerAddress } = props;
 
   const { register, errors, handleSubmit, formState } = useForm({
     mode: "onChange",
@@ -72,7 +72,7 @@ function EditOwnerModal(props) {
                 register={register}
                 required={`Name is required`}
                 placeholder="Owner name"
-                defaultValue={name}
+                defaultValue={ownerName}
               />
               <ErrorMessage name="name" errors={errors} />
             </div>

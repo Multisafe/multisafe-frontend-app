@@ -1,4 +1,3 @@
-import { TRANSACTION_MODES } from "constants/transactions";
 import {
   ADD_TRANSACTION,
   ADD_TRANSACTION_SUCCESS,
@@ -12,34 +11,10 @@ import {
   CLEAR_TRANSACTION_HASH,
 } from "./action-types";
 
-export function addTransaction({
-  to,
-  safeAddress,
-  createdBy,
-  transactionHash,
-  txData,
-  tokenValue,
-  tokenCurrency,
-  fiatValue,
-  addresses,
-  fiatCurrency = "USD",
-  transactionMode = TRANSACTION_MODES.MASS_PAYOUT,
-}) {
+export function addTransaction(body) {
   return {
     type: ADD_TRANSACTION,
-    body: {
-      to,
-      safeAddress,
-      createdBy,
-      transactionHash,
-      txData,
-      tokenValue,
-      tokenCurrency,
-      fiatValue,
-      addresses,
-      fiatCurrency,
-      transactionMode,
-    },
+    body,
   };
 }
 

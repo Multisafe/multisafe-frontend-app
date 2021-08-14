@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
@@ -55,6 +55,7 @@ import RejectTxModal, { MODAL_NAME as REJECT_TX_MODAL } from "./RejectTxModal";
 import ExecuteTxModal, {
   MODAL_NAME as EXECUTE_TX_MODAL,
 } from "./ExecuteTxModal";
+import { getDecryptedOwnerName } from "store/invitation/utils";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -67,7 +68,6 @@ const DECISIONS = {
 
 export default function MultiSigTransactions() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
-  const [finalTxHash, setFinalTxHash] = useState();
 
   const { account } = useActiveWeb3React();
 
@@ -88,7 +88,7 @@ export default function MultiSigTransactions() {
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const threshold = useSelector(makeSelectThreshold());
-  const txHashFromMetaTx = useSelector(makeSelectMultisigTransactionHash());
+  const multisigTxHash = useSelector(makeSelectMultisigTransactionHash());
   const updating = useSelector(makeSelectUpdating());
   const transactionDetails = useSelector(
     makeSelectMultisigTransactionDetails()
@@ -118,29 +118,22 @@ export default function MultiSigTransactions() {
   }, [transactionDetails]);
 
   useEffect(() => {
-    if (txHashFromMetaTx) {
-      setFinalTxHash(txHashFromMetaTx);
-      dispatch(clearMultisigTransactionHash());
-    }
-  }, [dispatch, txHashFromMetaTx]);
-
-  useEffect(() => {
-    if (finalTxHash && multisigTransactionId) {
+    if (multisigTxHash && multisigTransactionId) {
       dispatch(
         show(TX_SUBMITTED_MODAL, {
-          txHash: finalTxHash,
+          txHash: multisigTxHash,
           selectedCount: noOfPeoplePaid,
           transactionId: multisigTransactionId,
-          clearTxHash: clearTxHash,
         })
       );
       dispatch(
         getMultisigTransactionById(ownerSafeAddress, multisigTransactionId)
       );
+      dispatch(clearMultisigTransactionHash());
     }
   }, [
     dispatch,
-    finalTxHash,
+    multisigTxHash,
     multisigTransactionId,
     noOfPeoplePaid,
     ownerSafeAddress,
@@ -179,24 +172,33 @@ export default function MultiSigTransactions() {
     return "#fcbc04";
   };
 
-  const renderConfirmationStatus = ({ confirmations, createdBy, executor }) => {
+  const renderConfirmationStatus = ({
+    confirmations,
+    createdBy,
+    executor,
+    currentSafeOwners,
+  }) => {
     if (!confirmations || !confirmations.length) return;
 
     const statuses =
-      safeOwners &&
-      safeOwners.map((safeOwner) => {
+      currentSafeOwners &&
+      currentSafeOwners.map((safeOwner) => {
         const confirmedOwner = confirmations.find(
           (c) => c.owner === safeOwner.owner
         );
-        if (confirmedOwner)
+
+        let name;
+
+        if (confirmedOwner) {
+          name = getDecryptedOwnerName({
+            encryptedName: confirmedOwner.ownerInfo.name,
+            encryptionKey,
+            organisationType,
+          });
+
           return {
             ...confirmedOwner,
-            title: getDecryptedDetails(
-              confirmedOwner.ownerInfo.name,
-              encryptionKey,
-              organisationType,
-              false
-            ),
+            title: name,
             subtitle: getStatusText(
               confirmedOwner.approved,
               confirmedOwner.rejected
@@ -207,14 +209,17 @@ export default function MultiSigTransactions() {
               confirmedOwner.rejected
             ),
           };
-        return {
-          ownerInfo: safeOwner,
-          title: getDecryptedDetails(
-            safeOwner.name,
+        } else {
+          name = getDecryptedOwnerName({
+            encryptedName: safeOwner.name,
             encryptionKey,
             organisationType,
-            false
-          ),
+          });
+        }
+
+        return {
+          ownerInfo: safeOwner,
+          title: name,
           subtitle: getStatusText(safeOwner.approved, safeOwner.rejected),
           backgroundColor: getStatusColor(
             safeOwner.owner,
@@ -380,6 +385,8 @@ export default function MultiSigTransactions() {
       to,
       transactionMode,
       createdBy,
+      metaData,
+      safeOwners: currentSafeOwners,
     } = txDetails;
 
     const paidTeammates = getDecryptedDetails(
@@ -418,8 +425,13 @@ export default function MultiSigTransactions() {
         </InfoCard>
 
         <StepperCard>
-          <Stepper count={safeOwners.length}>
-            {renderConfirmationStatus({ confirmations, createdBy, executor })}
+          <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
+            {renderConfirmationStatus({
+              confirmations,
+              createdBy,
+              executor,
+              currentSafeOwners,
+            })}
           </Stepper>
         </StepperCard>
 
@@ -435,27 +447,21 @@ export default function MultiSigTransactions() {
         </DescriptionCard>
 
         <DisbursementCard>
-          <div className="title">Disbursement Details</div>
           <DisbursementDetails
             paidTeammates={paidTeammates}
             transactionMode={transactionMode}
             tokenCurrency={tokenCurrency}
+            metaData={metaData}
           />
         </DisbursementCard>
 
-        {txDetailsHash && (
-          <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
-        )}
+        <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
         {renderConfirmSection()}
         <ApproveTxModal />
         <RejectTxModal />
         <ExecuteTxModal />
       </div>
     );
-  };
-
-  const clearTxHash = () => {
-    setFinalTxHash("");
   };
 
   return renderTransactionDetails();

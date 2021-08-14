@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useSelector, useDispatch } from "react-redux";
 
-import { useActiveWeb3React, useMassPayout } from "hooks";
+import { useActiveWeb3React, useMultisigActions } from "hooks";
 import {
   Modal,
   ModalHeader,
@@ -43,7 +43,7 @@ function ExecuteTxModal(props) {
     setApproving,
     rejecting,
     setRejecting,
-  } = useMassPayout();
+  } = useMultisigActions();
 
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const transactionDetails = useSelector(
@@ -80,6 +80,18 @@ function ExecuteTxModal(props) {
     account,
     isMetaEnabled,
   ]);
+
+  useEffect(() => {
+    if (transactionDetails && threshold) {
+      const { rejectedCount } = transactionDetails;
+
+      if (rejectedCount >= threshold) {
+        setIsOnChainRejection(true);
+      } else {
+        setIsOnChainRejection(false);
+      }
+    }
+  }, [transactionDetails, threshold]);
 
   const executeTransaction = async () => {
     const {
@@ -159,18 +171,6 @@ function ExecuteTxModal(props) {
       setRejecting(false);
     }
   };
-
-  useEffect(() => {
-    if (transactionDetails && threshold) {
-      const { rejectedCount } = transactionDetails;
-
-      if (rejectedCount >= threshold) {
-        setIsOnChainRejection(true);
-      } else {
-        setIsOnChainRejection(false);
-      }
-    }
-  }, [transactionDetails, threshold]);
 
   return (
     <Modal toggle={handleHide} isOpen={show}>

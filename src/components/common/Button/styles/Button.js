@@ -51,6 +51,15 @@ export default styled.button`
     }
   }
 
+  &.danger {
+    box-shadow: 1rem 1rem 2rem 0 rgba(35, 30, 79, 0.1);
+    background-color: #ff4660;
+    color: #fff;
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
