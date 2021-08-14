@@ -255,6 +255,16 @@ export default function MultiSigTransactions() {
     dispatch(show(EXECUTE_TX_MODAL));
   };
 
+  const showResubmitModal = () => {
+    const { rejectedCount, confirmedCount } = transactionDetails;
+
+    if (rejectedCount >= confirmedCount) {
+      dispatch(show(REJECT_TX_MODAL));
+    } else {
+      dispatch(show(APPROVE_TX_MODAL));
+    }
+  };
+
   const renderConfirmSection = () => {
     const {
       isExecuted,
@@ -412,15 +422,28 @@ export default function MultiSigTransactions() {
               </div>
             )}
           </div>
+
           {isTxSubmitted && (
-            <FinalStatus>
-              {renderFinalStatus({
-                confirmedCount,
-                rejectedCount,
-                isExecuted,
-                txDetailsHash,
-              })}
-            </FinalStatus>
+            <div className="d-flex align-items-center">
+              <Button
+                iconOnly
+                type="button"
+                width="15rem"
+                onClick={showResubmitModal}
+                disabled={isReadOnly}
+                className="mr-2"
+              >
+                <div className="text-primary">Resubmit Tx</div>
+              </Button>
+              <FinalStatus>
+                {renderFinalStatus({
+                  confirmedCount,
+                  rejectedCount,
+                  isExecuted,
+                  txDetailsHash,
+                })}
+              </FinalStatus>
+            </div>
           )}
         </InfoCard>
 

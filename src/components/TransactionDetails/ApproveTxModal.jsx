@@ -90,7 +90,7 @@ function ApproveTxModal(props) {
     if (transactionDetails && threshold) {
       const { confirmedCount } = transactionDetails;
 
-      if (confirmedCount === threshold - 1) {
+      if (confirmedCount >= threshold - 1) {
         setShowExecute(true);
       }
     }
@@ -143,7 +143,7 @@ function ApproveTxModal(props) {
     try {
       setApproving(true);
 
-      if (confirmedCount === threshold - 1 && shouldExecute) {
+      if (confirmedCount >= threshold - 1 && shouldExecute) {
         // submit final approve tx
         await submitMassPayout(
           {

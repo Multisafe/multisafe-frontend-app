@@ -24,6 +24,7 @@ import {
   makeSelectThreshold,
   makeSelectIsOrganisationPrivate,
   makeSelectIsReadOnly,
+  makeSelectSafeOwners as makeSelectGlobalSafeOwners,
 } from "store/global/selectors";
 import Loading from "components/common/Loading";
 import { useActiveWeb3React } from "hooks";
@@ -65,6 +66,7 @@ export default function ManageOwners() {
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const threshold = useSelector(makeSelectThreshold());
   const safeOwners = useSelector(makeSelectSafeOwners());
+  const globalSafeOwners = useSelector(makeSelectGlobalSafeOwners());
   const createdBy = useSelector(makeSelectCreatedBy());
   const loading = useSelector(makeSelectLoading());
   const creatingInvitation = useSelector(makeSelectCreating());
@@ -387,7 +389,7 @@ export default function ManageOwners() {
           <div className="subtitle mt-2">
             Every transaction requires the confirmation of{" "}
             <span className="text-bold">
-              {threshold} out of {safeOwners.length}
+              {threshold} out of {globalSafeOwners.length}
             </span>{" "}
             owners
           </div>
