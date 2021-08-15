@@ -1,20 +1,29 @@
 import { call, put, delay, race, take } from "redux-saga/effects";
 import { BigNumber } from "@ethersproject/bignumber";
+import Big from "big.js";
 
 import { getGasPriceSuccess, getGasPriceError } from "./actions";
 import request from "utils/request";
-import { ethGasStationEndpoint } from "constants/endpoints";
+import { gasPriceEndpoint } from "constants/endpoints";
 import { ONE_GWEI } from "constants/index";
 import { GAS_MODES } from "./constants";
 
 const STOP_GAS_POLLING = "STOP_GAS_POLLING";
+const POLLING_INTERVAL = 20000; // 20s
 
-function getGasInGwei(value) {
-  return BigNumber.from(String(value)).mul(BigNumber.from(ONE_GWEI));
+function roundWei(value) {
+  // round decimals
+  const roundedWei = Big(value)
+    .div(Big(ONE_GWEI))
+    .round(0)
+    .mul(Big(ONE_GWEI))
+    .toString();
+
+  return BigNumber.from(roundedWei);
 }
 
 export function* getGasPrices() {
-  const requestURL = `${ethGasStationEndpoint}`;
+  const requestURL = `${gasPriceEndpoint}`;
   const options = {
     method: "GET",
   };
@@ -22,14 +31,15 @@ export function* getGasPrices() {
   while (true) {
     try {
       const result = yield call(request, requestURL, options);
+      const { gasPrices } = result;
       yield put(
         getGasPriceSuccess({
-          [GAS_MODES.STANDARD]: getGasInGwei(result["average"]),
-          [GAS_MODES.FAST]: getGasInGwei(result["fast"]),
-          [GAS_MODES.INSTANT]: getGasInGwei(result["fastest"]),
+          [GAS_MODES.STANDARD]: roundWei(gasPrices["standard"]),
+          [GAS_MODES.FAST]: roundWei(gasPrices["fast"]),
+          [GAS_MODES.INSTANT]: roundWei(gasPrices["rapid"]),
         })
       );
-      yield delay(10000);
+      yield delay(POLLING_INTERVAL);
     } catch (err) {
       yield put(getGasPriceError(err));
       yield put({ type: STOP_GAS_POLLING, err });
