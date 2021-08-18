@@ -1,15 +1,17 @@
 import produce from "immer";
+import { getAmountFromWei } from "utils/tx-helpers";
 import {
   GET_GAS_PRICE,
   GET_GAS_PRICE_SUCCESS,
   GET_GAS_PRICE_ERROR,
+  SET_SELECTED_GAS_PRICE,
 } from "./action-types";
 
 export const initialState = {
   loading: false,
-  slow: 0,
-  average: 0,
-  fast: 0,
+  selectedGasPriceInWei: 0,
+  selectedGasPrice: 0,
+  gasPrices: undefined,
   error: false,
 };
 
@@ -24,15 +26,18 @@ const reducer = (state = initialState, action) =>
 
       case GET_GAS_PRICE_SUCCESS:
         draft.loading = false;
-        draft.slow = action.slow;
-        draft.average = action.average;
-        draft.fast = action.fast;
+        draft.gasPrices = action.gasPrices;
         break;
 
       case GET_GAS_PRICE_ERROR:
         draft.loading = false;
         draft.error = action.error;
         break;
+
+      case SET_SELECTED_GAS_PRICE:
+        draft.selectedGasPriceInWei = action.gasPrice;
+        const gas = getAmountFromWei(action.gasPrice.toString(), 9);
+        draft.selectedGasPrice = gas;
     }
   });
 

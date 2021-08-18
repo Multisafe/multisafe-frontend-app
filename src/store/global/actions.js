@@ -10,6 +10,7 @@ import {
   GET_SAFE_INFO_ERROR,
   SET_READ_ONLY,
   SET_DATA_SHARING,
+  SET_GAS_MODE,
 } from "./action-types";
 
 export function setOwnerName(name) {
@@ -61,6 +62,13 @@ export function setDataSharingAllowed(dataSharingAllowed) {
   return {
     type: SET_DATA_SHARING,
     dataSharingAllowed,
+  };
+}
+
+export function setGasMode(gasMode) {
+  return {
+    type: SET_GAS_MODE,
+    gasMode,
   };
 }
 

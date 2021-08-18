@@ -11,7 +11,9 @@ import {
   GET_SAFE_INFO_SUCCESS,
   GET_SAFE_INFO_ERROR,
   SET_DATA_SHARING,
+  SET_GAS_MODE,
 } from "./action-types";
+import { GAS_MODES } from "store/gas/constants";
 
 export const initialState = {
   ownerName: "",
@@ -25,6 +27,7 @@ export const initialState = {
   error: false,
   isReadOnly: false,
   dataSharingAllowed: undefined,
+  gasMode: GAS_MODES.FAST,
   success: false,
 };
 
@@ -63,15 +66,21 @@ const reducer = (state = initialState, action) =>
         draft.dataSharingAllowed = action.dataSharingAllowed;
         break;
 
-      case CLEAR_GLOBAL_STATE:
-        draft.ownerName = "";
-        draft.ownerSafeAddress = "";
-        draft.createdBy = "";
-        draft.owners = [];
-        draft.threshold = 0;
-        draft.organisationType = undefined;
-        draft.isOwner = true;
+      case SET_GAS_MODE:
+        draft.gasMode = action.gasMode;
         break;
+
+      case CLEAR_GLOBAL_STATE:
+        // draft.ownerName = "";
+        // draft.ownerSafeAddress = "";
+        // draft.createdBy = "";
+        // draft.owners = [];
+        // draft.threshold = 0;
+        // draft.organisationType = undefined;
+        // draft.isOwner = true;
+        // draft.gasMode = GAS_MODES.FAST;
+        return initialState;
+      // break;
 
       case GET_SAFE_INFO:
         draft.loading = true;

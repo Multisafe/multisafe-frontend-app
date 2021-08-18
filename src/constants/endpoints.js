@@ -84,6 +84,5 @@ export const gnosisSafeTransactionV2Endpoint =
     ? `https://safe-relay.gnosis.io/api/v2/safes/`
     : `https://safe-relay.rinkeby.gnosis.io/api/v2/safes/`;
 
-// GAS STATION
-export const ethGasStationEndpoint =
-  "https://ethgasstation.info/api/ethgasAPI.json?";
+// GAS PRICE
+export const gasPriceEndpoint = `${ROOT_BE_URL}/api/v1/gasPrices`;

@@ -18,7 +18,7 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectIsMultiOwner,
 } from "store/global/selectors";
-import { makeSelectAverageGasPrice } from "store/gas/selectors";
+import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { makeSelectNonce } from "store/safe/selectors";
@@ -36,7 +36,7 @@ export default function useBatchTransaction() {
   const [isHardwareWallet, setIsHardwareWallet] = useState(false);
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const averageGasPrice = useSelector(makeSelectAverageGasPrice());
+  const selectedGasPrice = useSelector(makeSelectSelectedGasPriceInWei());
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const multisigNonce = useSelector(makeSelectNonce());
@@ -381,7 +381,7 @@ export default function useBatchTransaction() {
               autoApprovedSignature,
               {
                 gasLimit,
-                gasPrice: averageGasPrice || DEFAULT_GAS_PRICE,
+                gasPrice: selectedGasPrice || DEFAULT_GAS_PRICE,
               }
             );
             setTxHash(tx.hash);

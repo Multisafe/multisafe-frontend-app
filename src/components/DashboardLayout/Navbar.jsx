@@ -24,6 +24,7 @@ import BellIcon from "assets/icons/navbar/bell.svg";
 
 import { NotificationBell } from "./styles";
 import NewTransferDropdown from "./NewTransferDropdown";
+import GasDropdown from "./GasDropdown";
 // import CurrencyDropdown from "./CurrencyDropdown";
 
 const notificationsKey = "notifications";
@@ -70,6 +71,7 @@ export default function Navbar({ openSidebar }) {
             </div>
           </ConnectedAccount>
         )}
+        <GasDropdown />
         <NewTransferDropdown />
         {/* <CurrencyDropdown /> */}
         <NotificationBell onClick={toggleNotifications} hasSeen={hasSeen}>

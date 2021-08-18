@@ -8,7 +8,7 @@ import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE } from "constants/index";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { makeSelectAverageGasPrice } from "store/gas/selectors";
+import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 
 const { ZERO_ADDRESS } = addresses;
@@ -32,7 +32,7 @@ export default function useMultisigActions() {
   } = useBatchTransactions();
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const averageGasPrice = useSelector(makeSelectAverageGasPrice());
+  const selectedGasPrice = useSelector(makeSelectSelectedGasPriceInWei());
 
   // contracts
   const proxyContract = useContract(safeAddress, GnosisSafeABI, true);
@@ -350,7 +350,7 @@ export default function useMultisigActions() {
               signatureBytes,
               {
                 gasLimit,
-                gasPrice: averageGasPrice || DEFAULT_GAS_PRICE,
+                gasPrice: selectedGasPrice || DEFAULT_GAS_PRICE,
               }
             );
             setTxHash(tx.hash);
