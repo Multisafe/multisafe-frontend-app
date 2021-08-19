@@ -1,41 +1,91 @@
-import { useEffect, useState } from "react";
-import { utils } from "ethers";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import jwt_decode from "jwt-decode";
+import { useParams } from "react-router-dom";
 
-import { MESSAGE_TO_SIGN } from "constants/index";
-import { useLocalStorage, useActiveWeb3React } from "./index";
+import { useLocalStorage } from "./index";
+import { setReadOnly } from "store/global/actions";
+import {
+  makeSelectOrganisationType,
+  makeSelectIsOwner,
+  makeSelectIsDataSharingAllowed,
+  makeSelectSafeInfoSuccess,
+} from "store/global/selectors";
+import { ORGANISATION_TYPE } from "store/login/resources";
+import { logoutUser } from "store/logout/actions";
 
 export default function useAuth() {
   const [sign] = useLocalStorage("SIGNATURE");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { account } = useActiveWeb3React();
+  const organisationType = useSelector(makeSelectOrganisationType());
+  const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
+  const isOwner = useSelector(makeSelectIsOwner());
+  const success = useSelector(makeSelectSafeInfoSuccess());
 
-  const checkValidSignature = (sign, account) => {
-    if (!sign) return false;
-    const msgHash = utils.hashMessage(MESSAGE_TO_SIGN);
-    const recoveredAddress = utils.recoverAddress(msgHash, sign);
-    if (recoveredAddress === account) {
-      return true;
-    }
-    return false;
-  };
+  const dispatch = useDispatch();
+  const params = useParams();
+
+  const checkValidAccessToken = useCallback(
+    (accessToken) => {
+      if (!accessToken || !params) return false;
+      try {
+        const decoded = jwt_decode(accessToken);
+        if (decoded.safeAddress !== params.safeAddress) return false;
+        return true;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
+    },
+    [params]
+  );
 
   useEffect(() => {
-    // TODO: Redirect to login page if the account is undefined
-    // account is loaded with a delay, so we can't directly redirect if account === undefined
-    // Potential fix: check for account after timeout. if still undefined, log out
-    if (account) {
-      const isAuthenticated = checkValidSignature(sign, account);
-      // if (!isAuthenticated) {
-      //   history.push("/"); // login
-      // } else {
-      //   setIsAuthenticated(true);
-      // }
+    if (success) {
       const accessToken = localStorage.getItem("token");
-      if (isAuthenticated && accessToken) {
+      const isAuthenticated = checkValidAccessToken(accessToken);
+
+      // TODO: refactor if/else
+      if (isAuthenticated) {
         setIsAuthenticated(true);
+        if (isOwner) {
+          // READ and WRITE
+          dispatch(setReadOnly(false));
+        } else if (
+          !isOwner &&
+          organisationType === Number(ORGANISATION_TYPE.PRIVATE)
+        ) {
+          // No READ ONLY for private org
+          setIsAuthenticated(false);
+          dispatch(setReadOnly(false));
+        } else {
+          // READ ONLY
+          dispatch(setReadOnly(true));
+        }
+      } else {
+        if (organisationType === Number(ORGANISATION_TYPE.PRIVATE)) {
+          // No READ ONLY for private org
+          setIsAuthenticated(false);
+          dispatch(setReadOnly(false));
+        } else if (!dataSharingAllowed) {
+          console.log("logging out...");
+          dispatch(logoutUser());
+        } else {
+          // READ ONLY for DAOs
+          setIsAuthenticated(false);
+          dispatch(setReadOnly(true));
+        }
       }
     }
-  }, [sign, account]);
+  }, [
+    sign,
+    dispatch,
+    organisationType,
+    checkValidAccessToken,
+    dataSharingAllowed,
+    isOwner,
+    success,
+  ]);
 
   return isAuthenticated;
 }

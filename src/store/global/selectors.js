@@ -16,4 +16,58 @@ const makeSelectOwnerSafeAddress = () =>
 const makeSelectCreatedBy = () =>
   createSelector(selectGlobal, (globalState) => globalState.createdBy);
 
-export { makeSelectOwnerName, makeSelectOwnerSafeAddress, makeSelectCreatedBy };
+const makeSelectSafeOwners = () =>
+  createSelector(selectGlobal, (globalState) => globalState.owners);
+
+const makeSelectThreshold = () =>
+  createSelector(selectGlobal, (globalState) => globalState.threshold);
+
+const makeSelectIsMultiOwner = () =>
+  createSelector(selectGlobal, (globalState) => globalState.threshold > 1);
+
+const makeSelectOrganisationType = () =>
+  createSelector(selectGlobal, (globalState) => globalState.organisationType);
+
+const makeSelectIsOwner = () =>
+  createSelector(selectGlobal, (globalState) => globalState.isOwner);
+
+const makeSelectIsReadOnly = () =>
+  createSelector(selectGlobal, (globalState) => globalState.isReadOnly);
+
+const makeSelectIsOrganisationPrivate = () =>
+  createSelector(
+    selectGlobal,
+    (globalState) => globalState.organisationType === 0
+  );
+
+const makeSelectIsOrganisationPublic = () =>
+  createSelector(
+    selectGlobal,
+    (globalState) => globalState.organisationType === 1
+  );
+
+const makeSelectIsDataSharingAllowed = () =>
+  createSelector(selectGlobal, (globalState) => globalState.dataSharingAllowed);
+
+const makeSelectGasMode = () =>
+  createSelector(selectGlobal, (globalState) => globalState.gasMode);
+
+const makeSelectSafeInfoSuccess = () =>
+  createSelector(selectGlobal, (globalState) => globalState.success);
+
+export {
+  makeSelectOwnerName,
+  makeSelectOwnerSafeAddress,
+  makeSelectCreatedBy,
+  makeSelectSafeOwners,
+  makeSelectThreshold,
+  makeSelectOrganisationType,
+  makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
+  makeSelectIsOrganisationPublic,
+  makeSelectIsOrganisationPrivate,
+  makeSelectIsOwner,
+  makeSelectIsDataSharingAllowed,
+  makeSelectGasMode,
+  makeSelectSafeInfoSuccess,
+};

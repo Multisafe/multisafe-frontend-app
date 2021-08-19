@@ -17,7 +17,7 @@ const InputField = ({
     <Input
       name={name}
       id={id || name}
-      ref={register({ required, pattern })}
+      ref={register ? register({ required, pattern }) : undefined}
       type={type}
       {...rest}
     />

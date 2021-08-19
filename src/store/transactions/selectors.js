@@ -13,6 +13,12 @@ const makeSelectTransactions = () =>
     (transactionsState) => transactionsState.transactions
   );
 
+const makeSelectTransactionCount = () =>
+  createSelector(
+    selectTransactions,
+    (transactionsState) => transactionsState.transactionCount
+  );
+
 const makeSelectLoading = () =>
   createSelector(
     selectTransactions,
@@ -25,10 +31,22 @@ const makeSelectFetching = () =>
     (transactionsState) => transactionsState.fetching
   );
 
+const makeSelectTransactionDetails = () =>
+  createSelector(
+    selectTransactions,
+    (transactionsState) => transactionsState.transactionDetails
+  );
+
 const makeSelectMetaTransactionHash = () =>
   createSelector(
     selectTransactions,
     (transactionsState) => transactionsState.metaTransactionHash
+  );
+
+const makeSelectTransactionId = () =>
+  createSelector(
+    selectTransactions,
+    (transactionsState) => transactionsState.transactionId
   );
 
 const makeSelectError = () =>
@@ -44,4 +62,7 @@ export {
   makeSelectFetching,
   makeSelectMetaTransactionHash,
   makeSelectError,
+  makeSelectTransactionDetails,
+  makeSelectTransactionId,
+  makeSelectTransactionCount,
 };

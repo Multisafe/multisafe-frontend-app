@@ -1,42 +1,73 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 import { HeaderLink, NavBar, NavBarContent, NavGroup } from "./styles";
 
 import ConnectButton from "components/Connect";
-import DashboardHeader from "./DashboardHeader";
 import { useActiveWeb3React } from "hooks";
 import Button from "components/common/Button";
-import ParcelSvg from "assets/icons/parcel.svg";
+import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import Img from "components/common/Img";
+import { routeTemplates } from "constants/routes/templates";
 
 function PlainHeader() {
   const location = useLocation();
+  const history = useHistory();
   const isLoginPage = location.pathname === "/";
   const isSignupPage = location.pathname === "/signup";
-  const { account } = useActiveWeb3React();
+  const { account, onboard } = useActiveWeb3React();
+
+  const handleDisconnect = () => {
+    if (onboard) {
+      onboard.walletReset();
+    }
+  };
 
   const renderSignUpButton = () => (
-    <Button type="button" to="/signup" className="secondary ml-3">
+    <Button
+      type="button"
+      onClick={() => {
+        const searchParams = new URLSearchParams(location.search);
+        history.push({ pathname: "/signup", search: searchParams.toString() });
+      }}
+      className="secondary ml-3 py-2 px-4"
+    >
       Sign Up
     </Button>
   );
   const renderLoginButton = () => (
-    <Button type="button" to="/" className="secondary ml-3">
+    <Button
+      type="button"
+      onClick={() => {
+        const searchParams = new URLSearchParams(location.search);
+        history.push({ pathname: "/", search: searchParams.toString() });
+      }}
+      className="secondary ml-3 py-2 px-4"
+    >
       Login
     </Button>
   );
 
   return (
     <div>
-      <NavBar>
+      <NavBar white>
         <NavBarContent>
           <div className="d-flex justify-content-center align-items-center">
-            <HeaderLink to="/" className="dashboard-link">
-              <img src={ParcelSvg} alt="parcel" width="160" />
+            <HeaderLink to={routeTemplates.root} className="dashboard-link">
+              <Img src={MultisafeLogo} alt="multisafe" width="80" />
             </HeaderLink>
           </div>
           <NavGroup>
-            {!account && <ConnectButton>Connect</ConnectButton>}
+            {!account ? (
+              <ConnectButton className="py-2 px-4">Connect</ConnectButton>
+            ) : (
+              <Button
+                className="py-2 px-4 secondary"
+                onClick={handleDisconnect}
+              >
+                Disconnect
+              </Button>
+            )}
             {isLoginPage && renderSignUpButton()}
             {isSignupPage && renderLoginButton()}
           </NavGroup>
@@ -48,7 +79,7 @@ function PlainHeader() {
 export default function Header() {
   const location = useLocation();
 
-  if (location.pathname.includes("/dashboard")) return <DashboardHeader />;
+  if (location.pathname.includes("/dashboard")) return null;
 
   return <PlainHeader />;
 }

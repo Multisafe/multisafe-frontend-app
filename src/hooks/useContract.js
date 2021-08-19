@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import { useWeb3React } from "@web3-react/core";
+// import { useWeb3React } from "@web3-react/core";
 import { Contract } from "@ethersproject/contracts";
+import useActiveWeb3React from "./useActiveWeb3React";
 // import useActiveWeb3React from "./useActiveWeb3React";
 
 export default function useContract(address, ABI, withSigner = false) {
-  const { library, account } = useWeb3React();
+  const { library, account } = useActiveWeb3React();
   return useMemo(
     () =>
       !!address && !!ABI && !!library

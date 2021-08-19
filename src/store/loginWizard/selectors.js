@@ -49,6 +49,24 @@ const makeSelectCreatedBy = () =>
     (loginWizardState) => loginWizardState.createdBy
   );
 
+const makeSelectGnosisSafeOwners = () =>
+  createSelector(
+    selectLoginWizard,
+    (loginWizardState) => loginWizardState.gnosisSafeOwners
+  );
+
+const makeSelectGnosisSafeThreshold = () =>
+  createSelector(
+    selectLoginWizard,
+    (loginWizardState) => loginWizardState.gnosisSafeThreshold
+  );
+
+const makeSelectFetchingSafeDetails = () =>
+  createSelector(
+    selectLoginWizard,
+    (loginWizardState) => loginWizardState.fetchingSafeDetails
+  );
+
 const makeSelectError = () =>
   createSelector(
     selectLoginWizard,
@@ -64,5 +82,8 @@ export {
   makeSelectLoading,
   makeSelectSafes,
   makeSelectCreatedBy,
+  makeSelectGnosisSafeOwners,
+  makeSelectGnosisSafeThreshold,
+  makeSelectFetchingSafeDetails,
   makeSelectError,
 };

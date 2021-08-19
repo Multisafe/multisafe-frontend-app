@@ -1,25 +1,56 @@
 import { createSelector } from "reselect";
+import { GAS_MODES } from "./constants";
 import { initialState } from "./reducer";
 
-const seelctGasPrices = (state) => state.gas || initialState;
+const selctGasPrices = (state) => state.gas || initialState;
 
 const makeSelectLoading = () =>
-  createSelector(seelctGasPrices, (gasPriceState) => gasPriceState.loading);
+  createSelector(selctGasPrices, (gasPriceState) => gasPriceState.loading);
+
+const makeSelectAllGasPrices = () =>
+  createSelector(selctGasPrices, (gasPriceState) => gasPriceState.gasPrices);
 
 const makeSelectSlowGasPrice = () =>
-  createSelector(seelctGasPrices, (gasPriceState) => gasPriceState.slow);
+  createSelector(
+    selctGasPrices,
+    (gasPriceState) =>
+      gasPriceState.gasPrices && gasPriceState.gasPrices[GAS_MODES.STANDARD]
+  );
 
 const makeSelectAverageGasPrice = () =>
-  createSelector(seelctGasPrices, (gasPriceState) => gasPriceState.average);
+  createSelector(
+    selctGasPrices,
+    (gasPriceState) =>
+      gasPriceState.gasPrices && gasPriceState.gasPrices[GAS_MODES.FAST]
+  );
 
 const makeSelectFastGasPrice = () =>
-  createSelector(seelctGasPrices, (gasPriceState) => gasPriceState.fast);
+  createSelector(
+    selctGasPrices,
+    (gasPriceState) =>
+      gasPriceState.gasPrices && gasPriceState.gasPrices[GAS_MODES.INSTANT]
+  );
+
+const makeSelectSelectedGasPriceInWei = () =>
+  createSelector(
+    selctGasPrices,
+    (gasPriceState) => gasPriceState.selectedGasPriceInWei
+  );
+
+const makeSelectSelectedGasPrice = () =>
+  createSelector(
+    selctGasPrices,
+    (gasPriceState) => gasPriceState.selectedGasPrice
+  );
 
 const makeSelectError = () =>
-  createSelector(seelctGasPrices, (gasPriceState) => gasPriceState.error);
+  createSelector(selctGasPrices, (gasPriceState) => gasPriceState.error);
 
 export {
-  seelctGasPrices,
+  selctGasPrices,
+  makeSelectAllGasPrices,
+  makeSelectSelectedGasPriceInWei,
+  makeSelectSelectedGasPrice,
   makeSelectSlowGasPrice,
   makeSelectAverageGasPrice,
   makeSelectFastGasPrice,

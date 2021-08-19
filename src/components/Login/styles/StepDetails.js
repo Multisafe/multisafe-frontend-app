@@ -1,29 +1,29 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  padding: 10px 36px;
+  padding: 1rem 3.6rem 8rem;
 
   .title {
-    font-size: 20px;
+    font-size: 2rem;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.2;
+    line-height: normal;
     letter-spacing: normal;
     text-align: left;
     color: #373737;
-    margin-top: 20px;
+    margin-top: 2rem;
   }
 
   .subtitle {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: 300;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.19;
+    line-height: normal;
     letter-spacing: normal;
     color: #373737;
-    padding: 10px 0;
+    padding: 1rem 0;
   }
 
   .radio-toolbar input[type="radio"] {
@@ -32,21 +32,60 @@ export default styled.div`
 
   .radio-toolbar label {
     display: inline-block;
-    padding: 4px 11px;
-    font-size: 16px;
+    padding: 0.4rem 1.1rem;
+    font-size: 1.6rem;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 15px 0;
-    margin-right: 10px;
-    min-width: 133px;
-    border-radius: 8px;
-    border: solid 0.5px #aaaaaa;
-    background-color: #f2f2f2;
+    padding: 1.5rem 0;
+    margin-right: 1rem;
+    min-width: 13rem;
+    border: solid 0.1rem #dddcdc;
+    width: 10rem;
+    text-align: center;
+    border-radius: 0.4rem;
+    background-color: #ffffff;
   }
 
   .radio-toolbar input[type="radio"]:checked + label {
-    background-color: #c3c3c3;
+    background-color: ${({ theme }) => theme.primary};
+    color: #fff;
+  }
+
+  .default-address {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .proceed-btn {
+    width: 40rem;
+    padding: 1rem;
+    height: 4rem;
+    border-radius: 0.4rem;
+    box-shadow: 0.1rem 0.1rem 3rem 0 rgba(113, 113, 113, 0.25);
+    background-color: ${({ theme }) => theme.primary};
+    position: absolute;
+    right: 4rem;
+    bottom: 4rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: left;
+    color: #ffffff;
+
+    &:hover {
+      background-color: #3c3c3c;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .proceed-btn {
+      min-width: 14rem;
+      width: auto;
+    }
   }
 `;

@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { utils } from "ethers";
+import { hashMessage } from "@ethersproject/hash";
+import { recoverAddress } from "@ethersproject/transactions";
+import { toUtf8Bytes } from "@ethersproject/strings";
+import { keccak256 } from "@ethersproject/keccak256";
 
-import Container from "react-bootstrap/Container";
 import { useActiveWeb3React, useLocalStorage } from "hooks";
 import ConnectButton from "components/Connect";
-import { Card } from "components/common/Card";
 import { useInjectReducer } from "utils/injectReducer";
 import invitationReducer from "store/invitation/reducer";
 import invitationSaga from "store/invitation/saga";
@@ -21,20 +20,23 @@ import { acceptInvitation } from "store/invitation/actions";
 import Button from "components/common/Button";
 import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
-import PrivacyPng from "assets/images/register/privacy.png";
+import PrivacySvg from "assets/images/register/privacy.svg";
 import { MESSAGE_TO_SIGN } from "constants/index";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import TeamMembersPng from "assets/images/team-members.png";
 import { getPublicKey } from "utils/encryption";
-
+import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import LeftArrowIcon from "assets/icons/left-arrow.svg";
+import RightArrowIcon from "assets/icons/right-arrow.svg";
+import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 import {
   Background,
+  StyledCard,
   InnerCard,
-  Image,
   StepDetails,
   StepInfo,
 } from "components/Login/styles";
+import ErrorText from "components/common/ErrorText";
 
 const invitationKey = "invitation";
 
@@ -63,8 +65,9 @@ const AcceptInvite = () => {
   const [hasAlreadySigned, setHasAlreadySigned] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [step, chooseStep] = useState(STEPS.ZERO);
+  const [signing, setSigning] = useState(false);
 
-  const { active, account, library } = useActiveWeb3React();
+  const { active, account, library, connector } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: invitationKey, reducer: invitationReducer });
@@ -94,10 +97,22 @@ const AcceptInvite = () => {
   }, [active]);
 
   useEffect(() => {
+    if (sign) {
+      const msgHash = hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = recoverAddress(msgHash, sign);
+      if (recoveredAddress !== account) {
+        setHasAlreadySigned(false);
+        setSign("");
+        chooseStep(STEPS.ZERO);
+      }
+    }
+  }, [account, sign, setSign]);
+
+  useEffect(() => {
     if (step === STEPS.ONE && account) {
       if (sign) {
-        const msgHash = utils.hashMessage(MESSAGE_TO_SIGN);
-        const recoveredAddress = utils.recoverAddress(msgHash, sign);
+        const msgHash = hashMessage(MESSAGE_TO_SIGN);
+        const recoveredAddress = recoverAddress(msgHash, sign);
         if (recoveredAddress === account) {
           setHasAlreadySigned(true);
         }
@@ -105,21 +120,45 @@ const AcceptInvite = () => {
     }
   }, [step, dispatch, account, sign]);
 
-  const signTerms = useCallback(async () => {
+  const signTerms = async () => {
     if (!!library && !!account) {
+      setSigning(true);
       try {
-        await library
-          .getSigner(account)
-          .signMessage(MESSAGE_TO_SIGN)
-          .then((signature) => {
-            setSign(signature);
-            chooseStep(step + 1);
-          });
+        if (connector.name === "WalletConnect") {
+          const rawMessage = MESSAGE_TO_SIGN;
+          const messageLength = new Blob([rawMessage]).size;
+          const message = toUtf8Bytes(
+            "\x19Ethereum Signed Message:\n" + messageLength + rawMessage
+          );
+          const hashedMessage = keccak256(message);
+
+          connector.provider.wc
+            .signMessage([account.toLowerCase(), hashedMessage])
+            .then((signature) => {
+              setSign(signature);
+              setSigning(false);
+              goNext();
+            })
+            .catch((error) => {
+              setSigning(false);
+              console.error("Signature Rejected");
+            });
+        } else {
+          await library
+            .getSigner(account)
+            .signMessage(MESSAGE_TO_SIGN)
+            .then((signature) => {
+              setSign(signature);
+              setSigning(false);
+              chooseStep(step + 1);
+            });
+        }
       } catch (error) {
-        console.error("Transaction Failed");
+        console.error("Signature Rejected");
+        setSigning(false);
       }
     }
-  }, [library, account, setSign, step]);
+  };
 
   const goBack = () => {
     chooseStep(step - 1);
@@ -140,36 +179,38 @@ const AcceptInvite = () => {
 
   const renderConnect = () => (
     <div>
-      <Image minHeight="323px" />
-      <InnerCard height="257px">
-        <h2 className="text-center">Welcome to Parcel</h2>
-        <div className="mt-2 mb-5 text-center">
-          Your one stop for crypto payroll management.
-          <br />
-          Please connect your Ethereum wallet to proceed.
+      <Img
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        alt="welcome"
+        width="70%"
+        className="d-block mx-auto py-4"
+      />
+      <InnerCard>
+        <h2 className="text-center mb-4">
+          <Img src={MultisafeLogo} alt="multisafe" width="80" />
+        </h2>
+        <div className="mt-2 title">
+          Your one stop for crypto treasury management.
+        </div>
+        <div className="subtitle">
+          {!active && `Please connect your Ethereum wallet to proceed.`}
         </div>
         {loadingAccount && (
-          <div className="d-flex align-items-center justify-content-center mt-5">
-            <Loading color="primary" width="50px" height="50px" />
+          <div className="d-flex align-items-center justify-content-center">
+            <Loading color="primary" width="3rem" height="3rem" />
           </div>
         )}
-
         {!loadingAccount &&
           (!active ? (
-            <ConnectButton large className="mx-auto d-block" />
+            <ConnectButton className="mx-auto d-block mt-4 connect" />
           ) : (
-            <div className="row">
-              <div className="col-12">
-                <Button
-                  type="button"
-                  large
-                  className="primary"
-                  onClick={goNext}
-                >
-                  Proceed
-                </Button>
-              </div>
-            </div>
+            <Button
+              type="button"
+              className="mx-auto d-block mt-4 connect"
+              onClick={goNext}
+            >
+              Proceed
+            </Button>
           ))}
       </InnerCard>
     </div>
@@ -179,23 +220,29 @@ const AcceptInvite = () => {
     const steps = ACCEPT_INVITE_STEPS;
     return (
       <div>
-        <div style={{ height: "50px", padding: "8px 32px" }}>
-          <Button iconOnly onClick={goBack} className="px-0">
-            <FontAwesomeIcon icon={faArrowLeft} color="#aaa" />
+        <div className="back-btn-container">
+          <Button
+            iconOnly
+            onClick={goBack}
+            className="p-0 back-btn"
+            style={{ color: "#373737" }}
+          >
+            <Img src={LeftArrowIcon} alt="back" />
+            <span>Back</span>
           </Button>
         </div>
         <StepInfo>
           <div>
             <h3 className="title">Accept Invite</h3>
             <p className="next">
-              {steps[step + 1] ? `NEXT: ${steps[step + 1]}` : `Finish`}
+              {steps[step + 1] ? `Next: ${steps[step + 1]}` : `Finish`}
             </p>
           </div>
           <div className="step-progress">
             <CircularProgress
               current={step}
               max={getStepsCount()}
-              color="#7367f0"
+              color="#1452f5"
             />
           </div>
         </StepInfo>
@@ -207,25 +254,23 @@ const AcceptInvite = () => {
     return (
       <StepDetails>
         <Img
-          src={PrivacyPng}
+          src={PrivacySvg}
           alt="privacy"
           className="my-2"
-          width="130px"
-          style={{ minWidth: "130px" }}
+          width="130"
+          style={{ minWidth: "13rem" }}
         />
         <h3 className="title">We care for Your Privacy </h3>
 
         {!hasAlreadySigned ? (
           <React.Fragment>
-            <p className="subtitle mb-5 pb-5">
-              Please sign this message using your private key and authorize
-              Parcel.
-            </p>
+            <p className="subtitle mb-5 pb-5">Please sign to authorize.</p>
             <Button
               type="button"
               onClick={signTerms}
-              large
-              className="mx-auto d-block"
+              className="mx-auto d-block proceed-btn"
+              loading={signing}
+              disabled={signing}
             >
               I'm in
             </Button>
@@ -233,15 +278,17 @@ const AcceptInvite = () => {
         ) : (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              You have already authorized Parcel. Simply click Next to continue.
+              You have already authorized. Simply click Next to continue.
             </p>
             <Button
               type="button"
               onClick={goNext}
-              large
-              className="mx-auto d-block"
+              className="mx-auto d-block proceed-btn"
             >
-              Next
+              <span>Proceed</span>
+              <span className="ml-3">
+                <Img src={RightArrowIcon} alt="right" />
+              </span>
             </Button>
           </React.Fragment>
         )}
@@ -253,40 +300,44 @@ const AcceptInvite = () => {
     return (
       <StepDetails>
         <div className="text-center">
-          <img src={TeamMembersPng} alt="humans" width="350px" />
+          <img src={AddPeopleIcon} alt="people" />
         </div>
-        <h3 className="title">Accept Invite and join Parcel</h3>
+        <h3 className="title">Accept Invite and join Multisafe</h3>
 
         <p className="subtitle pb-5">
-          Once you accept the invitation, the main owner will approve you.
+          Once you accept the invitation, one of the owners will approve you.
           <br />
-          Then, you can login and view the Parcel dashboard.
+          Then, you can login and view the Multisafe dashboard.
         </p>
 
         <Button
           type="button"
           onClick={handleAccept}
-          large
-          className="mx-auto d-block"
+          className="mx-auto d-block proceed-btn"
           loading={loading}
           disabled={loading}
         >
           Accept
         </Button>
-        {error && <p className="text-danger my-3">Error: {error}</p>}
+        {error && <ErrorText>{error}</ErrorText>}
       </StepDetails>
     );
   };
 
   const renderSuccess = () => (
     <div>
-      <Image minHeight="323px" />
-      <InnerCard height="257px">
+      <Img
+        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        alt="welcome"
+        height="370"
+        className="d-block mx-auto"
+      />
+      <InnerCard>
         <h2 className="text-center">Invitation Accepted</h2>
-        <div className="mt-2 mb-5 text-center">
-          Great! Now, the main owner will approve you
+        <div className="mt-2 mb-5 text-center subtitle">
+          Great! Now, one of the owners will approve you
           <br />
-          and you will be able to login to the Parcel dashboard.
+          and you will be able to login to the Multisafe dashboard.
         </div>
       </InnerCard>
     </div>
@@ -312,31 +363,18 @@ const AcceptInvite = () => {
   };
 
   return (
-    <Background withImage minHeight="92vh" className="py-3">
-      <Container>
-        {!success ? (
-          <Card
-            className="mx-auto"
-            style={{
-              maxWidth: "668px",
-              minHeight: "580px",
-            }}
-          >
-            {step !== STEPS.ZERO && renderStepHeader()}
-            {renderSteps()}
-          </Card>
-        ) : (
-          <Card
-            className="mx-auto"
-            style={{
-              maxWidth: "668px",
-              minHeight: "580px",
-            }}
-          >
-            {renderSuccess()}
-          </Card>
-        )}
-      </Container>
+    <Background>
+      {success ? (
+        <StyledCard>{renderSuccess()}</StyledCard>
+      ) : step === STEPS.ZERO ? (
+        renderConnect()
+      ) : (
+        <StyledCard>
+          {renderStepHeader()}
+
+          {renderSteps()}
+        </StyledCard>
+      )}
     </Background>
   );
 };

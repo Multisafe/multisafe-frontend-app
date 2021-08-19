@@ -3,15 +3,9 @@ import styled from "styled-components/macro";
 
 export default styled(Link)`
   display: inline-flex;
-  padding: 0.25em 0;
-  margin: 1em 0;
   text-decoration: none;
   cursor: pointer;
   outline: 0;
-  font-family: "Montserrat", sans-serif;
-  font-weight: bold;
-  font-size: 20px;
-  color: ${({ theme }) => theme.logo.color};
 
   &:active {
     background: none;
@@ -25,5 +19,8 @@ export default styled(Link)`
 
   &.dashboard-link {
     color: #fff;
+  }
+
+  @media (max-width: 600px) {
   }
 `;

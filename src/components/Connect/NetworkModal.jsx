@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Modal, ModalBody } from "reactstrap";
 
 import { findNetworkNameByWeb3ChainId } from "constants/networks";
-import NotFoundPng from "assets/images/not-found.png";
 
 import { useActiveWeb3React } from "hooks";
 import { WrongNetwork } from "./styles";
@@ -29,11 +28,20 @@ const NetworkModal = () => {
         <WrongNetwork>
           <div className="text-center">
             <div className="pb-4">
-              <img src={NotFoundPng} alt="error" width="300" className="mb-4" />
+              <img
+                src={
+                  "https://images.multisafe.finance/landing-page/not-found.png"
+                }
+                alt="error"
+                width="300"
+                className="mb-4"
+              />
             </div>
-            <h4 className="title pb-3">Your wallet is on different network!</h4>
+            <h4 className="title pb-3">
+              Your wallet is on a different network!
+            </h4>
             <div className="subtitle">
-              Simply select "{requiredNetworkName}" to continue.
+              Select "{requiredNetworkName}" to continue.
             </div>
           </div>
         </WrongNetwork>

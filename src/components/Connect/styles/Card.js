@@ -3,7 +3,6 @@ import styled from "styled-components/macro";
 export default styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
   border: none;
   margin: 0.33em 0;
   background: inherit;
@@ -19,5 +18,22 @@ export default styled.button`
   }
   &:focus {
     outline: 0;
+  }
+
+  .wallet-details {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .wallet-name {
+    margin-left: 0.66em;
+    display: flex;
+    align-items: center;
+  }
+  .wallet-selected {
+    font-size: 0.8rem;
+    text-decoration: underline;
   }
 `;

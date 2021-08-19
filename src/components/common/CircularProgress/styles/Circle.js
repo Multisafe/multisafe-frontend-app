@@ -1,20 +1,20 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  width: 90px;
-  height: 90px;
+  position: relative;
+  width: 9rem;
+  height: 9rem;
   svg,
   circle {
-    width: 90px;
-    height: 90px;
+    width: 9rem;
+    height: 9rem;
   }
 
   circle {
-    position: absolute;
     stroke: #f9f9f9;
     fill: none;
     stroke-width: 5;
-    transform: translate(10px, 10px);
+    transform: translate(1rem, 1rem);
     stroke-dasharray: 220;
     stroke-linecap: round;
   }

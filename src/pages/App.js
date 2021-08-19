@@ -7,28 +7,40 @@ import GlobalStyle, { lightTheme, darkTheme } from "global-styles";
 import Header from "components/Header";
 import NetworkModal from "components/Connect/NetworkModal";
 
-import RegisterPage from "pages/Register";
-import LoginPage from "pages/Login";
-import DashboardPage from "./Dashboard";
-import AcceptInvitePage from "./AcceptInvite";
-import NotFoundPage from "./NotFound";
-import SideNavProvider from "context/SideNavContext";
+import RegisterPage from "pages/Register/loadable";
+import LoginPage from "pages/Login/loadable";
+import DashboardPage from "./Dashboard/loadable";
+import AcceptInvitePage from "./AcceptInvite/loadable";
+import DelegateTransfer from "./DelegateTransfer/loadable";
+import AdminStatsPage from "./AdminStats";
+import NotFoundPage from "./NotFound/loadable";
+import { routeTemplates } from "constants/routes/templates";
 
 export default function App() {
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
+
   return (
     <div className="app">
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-        <SideNavProvider>
-          <Header />
-          <Switch>
-            <Route exact path="/" component={LoginPage} />
-            <Route exact path="/signup" component={RegisterPage} />
-            <Route path="/dashboard" component={DashboardPage} />
-            <Route path="/accept-invite" component={AcceptInvitePage} />
-            <Route component={NotFoundPage} />
-          </Switch>
-        </SideNavProvider>
+        <Header />
+        <Switch>
+          <Route exact path={routeTemplates.login} component={LoginPage} />
+          <Route exact path={routeTemplates.signup} component={RegisterPage} />
+          <Route
+            path={routeTemplates.dashboard.root}
+            component={DashboardPage}
+          />
+          <Route
+            path={routeTemplates.acceptInvite}
+            component={AcceptInvitePage}
+          />
+          <Route
+            path={routeTemplates.delegateTransfer}
+            component={DelegateTransfer}
+          />
+          <Route path={routeTemplates.adminStats} component={AdminStatsPage} />
+          <Route component={NotFoundPage} />
+        </Switch>
         <GlobalStyle />
         <NetworkModal />
       </ThemeProvider>

@@ -1,0 +1,9 @@
+export const TX_ORIGIN = {
+  MULTISAFE: "MULTISAFE",
+  GNOSIS: "GNOSIS",
+};
+
+export const TX_DIRECTION = {
+  INCOMING: "INCOMING",
+  OUTGOING: "OUTGOING",
+};

@@ -1,28 +1,33 @@
 import React from "react";
-import { useState } from "react";
-import { useWeb3React } from "@web3-react/core";
-import { startCase } from "lodash";
 
-import { Account } from "components/common/Web3Utils";
-import { findNetworkNameByWeb3ChainId } from "constants/networks";
-import ConnectToWalletModal from "./ConnectModal";
-// import NetworkModal from "./NetworkModal";
 import Button from "components/common/Button";
+import { useActiveWeb3React } from "hooks";
+import { useState } from "react";
 
 const ConnectToWallet = ({ className, ...rest }) => {
-  const { chainId, active } = useWeb3React();
+  const { onboard } = useActiveWeb3React();
+  const [loading, setLoading] = useState();
 
-  const handleClick = () => {
-    if (!active) setShow(true);
+  const handleClick = async () => {
+    if (onboard) {
+      onboard.walletReset();
+      setLoading(true);
+      try {
+        const walletSelected = await onboard.walletSelect();
+        if (walletSelected) {
+          const ready = await onboard.walletCheck();
+          if (!ready) {
+            setLoading(false);
+          }
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
+    }
   };
-
-  const getNetworkName = () => {
-    return startCase(findNetworkNameByWeb3ChainId(chainId));
-  };
-
-  const [show, setShow] = useState(false);
-
-  const handleToggle = () => setShow(false);
 
   return (
     <div>
@@ -30,18 +35,12 @@ const ConnectToWallet = ({ className, ...rest }) => {
         type="button"
         onClick={handleClick}
         className={className}
+        loading={loading}
+        disabled={loading}
         {...rest}
       >
-        {!active ? (
-          <span>Connect</span>
-        ) : (
-          <span>
-            {getNetworkName()} <Account />
-          </span>
-        )}
+        <span>Connect</span>
       </Button>
-      <ConnectToWalletModal show={show} handleToggle={handleToggle} />
-      {/* <NetworkModal /> */}
     </div>
   );
 };

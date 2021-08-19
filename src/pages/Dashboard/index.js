@@ -1,58 +1,92 @@
-import React from "react";
-import { Route, Switch } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Route, Switch, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
-import Dashboard from "components/Dashboard";
-import People from "components/People";
-import AddTeammate from "components/People/AddTeammate";
-import AddDepartment from "components/People/AddDepartment";
-import ViewTeammates from "components/People/ViewTeammates";
-import Payments from "components/Payments";
-import Transactions from "components/Transactions";
-import QuickTransfer from "components/QuickTransfer";
-import InviteOwners from "components/InviteOwners";
+import Dashboard from "components/Dashboard/loadable";
+import People from "components/People/loadable";
+import Transactions from "components/Transactions/loadable";
+import Assets from "components/Assets/loadable";
+import TransactionDetails from "components/TransactionDetails/loadable";
+import Settings from "components/Settings/loadable";
 import Authenticated from "components/hoc/Authenticated";
-import NotFoundPage from "pages/NotFound";
+import NotFoundPage from "pages/NotFound/loadable";
+import {
+  makeSelectIsMultiOwner,
+  makeSelectIsReadOnly,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
+import { ToastMessage } from "components/common/Toast";
+import DashboardLayout from "components/DashboardLayout";
+import { routeTemplates } from "constants/routes/templates";
+import { useActiveWeb3React, useSocket } from "hooks";
+import {
+  clearGlobalState,
+  getSafeInfo,
+  setSafeAddress,
+} from "store/global/actions";
+import { useInjectSaga } from "utils/injectSaga";
+import globalSaga from "store/global/saga";
 
-const DashboardPage = ({ match }) => {
+const globalKey = "global";
+
+const DashboardPage = () => {
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const { account } = useActiveWeb3React();
+  const params = useParams();
+  useSocket({ isMultiOwner, safeAddress: params.safeAddress, isReadOnly });
+
+  useInjectSaga({ key: globalKey, saga: globalSaga });
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (safeAddress !== params.safeAddress) {
+      dispatch(clearGlobalState());
+      dispatch(setSafeAddress(params.safeAddress));
+    }
+    dispatch(getSafeInfo(params.safeAddress, account));
+  }, [dispatch, params.safeAddress, account, safeAddress]);
+
   return (
     <Authenticated>
-      <Switch>
-        <Route exact path={`${match.path}`} component={Dashboard} />
-        <Route exact path={`${match.path}/people`} component={People} />
-        <Route
-          exact
-          path={`${match.path}/people/new`}
-          component={AddTeammate}
-        />
-        <Route
-          exact
-          path={`${match.path}/department/new`}
-          component={AddDepartment}
-        />
-        <Route
-          exact
-          path={`${match.path}/people/view`}
-          component={ViewTeammates}
-        />
-        <Route
-          exact
-          path={`${match.path}/people/view/:departmentId`}
-          component={ViewTeammates}
-        />
-        <Route exact path={`${match.path}/payments`} component={Payments} />
-        <Route
-          exact
-          path={`${match.path}/transactions`}
-          component={Transactions}
-        />
-        <Route
-          exact
-          path={`${match.path}/quick-transfer`}
-          component={QuickTransfer}
-        />
-        <Route exact path={`${match.path}/invite`} component={InviteOwners} />
-        <Route component={NotFoundPage} />
-      </Switch>
+      <DashboardLayout>
+        <Switch>
+          <Route
+            exact
+            path={routeTemplates.dashboard.root}
+            component={Dashboard}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.people}
+            component={People}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.transactions}
+            component={Transactions}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.transactionById}
+            component={TransactionDetails}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.assets}
+            component={Assets}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.settings}
+            component={Settings}
+          />
+          <Route component={NotFoundPage} />
+        </Switch>
+        <ToastMessage />
+      </DashboardLayout>
     </Authenticated>
   );
 };

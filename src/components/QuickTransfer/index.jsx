@@ -1,451 +1,349 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row } from "reactstrap";
-import { useForm, Controller } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import { BigNumber } from "@ethersproject/bignumber";
 import { cryptoUtils } from "parcel-sdk";
-import { show } from "redux-modal";
 
-import TransactionSubmitted from "components/Payments/TransactionSubmitted";
-import { Info } from "components/Dashboard/styles";
-import { Card } from "components/common/Card";
 import Button from "components/common/Button";
-import Img from "components/common/Img";
 import {
   Input,
-  ErrorMessage,
   TextArea,
-  SelectTokenDropdown,
+  CurrencyInput,
+  SelectToken,
 } from "components/common/Form";
-import { useMassPayout, useLocalStorage } from "hooks";
-import transactionsReducer from "store/transactions/reducer";
-import transactionsSaga from "store/transactions/saga";
+import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
 import {
-  addTransaction,
-  clearTransactionHash,
-} from "store/transactions/actions";
-import {
-  makeSelectMetaTransactionHash,
   makeSelectError as makeSelectErrorInCreateTx,
-  makeSelectLoading as makeSelectAddTxLoading,
+  makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
 } from "store/transactions/selectors";
-import { useInjectReducer } from "utils/injectReducer";
-import { useInjectSaga } from "utils/injectSaga";
-import dashboardReducer from "store/dashboard/reducer";
-import marketRatesReducer from "store/market-rates/reducer";
-import dashboardSaga from "store/dashboard/saga";
-import marketRatesSaga from "store/market-rates/saga";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { getSafeBalances } from "store/dashboard/actions";
+import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
+import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
 import {
-  makeSelectLoading,
-  makeSelectBalances,
-  // makeSelectError,
-} from "store/dashboard/selectors";
-import { makeSelectPrices } from "store/market-rates/selectors";
-import Loading from "components/common/Loading";
-import { getMarketRates } from "store/market-rates/actions";
+  makeSelectOwnerSafeAddress,
+  makeSelectThreshold,
+  makeSelectOrganisationType,
+  makeSelectIsReadOnly,
+} from "store/global/selectors";
+import { getTokens } from "store/tokens/actions";
 import {
-  tokens,
-  getDefaultIconIfPossible,
-  defaultTokenDetails,
-} from "constants/index";
-import SelectTokenModal, {
-  MODAL_NAME as SELECT_TOKEN_MODAL,
-} from "components/Payments/SelectTokenModal";
+  makeSelectLoading as makeSelectLoadingTokens,
+  makeSelectTokenList,
+  makeSelectPrices,
+} from "store/tokens/selectors";
+import { TRANSACTION_MODES } from "constants/transactions";
+import { formatNumber } from "utils/number-helpers";
+import { constructLabel } from "utils/tokens";
+import DeleteSvg from "assets/icons/delete-bin.svg";
+import Img from "components/common/Img";
+import ErrorText from "components/common/ErrorText";
 
-import ETHIcon from "assets/icons/tokens/ETH-icon.png";
-// import DAIIcon from "assets/icons/tokens/DAI-icon.png";
-// import USDCIcon from "assets/icons/tokens/USDC-icon.png";
-import {
-  Container,
-  Title,
-  Heading,
-  StepsCard,
-  ActionItem,
-} from "components/People/styles";
-import { ShowToken } from "./styles";
-import { Circle } from "components/Header/styles";
+import { Error } from "components/common/Form/styles";
+import { QuickTransferContainer } from "./styles";
 
-const dashboardKey = "dashboard";
-const marketRatesKey = "marketRates";
-const transactionsKey = "transactions";
-
-export default function QuickTransfer() {
+export default function QuickTransfer(props) {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
 
-  const { txHash, loadingTx, massPayout, txData } = useMassPayout();
-  const [submittedTx, setSubmittedTx] = useState(false);
+  const { handleHide, defaultValues } = props;
+  const { account } = useActiveWeb3React();
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
-  // eslint-disable-next-line
-  const [selectedTokenName, setSelectedTokenName] = useState(tokens.DAI);
-  const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
-  const [payoutDetails, setPayoutDetails] = useState(null);
-  const [metaTxHash, setMetaTxHash] = useState();
+  const [existingTokenDetails, setExistingTokenDetails] = useState();
+  const [tokensDropdown, setTokensDropdown] = useState([]);
+  const [insufficientBalanceError, setInsufficientBalanceError] =
+    useState(false);
 
-  // Reducers
-  useInjectReducer({ key: dashboardKey, reducer: dashboardReducer });
-  useInjectReducer({ key: marketRatesKey, reducer: marketRatesReducer });
-  useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
+  const { loadingTx, massPayout } = useMassPayout();
 
-  // Sagas
-  useInjectSaga({ key: dashboardKey, saga: dashboardSaga });
-  useInjectSaga({ key: marketRatesKey, saga: marketRatesSaga });
-  useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
-
-  const { register, errors, handleSubmit, formState, control } = useForm({
-    mode: "onChange",
+  const { register, errors, handleSubmit, formState, control, watch } = useForm(
+    {
+      mode: "onChange",
+      defaultValues: {
+        receivers: [{ address: "", amount: "" }],
+      },
+    }
+  );
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "receivers",
   });
 
+  const selectedToken = watch("token") && watch("token").value;
+  const watchedRecievers = watch("receivers");
+
   const dispatch = useDispatch();
-  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const history = useHistory();
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   // Selectors
-  const loading = useSelector(makeSelectLoading());
-  const balances = useSelector(makeSelectBalances());
-  const prices = useSelector(makeSelectPrices());
-  const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
+  const loadingTokens = useSelector(makeSelectLoadingTokens());
+  const tokenList = useSelector(makeSelectTokenList());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
-  const addingTx = useSelector(makeSelectAddTxLoading());
+  const addingMultisigTx = useSelector(makeSelectAddTxLoading());
+  const addingSingleOwnerTx = useSelector(makeSelectSingleOwnerAddTxLoading());
+  const threshold = useSelector(makeSelectThreshold());
+  const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
+  const prices = useSelector(makeSelectPrices());
+  const organisationType = useSelector(makeSelectOrganisationType());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
-    if (selectedTokenName)
+    if (safeAddress) {
+      dispatch(getTokens(safeAddress));
+    }
+  }, [safeAddress, dispatch]);
+
+  useEffect(() => {
+    if (selectedToken && existingTokenDetails) {
       setSelectedTokenDetails(
-        tokenDetails.filter(({ name }) => name === selectedTokenName)[0]
+        existingTokenDetails.filter(({ name }) => name === selectedToken)[0]
       );
-  }, [tokenDetails, selectedTokenName]);
-
-  useEffect(() => {
-    if (txHashFromMetaTx) {
-      setMetaTxHash(txHashFromMetaTx);
-      dispatch(clearTransactionHash());
     }
-  }, [dispatch, txHashFromMetaTx]);
+  }, [selectedToken, existingTokenDetails]);
 
   useEffect(() => {
-    if (ownerSafeAddress) {
-      dispatch(getSafeBalances(ownerSafeAddress));
-    }
-  }, [ownerSafeAddress, dispatch]);
-
-  useEffect(() => {
-    dispatch(getMarketRates());
-  }, [dispatch]);
-
-  const totalAmountToPay = useMemo(() => {
-    if (prices && payoutDetails && payoutDetails.length > 0) {
-      return payoutDetails.reduce(
-        (total, { salaryAmount, salaryToken }) =>
-          (total += prices[salaryToken] * salaryAmount),
+    if (watchedRecievers && selectedTokenDetails) {
+      const totalAmountInToken = watchedRecievers.reduce(
+        (total, { amount }) => {
+          return amount ? total + Number(amount) : total;
+        },
         0
       );
-    }
 
-    return 0;
-  }, [prices, payoutDetails]);
-
-  useEffect(() => {
-    if (txHash) {
-      setSubmittedTx(true);
-      if (
-        encryptionKey &&
-        payoutDetails &&
-        ownerSafeAddress &&
-        totalAmountToPay &&
-        selectedTokenDetails
-      ) {
-        const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(payoutDetails),
-          encryptionKey
-        );
-        // const to = selectedTeammates;
-
-        dispatch(
-          addTransaction({
-            to,
-            safeAddress: ownerSafeAddress,
-            createdBy: ownerSafeAddress,
-            transactionHash: txHash,
-            tokenValue: totalAmountToPay,
-            tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
-            addresses: payoutDetails.map(({ address }) => address),
-            transactionMode: 1, // quick transfer
-          })
-        );
-      }
-    } else if (txData) {
-      if (
-        encryptionKey &&
-        payoutDetails &&
-        ownerSafeAddress &&
-        totalAmountToPay &&
-        selectedTokenDetails
-      ) {
-        const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(payoutDetails),
-          encryptionKey
-        );
-        dispatch(
-          addTransaction({
-            to,
-            safeAddress: ownerSafeAddress,
-            createdBy: ownerSafeAddress,
-            txData,
-            tokenValue: totalAmountToPay,
-            tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
-            addresses: payoutDetails.map(({ address }) => address),
-            transactionMode: 1, // quick transfer
-          })
-        );
-      }
-    }
-  }, [
-    txHash,
-    encryptionKey,
-    payoutDetails,
-    dispatch,
-    ownerSafeAddress,
-    totalAmountToPay,
-    selectedTokenDetails,
-    txData,
-  ]);
-
-  useEffect(() => {
-    if (balances && balances.length > 0 && prices) {
-      const seenTokens = {};
-      const allTokenDetails = balances
-        .map((bal, idx) => {
-          // erc20
-          if (bal.token && bal.tokenAddress) {
-            const balance = BigNumber.from(bal.balance)
-              .div(BigNumber.from(String(10 ** bal.token.decimals)))
-              .toString();
-            // mark as seen
-            seenTokens[bal.token.symbol] = true;
-            const tokenIcon = getDefaultIconIfPossible(bal.token.symbol);
-
-            return {
-              id: idx,
-              name: bal.token && bal.token.symbol,
-              icon: tokenIcon ? tokenIcon : bal.token.logoUri,
-              balance,
-              usd: bal.token
-                ? balance * prices[bal.token.symbol]
-                : balance * prices["ETH"],
-            };
-          }
-          // eth
-          else if (bal.balance) {
-            seenTokens[tokens.ETH] = true;
-            return {
-              id: idx,
-              name: tokens.ETH,
-              icon: ETHIcon,
-              balance: bal.balance / 10 ** 18,
-              usd: bal.balanceUsd,
-            };
-          } else return "";
-        })
-        .filter(Boolean);
-
-      if (allTokenDetails.length < 3) {
-        const zeroBalanceTokensToShow = defaultTokenDetails.filter(
-          (token) => !seenTokens[token.name]
-        );
-        setTokenDetails([...allTokenDetails, ...zeroBalanceTokensToShow]);
+      if (totalAmountInToken > selectedTokenDetails.balance) {
+        setInsufficientBalanceError(true);
       } else {
-        setTokenDetails(allTokenDetails);
+        setInsufficientBalanceError(false);
       }
     }
-  }, [balances, prices]);
+  }, [watchedRecievers, selectedTokenDetails]);
+
+  useEffect(() => {
+    if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
+      setExistingTokenDetails(tokenList);
+      setTokensDropdown(
+        tokenList.map((details) => ({
+          value: details.name,
+          label: constructLabel({
+            token: details.name,
+            component: (
+              <div>
+                {formatNumber(details.balance, 5)} {details.name}
+              </div>
+            ),
+            imgUrl: details.icon,
+          }),
+        }))
+      );
+    }
+  }, [tokenList, tokensDropdown]);
 
   const onSubmit = async (values) => {
-    const payoutDetails = [
-      {
-        address: values.address,
-        salaryAmount: values.amount,
-        salaryToken: values.currency.value,
-        description: values.description || "",
-      },
-    ];
-    setPayoutDetails(payoutDetails);
-    await massPayout(payoutDetails, selectedTokenDetails.name);
-  };
+    const receivers = values.receivers.map(({ address, amount }) => ({
+      address,
+      salaryAmount: amount,
+      salaryToken: selectedTokenDetails.name,
+      description: values.description || "",
+      usd: selectedTokenDetails.usdConversionRate * amount,
+    }));
 
-  const goBack = () => {
-    history.goBack();
-  };
-
-  const showTokenModal = () => {
-    dispatch(
-      show(SELECT_TOKEN_MODAL, {
-        selectedTokenDetails,
-        setSelectedTokenDetails,
-      })
+    const totalAmountToPay = receivers.reduce(
+      (total, { usd }) => (total += usd),
+      0
     );
+
+    const to = cryptoUtils.encryptDataUsingEncryptionKey(
+      JSON.stringify(receivers),
+      encryptionKey,
+      organisationType
+    );
+    const baseRequestBody = {
+      to,
+      safeAddress: safeAddress,
+      createdBy: account,
+      tokenValue: receivers.reduce(
+        (total, { salaryAmount }) => (total += parseFloat(salaryAmount)),
+        0
+      ),
+      tokenCurrency: selectedTokenDetails.name,
+      fiatValue: totalAmountToPay,
+      fiatCurrency: "USD",
+      addresses: receivers.map(({ address }) => address),
+      transactionMode: TRANSACTION_MODES.QUICK_TRANSFER,
+    };
+    await massPayout({
+      receivers,
+      tokenDetails: selectedTokenDetails,
+      baseRequestBody,
+    });
   };
 
-  const renderTransferDetails = () => (
-    <Card className="quick-transfer">
-      <Title className="mb-4">Quick Fund Transfer</Title>
-      <Heading>PAYING FROM</Heading>
+  const renderQuickTransfer = () => (
+    <div>
+      <div className="title">Paying From</div>
+      <div className="mb-3">
+        <SelectToken
+          name="token"
+          control={control}
+          required={`Token is required`}
+          width="20rem"
+          options={tokensDropdown}
+          isSearchable
+          placeholder={`Select Currency...`}
+          defaultValue={defaultValues ? defaultValues.token : null}
+          isLoading={loadingTokens}
+        />
+      </div>
 
-      {loading && (
-        <ShowToken>
-          <Loading color="#7367f0" />
-        </ShowToken>
-      )}
+      <div className="title mt-5">Paying To</div>
+      {fields.map(({ id }, index) => (
+        <div key={id} className="mb-4">
+          <div className="details-row">
+            <Input
+              type="text"
+              name={`receivers[${index}].address`}
+              register={register}
+              required={`Wallet Address is required`}
+              pattern={{
+                value: /^0x[a-fA-F0-9]{40}$/,
+                message: "Invalid Ethereum Address",
+              }}
+              placeholder="Wallet Address"
+              style={{ maxWidth: "32rem" }}
+              defaultValue={
+                defaultValues && defaultValues.receivers[index]
+                  ? defaultValues.receivers[index].address
+                  : ""
+              }
+            />
 
-      {!loading && selectedTokenDetails && (
-        <ShowToken onClick={showTokenModal}>
-          <div>
-            <Img src={selectedTokenDetails.icon} alt="token icon" width="36" />
-          </div>
-          <div className="token-balance">
-            <div className="value">
-              {selectedTokenDetails.balance
-                ? parseFloat(selectedTokenDetails.balance).toFixed(2)
-                : "0.00"}
+            {selectedToken && (
+              <div>
+                <Controller
+                  control={control}
+                  name={`receivers[${index}].amount`}
+                  rules={{
+                    required: "Amount is required",
+                    validate: (value) => {
+                      if (value <= 0) return "Please check your input";
+
+                      return true;
+                    },
+                  }}
+                  defaultValue={
+                    defaultValues && defaultValues.receivers[index]
+                      ? defaultValues.receivers[index].amount
+                      : ""
+                  }
+                  render={({ onChange, value }) => (
+                    <CurrencyInput
+                      type="number"
+                      name={`receivers[${index}].amount`}
+                      value={value}
+                      onChange={onChange}
+                      placeholder="0.00"
+                      conversionRate={
+                        prices &&
+                        selectedTokenDetails &&
+                        prices[selectedTokenDetails.name]
+                      }
+                      tokenName={
+                        selectedTokenDetails ? selectedTokenDetails.name : ""
+                      }
+                    />
+                  )}
+                />
+              </div>
+            )}
+            <div style={{ minWidth: "2rem" }}>
+              {fields.length > 1 && index === fields.length - 1 && (
+                <Button
+                  type="button"
+                  iconOnly
+                  onClick={() => remove(index)}
+                  className="p-0"
+                >
+                  <Img src={DeleteSvg} alt="remove" width="16" />
+                </Button>
+              )}
             </div>
-            <div className="name">{selectedTokenDetails.name}</div>
           </div>
-          <div className="change">Change</div>
-        </ShowToken>
+          <div className="error-row">
+            {errors["receivers"] &&
+              errors["receivers"][index] &&
+              errors["receivers"][index].address && (
+                <Error>{errors["receivers"][index].address.message}</Error>
+              )}
+            {errors["receivers"] &&
+              errors["receivers"][index] &&
+              errors["receivers"][index].amount && (
+                <Error>{errors["receivers"][index].amount.message}</Error>
+              )}
+          </div>
+        </div>
+      ))}
+
+      <div>
+        <Button
+          type="button"
+          onClick={() => append({})}
+          className="secondary"
+          width="12rem"
+          style={{ fontSize: "1.2rem" }}
+        >
+          <span className="mr-2">+</span>
+          Add More
+        </Button>
+      </div>
+
+      {insufficientBalanceError && (
+        <div className="mt-3">
+          <Error>Insufficient Balance</Error>
+        </div>
       )}
 
-      <Heading>PAYING TO</Heading>
-      <Row className="mb-3">
-        <Col lg="12">
-          <Input
-            type="text"
-            name="address"
-            register={register}
-            required={`Wallet Address is required`}
-            pattern={{
-              value: /^0x[a-fA-F0-9]{40}$/,
-              message: "Invalid Ethereum Address",
-            }}
-            placeholder="Wallet Address"
-          />
-          <ErrorMessage name="address" errors={errors} />
-        </Col>
-      </Row>
+      <div className="title mt-5">Description (Optional)</div>
+      <div>
+        <TextArea
+          name="description"
+          register={register}
+          placeholder="Paid 500 DAI to John Doe..."
+          rows="3"
+          cols="50"
+          defaultValue={defaultValues ? defaultValues.description : ""}
+        />
+      </div>
 
-      <Row className="mb-4">
-        <Col lg="6" sm="12">
-          <Input
-            type="number"
-            name="amount"
-            register={register}
-            required={`Amount is required`}
-            placeholder="Amount"
-          />
-          <ErrorMessage name="amount" errors={errors} />
-        </Col>
-        <Col lg="6" sm="12">
-          {/* <Select
-            name="currency"
-            register={register}
-            required={`Token is required`}
-            options={[
-              { name: "DAI", value: "DAI" },
-              { name: "USDC", value: "USDC" },
-            ]}
-          /> */}
-          <Controller
-            name="currency"
-            control={control}
-            rules={{ required: true }}
-            as={SelectTokenDropdown}
-          />
-          <ErrorMessage name="currency" errors={errors} />
-        </Col>
-      </Row>
+      <div className="buttons mt-5">
+        <Button
+          type="button"
+          className="secondary-2"
+          onClick={handleHide}
+          style={{ minWidth: "16rem" }}
+        >
+          Close
+        </Button>
+        <Button
+          type="submit"
+          style={{ minWidth: "16rem" }}
+          disabled={
+            !formState.isValid ||
+            loadingTx ||
+            addingMultisigTx ||
+            addingSingleOwnerTx ||
+            loadingSafeDetails ||
+            insufficientBalanceError ||
+            isReadOnly
+          }
+          loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
+        >
+          {threshold > 1 ? `Create Transaction` : `Send`}
+        </Button>
+      </div>
 
-      <Heading>DESCRIPTION (Optional)</Heading>
-      <Row className="mb-3">
-        <Col lg="12">
-          <TextArea
-            name="description"
-            register={register}
-            placeholder="Paid 500 DAI to John Doe..."
-            rows="5"
-            cols="50"
-          />
-        </Col>
-      </Row>
-
-      <Button
-        large
-        type="submit"
-        style={{ marginTop: "50px" }}
-        disabled={!formState.isValid || loadingTx || addingTx}
-        loading={loadingTx || addingTx}
-      >
-        Send
-      </Button>
-      {errorFromMetaTx && (
-        <div className="text-danger mt-3">{errorFromMetaTx}</div>
-      )}
-    </Card>
+      {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
+    </div>
   );
 
-  const renderQuickTransfer = () => {
-    return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <StepsCard>{renderTransferDetails()}</StepsCard>
-      </form>
-    );
-  };
-
-  return !metaTxHash && !submittedTx ? (
-    <div
-      className="position-relative"
-      style={{
-        transition: "all 0.25s linear",
-      }}
-    >
-      <Info>
-        <div
-          style={{
-            maxWidth: "1200px",
-            transition: "all 0.25s linear",
-          }}
-          className="mx-auto"
-        >
-          <Button iconOnly className="p-0" onClick={goBack}>
-            <ActionItem>
-              <Circle>
-                <FontAwesomeIcon icon={faLongArrowAltLeft} color="#fff" />
-              </Circle>
-              <div className="mx-3">
-                <div className="name">Back</div>
-              </div>
-            </ActionItem>
-          </Button>
-        </div>
-      </Info>
-
-      <Container
-        style={{
-          maxWidth: "1200px",
-          transition: "all 0.25s linear",
-        }}
-      >
-        {renderQuickTransfer()}
-      </Container>
-      <SelectTokenModal />
-    </div>
-  ) : (
-    <TransactionSubmitted
-      txHash={txHash ? txHash : metaTxHash}
-      selectedCount={1}
-    />
+  return (
+    <QuickTransferContainer>
+      <form onSubmit={handleSubmit(onSubmit)}>{renderQuickTransfer()}</form>
+    </QuickTransferContainer>
   );
 }

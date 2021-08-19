@@ -4,24 +4,24 @@ export default styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: solid 1px rgba(170, 170, 170, 0.2);
-  border-bottom: solid 1px rgba(170, 170, 170, 0.2);
+  border-top: solid 0.1rem rgba(170, 170, 170, 0.2);
+  border-bottom: solid 0.1rem rgba(170, 170, 170, 0.2);
 
   .title {
-    padding: 10px 36px;
-    font-size: 20px;
+    padding: 1rem 3.6rem 0;
+    font-size: 2rem;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.2;
+    line-height: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #373737;
+    color: ${({ theme }) => theme.primary};
   }
 
   .next {
-    padding: 10px 36px;
-    font-size: 16px;
+    padding: 1rem 3.6rem;
+    font-size: 1.6rem;
     font-weight: 300;
     font-stretch: normal;
     font-style: normal;
@@ -32,6 +32,6 @@ export default styled.div`
   }
 
   .step-progress {
-    padding: 10px 36px;
+    padding: 1rem 3.6rem;
   }
 `;

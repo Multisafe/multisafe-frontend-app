@@ -1,26 +1,36 @@
-// import React from "react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "hooks";
 import { useHistory } from "react-router-dom";
-import Loading from "components/common/Loading";
+import { useDispatch, useSelector } from "react-redux";
+
+import { logoutUser } from "store/logout/actions";
+import { useActiveWeb3React } from "hooks";
+import {
+  makeSelectIsReadOnly,
+  makeSelectSafeInfoSuccess,
+} from "store/global/selectors";
 
 export default function Authenticated({ children }) {
+  const { onboard } = useActiveWeb3React();
   const isAuthenticated = useAuth();
   const authRef = useRef();
   const history = useHistory();
+  const dispatch = useDispatch();
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const success = useSelector(makeSelectSafeInfoSuccess());
 
-  authRef.current = isAuthenticated;
+  authRef.current = isAuthenticated || isReadOnly;
 
-  const redirectAfterDelay = () => {
+  useEffect(() => {
     setTimeout(() => {
-      if (!authRef.current) {
-        history.push("/");
+      if (success && !authRef.current) {
+        if (onboard) {
+          onboard.walletReset();
+        }
+        dispatch(logoutUser());
       }
-      return children;
-    }, 3000);
+    }, 5000);
+  }, [children, history, dispatch, onboard, success]);
 
-    return <Loading />;
-  };
-
-  return isAuthenticated ? children : redirectAfterDelay();
+  return children;
 }

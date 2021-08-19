@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Select from "react-select";
-
-import { defaultTokenOptions } from "utils/massPayout";
+import { defaultTokenOptions } from "utils/tokens";
 
 const inputStyles = {
   control: (styles) => ({
@@ -31,15 +30,20 @@ const inputStyles = {
   singleValue: (styles, { data }) => ({ ...styles }),
 };
 
-const SelectTokenDropdownField = ({ name, options, ...rest }) => {
-  const [selectedOption, setSelectedOption] = useState();
+const SelectTokenDropdownField = ({
+  name,
+  options = defaultTokenOptions,
+  ...rest
+}) => {
+  const [selectedOption, setSelectedOption] = useState(options[0]);
+
   return (
     <div>
       <Select
         name={name}
         defaultValue={selectedOption}
         onChange={setSelectedOption}
-        options={defaultTokenOptions}
+        options={options}
         styles={inputStyles}
         {...rest}
       />

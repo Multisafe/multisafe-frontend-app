@@ -1,5 +1,7 @@
-import { tokens } from "constants/index";
-import { BigNumber } from "@ethersproject/bignumber";
+// import { BigNumber } from "@ethersproject/bignumber";
+import { parseUnits, formatUnits } from "@ethersproject/units";
+import Big from "big.js";
+
 // Hex helpers
 export function joinHexData(hexData) {
   return `0x${hexData
@@ -29,21 +31,18 @@ export function standardizeTransaction(tx) {
   return {
     operation: tx.operation ? tx.operation : defaultTxOperation,
     to: tx.to,
-    value: tx.value ? Number(tx.value.toString()) : defaultTxValue,
+    value: tx.value ? tx.value.toString() : defaultTxValue,
     data: tx.data ? tx.data : defaultTxData,
   };
 }
 
-export const getAmountInWei = (tokenName, tokenAmount) => {
-  switch (tokenName) {
-    case tokens.DAI:
-      return BigNumber.from(tokenAmount).mul(BigNumber.from(String(10 ** 18)));
-    case tokens.USDC:
-      return BigNumber.from(tokenAmount).mul(BigNumber.from(String(10 ** 6)));
-    case tokens.USDT:
-      return BigNumber.from(tokenAmount).mul(BigNumber.from(String(10 ** 6)));
+export const getAmountInWei = (amount, decimals) => {
+  return parseUnits(Big(amount).round(decimals).toString(), decimals);
+};
 
-    default:
-      return 0;
+export const getAmountFromWei = (amount, decimals, precision) => {
+  if (precision) {
+    return parseFloat(formatUnits(amount, decimals)).toFixed(precision);
   }
+  return parseFloat(formatUnits(amount, decimals));
 };

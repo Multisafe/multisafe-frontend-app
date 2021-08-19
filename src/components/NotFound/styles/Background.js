@@ -1,8 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  min-height: 92vh;
-  background-color: #f2f2f2;
+  min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,7 +9,7 @@ export default styled.div`
 
   .title,
   .subtitle {
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
@@ -21,7 +20,7 @@ export default styled.div`
   }
 
   .title {
-    margin-top: 100px;
+    margin-top: 10rem;
   }
 
   .subtitle {

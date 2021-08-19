@@ -1,766 +1,677 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faLongArrowAltLeft,
-  faLongArrowAltRight,
-} from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 import { cryptoUtils } from "parcel-sdk";
-import { show } from "redux-modal";
-import { BigNumber } from "@ethersproject/bignumber";
+import { useForm } from "react-hook-form";
+import Big from "big.js";
+import { isEqual } from "lodash";
 
-import { Info } from "components/Dashboard/styles";
-import { Card } from "components/common/Card";
 import Button from "components/common/Button";
-import viewDepartmentsReducer from "store/view-departments/reducer";
-import { getDepartments } from "store/view-departments/actions";
-import viewDepartmentsSaga from "store/view-departments/saga";
-import viewTeammatesSaga from "store/view-teammates/saga";
+import viewTeamsReducer from "store/view-teams/reducer";
+import { getTeams } from "store/view-teams/actions";
+import viewTeamsSaga from "store/view-teams/saga";
+import viewPeopleSaga from "store/view-people/saga";
+import viewPeopleReducer from "store/view-people/reducer";
+import { getPeopleByTeam } from "store/view-people/actions";
 import {
-  makeSelectMetaTransactionHash,
-  makeSelectError as makeSelectErrorInCreateTx,
-  makeSelectLoading as makeSelectAddTxLoading,
-} from "store/transactions/selectors";
-import viewTeammatesReducer from "store/view-teammates/reducer";
+  makeSelectTeams,
+  makeSelectLoading as makeSelectTeamsLoading,
+  makeSelectTeamIdToDetailsMap,
+} from "store/view-teams/selectors";
 import {
-  getAllTeammates,
-  getTeammatesByDepartment,
-} from "store/view-teammates/actions";
+  makeSelectPeopleByTeam,
+  makeSelectLoadingPeopleByTeam,
+} from "store/view-people/selectors";
+import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
+import { getInvitations } from "store/invitation/actions";
+import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
+import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
 import {
-  makeSelectDepartments,
-  makeSelectLoading as makeSelectDepartmentsLoading,
-} from "store/view-departments/selectors";
-import {
-  makeSelectTeammates,
-  makeSelectLoading as makeSelectTeammatesLoading,
-} from "store/view-teammates/selectors";
-import transactionsReducer from "store/transactions/reducer";
-import transactionsSaga from "store/transactions/saga";
-import {
-  addTransaction,
-  clearTransactionHash,
-} from "store/transactions/actions";
-import marketRatesReducer from "store/market-rates/reducer";
-import { getMarketRates } from "store/market-rates/actions";
-import { makeSelectPrices } from "store/market-rates/selectors";
-import marketRatesSaga from "store/market-rates/saga";
-import dashboardReducer from "store/dashboard/reducer";
-import { getSafeBalances } from "store/dashboard/actions";
-import { makeSelectBalances } from "store/dashboard/selectors";
-import dashboardSaga from "store/dashboard/saga";
+  makeSelectLoading as makeSelectLoadingTokens,
+  makeSelectTokenList,
+  makeSelectPrices,
+} from "store/tokens/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useLocalStorage, useMassPayout } from "hooks";
-import { numToOrd } from "utils/date-helpers";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { minifyAddress } from "components/common/Web3Utils";
-import Loading from "components/common/Loading";
-import TeamPng from "assets/images/user-team.png";
-import ETHIcon from "assets/icons/tokens/ETH-icon.png";
-
+import { useActiveWeb3React, useLocalStorage, useMassPayout } from "hooks";
 import {
-  tokens,
-  getDefaultIconIfPossible,
-  defaultTokenDetails,
-} from "constants/index";
-import { Container, Table, PaymentSummary, TokenBalance } from "./styles";
-import TransactionSubmitted from "./TransactionSubmitted";
-import SelectTokenModal, {
-  MODAL_NAME as SELECT_TOKEN_MODAL,
-} from "./SelectTokenModal";
-
-const { TableBody, TableHead, TableRow } = Table;
+  makeSelectOwnerSafeAddress,
+  makeSelectThreshold,
+  makeSelectOrganisationType,
+  makeSelectIsReadOnly,
+} from "store/global/selectors";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableInfo,
+  TableLoader,
+} from "components/common/Table";
+import { MassPayoutContainer, PaymentSummary } from "./styles";
+import { TRANSACTION_MODES } from "constants/transactions";
+import { formatNumber } from "utils/number-helpers";
+import TokenImg from "components/common/TokenImg";
+import { getDecryptedDetails } from "utils/encryption";
+import { Input, Select, SelectToken } from "components/common/Form";
+import { constructLabel } from "utils/tokens";
+import CheckBox from "components/common/CheckBox";
+import ErrorText from "components/common/ErrorText";
 
 // reducer/saga keys
-const viewTeammatesKey = "viewTeammates";
-const viewDepartmentsKey = "viewDepartments";
-const marketRatesKey = "marketRates";
-const dashboardKey = "dashboard";
-const transactionsKey = "transactions";
+const viewPeopleKey = "viewPeople";
+const viewTeamsKey = "viewTeams";
 
-const TABS = {
-  PEOPLE: "1",
-  DEPARTMENT: "2",
-};
-
-const navStyles = `
-  .nav-tabs {
-    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.05);
-    border-bottom: solid 1px #f2f2f2;
-    background-color: #ffffff;
-  }
-
-  .nav-link {
-    font-size: 20px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    text-align: left;
-    color: #aaaaaa;
-    cursor: pointer;
-    opacity: 0.4;
-    padding-bottom: 15px;
-    padding-top: 15px;
-  }
-
-  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    border-bottom: 5px solid #7367f0;
-  }
-
-  .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover {
-    border: none;
-    border-bottom: 5px solid #7367f0;
-    opacity: 1;
-  }
-
-  .nav-link.active {
-    opacity: 1;
-    border: none;
-    font-size: 20px;
-    font-weight: bold;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.2;
-    letter-spacing: normal;
-    text-align: left;
-    color: #373737;
-  }
-`;
-
-export default function People() {
+export default function Payments() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const { register, handleSubmit, control, setValue, watch } = useForm({
+    mode: "onChange",
+  });
+
+  const selectedTeamId = watch("team") && watch("team").value;
+  const selectedToken = watch("token") && watch("token").value;
+  const watchedAmounts = watch("amounts");
+
+  const { account } = useActiveWeb3React();
 
   const [checked, setChecked] = useState([]);
   const [isCheckedAll, setIsCheckedAll] = useState(false);
-  const [activeTab, setActiveTab] = useState(TABS.PEOPLE);
-  // const [loadingTx, setLoadingTx] = useState(false);
-  // const [txHash, setTxHash] = useState("");
-  const {
-    loadingTx,
-    txHash,
-    recievers,
-    massPayout,
-    txData,
-    setTxData,
-  } = useMassPayout();
+  const [people, setPeople] = useState();
   const [selectedRows, setSelectedRows] = useState([]);
-  const [departmentStep, setDepartmentStep] = useState(0);
-  const [metaTxHash, setMetaTxHash] = useState();
-  const [submittedTx, setSubmittedTx] = useState(false);
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
-  const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
+  const [isSelectedTokenUSD, setIsSelectedTokenUSD] = useState();
+  const [existingTokenDetails, setExistingTokenDetails] = useState();
+  const [tokensDropdown, setTokensDropdown] = useState([]);
+  const [teamsDropdown, setTeamsDropdown] = useState();
+  const [tokenError, setTokenError] = useState(false);
+  const [amountError, setAmountError] = useState(false);
 
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
+  const { loadingTx, massPayout } = useMassPayout();
 
-  useInjectReducer({ key: viewTeammatesKey, reducer: viewTeammatesReducer });
-  useInjectReducer({
-    key: viewDepartmentsKey,
-    reducer: viewDepartmentsReducer,
-  });
-  useInjectReducer({ key: marketRatesKey, reducer: marketRatesReducer });
-  useInjectReducer({ key: dashboardKey, reducer: dashboardReducer });
-  useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
+  // Reducers
+  useInjectReducer({ key: viewPeopleKey, reducer: viewPeopleReducer });
+  useInjectReducer({ key: viewTeamsKey, reducer: viewTeamsReducer });
 
-  useInjectSaga({ key: viewTeammatesKey, saga: viewTeammatesSaga });
-  useInjectSaga({ key: viewDepartmentsKey, saga: viewDepartmentsSaga });
-  useInjectSaga({ key: marketRatesKey, saga: marketRatesSaga });
-  useInjectSaga({ key: dashboardKey, saga: dashboardSaga });
-  useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
+  // Sagas
+  useInjectSaga({ key: viewPeopleKey, saga: viewPeopleSaga });
+  useInjectSaga({ key: viewTeamsKey, saga: viewTeamsSaga });
 
   const dispatch = useDispatch();
-  const allDepartments = useSelector(makeSelectDepartments());
-  const loadingDepartments = useSelector(makeSelectDepartmentsLoading()); // eslint-disable-line
-  const loadingTeammates = useSelector(makeSelectTeammatesLoading()); // eslint-disable-line
-  const teammates = useSelector(makeSelectTeammates());
+
+  // Selectors
+  const allTeams = useSelector(makeSelectTeams());
+  const loadingTeams = useSelector(makeSelectTeamsLoading());
+  const loadingTeammates = useSelector(makeSelectLoadingPeopleByTeam());
+  const teammates = useSelector(makeSelectPeopleByTeam());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const prices = useSelector(makeSelectPrices());
-  const balances = useSelector(makeSelectBalances());
-  const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
   const addingTx = useSelector(makeSelectAddTxLoading());
+  const threshold = useSelector(makeSelectThreshold());
+  const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
+  const tokenList = useSelector(makeSelectTokenList());
+  const loadingTokens = useSelector(makeSelectLoadingTokens());
+  const organisationType = useSelector(makeSelectOrganisationType());
+  const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
+  const isReadOnly = useSelector(makeSelectIsReadOnly());
 
   useEffect(() => {
-    dispatch(getMarketRates());
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (txHashFromMetaTx) {
-      setMetaTxHash(txHashFromMetaTx);
-      dispatch(clearTransactionHash());
+    if (ownerSafeAddress) {
+      dispatch(getInvitations(ownerSafeAddress));
     }
-  }, [dispatch, txHashFromMetaTx]);
+  }, [ownerSafeAddress, dispatch]);
 
   useEffect(() => {
-    dispatch(getSafeBalances(ownerSafeAddress));
-  }, [dispatch, ownerSafeAddress]);
+    let dropdownList = [];
+    if (allTeams && allTeams.length > 0 && !teamsDropdown) {
+      dropdownList = allTeams.map(({ departmentId, name }) => ({
+        value: departmentId,
+        label: name,
+      }));
+      setTeamsDropdown(dropdownList);
+    }
+  }, [allTeams, existingTokenDetails, teamsDropdown]);
 
   useEffect(() => {
-    setSelectedTokenDetails(
-      tokenDetails.filter(({ name }) => name === tokens.DAI)[0]
-    );
-  }, [tokenDetails]);
+    if (selectedTeamId && teamIdToDetailsMap[selectedTeamId]) {
+      setTokenError(false);
+      const { tokenInfo } = teamIdToDetailsMap[selectedTeamId];
+      const existingToken = existingTokenDetails.filter(
+        ({ name }) => name === tokenInfo.symbol
+      )[0];
+
+      if (tokenInfo && tokenInfo.symbol === "USD") {
+        setIsSelectedTokenUSD(true);
+      } else {
+        setIsSelectedTokenUSD(false);
+      }
+
+      if (existingToken) {
+        setValue("token", {
+          value: existingToken.name,
+          label: constructLabel({
+            token: existingToken.name,
+            component: (
+              <div>
+                {formatNumber(existingToken.balance, 5)} {existingToken.name}
+              </div>
+            ),
+            imgUrl: existingToken.icon,
+          }),
+        });
+      } else {
+        if (tokenInfo && tokenInfo.symbol === "USD") {
+          setValue("token", {
+            value: existingTokenDetails[0].name,
+            label: constructLabel({
+              token: existingTokenDetails[0].name,
+              component: (
+                <div>
+                  {formatNumber(existingTokenDetails[0].balance, 5)}{" "}
+                  {existingTokenDetails[0].name}
+                </div>
+              ),
+              imgUrl: existingTokenDetails[0].icon,
+            }),
+          });
+        } else {
+          setTokenError(
+            `Please deposit ${tokenInfo.symbol} tokens into your safe and try again`
+          );
+          setValue("token", {
+            value: tokenInfo.symbol,
+            label: `0.00 ${tokenInfo.symbol}`,
+          });
+        }
+      }
+    }
+  }, [selectedTeamId, existingTokenDetails, setValue]); // eslint-disable-line
+
+  useEffect(() => {
+    if (selectedTeamId) {
+      dispatch(getPeopleByTeam(ownerSafeAddress, selectedTeamId));
+    }
+  }, [selectedTeamId, dispatch, ownerSafeAddress]);
+
+  useEffect(() => {
+    if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
+      setExistingTokenDetails(tokenList);
+      setTokensDropdown(
+        tokenList.map((details) => ({
+          value: details.name,
+          label: constructLabel({
+            token: details.name,
+            component: (
+              <div>
+                {formatNumber(details.balance, 5)} {details.name}
+              </div>
+            ),
+            imgUrl: details.icon,
+          }),
+        }))
+      );
+    }
+  }, [tokenList, tokensDropdown]);
+
+  useEffect(() => {
+    if (!allTeams) {
+      dispatch(getTeams(ownerSafeAddress));
+    }
+  }, [dispatch, ownerSafeAddress, allTeams]);
 
   useEffect(() => {
     // reset to initial state
     setSelectedRows([]);
     setChecked([]);
     setIsCheckedAll(false);
-    if (activeTab === TABS.PEOPLE) {
-      dispatch(getAllTeammates(ownerSafeAddress));
-    } else {
-      setDepartmentStep(0);
-      dispatch(getDepartments(ownerSafeAddress));
-    }
-  }, [dispatch, ownerSafeAddress, activeTab]);
+  }, [selectedToken, selectedTeamId]);
 
   useEffect(() => {
-    if (teammates && teammates.length > 0) {
-      setChecked(new Array(teammates.length).fill(false));
+    if (people && people.length > 0) {
+      setChecked(new Array(people.length).fill(false));
     }
-  }, [teammates]);
+  }, [people]);
 
-  const totalAmountToPay = useMemo(() => {
-    if (prices) {
-      return selectedRows.reduce(
-        (total, { salaryAmount, salaryToken }) =>
-          (total += prices[salaryToken] * salaryAmount),
-        0
+  useEffect(() => {
+    if (selectedTeamId && teammates) {
+      setPeople(teammates);
+    } else {
+      setPeople();
+    }
+  }, [selectedTeamId, teammates]);
+
+  useEffect(() => {
+    if (selectedToken && existingTokenDetails) {
+      setSelectedTokenDetails(
+        existingTokenDetails.filter(({ name }) => name === selectedToken)[0]
       );
     }
+  }, [selectedToken, existingTokenDetails]);
 
-    return selectedRows.reduce(
-      (total, { salaryAmount }) => (total += Number(salaryAmount)),
-      0
-    );
+  useEffect(() => {
+    if (watchedAmounts) {
+      const newSelectedRows = selectedRows.map(({ index, ...rest }) => ({
+        ...rest,
+        salaryAmount: watchedAmounts[index],
+        index,
+      }));
+      if (!isEqual(selectedRows, newSelectedRows)) {
+        setSelectedRows(newSelectedRows);
+      }
+    }
+  }, [watchedAmounts, selectedRows]);
+
+  useEffect(() => {
+    if (
+      selectedRows &&
+      selectedRows.some(({ salaryAmount }) => salaryAmount <= 0)
+    ) {
+      setAmountError(true);
+    } else {
+      setAmountError(false);
+    }
+  }, [selectedRows]);
+
+  const totalAmountToPay = useMemo(() => {
+    if (!selectedRows.length) return 0;
+    if (prices) {
+      const totalAmount = selectedRows.reduce(
+        (total, { salaryAmount, salaryToken }) => {
+          // TODO use Big.js to fix precision errors
+          if (salaryToken === "USD") {
+            total += Number(salaryAmount);
+          } else {
+            total += prices[salaryToken] * salaryAmount;
+          }
+
+          return total;
+        },
+        0
+      );
+
+      return totalAmount ? new Big(totalAmount).round(2).toNumber() : 0;
+    }
   }, [prices, selectedRows]);
 
-  useEffect(() => {
-    if (txHash) {
-      setSubmittedTx(true);
-      if (
-        encryptionKey &&
-        recievers &&
-        ownerSafeAddress &&
-        totalAmountToPay &&
-        selectedTokenDetails
-      ) {
-        const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(recievers),
-          encryptionKey
-        );
-        // const to = selectedTeammates;
-
-        dispatch(
-          addTransaction({
-            to,
-            safeAddress: ownerSafeAddress,
-            createdBy: ownerSafeAddress,
-            transactionHash: txHash,
-            tokenValue: totalAmountToPay,
-            tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
-            addresses: recievers.map(({ address }) => address),
-          })
-        );
-      }
-    } else if (txData) {
-      console.log({ txData });
-      if (
-        encryptionKey &&
-        recievers &&
-        ownerSafeAddress &&
-        totalAmountToPay &&
-        selectedTokenDetails
-      ) {
-        const to = cryptoUtils.encryptDataUsingEncryptionKey(
-          JSON.stringify(recievers),
-          encryptionKey
-        );
-        dispatch(
-          addTransaction({
-            to,
-            safeAddress: ownerSafeAddress,
-            createdBy: ownerSafeAddress,
-            txData,
-            tokenValue: totalAmountToPay,
-            tokenCurrency: selectedTokenDetails.name,
-            fiatValue: totalAmountToPay,
-            addresses: recievers.map(({ address }) => address),
-          })
-        );
-        setTxData(undefined);
-      }
+  const totalAmountInToken = useMemo(() => {
+    if (!selectedRows.length) return 0;
+    if (prices) {
+      return selectedRows.reduce((total, { salaryAmount, salaryToken }) => {
+        // TODO use Big.js to fix precision errors
+        if (salaryToken === selectedTokenDetails.name) {
+          total += Number(salaryAmount);
+        } else if (salaryToken === "USD") {
+          total += salaryAmount / prices[selectedTokenDetails.name];
+        } else {
+          total +=
+            (salaryAmount * prices[salaryToken]) /
+            prices[selectedTokenDetails.name];
+        }
+        return total;
+      }, 0);
     }
-  }, [
-    txHash,
-    encryptionKey,
-    recievers,
-    dispatch,
-    ownerSafeAddress,
-    totalAmountToPay,
-    selectedTokenDetails,
-    txData,
-    setTxData,
-  ]);
+  }, [prices, selectedRows, selectedTokenDetails]);
 
-  useEffect(() => {
-    if (balances && balances.length > 0 && prices) {
-      const seenTokens = {};
-      const allTokenDetails = balances
-        .map((bal, idx) => {
-          // erc20
-          if (bal.token && bal.tokenAddress) {
-            const balance = BigNumber.from(bal.balance)
-              .div(BigNumber.from(String(10 ** bal.token.decimals)))
-              .toString();
-            // mark as seen
-            seenTokens[bal.token.symbol] = true;
-            const tokenIcon = getDefaultIconIfPossible(bal.token.symbol);
+  const selectedCount = useMemo(() => {
+    return checked.filter(Boolean).length;
+  }, [checked]);
 
-            return {
-              id: idx,
-              name: bal.token && bal.token.symbol,
-              icon: tokenIcon ? tokenIcon : bal.token.logoUri,
-              balance,
-              usd: bal.token
-                ? balance * prices[bal.token.symbol]
-                : balance * prices["ETH"],
-            };
-          }
-          // eth
-          else if (bal.balance) {
-            seenTokens[tokens.ETH] = true;
-            return {
-              id: idx,
-              name: tokens.ETH,
-              icon: ETHIcon,
-              balance: bal.balance / 10 ** 18,
-              usd: bal.balanceUsd,
-            };
-          } else return "";
-        })
-        .filter(Boolean);
-
-      if (allTokenDetails.length < 3) {
-        const zeroBalanceTokensToShow = defaultTokenDetails.filter(
-          (token) => !seenTokens[token.name]
-        );
-        setTokenDetails([...allTokenDetails, ...zeroBalanceTokensToShow]);
-      } else {
-        setTokenDetails(allTokenDetails);
-      }
-    }
-  }, [balances, prices]);
-
-  const isNoneChecked = useMemo(() => checked.every((check) => !check), [
-    checked,
-  ]);
-
-  const getDecryptedDetails = (data) => {
-    if (!encryptionKey) return "";
-    return JSON.parse(
-      cryptoUtils.decryptDataUsingEncryptionKey(data, encryptionKey)
+  const handleMassPayout = async (receivers) => {
+    const to = cryptoUtils.encryptDataUsingEncryptionKey(
+      JSON.stringify(receivers),
+      encryptionKey,
+      organisationType
     );
+    const baseRequestBody = {
+      to,
+      safeAddress: ownerSafeAddress,
+      createdBy: account,
+      tokenValue: receivers.reduce(
+        (total, { salaryAmount }) => (total += parseFloat(salaryAmount)),
+        0
+      ),
+      tokenCurrency: selectedTokenDetails.name,
+      fiatValue: totalAmountToPay,
+      fiatCurrency: "USD",
+      addresses: receivers.map(({ address }) => address),
+      transactionMode: TRANSACTION_MODES.MASS_PAYOUT,
+    };
+    await massPayout({
+      receivers,
+      tokenDetails: selectedTokenDetails,
+      baseRequestBody,
+    });
   };
 
-  const handleMassPayout = async (selectedTeammates) => {
-    await massPayout(selectedTeammates, selectedTokenDetails.name);
+  const onSubmit = async (values) => {
+    const selectedTeammates = selectedRows.map(
+      ({ address, salaryAmount, salaryToken, ...rest }) => {
+        const amount =
+          salaryToken === "USD"
+            ? String(salaryAmount / selectedTokenDetails.usdConversionRate)
+            : salaryAmount;
+        return {
+          address,
+          salaryAmount: amount,
+          salaryToken,
+          description: values.description || "",
+          usd: selectedTokenDetails.usdConversionRate * amount,
+          ...rest,
+        };
+      }
+    );
+
+    console.log({ selectedTeammates });
+
+    await handleMassPayout(selectedTeammates);
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    // console.log({ selectedRows });
-
-    await handleMassPayout(selectedRows);
-  };
-
-  const handleCheckAll = (e) => {
-    if (checked.every((check) => check)) {
-      // deselect all
-      setChecked(new Array(checked.length).fill(false));
+  const handleCheckAll = () => {
+    if (checked.length === people.length && checked.every((check) => check)) {
+      // if all are checked, deselect all
       setIsCheckedAll(false);
       setSelectedRows([]);
+      setChecked([]);
     } else {
       // select all
-      setChecked(new Array(checked.length).fill(true));
+      setChecked(new Array(people.length).fill(true));
       setIsCheckedAll(true);
-      if (teammates && teammates.length > 0) {
-        const allRows = teammates.map(({ data }) => getDecryptedDetails(data));
+      if (people && people.length > 0) {
+        const allRows = people.map(({ data, peopleId, ...rest }, index) => ({
+          peopleId,
+          ...getDecryptedDetails(data, encryptionKey, organisationType),
+          index,
+          ...rest,
+        }));
         setSelectedRows(allRows);
       }
     }
   };
 
-  const handleChecked = (e, teammateDetails, index) => {
+  const handleChecked = (teammateDetails, index) => {
     const newChecked = [...checked];
     newChecked[index] = !checked[index];
     setChecked(newChecked);
+
+    if (
+      newChecked.length === people.length &&
+      newChecked.every((check) => check)
+    ) {
+      setIsCheckedAll(true);
+    } else {
+      setIsCheckedAll(false);
+    }
     // if checked, push the details, provided it doesn't already exist in the array
     // else remove the unselected details from the array
     if (
-      e.target.checked &&
-      !selectedRows.some((row) => row.address === teammateDetails.address)
+      newChecked[index] &&
+      !selectedRows.some((row) => row.peopleId === teammateDetails.peopleId)
     ) {
       setSelectedRows([...selectedRows, teammateDetails]);
     } else {
       setSelectedRows(
-        selectedRows.filter((row) => row.address !== teammateDetails.address)
+        selectedRows.filter((row) => row.peopleId !== teammateDetails.peopleId)
       );
     }
   };
 
-  const handleSelectDepartment = (departmentId) => {
-    if (ownerSafeAddress && departmentId) {
-      dispatch(getTeammatesByDepartment(ownerSafeAddress, departmentId));
-      setDepartmentStep(departmentStep + 1);
-      setSelectedRows([]);
-    }
-  };
-
-  const goBackToDepartments = () => {
-    setDepartmentStep(departmentStep - 1);
-  };
-
-  const getSelectedCount = () => {
-    return checked.filter(Boolean).length;
-  };
-
-  const showTokenModal = () => {
-    dispatch(
-      show(SELECT_TOKEN_MODAL, {
-        selectedTokenDetails,
-        setSelectedTokenDetails,
-      })
-    );
-  };
+  const renderNoPeopleFound = () => (
+    <TableInfo
+      style={{
+        fontSize: "1.4rem",
+        fontWeight: "500",
+        textAlign: "center",
+        height: "20rem",
+      }}
+    >
+      <td colSpan={4}>No people found!</td>
+    </TableInfo>
+  );
 
   const renderPayTable = () => {
-    if (!teammates.length)
-      return (
-        <div
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "400px" }}
-        >
-          No Teammates Found!
-        </div>
-      );
+    if (!people || !selectedToken) return;
 
     return (
       <div>
-        <TableHead>
-          <div className="form-check d-flex">
-            <input
-              className="form-check-input position-static mr-3"
-              type="checkbox"
-              id="allCheckbox"
-              checked={isCheckedAll}
-              onChange={handleCheckAll}
-            />
-            <div>Employee Name</div>
-          </div>
-          <div>Department</div>
-          {/* <div>Pay Token</div> */}
-          <div>Pay Amount</div>
-          <div>Address</div>
-          <div></div>
-        </TableHead>
-        <TableBody>
-          {teammates.length > 0 &&
-            teammates.map(({ data, departmentName }, idx) => {
-              const {
-                firstName,
-                lastName,
-                salaryAmount,
-                salaryToken,
-                address,
-              } = getDecryptedDetails(data);
-              return (
-                <TableRow key={`${address}-${idx}`}>
-                  <div className="form-check d-flex">
-                    <input
-                      className="form-check-input position-static mr-3"
-                      type="checkbox"
-                      id={`checkbox${idx}`}
-                      name={`checkbox${idx}`}
-                      checked={checked[idx] || false}
-                      onChange={(e) => {
-                        const teammateDetails = {
-                          firstName,
-                          lastName,
-                          salaryToken,
-                          salaryAmount,
-                          address,
-                        };
-                        handleChecked(e, teammateDetails, idx);
-                      }}
-                    />
-                    <div>
-                      {firstName} {lastName}
-                    </div>
-                  </div>
-                  <div>{departmentName}</div>
-                  {/* <div>{salaryToken}</div> */}
-                  <div>
-                    <img
-                      src={getDefaultIconIfPossible(salaryToken)}
-                      alt={salaryToken}
-                      width="16"
-                    />{" "}
-                    {salaryAmount} {salaryToken} (US$
-                    {prices ? prices[salaryToken] * salaryAmount : 0})
-                  </div>
-                  <div>{minifyAddress(address)}</div>
-                  <div className="text-right">
-                    {checked.filter(Boolean).length <= 1 && (
-                      <Button
-                        type="submit"
-                        iconOnly
-                        disabled={!checked[idx] || loadingTx || isNoneChecked}
-                        className="py-0"
-                      >
-                        <span className="pay-text">PAY</span>
-                      </Button>
-                    )}
-                  </div>
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </div>
-    );
-  };
+        <div className="outer-flex mt-5">
+          <div className="title">Team Details</div>
 
-  const renderDepartments = () => {
-    if (!allDepartments || !allDepartments.length) {
-      return (
-        <div
-          className="d-flex align-items-center justify-content-center"
-          style={{ height: "400px" }}
-        >
-          No Departments Found!
-        </div>
-      );
-    }
-    return (
-      <div className="department-cards">
-        {allDepartments &&
-          allDepartments.map(
-            ({ departmentId, name, payCycleDate, employees }) => (
-              <Card
-                className="department-card mb-4"
-                key={departmentId}
-                onClick={() => handleSelectDepartment(departmentId)}
-              >
-                <div className="upper">
-                  <div className="d-flex justify-content-between">
-                    <img src={TeamPng} alt={name} width="50" />
-                    <div className="circle circle-grey">
-                      <FontAwesomeIcon
-                        icon={faLongArrowAltRight}
-                        color="#7367f0"
-                      />
-                    </div>
-                  </div>
-                  <div className="mt-2">{name}</div>
-                </div>
-
-                <div className="line" />
-                <div className="lower">
-                  <div className="mb-3">Employees : {employees}</div>
-                  <div>Paydate : {numToOrd(payCycleDate)} of every month</div>
-                </div>
-              </Card>
-            )
+          {!loadingTeammates && people.length > 0 && (
+            <div className="select-all">
+              <CheckBox
+                type="checkbox"
+                id="allCheckbox"
+                checked={isCheckedAll}
+                onChange={handleCheckAll}
+                label={`Select All`}
+              />
+            </div>
           )}
+        </div>
+        <Table>
+          <TableHead>
+            <tr>
+              <th style={{ width: "30%" }}>Name</th>
+              <th style={{ width: "25%" }}>Disbursement</th>
+              <th style={{ width: "45%" }}>Address</th>
+            </tr>
+          </TableHead>
+          <TableBody style={{ maxHeight: "25rem", overflow: "auto" }}>
+            {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
+            {!loadingTeammates && !people.length && renderNoPeopleFound()}
+            {!loadingTeammates &&
+              people.length > 0 &&
+              people.map(({ peopleId, data, ...rest }, idx) => {
+                const {
+                  firstName,
+                  lastName,
+                  salaryAmount,
+                  salaryToken,
+                  address,
+                } = getDecryptedDetails(data, encryptionKey, organisationType);
+
+                const teammateDetails = {
+                  firstName,
+                  lastName,
+                  salaryToken,
+                  salaryAmount,
+                  address,
+                  peopleId,
+                  index: idx,
+                  ...rest,
+                };
+                return (
+                  <tr
+                    key={`${address}-${idx}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleChecked(teammateDetails, idx);
+                    }}
+                    style={{
+                      backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
+                    }}
+                  >
+                    <td style={{ width: "30%" }}>
+                      <div className="d-flex align-items-center">
+                        <CheckBox
+                          type="checkbox"
+                          id={`checkbox${idx}`}
+                          name={`checkbox${idx}`}
+                          checked={checked[idx] || false}
+                          onChange={() => handleChecked(teammateDetails, idx)}
+                        />
+                        <div>
+                          {firstName} {lastName}
+                        </div>
+                      </div>
+                    </td>
+                    <td style={{ width: "25%" }}>
+                      <TokenImg token={salaryToken} />
+                      <span className="mr-2">
+                        <Input
+                          type="number"
+                          name={`amounts[${idx}]`}
+                          register={register}
+                          style={{ width: "7rem" }}
+                          placeholder="0"
+                          defaultValue={salaryAmount}
+                          onClick={(e) => e.stopPropagation()}
+                          step=".0001"
+                        />
+                      </span>
+                      <span>{salaryToken}</span>
+                    </td>
+                    <td style={{ width: "45%" }}>{address}</td>
+                  </tr>
+                );
+              })}
+          </TableBody>
+        </Table>
       </div>
     );
   };
 
   const renderPaymentSummary = () => {
+    if (tokenError) return <ErrorText>{tokenError}</ErrorText>;
+
+    if (!people || !selectedToken || !selectedTokenDetails) return null;
     const insufficientBalance =
       selectedTokenDetails.usd - totalAmountToPay > 0 ? false : true;
     return (
       <PaymentSummary>
         <div className="payment-info">
           <div>
-            <div className="payment-title">Total Selected</div>
-            <div className="payment-subtitle">{getSelectedCount()} people</div>
-          </div>
-          <div>
-            <div className="payment-title">Total Amount</div>
-            <div className="payment-subtitle">US$ {totalAmountToPay}</div>
+            <div className="payment-title">Current Balance</div>
+            <div className="payment-subtitle text-bold">
+              {`${formatNumber(selectedTokenDetails.balance, 5)} ${
+                selectedTokenDetails.name
+              }`}
+            </div>
+            <div className="payment-subtitle">{`US$ ${formatNumber(
+              selectedTokenDetails.usd
+            )}`}</div>
           </div>
           <div>
             <div className="payment-title">Balance after payment</div>
+            <div className="payment-subtitle text-bold">
+              {!insufficientBalance
+                ? `${formatNumber(
+                    selectedTokenDetails.balance - totalAmountInToken
+                  )} ${selectedTokenDetails.name}`
+                : `Insufficient Balance`}
+            </div>
             <div className="payment-subtitle">
               {!insufficientBalance
-                ? `US$ ${parseFloat(
+                ? `US$ ${formatNumber(
                     selectedTokenDetails.usd - totalAmountToPay
-                  ).toFixed(2)}`
+                  )}`
                 : `Insufficient Balance`}
+            </div>
+          </div>
+          <div>
+            <div className="payment-title">Total Selected</div>
+            <div className="payment-subtitle">{selectedCount} people</div>
+          </div>
+          <div>
+            <div className="payment-title">Total Amount</div>
+            <div className="payment-subtitle text-bold">
+              {!isNaN(totalAmountInToken)
+                ? `${formatNumber(totalAmountInToken)} ${
+                    selectedTokenDetails.name
+                  }`
+                : `0`}
+            </div>
+            <div className="payment-subtitle">
+              {!isNaN(totalAmountToPay)
+                ? `US$ ${formatNumber(totalAmountToPay)}`
+                : `0`}
             </div>
           </div>
         </div>
 
-        <div className="pay-button">
+        <div>
           <Button
             type="submit"
-            large
+            width="20rem"
             loading={loadingTx || addingTx}
-            disabled={loadingTx || insufficientBalance || addingTx}
+            disabled={
+              loadingTx ||
+              insufficientBalance ||
+              addingTx ||
+              loadingSafeDetails ||
+              loadingTokens ||
+              !selectedCount ||
+              amountError ||
+              isReadOnly
+            }
           >
-            Pay Now
+            {threshold > 1 ? `Create Transaction` : `Pay Now`}
           </Button>
         </div>
       </PaymentSummary>
     );
   };
 
-  return !metaTxHash && !submittedTx ? (
-    <div
-      style={{
-        transition: "all 0.25s linear",
-      }}
-    >
+  return (
+    <MassPayoutContainer>
       <div>
-        <Info>
-          <div
-            style={{
-              maxWidth: "1200px",
-              transition: "all 0.25s linear",
-            }}
-            className="mx-auto"
-          >
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <div className="title">Payments</div>
-                <div className="subtitle">
-                  You can instantly pay or manage team payrolls
-                </div>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="outer-flex">
+            <div className="inner-flex">
+              <div className="mr-3">
+                <div className="title">Paying To</div>
+                <Select
+                  name="team"
+                  control={control}
+                  required={`Team is required`}
+                  width="18rem"
+                  options={teamsDropdown}
+                  isLoading={loadingTeams}
+                  placeholder={`Select Team...`}
+                  defaultValue={null}
+                />
               </div>
-              {!selectedTokenDetails && (
-                <TokenBalance>
-                  <div className="d-flex align-items-center justify-content-center">
-                    <Loading color="primary" width="50px" height="50px" />
-                  </div>
-                </TokenBalance>
+              {selectedTeamId && (
+                <div className="mr-4">
+                  <div className="title">Paying From</div>
+                  <SelectToken
+                    name="token"
+                    control={control}
+                    required={`Token is required`}
+                    width="18rem"
+                    options={tokensDropdown}
+                    isSearchable
+                    isLoading={loadingTeams}
+                    placeholder={`Select Currency...`}
+                    isDisabled={!isSelectedTokenUSD}
+                    defaultValue={null}
+                  />
+                </div>
               )}
-              {selectedTokenDetails && (
-                <TokenBalance onClick={showTokenModal}>
-                  <div className="token-icon">
-                    <img
-                      src={selectedTokenDetails.icon}
-                      alt="token"
-                      width="45"
-                    />
-                  </div>
-                  <div className="balance-info">
-                    <div className="balance-text">
-                      Paying from {selectedTokenDetails.name}
-                    </div>
-                    <div className="balance-value">
-                      {parseFloat(selectedTokenDetails.balance).toFixed(2)}{" "}
-                      {selectedTokenDetails.name} (US$
-                      {parseFloat(selectedTokenDetails.usd).toFixed(2)})
-                    </div>
-                  </div>
-                  <div className="separator"></div>
-                  <div className="change-text">CHANGE</div>
-                </TokenBalance>
-              )}
-              <SelectTokenModal />
+            </div>
+            <div>
+              <div className="title">Description</div>
+              <Input
+                type="text"
+                name="description"
+                style={{ width: "30rem" }}
+                register={register}
+                placeholder="Enter description"
+              />
             </div>
           </div>
-        </Info>
-        <Container
-          style={{
-            maxWidth: "1200px",
-            transition: "all 0.25s linear",
-          }}
-        >
-          <form onSubmit={onSubmit}>
-            <style>{navStyles}</style>
-            <Card style={{ minHeight: "532px" }} className="pt-3">
-              <Nav tabs>
-                <NavItem className="px-3">
-                  <NavLink
-                    className={`${activeTab === TABS.PEOPLE ? "active" : ""}`}
-                    onClick={() => toggle(TABS.PEOPLE)}
-                  >
-                    People
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={`${
-                      activeTab === TABS.DEPARTMENT ? "active" : ""
-                    }`}
-                    onClick={() => toggle(TABS.DEPARTMENT)}
-                  >
-                    Department
-                  </NavLink>
-                </NavItem>
-              </Nav>
-              <TabContent activeTab={activeTab}>
-                <TabPane tabId={TABS.PEOPLE}>
-                  {loadingTeammates && (
-                    <div
-                      className="d-flex align-items-center justify-content-center"
-                      style={{ height: "400px" }}
-                    >
-                      <Loading color="primary" width="50px" height="50px" />
-                    </div>
-                  )}
-                  {!loadingTeammates && teammates && renderPayTable()}
-                </TabPane>
-                <TabPane tabId={TABS.DEPARTMENT}>
-                  {(loadingDepartments || loadingTeammates) && (
-                    <div
-                      className="d-flex align-items-center justify-content-center"
-                      style={{ height: "400px" }}
-                    >
-                      <Loading color="primary" width="50px" height="50px" />
-                    </div>
-                  )}
 
-                  {!loadingTeammates &&
-                    !loadingDepartments &&
-                    (departmentStep === 0 ? (
-                      renderDepartments()
-                    ) : (
-                      <div>
-                        <Button iconOnly onClick={goBackToDepartments}>
-                          <div className="circle">
-                            <FontAwesomeIcon
-                              icon={faLongArrowAltLeft}
-                              color="#fff"
-                            />
-                          </div>
-                        </Button>
-                        {teammates && renderPayTable()}
-                      </div>
-                    ))}
-                </TabPane>
-              </TabContent>
+          {renderPayTable()}
 
-              {!isNoneChecked && renderPaymentSummary()}
-            </Card>
-          </form>
-          {!loadingTx && errorFromMetaTx && (
-            <div className="text-danger mt-3">{errorFromMetaTx}</div>
-          )}
-        </Container>
+          <div>
+            {!loadingTx && errorFromMetaTx && (
+              <ErrorText>{errorFromMetaTx}</ErrorText>
+            )}
+            {amountError && (
+              <ErrorText>Please check if the amounts are correct</ErrorText>
+            )}
+          </div>
+          {renderPaymentSummary()}
+        </form>
       </div>
-    </div>
-  ) : (
-    <TransactionSubmitted
-      txHash={txHash ? txHash : metaTxHash}
-      selectedCount={getSelectedCount()}
-    />
+    </MassPayoutContainer>
   );
 }

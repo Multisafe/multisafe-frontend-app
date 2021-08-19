@@ -22,10 +22,14 @@ const makeSelectTransactionHash = () =>
 const makeSelectLog = () =>
   createSelector(selectRegister, (registerState) => registerState.log);
 
+const makeSelectRegistering = () =>
+  createSelector(selectRegister, (registerState) => registerState.registering);
+
 export {
   selectRegister,
   makeSelectLoading,
   makeSelectError,
   makeSelectTransactionHash,
   makeSelectLog,
+  makeSelectRegistering,
 };

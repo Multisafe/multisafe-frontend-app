@@ -12,10 +12,9 @@ import request from "utils/request";
 // import { makeSelectUsername } from "containers/HomePage/selectors";
 import { registerEndpoint, createMetaTxEndpoint } from "constants/endpoints";
 import { networkId } from "constants/networks";
+import { routeGenerators } from "constants/routes/generators";
 
 export function* registerUser(action) {
-  // Select username from store
-  // const username = yield select(makeSelectUsername());
   const requestURL = registerEndpoint;
   const options = {
     method: "POST",
@@ -35,10 +34,17 @@ export function* registerUser(action) {
       // set auth token
       localStorage.setItem("token", result.access_token);
       yield put(registerUserSuccess(result.transactionHash, result.log));
-      if (action.redirect) yield put(push("/dashboard"));
+      if (action.redirect)
+        yield put(
+          push(
+            routeGenerators.dashboard.root({
+              safeAddress: action.body.safeAddress,
+            })
+          )
+        );
     }
   } catch (err) {
-    yield put(registerUserError(err));
+    yield put(registerUserError(err.message));
   }
 }
 
@@ -61,7 +67,7 @@ export function* createMetaTx(action) {
       yield put(createMetaTxSuccess(result.transactionHash, result.log));
     }
   } catch (err) {
-    yield put(createMetaTxError(err));
+    yield put(createMetaTxError(err.message));
   }
 }
 

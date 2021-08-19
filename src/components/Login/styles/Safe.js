@@ -1,14 +1,14 @@
 import styled from "styled-components";
 
 export default styled.div`
-  min-width: 532px;
-  min-height: 157px;
-  border-radius: 16px;
-  border: solid 0.5px #aaaaaa;
+  width: 100%;
+  min-height: 15rem;
+  border-radius: 1.6rem;
+  border: solid 0.05rem #aaaaaa;
   background-color: #ffffff;
   position: relative;
   color: #363537;
-  margin: 32px 0;
+  margin: 3.2rem 0;
   cursor: pointer;
 
   .select-safe {
@@ -16,42 +16,46 @@ export default styled.div`
   }
 
   .top {
-    border-bottom: solid 0.5px #aaaaaa;
-    padding: 20px 35px;
+    border-bottom: solid 0.05rem #aaaaaa;
+    padding: 2rem 3.5rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
   }
 
   .bottom {
-    padding: 20px 35px;
+    padding: 2rem 3.5rem;
     display: flex;
     justify-content: flex-start;
   }
 
   .details {
-    min-width: 250px;
+    width: 100%;
     display: flex;
     align-items: center;
   }
 
   .info {
-    margin-left: 1em;
+    margin-left: 1rem;
+    width: 100%;
 
     .desc {
-      font-size: 14px;
+      font-size: 1.4rem;
       font-weight: 500;
       color: #aaaaaa;
       text-transform: uppercase;
     }
 
     .val {
-      font-size: 16px;
+      font-size: 1.6rem;
       font-weight: bold;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.2;
       color: #373737;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
@@ -62,10 +66,10 @@ export default styled.div`
       position: absolute;
       right: 0;
       top: 0;
-      width: 56px;
+      width: 5.6rem;
       height: 100%;
       background-color: ${({ theme }) => theme.primary};
-      border-radius: 0 16px 16px 0;
+      border-radius: 0 1.5rem 1.5rem 0;
       display: flex;
       justify-content: center;
       align-items: center;
