@@ -1,4 +1,4 @@
-# Parcel Frontend
+#  Frontend
 
 [![Lint](https://github.com/Uniswap/uniswap-interface/workflows/Lint/badge.svg)](https://github.com/ParcelHQ/parcel-frontend-app)
 [![Tests](https://github.com/Uniswap/uniswap-interface/workflows/Tests/badge.svg)](https://github.com/ParcelHQ/parcel-frontend-app)
