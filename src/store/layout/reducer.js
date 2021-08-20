@@ -3,11 +3,13 @@ import {
   TOGGLE_NOTIFICATION,
   TOGGLE_PEOPLE_DETAILS,
   SET_PEOPLE_DETAILS,
+  TOGGLE_SWITCH_ACCOUNT,
 } from "./action-types";
 
 export const initialState = {
   isNotificationOpen: false,
   isPeopleDetailsOpen: false,
+  isSwitchAccountOpen: false,
   peopleDetails: null,
 };
 
@@ -17,6 +19,9 @@ const reducer = (state = initialState, action) =>
     switch (action.type) {
       case TOGGLE_NOTIFICATION:
         draft.isNotificationOpen = action.show;
+        break;
+      case TOGGLE_SWITCH_ACCOUNT:
+        draft.isSwitchAccountOpen = action.show;
         break;
       case TOGGLE_PEOPLE_DETAILS:
         draft.isPeopleDetailsOpen = action.show;

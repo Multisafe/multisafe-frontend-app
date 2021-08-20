@@ -8,6 +8,7 @@ import { useInjectSaga } from "utils/injectSaga";
 import layoutReducer from "store/layout/reducer";
 import NotificationSidebar from "./NotificationSidebar";
 import PeopleDetailsSidebar from "components/People/PeopleDetailsSidebar";
+import SwitchAccountSidebar from "./SwitchAccountSidebar";
 import { getTokenList, getTokens } from "store/tokens/actions";
 import tokensReducer from "store/tokens/reducer";
 import tokensSaga from "store/tokens/saga";
@@ -54,6 +55,7 @@ export default function DashboardLayout({ children }) {
       </LayoutContainer>
       <NotificationSidebar />
       <PeopleDetailsSidebar />
+      <SwitchAccountSidebar />
     </React.Fragment>
   );
 }

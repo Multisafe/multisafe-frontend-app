@@ -6,6 +6,12 @@ const selectLayout = (state) => state.layout || initialState;
 const makeSelectIsNotificationOpen = () =>
   createSelector(selectLayout, (layoutState) => layoutState.isNotificationOpen);
 
+const makeSelectIsSwitchAccountOpen = () =>
+  createSelector(
+    selectLayout,
+    (layoutState) => layoutState.isSwitchAccountOpen
+  );
+
 const makeSelectIsPeopleDetailsOpen = () =>
   createSelector(
     selectLayout,
@@ -19,5 +25,6 @@ export {
   selectLayout,
   makeSelectIsNotificationOpen,
   makeSelectIsPeopleDetailsOpen,
+  makeSelectIsSwitchAccountOpen,
   makeSelectPeopleDetails,
 };

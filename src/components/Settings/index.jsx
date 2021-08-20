@@ -87,7 +87,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (account) {
-      dispatch(getSafeInfo(params.safeAddress, account));
+      dispatch(getSafeInfo(params.safeAddress, account, 0));
     }
   }, [dispatch, account, params.safeAddress]);
 

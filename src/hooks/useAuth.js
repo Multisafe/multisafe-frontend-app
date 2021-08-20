@@ -42,7 +42,6 @@ export default function useAuth() {
 
           if (ready) {
             setWalletState(WALLET_STATES.CONNECTED);
-            return console.log("account ready");
           } else {
             return setWalletState(WALLET_STATES.NOT_CONNECTED);
           }
@@ -62,12 +61,12 @@ export default function useAuth() {
     if (onboard) {
       onboard.walletReset();
     }
-    console.log("Logout...");
+    console.log("Unauthorized. Logging out...");
     dispatch(logoutUser());
   }, [onboard, dispatch]);
 
   const doReadOnlyChecks = useCallback(() => {
-    // if checks pass, RO,
+    // if checks pass, Read only. Else, logout
     if (safeInfoSuccess) {
       if (dataSharingAllowed) {
         setIsAuthenticated(false);
@@ -85,7 +84,6 @@ export default function useAuth() {
       // TODO: check account inside access token as well
 
       if (isValidSignature) {
-        console.log("authenticated...");
         // authenticated
         setIsAuthenticated(true);
         dispatch(setReadOnly(false));
