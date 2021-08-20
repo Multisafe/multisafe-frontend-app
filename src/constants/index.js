@@ -82,3 +82,9 @@ export const defaultTokenDetails = [
     usdConversionRate: 1,
   },
 ];
+
+export const WALLET_STATES = {
+  UNDETECTED: "UNDETECTED",
+  CONNECTED: "CONNECTED",
+  NOT_CONNECTED: "NOT_CONNECTED",
+};

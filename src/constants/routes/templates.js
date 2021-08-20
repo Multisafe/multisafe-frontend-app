@@ -5,6 +5,7 @@ export const routeTemplates = {
   acceptInvite: "/accept-invite",
   delegateTransfer: "/delegate-transfer",
   adminStats: "/admin/stats",
+  verifyUser: "/verify-user/:safeAddress",
 
   dashboard: {
     root: "/dashboard/:safeAddress",

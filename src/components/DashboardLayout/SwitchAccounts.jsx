@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { cryptoUtils } from "parcel-sdk";
-import { useHistory } from "react-router-dom";
 
 import { useActiveWeb3React, useLocalStorage, useEncryptionKey } from "hooks";
 import { useInjectReducer } from "utils/injectReducer";
@@ -15,14 +14,8 @@ import {
   makeSelectSafes,
 } from "store/loginWizard/selectors";
 import { getParcelSafes } from "store/loginWizard/actions";
-import {
-  setOwnerDetails,
-  setOwnersAndThreshold,
-  setOrganisationType,
-  getSafeInfo,
-} from "store/global/actions";
 import Loading from "components/common/Loading";
-import { routeGenerators } from "constants/routes/generators";
+import { loginUser } from "store/login/actions";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -42,7 +35,6 @@ export default function SwitchAccounts() {
   useInjectSaga({ key: loginWizardKey, saga: loginWizardSaga });
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const safes = useSelector(makeSelectSafes());
   const loadingSafes = useSelector(makeSelectLoading());
@@ -82,8 +74,8 @@ export default function SwitchAccounts() {
       sign,
       organisationType
     );
-    setEncryptionKey(encryptionKey, safeAddress);
-    history.push(routeGenerators.dashboard.root({ safeAddress }));
+    setEncryptionKey(encryptionKey);
+    dispatch(loginUser(safeAddress, encryptionKeyData));
   };
 
   const renderSafes = () => {

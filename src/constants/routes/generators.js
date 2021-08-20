@@ -11,6 +11,8 @@ export function generatePath(template, params = {}) {
 }
 
 export const routeGenerators = {
+  verifyUser: ({ safeAddress }) =>
+    generatePath(routeTemplates.verifyUser, { safeAddress }),
   dashboard: {
     root: ({ safeAddress }) =>
       generatePath(routeTemplates.dashboard.root, { safeAddress }),

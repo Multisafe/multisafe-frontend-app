@@ -25,7 +25,6 @@ export default function createReducer(injectedReducers = {}) {
 
   const rootReducer = (state, action) => {
     if (action.type === LOGOUT_USER) {
-      console.log("logging out..");
       return appReducer(undefined, action);
     }
 

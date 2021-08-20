@@ -419,7 +419,7 @@ const Register = () => {
           const publicKey = getPublicKey(sign);
           // set encryptionKey
           const encryptionKey = cryptoUtils.getEncryptionKey(sign, proxy);
-          setEncryptionKey(encryptionKey, proxy);
+          setEncryptionKey(encryptionKey);
           let encryptionKeyData;
           try {
             encryptionKeyData = await cryptoUtils.encryptUsingSignatures(
@@ -482,7 +482,7 @@ const Register = () => {
     const organisationType = parseInt(formData.organisationType);
 
     // set encryptionKey
-    setEncryptionKey(encryptionKey, safeAddress);
+    setEncryptionKey(encryptionKey);
     const encryptedOwners =
       formData.owners && formData.owners.length
         ? formData.owners.map(({ name, owner }) => ({

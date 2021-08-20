@@ -314,7 +314,7 @@ const Login = () => {
         chosenSafeAddress
       );
       // set encryptionKey
-      setEncryptionKey(encryptionKey, chosenSafeAddress);
+      setEncryptionKey(encryptionKey);
 
       const organisationType = parseInt(formData.organisationType);
 
@@ -752,10 +752,10 @@ const Login = () => {
         sign,
         organisationType
       );
-      setEncryptionKey(encryptionKey, safe);
+      setEncryptionKey(encryptionKey);
     }
 
-    dispatch(loginUser(safe));
+    dispatch(loginUser(safe, encryptionKeyData));
   };
 
   const handleImportSelectedSafe = async (safe) => {

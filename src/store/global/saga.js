@@ -7,11 +7,16 @@ import request from "utils/request";
 import { getSafeInfoEndpoint } from "constants/endpoints";
 import { logoutUser } from "store/logout/actions";
 
-function* fetchSafeInfo(action) {
-  if (!isAddress(action.safeAddress)) yield put(logoutUser());
+function* fetchSafeInfo({ safeAddress, ownerAddress, isCached }) {
+  if (!isAddress(safeAddress)) yield put(logoutUser());
 
-  const requestURL = `${getSafeInfoEndpoint}?safeAddress=${action.safeAddress}&ownerAddress=${action.ownerAddress}`;
-
+  const requestURL = new URL(`${getSafeInfoEndpoint}`);
+  const params = [
+    ["safeAddress", safeAddress],
+    ["ownerAddress", ownerAddress],
+    ["isCached", isCached],
+  ];
+  requestURL.search = new URLSearchParams(params).toString();
   const options = {
     method: "GET",
   };

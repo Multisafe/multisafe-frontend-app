@@ -13,6 +13,7 @@ import DashboardPage from "./Dashboard/loadable";
 import AcceptInvitePage from "./AcceptInvite/loadable";
 import DelegateTransfer from "./DelegateTransfer/loadable";
 import AdminStatsPage from "./AdminStats";
+import VerifyUserPage from "./VerifyUser";
 import NotFoundPage from "./NotFound/loadable";
 import { routeTemplates } from "constants/routes/templates";
 
@@ -39,6 +40,7 @@ export default function App() {
             component={DelegateTransfer}
           />
           <Route path={routeTemplates.adminStats} component={AdminStatsPage} />
+          <Route path={routeTemplates.verifyUser} component={VerifyUserPage} />
           <Route component={NotFoundPage} />
         </Switch>
         <GlobalStyle />

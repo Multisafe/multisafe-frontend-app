@@ -39,14 +39,14 @@ export default function Web3ReactProvider({ children }) {
     setOnboard(onboard);
   }, []);
 
-  useEffect(() => {
-    const previouslySelectedWallet =
-      window.localStorage.getItem("selectedWallet");
+  // useEffect(() => {
+  //   const previouslySelectedWallet =
+  //     window.localStorage.getItem("selectedWallet");
 
-    if (previouslySelectedWallet && onboard) {
-      onboard.walletSelect(previouslySelectedWallet);
-    }
-  }, [onboard]);
+  //   if (previouslySelectedWallet && onboard) {
+  //     onboard.walletSelect(previouslySelectedWallet);
+  //   }
+  // }, [onboard]);
 
   return (
     <Web3ReactContext.Provider

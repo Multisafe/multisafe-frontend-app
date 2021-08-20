@@ -8,7 +8,7 @@ import Transactions from "components/Transactions/loadable";
 import Assets from "components/Assets/loadable";
 import TransactionDetails from "components/TransactionDetails/loadable";
 import Settings from "components/Settings/loadable";
-import Authenticated from "components/hoc/Authenticated";
+import Authenticated from "components/Authenticated";
 import NotFoundPage from "pages/NotFound/loadable";
 import {
   makeSelectIsMultiOwner,
