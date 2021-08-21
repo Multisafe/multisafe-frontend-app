@@ -189,7 +189,7 @@ function SwitchAccountSidebar() {
       </div>
       <div className="search-safes">
         <Img src={SearchIcon} alt="search safes" />
-        <div>
+        <div className="w-100">
           <ControlledInput
             type="text"
             className="safe-input"
