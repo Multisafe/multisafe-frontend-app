@@ -18,11 +18,16 @@ import loginWizardReducer from "store/loginWizard/reducer";
 import loginReducer from "store/login/reducer";
 import logoutSaga from "store/logout/saga";
 import { loginUser } from "store/login/actions";
+import { makeSelectLoading as makeSelectLoggingIn } from "store/login/selectors";
 import {
   makeSelectLoading,
   makeSelectSafes,
 } from "store/loginWizard/selectors";
 import LoadingIndicator from "components/common/Loading/PageLoader";
+import Img from "components/common/Img";
+import MultisafeLogo from "assets/images/multisafe-logo.svg";
+
+import { Background, InnerCard } from "components/Login/styles";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -49,6 +54,7 @@ const VerifyUser = () => {
 
   const loading = useSelector(makeSelectLoading());
   const safes = useSelector(makeSelectSafes());
+  const loggingIn = useSelector(makeSelectLoggingIn());
 
   useEffect(() => {
     if (account) dispatch(getParcelSafes(account));
@@ -107,6 +113,8 @@ const VerifyUser = () => {
         console.error(error);
         setSigning(false);
       }
+    } else {
+      dispatch(logoutUser());
     }
   };
 
@@ -115,11 +123,34 @@ const VerifyUser = () => {
   }
 
   return (
-    <div className="m-5">
-      <Button onClick={signTerms} disabled={signing} loading={signing}>
-        Sign and Login
-      </Button>
-    </div>
+    <Background>
+      <div>
+        <Img
+          src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+          alt="welcome"
+          width="70%"
+          className="d-block mx-auto py-4"
+        />
+        <InnerCard>
+          <h2 className="text-center mb-4">
+            <Img src={MultisafeLogo} alt="multisafe" width="80" />
+          </h2>
+          <div className="mt-2 title">
+            Please sign to verify your account and proceed.
+          </div>
+
+          <Button
+            type="button"
+            className="mx-auto d-block mt-3"
+            onClick={signTerms}
+            loading={signing || loggingIn}
+            disabled={signing || loggingIn}
+          >
+            Sign and Proceed
+          </Button>
+        </InnerCard>
+      </div>
+    </Background>
   );
 };
 

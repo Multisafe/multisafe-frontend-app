@@ -82,7 +82,7 @@ function SwitchAccountSidebar() {
   }, [dispatch, account]);
 
   useEffect(() => {
-    if (safes) setSafesToShow(safes);
+    if (safes && safes.length) setSafesToShow(safes);
   }, [safes]);
 
   const getEncryptionKey = async (data, sign, organisationType) => {

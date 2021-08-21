@@ -156,12 +156,17 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               </div>
               <div className="name">Settings</div>
             </Link>
-            <div className="settings-option" onClick={openSwitchAccountSidebar}>
-              <div className="icon">
-                <Img src={SwapAccountIcon} alt="switch-account" />
+            {!isReadOnly && (
+              <div
+                className="settings-option"
+                onClick={openSwitchAccountSidebar}
+              >
+                <div className="icon">
+                  <Img src={SwapAccountIcon} alt="switch-account" />
+                </div>
+                <div className="name">Switch Account</div>
               </div>
-              <div className="name">Switch Account</div>
-            </div>
+            )}
             {!isReadOnly && (
               <div className="settings-option" onClick={logout}>
                 <div className="icon">
