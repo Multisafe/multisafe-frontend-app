@@ -1,8 +1,8 @@
-// TODO: When user switches between connected accounts in MetaMask for ex,
-// show "Sign and Login". If that addr is an owner, login else logout
+// When user switches between connected accounts in MetaMask for ex,
+// show "Sign and Login". If that address is an owner, login else logout
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { cryptoUtils } from "parcel-sdk";
 
 import Button from "components/common/Button";
@@ -28,6 +28,12 @@ import Img from "components/common/Img";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
 
 import { Background, InnerCard } from "components/Login/styles";
+import { setReadOnly } from "store/global/actions";
+import {
+  makeSelectIsDataSharingAllowed,
+  makeSelectSafeInfoSuccess,
+} from "store/global/selectors";
+import { routeGenerators } from "constants/routes/generators";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -42,6 +48,7 @@ const VerifyUser = () => {
 
   const dispatch = useDispatch();
   const params = useParams();
+  const history = useHistory();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -55,6 +62,8 @@ const VerifyUser = () => {
   const loading = useSelector(makeSelectLoading());
   const safes = useSelector(makeSelectSafes());
   const loggingIn = useSelector(makeSelectLoggingIn());
+  const safeInfoSuccess = useSelector(makeSelectSafeInfoSuccess());
+  const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
 
   useEffect(() => {
     if (account) dispatch(getParcelSafes(account));
@@ -93,7 +102,20 @@ const VerifyUser = () => {
             ({ safeAddress }) => safeAddress === params.safeAddress
           );
 
-          if (!safe) dispatch(logoutUser());
+          if (!safe && safeInfoSuccess) {
+            if (dataSharingAllowed) {
+              dispatch(setReadOnly(true));
+              setSigning(false);
+              history.push(
+                routeGenerators.dashboard.root({
+                  safeAddress: params.safeAddress,
+                })
+              );
+            } else {
+              dispatch(setReadOnly(false));
+              dispatch(logoutUser());
+            }
+          }
 
           try {
             const encryptionKey = await getEncryptionKey(

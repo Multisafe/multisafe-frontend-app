@@ -6,13 +6,14 @@ import { useLocalStorage } from "./index";
 import { setReadOnly } from "store/global/actions";
 import {
   makeSelectIsDataSharingAllowed,
+  makeSelectIsOwner,
   makeSelectOwnerSafeAddress,
   makeSelectSafeInfoSuccess,
 } from "store/global/selectors";
 import { logoutUser } from "store/logout/actions";
 import useActiveWeb3React from "./useActiveWeb3React";
 import { WALLET_STATES } from "constants/index";
-import { checkValidSignature } from "utils/checkAuth";
+import { checkValidSignature, checkValidAccessToken } from "utils/checkAuth";
 import { routeGenerators } from "constants/routes/generators";
 
 export default function useAuth() {
@@ -23,6 +24,7 @@ export default function useAuth() {
   const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
   const safeInfoSuccess = useSelector(makeSelectSafeInfoSuccess());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const isOwner = useSelector(makeSelectIsOwner());
 
   const { onboard, account } = useActiveWeb3React();
 
@@ -67,36 +69,44 @@ export default function useAuth() {
 
   const doReadOnlyChecks = useCallback(() => {
     // if checks pass, Read only. Else, logout
-    if (safeInfoSuccess) {
-      if (dataSharingAllowed) {
-        setIsAuthenticated(false);
-        dispatch(setReadOnly(true));
-      } else {
-        resetAndLogout();
-      }
+    if (dataSharingAllowed) {
+      setIsAuthenticated(false);
+      dispatch(setReadOnly(true));
+    } else {
+      resetAndLogout();
     }
-  }, [dataSharingAllowed, dispatch, safeInfoSuccess, resetAndLogout]);
+  }, [dataSharingAllowed, dispatch, resetAndLogout]);
 
   useEffect(() => {
-    if (walletState === WALLET_STATES.CONNECTED && account) {
-      const isValidSignature = checkValidSignature(sign, account);
-      // const isValidAccessToken = checkValidAccessToken(safeAddress);
-      // TODO: check account inside access token as well
+    if (safeInfoSuccess) {
+      if (walletState === WALLET_STATES.CONNECTED && account) {
+        const isValidSignature = checkValidSignature(sign, account);
+        const isValidAccessToken = checkValidAccessToken(safeAddress);
+        // TODO: check account inside access token as well
 
-      if (isValidSignature) {
-        // authenticated
-        setIsAuthenticated(true);
-        dispatch(setReadOnly(false));
-      } else {
-        // Please sign & login to view the dashboard
-        history.push(routeGenerators.verifyUser({ safeAddress }));
-
-        // resetAndLogout();
-        setIsAuthenticated(false);
-        dispatch(setReadOnly(true));
+        if (isValidSignature && isValidAccessToken) {
+          if (isOwner) {
+            // authenticated
+            setIsAuthenticated(true);
+            dispatch(setReadOnly(false));
+          } else {
+            // TODO: isOwner should be deduced from the access token
+            // i.e. connected account === accessToken account
+            // for now, show read only until isOwner returns true from BE
+            setIsAuthenticated(false);
+            dispatch(setReadOnly(true));
+          }
+        } else {
+          setIsAuthenticated(false);
+          dispatch(setReadOnly(true));
+          if (!dataSharingAllowed) {
+            // Please sign to verify and login to the dashboard
+            history.push(routeGenerators.verifyUser({ safeAddress }));
+          }
+        }
+      } else if (walletState === WALLET_STATES.NOT_CONNECTED) {
+        doReadOnlyChecks();
       }
-    } else if (walletState === WALLET_STATES.NOT_CONNECTED) {
-      doReadOnlyChecks();
     }
   }, [
     dispatch,
@@ -106,7 +116,9 @@ export default function useAuth() {
     walletState,
     safeAddress,
     doReadOnlyChecks,
-    resetAndLogout,
+    safeInfoSuccess,
+    dataSharingAllowed,
+    isOwner,
   ]);
 
   return { isAuthenticated, walletState };
