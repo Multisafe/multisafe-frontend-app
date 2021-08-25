@@ -7,7 +7,7 @@ import { toUtf8Bytes } from "@ethersproject/strings";
 import { keccak256 } from "@ethersproject/keccak256";
 import { recoverAddress } from "@ethersproject/transactions";
 import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 import { show } from "redux-modal";
 
 import { useActiveWeb3React, useEncryptionKey, useLocalStorage } from "hooks";

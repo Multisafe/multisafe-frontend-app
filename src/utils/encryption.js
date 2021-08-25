@@ -1,4 +1,4 @@
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 import { ORGANISATION_TYPE } from "store/login/resources";
 
 export const getPublicKey = (sign) => {

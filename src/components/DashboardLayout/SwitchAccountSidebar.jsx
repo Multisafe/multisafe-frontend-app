@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectSaga } from "utils/injectSaga";

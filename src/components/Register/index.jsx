@@ -4,8 +4,7 @@ import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { show } from "redux-modal";
-import { toUtf8Bytes } from "@ethersproject/strings";
-import { keccak256 } from "@ethersproject/keccak256";
+import { cryptoUtils } from "coinshift-sdk";
 
 import {
   useActiveWeb3React,
@@ -49,8 +48,11 @@ import {
 } from "store/register/selectors";
 import { useInjectSaga } from "utils/injectSaga";
 import { registerUser, createMetaTx } from "store/register/actions";
-import { cryptoUtils } from "parcel-sdk";
-import { MESSAGE_TO_SIGN, DEFAULT_GAS_PRICE } from "constants/index";
+import {
+  MESSAGE_TO_SIGN,
+  DEFAULT_GAS_PRICE,
+  MESSAGE_TO_AUTHENTICATE,
+} from "constants/index";
 import Loading from "components/common/Loading";
 import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
@@ -139,8 +141,11 @@ const Register = () => {
   const [signing, setSigning] = useState(false);
   const [txHashWithoutReferral, setTxHashWithoutReferral] = useState();
   const [confirming, setConfirming] = useState(false);
+  const [authenticating, setAuthenticating] = useState(false);
+  const [password, setPassword] = useState();
+  const [authSign, setAuthSign] = useState();
 
-  const { active, account, library, connector } = useActiveWeb3React();
+  const { active, account, library } = useActiveWeb3React();
   // Reducers
   useInjectReducer({ key: registerWizardKey, reducer: registerWizardReducer });
   useInjectReducer({ key: registerKey, reducer: registerReducer });
@@ -262,37 +267,42 @@ const Register = () => {
     if (!!library && !!account) {
       setSigning(true);
       try {
-        if (connector.name === "WalletConnect") {
-          const rawMessage = MESSAGE_TO_SIGN;
-          const messageLength = new Blob([rawMessage]).size;
-          const message = toUtf8Bytes(
-            "\x19Ethereum Signed Message:\n" + messageLength + rawMessage
-          );
-          const hashedMessage = keccak256(message);
-
-          connector.provider.wc
-            .signMessage([account.toLowerCase(), hashedMessage])
-            .then((signature) => {
-              setSign(signature);
-              setSigning(false);
-              dispatch(chooseStep(step + 1));
-            })
-            .catch((error) => {
-              setSigning(false);
-              console.error("Signature Rejected");
-            });
-        } else {
-          await library
-            .getSigner(account)
-            .signMessage(MESSAGE_TO_SIGN)
-            .then(async (signature) => {
-              setSign(signature);
-              setSigning(false);
-              dispatch(chooseStep(step + 1));
-            });
-        }
+        await library
+          .getSigner(account)
+          .signMessage(MESSAGE_TO_SIGN)
+          .then((signature) => {
+            setSign(signature);
+            setSigning(false);
+            dispatch(chooseStep(step + 1));
+          });
       } catch (error) {
         setSigning(false);
+        console.error("Signature Failed");
+      }
+    }
+  };
+
+  const signAndAuthenticate = async () => {
+    if (!!library && !!account && sign) {
+      setAuthenticating(true);
+
+      try {
+        const password = cryptoUtils.getPasswordUsingSignatures(
+          MESSAGE_TO_AUTHENTICATE,
+          sign
+        );
+        await library
+          .getSigner(account)
+          .signMessage(password)
+          .then((signature) => {
+            console.log({ signature });
+            setPassword(password);
+            setAuthSign(signature);
+            setAuthenticating(false);
+            dispatch(chooseStep(step + 1));
+          });
+      } catch (error) {
+        setAuthenticating(false);
         console.error("Signature Failed");
       }
     }
@@ -467,6 +477,8 @@ const Register = () => {
             publicKey,
             threshold,
             organisationType,
+            password: password,
+            signature: authSign,
           };
           dispatch(registerUser(body));
           dispatch(setOwnerDetails(formData.name, proxy, account));
@@ -534,6 +546,8 @@ const Register = () => {
       publicKey,
       threshold,
       organisationType,
+      password: password,
+      signature: authSign,
     };
     dispatch(setOwnerDetails(formData.name, safeAddress, account));
     dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
@@ -948,6 +962,34 @@ const Register = () => {
     }
   };
 
+  const renderAuthenticate = () => {
+    return (
+      <StepDetails>
+        <Img
+          src={PrivacySvg}
+          alt="privacy"
+          className="my-4"
+          width="100"
+          style={{ minWidth: "10rem" }}
+        />
+        <h3 className="title">One-time Verification</h3>
+        <p className="subtitle">
+          Please sign to authenticate your connected account.
+        </p>
+
+        <Button
+          type="button"
+          onClick={signAndAuthenticate}
+          className="proceed-btn"
+          disabled={authenticating}
+          loading={authenticating}
+        >
+          Sign and Authenticate
+        </Button>
+      </StepDetails>
+    );
+  };
+
   const renderReview = () => {
     return loadingTx ? (
       <LoadingTransaction>
@@ -1088,6 +1130,10 @@ const Register = () => {
       }
 
       case STEPS.SIX: {
+        return renderAuthenticate();
+      }
+
+      case STEPS.SEVEN: {
         return renderReview();
       }
 

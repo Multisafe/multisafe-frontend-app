@@ -3,7 +3,7 @@ import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { Row, Col } from "reactstrap";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { AddPeopleContainer } from "./styles";

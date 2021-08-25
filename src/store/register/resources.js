@@ -87,6 +87,7 @@ export const STEPS = {
   FOUR: 4,
   FIVE: 5,
   SIX: 6,
+  SEVEN: 7,
 };
 
 export const COMPANY_REGISTER_STEPS = {
@@ -96,7 +97,8 @@ export const COMPANY_REGISTER_STEPS = {
   [STEPS.THREE]: "Owner Name and Address",
   [STEPS.FOUR]: "Threshold",
   [STEPS.FIVE]: "Privacy",
-  [STEPS.SIX]: "Review your entry",
+  [STEPS.SIX]: "Authenticate",
+  [STEPS.SEVEN]: "Review your entry",
 };
 
 export const DAO_REGISTER_STEPS = {
@@ -106,7 +108,8 @@ export const DAO_REGISTER_STEPS = {
   [STEPS.THREE]: "Owner Name and Address",
   [STEPS.FOUR]: "Threshold",
   [STEPS.FIVE]: "Privacy",
-  [STEPS.SIX]: "Review your entry",
+  [STEPS.SIX]: "Authenticate",
+  [STEPS.SEVEN]: "Review your entry",
 };
 
 export const INDIVIDUAL_REGISTER_STEPS = {
@@ -116,5 +119,6 @@ export const INDIVIDUAL_REGISTER_STEPS = {
   [STEPS.THREE]: "Owner Name and Address",
   [STEPS.FOUR]: "Threshold",
   [STEPS.FIVE]: "Privacy",
-  [STEPS.SIX]: "Review your entry",
+  [STEPS.SIX]: "Authenticate",
+  [STEPS.SEVEN]: "Review your entry",
 };

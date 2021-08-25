@@ -11,7 +11,7 @@ import {
 } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import addPeopleReducer from "store/add-people/reducer";
 import { useEncryptionKey } from "hooks";
