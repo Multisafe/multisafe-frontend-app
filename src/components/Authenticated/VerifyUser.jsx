@@ -7,7 +7,7 @@ import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
 import { useActiveWeb3React, useEncryptionKey, useLocalStorage } from "hooks";
-import { MESSAGE_TO_SIGN } from "constants/index";
+import { MESSAGE_TO_AUTHENTICATE, MESSAGE_TO_SIGN } from "constants/index";
 import { logoutUser } from "store/logout/actions";
 import { getParcelSafes } from "store/loginWizard/actions";
 import { useInjectReducer } from "utils/injectReducer";
@@ -124,7 +124,19 @@ const VerifyUser = () => {
               safe.organisationType
             );
             setEncryptionKey(encryptionKey);
-            dispatch(loginUser(params.safeAddress, safe.encryptionKeyData));
+
+            const password = cryptoUtils.getPasswordUsingSignatures(
+              MESSAGE_TO_AUTHENTICATE,
+              signature
+            );
+            dispatch(
+              loginUser({
+                safeAddress: params.safeAddress,
+                encryptionKeyData: safe.encryptionKeyData,
+                password,
+                owner: account,
+              })
+            );
           } catch (err) {
             console.error(err);
           }

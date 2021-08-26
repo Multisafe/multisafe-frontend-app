@@ -792,6 +792,7 @@ const Login = () => {
         encryptionKeyData,
         password,
         signature: authSign,
+        owner: account,
       })
     );
   };
