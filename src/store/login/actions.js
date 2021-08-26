@@ -10,6 +10,7 @@ export function loginUser({
   encryptionKeyData,
   password,
   signature,
+  owner,
 }) {
   return {
     type: LOGIN_USER,
@@ -17,6 +18,7 @@ export function loginUser({
     encryptionKeyData,
     password,
     signature,
+    owner,
   };
 }
 

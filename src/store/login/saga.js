@@ -18,6 +18,7 @@ export function* loginUser({
   encryptionKeyData,
   signature,
   password,
+  owner,
 }) {
   const requestURL = `${loginEndpoint}`;
 
@@ -28,6 +29,7 @@ export function* loginUser({
       encryptionKeyData,
       signature,
       password,
+      owner,
       networkId,
     }),
   };
