@@ -48,9 +48,9 @@ import Img from "components/common/Img";
 import CompanyPng from "assets/images/register/company.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
-import { getPublicKey } from "utils/encryption";
+import { getPassword, getPublicKey } from "utils/encryption";
 
-import { MESSAGE_TO_SIGN, MESSAGE_TO_AUTHENTICATE } from "constants/index";
+import { MESSAGE_TO_SIGN } from "constants/index";
 import loginSaga from "store/login/saga";
 import loginWizardSaga from "store/loginWizard/saga";
 import registerReducer from "store/register/reducer";
@@ -139,7 +139,6 @@ const Login = () => {
   const [safeDetails, setSafeDetails] = useState([]);
   const [signing, setSigning] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
-  const [password, setPassword] = useState();
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
@@ -260,10 +259,7 @@ const Login = () => {
 
   useEffect(() => {
     if (account && sign) {
-      const password = cryptoUtils.getPasswordUsingSignatures(
-        MESSAGE_TO_AUTHENTICATE,
-        sign
-      );
+      const password = getPassword(sign);
       dispatch(getVerificationStatus({ password, owner: account }));
     }
   }, [dispatch, sign, account]);
@@ -305,16 +301,11 @@ const Login = () => {
       setAuthenticating(true);
 
       try {
-        const password = cryptoUtils.getPasswordUsingSignatures(
-          MESSAGE_TO_AUTHENTICATE,
-          sign
-        );
+        const password = getPassword(sign);
         await library
           .getSigner(account)
           .signMessage(password)
           .then((signature) => {
-            console.log({ signature });
-            setPassword(password);
             setAuthSign(signature);
             setAuthenticating(false);
             setIsVerified(true);
@@ -382,6 +373,8 @@ const Login = () => {
         console.error(error);
         return;
       }
+
+      const password = getPassword(sign);
 
       const body = {
         name: formData.name,
@@ -785,6 +778,8 @@ const Login = () => {
       );
       setEncryptionKey(encryptionKey);
     }
+
+    const password = getPassword(sign);
 
     dispatch(
       loginUser({

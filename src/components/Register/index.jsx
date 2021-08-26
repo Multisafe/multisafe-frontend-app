@@ -36,7 +36,7 @@ import OwnerPng from "assets/images/register/owner.png";
 import ThresholdIcon from "assets/images/register/threshold.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
-import { getPublicKey } from "utils/encryption";
+import { getPassword, getPublicKey } from "utils/encryption";
 import addresses from "constants/addresses";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import ProxyFactoryABI from "constants/abis/ProxyFactory.json";
@@ -54,11 +54,7 @@ import {
   createMetaTx,
   getVerificationStatus,
 } from "store/register/actions";
-import {
-  MESSAGE_TO_SIGN,
-  DEFAULT_GAS_PRICE,
-  MESSAGE_TO_AUTHENTICATE,
-} from "constants/index";
+import { MESSAGE_TO_SIGN, DEFAULT_GAS_PRICE } from "constants/index";
 import Loading from "components/common/Loading";
 import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
@@ -148,7 +144,6 @@ const Register = () => {
   const [txHashWithoutReferral, setTxHashWithoutReferral] = useState();
   const [confirming, setConfirming] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
-  const [password, setPassword] = useState();
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
@@ -274,10 +269,7 @@ const Register = () => {
 
   useEffect(() => {
     if (account && sign && step === STEPS.SIX) {
-      const password = cryptoUtils.getPasswordUsingSignatures(
-        MESSAGE_TO_AUTHENTICATE,
-        sign
-      );
+      const password = getPassword(sign);
       dispatch(getVerificationStatus({ password, owner: account }));
     }
   }, [dispatch, sign, step, account]);
@@ -310,16 +302,11 @@ const Register = () => {
       setAuthenticating(true);
 
       try {
-        const password = cryptoUtils.getPasswordUsingSignatures(
-          MESSAGE_TO_AUTHENTICATE,
-          sign
-        );
+        const password = getPassword(sign);
         await library
           .getSigner(account)
           .signMessage(password)
           .then((signature) => {
-            console.log({ signature });
-            setPassword(password);
             setAuthSign(signature);
             setAuthenticating(false);
             setIsVerified(true);
@@ -485,6 +472,8 @@ const Register = () => {
                   },
                 ];
 
+          const password = getPassword(sign);
+
           body = {
             name: formData.name,
             referralId: formData.referralId,
@@ -553,6 +542,7 @@ const Register = () => {
     }
 
     const threshold = formData.threshold ? parseInt(formData.threshold) : 1;
+    const password = getPassword(sign);
 
     const body = {
       name: formData.name,

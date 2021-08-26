@@ -23,7 +23,7 @@ import Loading from "components/common/Loading";
 import { loginUser } from "store/login/actions";
 import SearchIcon from "assets/icons/dashboard/search-icon.svg";
 import ControlledInput from "components/common/Input";
-import { MESSAGE_TO_AUTHENTICATE } from "constants/index";
+import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
 
@@ -112,18 +112,18 @@ function SwitchAccountSidebar() {
     );
     setEncryptionKey(encryptionKey);
     closeSidebar();
-    const password = cryptoUtils.getPasswordUsingSignatures(
-      MESSAGE_TO_AUTHENTICATE,
-      sign
-    );
-    dispatch(
-      loginUser({
-        safeAddress: safe,
-        encryptionKeyData,
-        password,
-        owner: account,
-      })
-    );
+    const password = getPassword(sign);
+
+    if (safeAddress !== safe) {
+      dispatch(
+        loginUser({
+          safeAddress: safe,
+          encryptionKeyData,
+          password,
+          owner: account,
+        })
+      );
+    }
   };
 
   const renderSafes = () => {
