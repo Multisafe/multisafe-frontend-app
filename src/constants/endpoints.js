@@ -5,6 +5,7 @@ export const ROOT_BE_URL = process.env.REACT_APP_BE_URL;
 // REGISTER
 export const registerEndpoint = `${ROOT_BE_URL}/api/v1/users/create`;
 export const createMetaTxEndpoint = `${ROOT_BE_URL}/api/v1/users/create/meta-tx`;
+export const getVerificationStatusEndpoint = `${ROOT_BE_URL}/api/v1/users/getVerificationStatus`;
 
 // LOGIN
 export const fetchSafesEndpoint = `${ROOT_BE_URL}/api/v1/users/fetch-safes`;

@@ -5,13 +5,15 @@ import {
   CREATE_META_TX,
   CREATE_META_TX_SUCCESS,
   CREATE_META_TX_ERROR,
+  GET_VERIFICATION_STATUS,
+  GET_VERIFICATION_STATUS_SUCCESS,
+  GET_VERIFICATION_STATUS_ERROR,
 } from "./action-types";
 
-export function registerUser(body, redirect = true) {
+export function registerUser(body) {
   return {
     type: REGISTER_USER,
     body,
-    redirect,
   };
 }
 
@@ -48,6 +50,29 @@ export function createMetaTxSuccess(transactionHash, log) {
 export function createMetaTxError(error) {
   return {
     type: CREATE_META_TX_ERROR,
+    error,
+  };
+}
+
+export function getVerificationStatus({ password, owner }) {
+  return {
+    type: GET_VERIFICATION_STATUS,
+    password,
+    owner,
+  };
+}
+
+export function getVerificationStatusSuccess(isVerified, log) {
+  return {
+    type: GET_VERIFICATION_STATUS_SUCCESS,
+    isVerified,
+    log,
+  };
+}
+
+export function getVerificationStatusError(error) {
+  return {
+    type: GET_VERIFICATION_STATUS_ERROR,
     error,
   };
 }

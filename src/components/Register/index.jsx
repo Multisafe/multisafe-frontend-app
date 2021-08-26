@@ -45,9 +45,15 @@ import {
   makeSelectError as makeSelectRegisterError,
   makeSelectTransactionHash,
   makeSelectRegistering,
+  makeSelectIsFetching,
+  makeSelectIsVerified,
 } from "store/register/selectors";
 import { useInjectSaga } from "utils/injectSaga";
-import { registerUser, createMetaTx } from "store/register/actions";
+import {
+  registerUser,
+  createMetaTx,
+  getVerificationStatus,
+} from "store/register/actions";
 import {
   MESSAGE_TO_SIGN,
   DEFAULT_GAS_PRICE,
@@ -144,6 +150,7 @@ const Register = () => {
   const [authenticating, setAuthenticating] = useState(false);
   const [password, setPassword] = useState();
   const [authSign, setAuthSign] = useState();
+  const [isVerified, setIsVerified] = useState();
 
   const { active, account, library } = useActiveWeb3React();
   // Reducers
@@ -167,6 +174,8 @@ const Register = () => {
   const errorInRegister = useSelector(makeSelectRegisterError());
   const txHash = useSelector(makeSelectTransactionHash());
   const registering = useSelector(makeSelectRegistering());
+  const fetchingVerificationStatus = useSelector(makeSelectIsFetching());
+  const isAccountVerified = useSelector(makeSelectIsVerified());
 
   // Form
   const { register, handleSubmit, errors, reset, control } = useForm();
@@ -263,6 +272,20 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    if (account && sign && step === STEPS.SIX) {
+      const password = cryptoUtils.getPasswordUsingSignatures(
+        MESSAGE_TO_AUTHENTICATE,
+        sign
+      );
+      dispatch(getVerificationStatus({ password, owner: account }));
+    }
+  }, [dispatch, sign, step, account]);
+
+  useEffect(() => {
+    setIsVerified(isAccountVerified);
+  }, [isAccountVerified]);
+
   const signTerms = async () => {
     if (!!library && !!account) {
       setSigning(true);
@@ -299,7 +322,7 @@ const Register = () => {
             setPassword(password);
             setAuthSign(signature);
             setAuthenticating(false);
-            dispatch(chooseStep(step + 1));
+            setIsVerified(true);
           });
       } catch (error) {
         setAuthenticating(false);
@@ -991,6 +1014,17 @@ const Register = () => {
   };
 
   const renderReview = () => {
+    if (fetchingVerificationStatus) {
+      return (
+        <div className="d-flex align-items-center justify-content-center mt-5">
+          <Loading color="primary" width="3rem" height="3rem" />
+        </div>
+      );
+    }
+    if (!isVerified) {
+      return renderAuthenticate();
+    }
+
     return loadingTx ? (
       <LoadingTransaction>
         <div className="loading-heading">Creating account on MultiSafe</div>
@@ -1130,10 +1164,6 @@ const Register = () => {
       }
 
       case STEPS.SIX: {
-        return renderAuthenticate();
-      }
-
-      case STEPS.SEVEN: {
         return renderReview();
       }
 

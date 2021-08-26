@@ -5,11 +5,18 @@ import {
   IMPORT_SAFE,
 } from "./action-types";
 
-export function loginUser(safeAddress, encryptionKeyData) {
+export function loginUser({
+  safeAddress,
+  encryptionKeyData,
+  password,
+  signature,
+}) {
   return {
     type: LOGIN_USER,
     safeAddress,
     encryptionKeyData,
+    password,
+    signature,
   };
 }
 

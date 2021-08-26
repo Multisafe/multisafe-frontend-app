@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { hashMessage } from "@ethersproject/hash";
-import { toUtf8Bytes } from "@ethersproject/strings";
-import { keccak256 } from "@ethersproject/keccak256";
 import { recoverAddress } from "@ethersproject/transactions";
 import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "coinshift-sdk";
@@ -52,7 +50,7 @@ import PrivacySvg from "assets/images/register/privacy.svg";
 import { Error } from "components/common/Form/styles";
 import { getPublicKey } from "utils/encryption";
 
-import { MESSAGE_TO_SIGN } from "constants/index";
+import { MESSAGE_TO_SIGN, MESSAGE_TO_AUTHENTICATE } from "constants/index";
 import loginSaga from "store/login/saga";
 import loginWizardSaga from "store/loginWizard/saga";
 import registerReducer from "store/register/reducer";
@@ -60,10 +58,13 @@ import registerSaga from "store/register/saga";
 import {
   makeSelectError as makeSelectRegisterError,
   makeSelectLoading as makeSelectLoadingRegister,
+  makeSelectIsFetching as makeSelectIsFetchingVerificationStatus,
+  makeSelectIsVerified,
 } from "store/register/selectors";
+import { makeSelectError as makeSelectLoginError } from "store/login/selectors";
 import { useInjectSaga } from "utils/injectSaga";
 import { loginUser } from "store/login/actions";
-import { registerUser } from "store/register/actions";
+import { registerUser, getVerificationStatus } from "store/register/actions";
 import Loading from "components/common/Loading";
 import TeamPng from "assets/images/user-team.png";
 import MultisafeLogo from "assets/images/multisafe-logo.svg";
@@ -137,6 +138,10 @@ const Login = () => {
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [safeDetails, setSafeDetails] = useState([]);
   const [signing, setSigning] = useState(false);
+  const [authenticating, setAuthenticating] = useState(false);
+  const [password, setPassword] = useState();
+  const [authSign, setAuthSign] = useState();
+  const [isVerified, setIsVerified] = useState();
 
   const { active, account, library, connector } = useActiveWeb3React();
 
@@ -165,7 +170,12 @@ const Login = () => {
   const gnosisSafeOwners = useSelector(makeSelectGnosisSafeOwners());
   const gnosisSafeThreshold = useSelector(makeSelectGnosisSafeThreshold());
   const errorInRegister = useSelector(makeSelectRegisterError());
+  const errorInLogin = useSelector(makeSelectLoginError());
   const creating = useSelector(makeSelectLoadingRegister());
+  const fetchingVerificationStatus = useSelector(
+    makeSelectIsFetchingVerificationStatus()
+  );
+  const isAccountVerified = useSelector(makeSelectIsVerified());
 
   // Form
   const { register, handleSubmit, errors, reset, control } = useForm();
@@ -248,6 +258,20 @@ const Login = () => {
     }
   }, [location, dispatch]);
 
+  useEffect(() => {
+    if (account && sign) {
+      const password = cryptoUtils.getPasswordUsingSignatures(
+        MESSAGE_TO_AUTHENTICATE,
+        sign
+      );
+      dispatch(getVerificationStatus({ password, owner: account }));
+    }
+  }, [dispatch, sign, account]);
+
+  useEffect(() => {
+    setIsVerified(isAccountVerified);
+  }, [isAccountVerified]);
+
   const completeImport = async () => {
     await signup();
   };
@@ -261,38 +285,43 @@ const Login = () => {
     if (!!library && !!account) {
       setSigning(true);
       try {
-        if (connector.name === "WalletConnect") {
-          const rawMessage = MESSAGE_TO_SIGN;
-          const messageLength = new Blob([rawMessage]).size;
-          const message = toUtf8Bytes(
-            "\x19Ethereum Signed Message:\n" + messageLength + rawMessage
-          );
-          const hashedMessage = keccak256(message);
-
-          connector.provider.wc
-            .signMessage([account.toLowerCase(), hashedMessage])
-            .then((signature) => {
-              setSign(signature);
-              setSigning(false);
-              goNext();
-            })
-            .catch((error) => {
-              setSigning(false);
-              console.error("Signature Rejected");
-            });
-        } else {
-          await library
-            .getSigner(account)
-            .signMessage(MESSAGE_TO_SIGN)
-            .then((signature) => {
-              setSign(signature);
-              setSigning(false);
-              goNext();
-            });
-        }
+        await library
+          .getSigner(account)
+          .signMessage(MESSAGE_TO_SIGN)
+          .then((signature) => {
+            setSign(signature);
+            setSigning(false);
+            goNext();
+          });
       } catch (error) {
         console.error("Signature Rejected");
         setSigning(false);
+      }
+    }
+  };
+
+  const signAndAuthenticate = async () => {
+    if (!!library && !!account && sign) {
+      setAuthenticating(true);
+
+      try {
+        const password = cryptoUtils.getPasswordUsingSignatures(
+          MESSAGE_TO_AUTHENTICATE,
+          sign
+        );
+        await library
+          .getSigner(account)
+          .signMessage(password)
+          .then((signature) => {
+            console.log({ signature });
+            setPassword(password);
+            setAuthSign(signature);
+            setAuthenticating(false);
+            setIsVerified(true);
+          });
+      } catch (error) {
+        setAuthenticating(false);
+        console.error("Signature Failed");
       }
     }
   };
@@ -365,6 +394,8 @@ const Login = () => {
         encryptionKeyData,
         organisationType,
         isImported: 1,
+        signature: authSign,
+        password,
       };
 
       dispatch(setOwnerDetails(formData.name, chosenSafeAddress, account));
@@ -755,7 +786,14 @@ const Login = () => {
       setEncryptionKey(encryptionKey);
     }
 
-    dispatch(loginUser(safe, encryptionKeyData));
+    dispatch(
+      loginUser({
+        safeAddress: safe,
+        encryptionKeyData,
+        password,
+        signature: authSign,
+      })
+    );
   };
 
   const handleImportSelectedSafe = async (safe) => {
@@ -771,7 +809,46 @@ const Login = () => {
     }
   }, [dispatch, account, flow]);
 
+  const renderAuthenticate = () => {
+    return (
+      <StepDetails>
+        <Img
+          src={PrivacySvg}
+          alt="privacy"
+          className="my-4"
+          width="100"
+          style={{ minWidth: "10rem" }}
+        />
+        <h3 className="title">One-time Verification</h3>
+        <p className="subtitle">
+          Please sign to authenticate your connected account.
+        </p>
+
+        <Button
+          type="button"
+          onClick={signAndAuthenticate}
+          className="proceed-btn"
+          disabled={authenticating}
+          loading={authenticating}
+        >
+          Sign and Authenticate
+        </Button>
+      </StepDetails>
+    );
+  };
+
   const renderSafes = () => {
+    if (fetchingVerificationStatus) {
+      return (
+        <div className="d-flex align-items-center justify-content-center mt-5">
+          <Loading color="primary" width="3rem" height="3rem" />
+        </div>
+      );
+    }
+    if (!isVerified) {
+      return renderAuthenticate();
+    }
+
     if (getSafesLoading)
       return (
         <div className="d-flex align-items-center justify-content-center mt-5">
@@ -864,15 +941,6 @@ const Login = () => {
                       <div className="val">{name}</div>
                     </div>
                   </div>
-                  {/* <div className="details">
-                <div className="icon">
-                  <FontAwesomeIcon icon={faWallet} color="#aaa" />
-                </div>
-                <div className="info">
-                  <div className="desc">Balance</div>
-                  <div className="val">{balance} ETH</div>
-                </div>
-              </div> */}
                 </div>
 
                 <div className="bottom">
@@ -895,6 +963,7 @@ const Login = () => {
               </Safe>
             )
           )}
+        {errorInLogin && <ErrorText>{errorInLogin}</ErrorText>}
         <RetryText onClick={handleRefetch}>Safe not loaded?</RetryText>
       </StepDetails>
     );
