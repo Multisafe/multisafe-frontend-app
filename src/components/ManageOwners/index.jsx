@@ -43,12 +43,14 @@ import DeleteOwnerModal, {
   MODAL_NAME as DELETE_OWNER_MODAL,
 } from "./DeleteOwnerModal";
 import AddOwnerModal, { MODAL_NAME as ADD_OWNER_MODAL } from "./AddOwnerModal";
+import ChangeThresholdModal , { MODAL_NAME as CHANGE_THRESHOLD_MODAL } from "./ChangeThresholdModal";
 import InvitationStepsModal, {
   MODAL_NAME as INVITE_STEPS_MODAL,
 } from "./InvitationStepsModal";
 import Avatar from "components/common/Avatar";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 import EditIcon from "assets/icons/dashboard/edit-icon.svg";
+import EditButtonIcon from "assets/icons/dashboard/edit-button-icon.svg";
 import ReplaceIcon from "assets/icons/dashboard/replace-icon.svg";
 import DeleteIcon from "assets/icons/dashboard/trash-icon.svg";
 import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
@@ -146,6 +148,10 @@ export default function ManageOwners() {
 
   const handleAddOwner = () => {
     dispatch(show(ADD_OWNER_MODAL));
+  };
+
+  const handleChangeThreshold = () => {
+    dispatch(show(CHANGE_THRESHOLD_MODAL));
   };
 
   const showInvitationSteps = () => {
@@ -371,6 +377,7 @@ export default function ManageOwners() {
         <ReplaceOwnerModal />
         <DeleteOwnerModal />
         <AddOwnerModal />
+        <ChangeThresholdModal />
       </React.Fragment>
     );
   };
@@ -393,13 +400,23 @@ export default function ManageOwners() {
           </div>
         </div>
 
-        <Button
-          className="d-flex align-items-center mt-3"
-          onClick={handleAddOwner}
-        >
-          <Img src={PlusIcon} alt="plus" className="mr-3" />
-          <div>Add Owner</div>
-        </Button>
+        <div className="d-flex">
+          <Button
+            className="d-flex align-items-center mt-3"
+            onClick={handleChangeThreshold}
+          >
+            <Img src={EditButtonIcon} alt="edit" className="mr-3" />
+            <div>Threshold</div>
+          </Button>
+
+          <Button
+            className="d-flex align-items-center mt-3 ml-3"
+            onClick={handleAddOwner}
+          >
+            <Img src={PlusIcon} alt="plus" className="mr-3" />
+            <div>Add Owner</div>
+          </Button>
+        </div>
       </InfoCard>
       <OwnersContainer>{renderInviteOwners()}</OwnersContainer>
       <InvitationStepsModal />

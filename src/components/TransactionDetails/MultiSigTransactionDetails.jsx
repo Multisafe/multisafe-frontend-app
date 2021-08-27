@@ -39,8 +39,6 @@ import { InfoCard } from "components/People/styles";
 import {
   ConfirmSection,
   FinalStatus,
-  DescriptionCard,
-  DisbursementCard,
   StepperCard,
 } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
@@ -56,6 +54,7 @@ import ExecuteTxModal, {
   MODAL_NAME as EXECUTE_TX_MODAL,
 } from "./ExecuteTxModal";
 import { getDecryptedOwnerName } from "store/invitation/utils";
+import {TransactionDescription} from "./TransactionDescription";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -389,7 +388,7 @@ export default function MultiSigTransactions() {
       safeOwners: currentSafeOwners,
     } = txDetails;
 
-    const paidTeammates = getDecryptedDetails(
+    const decryptedDetails = getDecryptedDetails(
       to,
       encryptionKey,
       organisationType
@@ -435,27 +434,20 @@ export default function MultiSigTransactions() {
           </Stepper>
         </StepperCard>
 
-        <DescriptionCard>
-          <div className="title">Description</div>
-          <div className="subtitle">
-            {paidTeammates &&
-            paidTeammates.length > 0 &&
-            paidTeammates[0].description
-              ? paidTeammates[0].description
-              : `No description given...`}
-          </div>
-        </DescriptionCard>
+        <TransactionDescription
+          decryptedDetails={decryptedDetails}
+          transactionMode={transactionMode}
+          metaData={metaData}
+        />
 
-        <DisbursementCard>
-          <DisbursementDetails
-            paidTeammates={paidTeammates}
-            transactionMode={transactionMode}
-            tokenCurrency={tokenCurrency}
-            metaData={metaData}
-          />
-        </DisbursementCard>
+        <DisbursementDetails
+          paidTeammates={decryptedDetails}
+          transactionMode={transactionMode}
+          tokenCurrency={tokenCurrency}
+          metaData={metaData}
+        />
 
-        <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
+        <Summary txDetails={txDetails} paidTeammates={decryptedDetails} />
         {renderConfirmSection()}
         <ApproveTxModal />
         <RejectTxModal />

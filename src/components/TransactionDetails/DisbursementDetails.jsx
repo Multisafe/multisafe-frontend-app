@@ -9,6 +9,7 @@ import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { getDecryptedDetails } from "utils/encryption";
 import Avatar from "components/common/Avatar";
+import {DisbursementCard} from "./styles";
 
 export default function DisbursementDetails({
   paidTeammates,
@@ -287,6 +288,10 @@ export default function DisbursementDetails({
     );
   };
 
+  const renderChangeThresholdDetails = () => {
+
+  };
+
   const renderTransactionDetails = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
@@ -301,6 +306,8 @@ export default function DisbursementDetails({
         return renderReplaceOwnerDetails();
       case TRANSACTION_MODES.ADD_SAFE_OWNER:
         return renderAddOwnerDetails();
+      case TRANSACTION_MODES.CHANGE_THRESHOLD:
+        return renderChangeThresholdDetails();
 
       default:
         return null;
@@ -326,10 +333,13 @@ export default function DisbursementDetails({
     }
   };
 
-  return (
-    <React.Fragment>
-      {renderTitle()}
-      {renderTransactionDetails()}
-    </React.Fragment>
-  );
+  const title = renderTitle();
+  const transactionDetails = renderTransactionDetails();
+
+  return title || transactionDetails ? (
+    <DisbursementCard>
+      {title}
+      {transactionDetails}
+    </DisbursementCard>
+  ) : null;
 }
