@@ -1,7 +1,4 @@
 import { createGlobalStyle } from "styled-components";
-import AvenirLTProBook from "assets/fonts/AvenirLTProBook.otf";
-import AvenirLTProHeavy from "assets/fonts/AvenirLTProHeavy.otf";
-import AvenirLTProMedium from "assets/fonts/AvenirLTProMedium.otf";
 
 export const lightTheme = {
   primary: "#1452f5",
@@ -52,30 +49,6 @@ export const darkTheme = {
 };
 
 const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: 'Avenir Pro';
-    src: local('Avenir Pro'), local('AvenirPro'),
-    url(${AvenirLTProBook}) format('opentype');
-    font-weight: normal; 
-    font-style: normal;
-  }
-
-  @font-face {
-    font-family: 'Avenir Pro';
-    src: local('Avenir Pro'), local('AvenirPro'),
-    url(${AvenirLTProHeavy}) format('opentype');
-    font-style: normal;
-    font-weight: bold;
-  }
-
-  @font-face {
-    font-family: 'Avenir Pro';
-    src: local('Avenir Pro'), local('AvenirPro'),
-    url(${AvenirLTProMedium}) format('opentype');
-    font-style: normal;
-    font-weight: 500;
-  }
-
   html,
   body {
     height: 100%;
@@ -95,10 +68,6 @@ const GlobalStyle = createGlobalStyle`
     font-family: 'Avenir Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: normal;
     overflow-x: hidden;
-  }
-
-  body.fontLoaded {
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }
 
   a {

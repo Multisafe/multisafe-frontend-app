@@ -1,0 +1,23 @@
+@font-face {
+  font-family: 'Avenir Pro';
+  src: local('Avenir Pro'), local('AvenirPro'),
+  url('./assets/fonts/AvenirLTProBook.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Avenir Pro';
+  src: local('Avenir Pro'), local('AvenirPro'),
+  url('./assets/fonts/AvenirLTProHeavy.otf') format('opentype');
+  font-style: normal;
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Avenir Pro';
+  src: local('Avenir Pro'), local('AvenirPro'),
+  url('./assets/fonts/AvenirLTProMedium.otf') format('opentype');
+  font-style: normal;
+  font-weight: 500;
+}

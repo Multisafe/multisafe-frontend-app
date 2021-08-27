@@ -16,6 +16,7 @@ import history from "utils/history";
 import App from "./pages/App";
 import configureStore from "store/index";
 import Web3ReactProvider from "context/Web3ReactContext";
+import './index.css';
 
 const initialState = {};
 const store = configureStore(initialState, history);
