@@ -401,13 +401,15 @@ export default function ManageOwners() {
         </div>
 
         <div className="d-flex">
-          <Button
-            className="d-flex align-items-center mt-3"
-            onClick={handleChangeThreshold}
-          >
-            <Img src={EditButtonIcon} alt="edit" className="mr-3" />
-            <div>Threshold</div>
-          </Button>
+          {safeOwners.length > 1 ? (
+            <Button
+              className="d-flex align-items-center mt-3"
+              onClick={handleChangeThreshold}
+            >
+              <Img src={EditButtonIcon} alt="edit" className="mr-3" />
+              <div>Threshold</div>
+            </Button>
+          ) : null}
 
           <Button
             className="d-flex align-items-center mt-3 ml-3"

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 //@ts-ignore
 import { cryptoUtils } from "parcel-sdk";
-import {useActiveWeb3React, useLocalStorage, useManageOwners} from '../../hooks';
+import {useActiveWeb3React, useLocalStorage, useManageOwners} from 'hooks';
 import {STEPS} from 'store/login/resources';
 import {useForm} from 'react-hook-form';
 import {useDispatch, useSelector} from 'react-redux';
@@ -10,15 +10,15 @@ import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress, makeSelectSafeOwners,
   makeSelectThreshold
-} from '../../store/global/selectors';
-import {makeSelectLoading as makeSelectLoadingSafeDetails} from '../../store/safe/selectors';
-import {TRANSACTION_MODES} from '../../constants/transactions';
+} from 'store/global/selectors';
+import {makeSelectLoading as makeSelectLoadingSafeDetails} from 'store/safe/selectors';
+import {TRANSACTION_MODES} from 'constants/transactions';
 import {DeleteContainer, OwnerDetails, ReplaceContainer} from './styles';
 import {Select} from '../common/Form';
 import {Button} from '../common/Button/styles';
 import ErrorText from '../common/ErrorText';
 import {Information} from '../Register/styles';
-import {makeSelectError as makeSelectErrorInCreateTx} from '../../store/transactions/selectors';
+import {makeSelectError as makeSelectErrorInCreateTx} from 'store/transactions/selectors';
 
 export const ChangeThreshold = () => {
   const dispatch = useDispatch();
@@ -117,8 +117,6 @@ export const ChangeThreshold = () => {
           <div className="subtitle mb-0">
             out of {safeOwners.length} owners.
           </div>
-
-
         </div>
 
         <div className="buttons">
@@ -144,7 +142,7 @@ export const ChangeThreshold = () => {
         <OwnerDetails>
           <div className="left">
             <div className="details">
-              <div className="address" style={{fontSize: "16px"}}>
+              <div className="address">
                 Threshold:
                 <span className="text-bold">
                   {" "}
@@ -155,7 +153,7 @@ export const ChangeThreshold = () => {
           </div>
         </OwnerDetails>
 
-        <Information className="mt-5" style={{fontSize: "16px"}}>
+        <Information className="mt-5">
           You are about to create an on-chain transaction.
         </Information>
 

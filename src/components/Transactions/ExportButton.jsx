@@ -61,6 +61,9 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.ADD_SAFE_OWNER:
       return "Added Owner";
 
+    case TRANSACTION_MODES.CHANGE_THRESHOLD:
+      return "Changed Threshold";
+
     default:
       return "";
   }

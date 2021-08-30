@@ -1,6 +1,6 @@
 import React from 'react';
+import {TRANSACTION_MODES} from 'constants/transactions';
 import {DescriptionCard} from './styles';
-import {TRANSACTION_MODES} from '../../constants/transactions';
 
 type Props = {
   decryptedDetails: FixMe,

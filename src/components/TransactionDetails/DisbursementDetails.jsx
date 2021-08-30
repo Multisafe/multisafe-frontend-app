@@ -288,10 +288,6 @@ export default function DisbursementDetails({
     );
   };
 
-  const renderChangeThresholdDetails = () => {
-
-  };
-
   const renderTransactionDetails = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
@@ -306,8 +302,6 @@ export default function DisbursementDetails({
         return renderReplaceOwnerDetails();
       case TRANSACTION_MODES.ADD_SAFE_OWNER:
         return renderAddOwnerDetails();
-      case TRANSACTION_MODES.CHANGE_THRESHOLD:
-        return renderChangeThresholdDetails();
 
       default:
         return null;
