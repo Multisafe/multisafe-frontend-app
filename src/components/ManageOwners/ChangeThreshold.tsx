@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { cryptoUtils } from "parcel-sdk";
 import { useActiveWeb3React, useLocalStorage, useManageOwners } from "hooks";
 import { STEPS } from "store/login/resources";
-import { useForm } from "react-hook-form";
+import {useForm, useWatch} from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import {
   makeSelectIsReadOnly,
@@ -16,10 +16,12 @@ import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/se
 import { TRANSACTION_MODES } from "constants/transactions";
 import { DeleteContainer, OwnerDetails, ReplaceContainer } from "./styles";
 import { Select } from "components/common/Form";
-import { Button } from "components/common/Button/styles";
+import Button from "components/common/Button";
 import ErrorText from "components/common/ErrorText";
 import { Information } from "components/Register/styles";
 import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
+
+const THRESHOLD_CONTROL = "threshold";
 
 export const ChangeThreshold = () => {
   const dispatch = useDispatch();
@@ -44,6 +46,8 @@ export const ChangeThreshold = () => {
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const safeOwners = useSelector(makeSelectSafeOwners());
+
+  const {value: thresholdValue} = useWatch({control, name: THRESHOLD_CONTROL, defaultValue: threshold});
 
   useEffect(() => {
     if (safeOwners) {
@@ -106,7 +110,7 @@ export const ChangeThreshold = () => {
 
         <div className="threshold-select">
           <Select
-            name="threshold"
+            name={THRESHOLD_CONTROL}
             control={control}
             required={`Threshold is required`}
             width="6rem"
@@ -123,7 +127,7 @@ export const ChangeThreshold = () => {
           <Button
             type="submit"
             style={{ minWidth: "16rem" }}
-            disabled={!formState.isValid}
+            disabled={!formState.isValid || thresholdValue === threshold}
           >
             Next
           </Button>
