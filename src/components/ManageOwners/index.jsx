@@ -43,7 +43,9 @@ import DeleteOwnerModal, {
   MODAL_NAME as DELETE_OWNER_MODAL,
 } from "./DeleteOwnerModal";
 import AddOwnerModal, { MODAL_NAME as ADD_OWNER_MODAL } from "./AddOwnerModal";
-import ChangeThresholdModal , { MODAL_NAME as CHANGE_THRESHOLD_MODAL } from "./ChangeThresholdModal";
+import ChangeThresholdModal, {
+  MODAL_NAME as CHANGE_THRESHOLD_MODAL,
+} from "./ChangeThresholdModal";
 import InvitationStepsModal, {
   MODAL_NAME as INVITE_STEPS_MODAL,
 } from "./InvitationStepsModal";

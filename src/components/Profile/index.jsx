@@ -180,7 +180,9 @@ export default function Profile() {
         </div>
       </InfoCard>
       <ProfileContainer>{renderOrganisationDetails()}</ProfileContainer>
-      {isOrganisationPublic && <ProfileContainer>{renderShareData()}</ProfileContainer>}
+      {isOrganisationPublic && (
+        <ProfileContainer>{renderShareData()}</ProfileContainer>
+      )}
     </div>
   );
 }

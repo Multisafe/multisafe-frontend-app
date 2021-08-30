@@ -36,11 +36,7 @@ import {
 import Loading from "components/common/Loading";
 import { Stepper, StepCircle } from "components/common/Stepper";
 import { InfoCard } from "components/People/styles";
-import {
-  ConfirmSection,
-  FinalStatus,
-  StepperCard,
-} from "./styles";
+import { ConfirmSection, FinalStatus, StepperCard } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import DisbursementDetails from "./DisbursementDetails";
@@ -54,7 +50,7 @@ import ExecuteTxModal, {
   MODAL_NAME as EXECUTE_TX_MODAL,
 } from "./ExecuteTxModal";
 import { getDecryptedOwnerName } from "store/invitation/utils";
-import {TransactionDescription} from "./TransactionDescription";
+import { TransactionDescription } from "./TransactionDescription";
 
 const multisigKey = "multisig";
 const safeKey = "safe";

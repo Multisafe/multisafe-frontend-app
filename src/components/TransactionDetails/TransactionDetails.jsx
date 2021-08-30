@@ -18,7 +18,7 @@ import Loading from "components/common/Loading";
 import { getDecryptedDetails } from "utils/encryption";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
-import {TransactionDescription} from "./TransactionDescription";
+import { TransactionDescription } from "./TransactionDescription";
 
 const transactionsKey = "transactions";
 
@@ -71,7 +71,6 @@ export default function TransactionDetails() {
           </div>
         </InfoCard>
 
-
         <TransactionDescription
           decryptedDetails={decryptedDetails}
           transactionMode={transactionMode}
@@ -85,7 +84,10 @@ export default function TransactionDetails() {
           metaData={metaData}
         />
 
-        <Summary txDetails={transactionDetails} paidTeammates={decryptedDetails} />
+        <Summary
+          txDetails={transactionDetails}
+          paidTeammates={decryptedDetails}
+        />
       </div>
     );
   };

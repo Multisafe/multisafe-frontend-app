@@ -1,24 +1,25 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 //@ts-ignore
 import { cryptoUtils } from "parcel-sdk";
-import {useActiveWeb3React, useLocalStorage, useManageOwners} from 'hooks';
-import {STEPS} from 'store/login/resources';
-import {useForm} from 'react-hook-form';
-import {useDispatch, useSelector} from 'react-redux';
+import { useActiveWeb3React, useLocalStorage, useManageOwners } from "hooks";
+import { STEPS } from "store/login/resources";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import {
   makeSelectIsReadOnly,
   makeSelectOrganisationType,
-  makeSelectOwnerSafeAddress, makeSelectSafeOwners,
-  makeSelectThreshold
-} from 'store/global/selectors';
-import {makeSelectLoading as makeSelectLoadingSafeDetails} from 'store/safe/selectors';
-import {TRANSACTION_MODES} from 'constants/transactions';
-import {DeleteContainer, OwnerDetails, ReplaceContainer} from './styles';
-import {Select} from '../common/Form';
-import {Button} from '../common/Button/styles';
-import ErrorText from '../common/ErrorText';
-import {Information} from '../Register/styles';
-import {makeSelectError as makeSelectErrorInCreateTx} from 'store/transactions/selectors';
+  makeSelectOwnerSafeAddress,
+  makeSelectSafeOwners,
+  makeSelectThreshold,
+} from "store/global/selectors";
+import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
+import { TRANSACTION_MODES } from "constants/transactions";
+import { DeleteContainer, OwnerDetails, ReplaceContainer } from "./styles";
+import { Select } from "../common/Form";
+import { Button } from "../common/Button/styles";
+import ErrorText from "../common/ErrorText";
+import { Information } from "../Register/styles";
+import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
 
 export const ChangeThreshold = () => {
   const dispatch = useDispatch();
@@ -32,10 +33,9 @@ export const ChangeThreshold = () => {
 
   const { loadingTx, changeThreshold } = useManageOwners();
 
-  const { handleSubmit, formState, control, setValue } =
-    useForm({
-      mode: "onChange",
-    });
+  const { handleSubmit, formState, control, setValue } = useForm({
+    mode: "onChange",
+  });
 
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -169,11 +169,7 @@ export const ChangeThreshold = () => {
           <Button
             type="submit"
             style={{ minWidth: "16rem" }}
-            disabled={
-              loadingTx ||
-              loadingSafeDetails ||
-              isReadOnly
-            }
+            disabled={loadingTx || loadingSafeDetails || isReadOnly}
             loading={loadingTx}
           >
             Confirm
@@ -193,4 +189,4 @@ export const ChangeThreshold = () => {
       </form>
     </div>
   );
-}
+};

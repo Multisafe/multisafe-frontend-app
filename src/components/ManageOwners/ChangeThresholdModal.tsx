@@ -2,7 +2,7 @@ import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
-import {ChangeThreshold} from "./ChangeThreshold";
+import { ChangeThreshold } from "./ChangeThreshold";
 
 export const MODAL_NAME = "change-threshold-modal";
 

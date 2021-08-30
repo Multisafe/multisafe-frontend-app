@@ -106,7 +106,7 @@ export default function useManageOwners() {
     await executeBatchTransactions({ transactions });
   };
 
-  const changeThreshold = async ({newThreshold, baseRequestBody}) => {
+  const changeThreshold = async ({ newThreshold, baseRequestBody }) => {
     const transactions = [];
 
     setBaseRequestBody(baseRequestBody);
@@ -115,10 +115,9 @@ export default function useManageOwners() {
       operation: 0, // CALL
       to: proxyContract.address,
       value: 0,
-      data: proxyContract.interface.encodeFunctionData(
-        "changeThreshold",
-        [newThreshold]
-      ),
+      data: proxyContract.interface.encodeFunctionData("changeThreshold", [
+        newThreshold,
+      ]),
     });
 
     await executeBatchTransactions({ transactions });
@@ -129,6 +128,6 @@ export default function useManageOwners() {
     replaceSafeOwner,
     deleteSafeOwner,
     addSafeOwner,
-    changeThreshold
+    changeThreshold,
   };
 }

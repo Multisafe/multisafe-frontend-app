@@ -9,7 +9,7 @@ import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { getDecryptedDetails } from "utils/encryption";
 import Avatar from "components/common/Avatar";
-import {DisbursementCard} from "./styles";
+import { DisbursementCard } from "./styles";
 
 export default function DisbursementDetails({
   paidTeammates,
