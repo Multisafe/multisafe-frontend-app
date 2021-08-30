@@ -15,10 +15,10 @@ import {
 import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { DeleteContainer, OwnerDetails, ReplaceContainer } from "./styles";
-import { Select } from "../common/Form";
-import { Button } from "../common/Button/styles";
-import ErrorText from "../common/ErrorText";
-import { Information } from "../Register/styles";
+import { Select } from "components/common/Form";
+import { Button } from "components/common/Button/styles";
+import ErrorText from "components/common/ErrorText";
+import { Information } from "components/Register/styles";
 import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
 
 export const ChangeThreshold = () => {
