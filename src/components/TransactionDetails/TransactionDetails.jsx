@@ -15,10 +15,10 @@ import { useInjectSaga } from "utils/injectSaga";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { InfoCard } from "components/People/styles";
 import Loading from "components/common/Loading";
-import { DescriptionCard, DisbursementCard } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
+import { TransactionDescription } from "./TransactionDescription";
 
 const transactionsKey = "transactions";
 
@@ -57,7 +57,7 @@ export default function TransactionDetails() {
     if (!transactionDetails) return null;
 
     const { to, transactionMode, tokenCurrency, metaData } = transactionDetails;
-    const paidTeammates = getDecryptedDetails(
+    const decryptedDetails = getDecryptedDetails(
       to,
       encryptionKey,
       organisationType
@@ -71,27 +71,23 @@ export default function TransactionDetails() {
           </div>
         </InfoCard>
 
-        <DescriptionCard>
-          <div className="title">Description</div>
-          <div className="subtitle">
-            {paidTeammates &&
-            paidTeammates.length > 0 &&
-            paidTeammates[0].description
-              ? paidTeammates[0].description
-              : `No description given...`}
-          </div>
-        </DescriptionCard>
+        <TransactionDescription
+          decryptedDetails={decryptedDetails}
+          transactionMode={transactionMode}
+          metaData={metaData}
+        />
 
-        <DisbursementCard>
-          <DisbursementDetails
-            paidTeammates={paidTeammates}
-            transactionMode={transactionMode}
-            tokenCurrency={tokenCurrency}
-            metaData={metaData}
-          />
-        </DisbursementCard>
+        <DisbursementDetails
+          paidTeammates={decryptedDetails}
+          transactionMode={transactionMode}
+          tokenCurrency={tokenCurrency}
+          metaData={metaData}
+        />
 
-        <Summary txDetails={transactionDetails} paidTeammates={paidTeammates} />
+        <Summary
+          txDetails={transactionDetails}
+          paidTeammates={decryptedDetails}
+        />
       </div>
     );
   };
