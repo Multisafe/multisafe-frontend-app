@@ -76,7 +76,7 @@ export const ChangeThreshold = () => {
           safeOwners: safeOwners.length,
           threshold,
           newThreshold,
-          description: `Changing safe signature threshold`,
+          description: `Changing safe signature threshold from ${threshold}/${safeOwners.length} to ${newThreshold}/${safeOwners.length}`,
         },
       ];
 
