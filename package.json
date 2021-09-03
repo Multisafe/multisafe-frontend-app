@@ -22,7 +22,7 @@
     "date-fns": "^2.16.1",
     "ethereum-qr-code": "^0.3.0",
     "fontfaceobserver": "^2.1.0",
-    "immer": "^8.0.1",
+    "immer": "^9.0.6",
     "invariant": "^2.2.4",
     "jwt-decode": "^3.1.2",
     "localforage": "^1.9.0",
