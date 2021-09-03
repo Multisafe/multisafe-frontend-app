@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactTooltip from "react-tooltip";
 import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 import { show } from "redux-modal";
 
 import Button from "components/common/Button";

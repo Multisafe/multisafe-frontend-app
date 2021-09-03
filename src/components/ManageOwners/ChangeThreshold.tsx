@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 //@ts-ignore
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 import { useActiveWeb3React, useLocalStorage, useManageOwners } from "hooks";
 import { STEPS } from "store/login/resources";
 import {useForm, useWatch} from "react-hook-form";

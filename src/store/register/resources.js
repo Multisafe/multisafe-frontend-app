@@ -87,6 +87,7 @@ export const STEPS = {
   FOUR: 4,
   FIVE: 5,
   SIX: 6,
+  SEVEN: 7,
 };
 
 export const COMPANY_REGISTER_STEPS = {

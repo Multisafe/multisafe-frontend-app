@@ -1,16 +1,25 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { push } from "connected-react-router";
 
-import { CREATE_META_TX, REGISTER_USER } from "./action-types";
+import {
+  CREATE_META_TX,
+  REGISTER_USER,
+  GET_VERIFICATION_STATUS,
+} from "./action-types";
 import {
   registerUserSuccess,
   registerUserError,
   createMetaTxError,
   createMetaTxSuccess,
+  getVerificationStatusSuccess,
+  getVerificationStatusError,
 } from "./actions";
 import request from "utils/request";
-// import { makeSelectUsername } from "containers/HomePage/selectors";
-import { registerEndpoint, createMetaTxEndpoint } from "constants/endpoints";
+import {
+  registerEndpoint,
+  createMetaTxEndpoint,
+  getVerificationStatusEndpoint,
+} from "constants/endpoints";
 import { networkId } from "constants/networks";
 import { routeGenerators } from "constants/routes/generators";
 
@@ -34,14 +43,13 @@ export function* registerUser(action) {
       // set auth token
       localStorage.setItem("token", result.access_token);
       yield put(registerUserSuccess(result.transactionHash, result.log));
-      if (action.redirect)
-        yield put(
-          push(
-            routeGenerators.dashboard.root({
-              safeAddress: action.body.safeAddress,
-            })
-          )
-        );
+      yield put(
+        push(
+          routeGenerators.dashboard.root({
+            safeAddress: action.body.safeAddress,
+          })
+        )
+      );
     }
   } catch (err) {
     yield put(registerUserError(err.message));
@@ -71,6 +79,33 @@ export function* createMetaTx(action) {
   }
 }
 
+export function* fetchVerificationStatus({ password, owner }) {
+  const requestURL = new URL(getVerificationStatusEndpoint);
+  const params = [
+    ["password", password],
+    ["owner", owner],
+    ["networkId", networkId],
+  ];
+
+  requestURL.search = new URLSearchParams(params).toString();
+
+  const options = {
+    method: "GET",
+  };
+
+  try {
+    const result = yield call(request, requestURL, options);
+    if (result.flag !== 200) {
+      // Error in payload
+      yield put(getVerificationStatusError(result.log));
+    } else {
+      yield put(getVerificationStatusSuccess(result.isVerified, result.log));
+    }
+  } catch (err) {
+    yield put(getVerificationStatusError(err.message));
+  }
+}
+
 function* watchRegister() {
   yield takeLatest(REGISTER_USER, registerUser);
 }
@@ -79,7 +114,12 @@ function* watchCreateMetaTx() {
   yield takeLatest(CREATE_META_TX, createMetaTx);
 }
 
+function* watchGetVerificationStatus() {
+  yield takeLatest(GET_VERIFICATION_STATUS, fetchVerificationStatus);
+}
+
 export default function* register() {
   yield fork(watchRegister);
   yield fork(watchCreateMetaTx);
+  yield fork(watchGetVerificationStatus);
 }

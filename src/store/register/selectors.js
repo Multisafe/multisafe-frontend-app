@@ -25,6 +25,12 @@ const makeSelectLog = () =>
 const makeSelectRegistering = () =>
   createSelector(selectRegister, (registerState) => registerState.registering);
 
+const makeSelectIsFetching = () =>
+  createSelector(selectRegister, (registerState) => registerState.fetching);
+
+const makeSelectIsVerified = () =>
+  createSelector(selectRegister, (registerState) => registerState.isVerified);
+
 export {
   selectRegister,
   makeSelectLoading,
@@ -32,4 +38,6 @@ export {
   makeSelectTransactionHash,
   makeSelectLog,
   makeSelectRegistering,
+  makeSelectIsFetching,
+  makeSelectIsVerified,
 };

@@ -6,24 +6,37 @@ import { call, put, takeLatest } from "redux-saga/effects";
 import { push } from "connected-react-router";
 
 import { LOGIN_USER } from "./action-types";
-import { loginUserSuccess, loginUserError, setImportSafeFlag } from "./actions";
+import { loginUserSuccess, loginUserError } from "./actions";
 import { getSafeInfoSuccess } from "../global/actions";
 import request from "utils/request";
 import { loginEndpoint } from "constants/endpoints";
 import { networkId } from "constants/networks";
 import { routeGenerators } from "constants/routes/generators";
 
-export function* loginUser({ safeAddress }) {
-  const requestURL = `${loginEndpoint}?safeAddress=${safeAddress}&networkId=${networkId}`;
+export function* loginUser({
+  safeAddress,
+  encryptionKeyData,
+  signature,
+  password,
+  owner,
+}) {
+  const requestURL = `${loginEndpoint}`;
+
   const options = {
-    method: "GET",
+    method: "POST",
+    body: JSON.stringify({
+      safeAddress,
+      encryptionKeyData,
+      signature,
+      password,
+      owner,
+      networkId,
+    }),
   };
 
   try {
     const result = yield call(request, requestURL, options);
-    if (result.flag === 145) {
-      yield put(setImportSafeFlag(result.flag));
-    } else if (result.flag !== 200) {
+    if (result.flag !== 200) {
       // Error in payload
       yield put(loginUserError(result.log));
     } else {

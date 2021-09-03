@@ -1,6 +1,6 @@
 import React, { useState, useEffect, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectSaga } from "utils/injectSaga";
@@ -23,6 +23,7 @@ import Loading from "components/common/Loading";
 import { loginUser } from "store/login/actions";
 import SearchIcon from "assets/icons/dashboard/search-icon.svg";
 import ControlledInput from "components/common/Input";
+import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
 
@@ -111,7 +112,18 @@ function SwitchAccountSidebar() {
     );
     setEncryptionKey(encryptionKey);
     closeSidebar();
-    dispatch(loginUser(safe, encryptionKeyData));
+    const password = getPassword(sign);
+
+    if (safeAddress !== safe) {
+      dispatch(
+        loginUser({
+          safeAddress: safe,
+          encryptionKeyData,
+          password,
+          owner: account,
+        })
+      );
+    }
   };
 
   const renderSafes = () => {

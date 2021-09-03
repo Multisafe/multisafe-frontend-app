@@ -53,6 +53,7 @@ export default styled(Menu)`
         text-align: left;
         color: #373737;
         margin-bottom: 0.6rem;
+        word-break: break-all;
       }
 
       .address {

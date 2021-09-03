@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
 import { EditContainer } from "./styles";

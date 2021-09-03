@@ -1,4 +1,6 @@
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
+
+import { MESSAGE_TO_AUTHENTICATE } from "constants/index";
 import { ORGANISATION_TYPE } from "store/login/resources";
 
 export const getPublicKey = (sign) => {
@@ -29,4 +31,14 @@ export const getDecryptedDetails = (
     console.error(err);
     return "";
   }
+};
+
+export const getPassword = (sign) => {
+  if (!sign) return;
+
+  const password = cryptoUtils.getPasswordUsingSignatures(
+    MESSAGE_TO_AUTHENTICATE,
+    sign
+  );
+  return password;
 };
