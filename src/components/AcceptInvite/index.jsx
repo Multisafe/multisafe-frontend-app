@@ -264,7 +264,9 @@ const AcceptInvite = () => {
 
         {!hasAlreadySigned ? (
           <React.Fragment>
-            <p className="subtitle mb-5 pb-5">Please sign to authorize.</p>
+            <p className="subtitle mb-5 pb-5">
+              Please sign and authorize MultiSafe to derive your encryption key.
+            </p>
             <Button
               type="button"
               onClick={signTerms}
@@ -272,7 +274,7 @@ const AcceptInvite = () => {
               loading={signing}
               disabled={signing}
             >
-              I'm in
+              Sign and Authorize
             </Button>
           </React.Fragment>
         ) : (

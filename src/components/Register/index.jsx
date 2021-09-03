@@ -35,6 +35,7 @@ import CompanyPng from "assets/images/register/company.png";
 import OwnerPng from "assets/images/register/owner.png";
 import ThresholdIcon from "assets/images/register/threshold.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
+import VerificationSvg from "assets/images/register/verification.svg";
 import { Error } from "components/common/Form/styles";
 import { getPassword, getPublicKey } from "utils/encryption";
 import addresses from "constants/addresses";
@@ -929,16 +930,17 @@ const Register = () => {
           style={{ minWidth: "10rem" }}
         />
         <h3 className="title">We care for Your Privacy </h3>
-        <p className="subtitle">Please sign to authorize.</p>
-
+        <p className="subtitle mb-5 pb-5">
+          Please sign and authorize MultiSafe to derive your encryption key.
+        </p>
         <Button
           type="button"
           onClick={signTerms}
-          className="proceed-btn"
-          disabled={signing}
+          className="mx-auto d-block proceed-btn"
           loading={signing}
+          disabled={signing}
         >
-          I'm in
+          Sign and Authorize
         </Button>
       </StepDetails>
     );
@@ -979,17 +981,19 @@ const Register = () => {
     return (
       <StepDetails>
         <Img
-          src={PrivacySvg}
-          alt="privacy"
+          src={VerificationSvg}
+          alt="verification"
           className="my-4"
           width="100"
           style={{ minWidth: "10rem" }}
         />
         <h3 className="title">One-time Verification</h3>
-        <p className="subtitle">
-          Please sign to authenticate your connected account.
+        <p className="subtitle pb-0">
+          A password has been created from your signature.
         </p>
-
+        <p className="subtitle">
+          Please sign your password to verify your connected account.
+        </p>
         <Button
           type="button"
           onClick={signAndAuthenticate}
@@ -997,7 +1001,7 @@ const Register = () => {
           disabled={authenticating}
           loading={authenticating}
         >
-          Sign and Authenticate
+          Sign and Verify
         </Button>
       </StepDetails>
     );

@@ -47,6 +47,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import Img from "components/common/Img";
 import CompanyPng from "assets/images/register/company.png";
 import PrivacySvg from "assets/images/register/privacy.svg";
+import VerificationSvg from "assets/images/register/verification.svg";
 import { Error } from "components/common/Form/styles";
 import { getPassword, getPublicKey } from "utils/encryption";
 
@@ -674,7 +675,9 @@ const Login = () => {
 
         {!hasAlreadySigned ? (
           <React.Fragment>
-            <p className="subtitle mb-5 pb-5">Please sign to authorize.</p>
+            <p className="subtitle mb-5 pb-5">
+              Please sign and authorize MultiSafe to derive your encryption key.
+            </p>
             <Button
               type="button"
               onClick={signTerms}
@@ -682,7 +685,7 @@ const Login = () => {
               loading={signing}
               disabled={signing}
             >
-              I'm in
+              Sign and Authorize
             </Button>
           </React.Fragment>
         ) : (
@@ -809,15 +812,18 @@ const Login = () => {
     return (
       <StepDetails>
         <Img
-          src={PrivacySvg}
-          alt="privacy"
+          src={VerificationSvg}
+          alt="verification"
           className="my-4"
           width="100"
           style={{ minWidth: "10rem" }}
         />
         <h3 className="title">One-time Verification</h3>
+        <p className="subtitle pb-0">
+          A password has been created from your signature.
+        </p>
         <p className="subtitle">
-          Please sign to authenticate your connected account.
+          Please sign your password to verify your connected account.
         </p>
 
         <Button
@@ -827,7 +833,7 @@ const Login = () => {
           disabled={authenticating}
           loading={authenticating}
         >
-          Sign and Authenticate
+          Sign and Verify
         </Button>
       </StepDetails>
     );
