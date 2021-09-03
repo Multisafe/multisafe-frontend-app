@@ -4,10 +4,10 @@ import { Circle, Inner } from "./styles";
 // Add prop-types
 
 const CircularProgress = ({ current, max, color, ...rest }) => {
-  const percentage = useMemo(() => Math.floor((current / max) * 100), [
-    current,
-    max,
-  ]);
+  const percentage = useMemo(
+    () => Math.floor((current / max) * 100),
+    [current, max]
+  );
   return (
     <Circle color={color} percentage={percentage} {...rest}>
       <svg>

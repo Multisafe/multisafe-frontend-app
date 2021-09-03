@@ -9,6 +9,7 @@ import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { getDecryptedDetails } from "utils/encryption";
 import Avatar from "components/common/Avatar";
+import { DisbursementCard } from "./styles";
 
 export default function DisbursementDetails({
   paidTeammates,
@@ -326,10 +327,13 @@ export default function DisbursementDetails({
     }
   };
 
-  return (
-    <React.Fragment>
-      {renderTitle()}
-      {renderTransactionDetails()}
-    </React.Fragment>
-  );
+  const title = renderTitle();
+  const transactionDetails = renderTransactionDetails();
+
+  return title || transactionDetails ? (
+    <DisbursementCard>
+      {title}
+      {transactionDetails}
+    </DisbursementCard>
+  ) : null;
 }

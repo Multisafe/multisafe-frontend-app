@@ -61,6 +61,9 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.ADD_SAFE_OWNER:
       return "Added Owner";
 
+    case TRANSACTION_MODES.CHANGE_THRESHOLD:
+      return "Changed Threshold";
+
     default:
       return "";
   }
@@ -135,10 +138,17 @@ export default function ExportButton() {
           let spentCurrencies = [];
           let spentFiatAmounts = [];
           let spentFiatCurrencies = [];
+          let txDescription = "";
 
           for (let i = 0; i < paidTeammates.length; i++) {
-            const { firstName, lastName, salaryAmount, salaryToken, usd } =
-              paidTeammates[i];
+            const {
+              firstName,
+              lastName,
+              salaryAmount,
+              salaryToken,
+              usd,
+              description,
+            } = paidTeammates[i];
 
             names.push(`${firstName || ""} ${lastName || ""}`);
             spentAmounts.push(salaryAmount);
@@ -147,6 +157,10 @@ export default function ExportButton() {
             );
             spentFiatAmounts.push(usd);
             spentFiatCurrencies.push("USD");
+
+            if (!txDescription) {
+              txDescription = description;
+            }
           }
 
           csvData.push({
@@ -156,6 +170,7 @@ export default function ExportButton() {
             "Transaction Type": direction,
             "Transaction Mode": getTransactionMode(transactionMode),
             Status: getStatus(status),
+            Description: txDescription,
             To: joinArray(names),
             "Spent Amount": joinArray(spentAmounts),
             "Spent Currency": joinArray(spentCurrencies),
