@@ -18,6 +18,7 @@ import CheckBox from "components/common/CheckBox";
 import {
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
+  makeSelectMultisigExecutionAllowed,
 } from "store/multisig/selectors";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
@@ -56,6 +57,7 @@ function RejectTxModal(props) {
   const threshold = useSelector(makeSelectThreshold());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const updating = useSelector(makeSelectUpdating());
+  const executionAllowed = useSelector(makeSelectMultisigExecutionAllowed());
 
   const dispatch = useDispatch();
 
@@ -112,6 +114,13 @@ function RejectTxModal(props) {
       }
     }
   }, [transactionDetails, threshold]);
+
+  useEffect(() => {
+    if (!executionAllowed) {
+      setShowExecute(false);
+      setShouldExecute(false);
+    }
+  }, [executionAllowed]);
 
   const handleToggleCheck = () => {
     setShouldExecute((shouldExecute) => !shouldExecute);
