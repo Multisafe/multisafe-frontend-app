@@ -1,18 +1,33 @@
-import React from "react";
+import React, {ReactNode, CSSProperties} from "react";
 
 import { Input } from "./styles";
+
+type Props = {
+  type: string,
+  name: string,
+  id: string,
+  value?: FixMe,
+  onChange?: FixMe,
+  placeholder?: string,
+  disabled?: boolean,
+  label?: ReactNode,
+  required?: boolean,
+  pattern?: RegExp,
+  register?: FixMe,
+  labelStyle?: CSSProperties
+}
 
 const InputField = ({
   name,
   id,
   label,
   register,
-  required,
+  required = false,
   pattern,
   type,
   labelStyle = {},
   ...rest
-}) => (
+}: Props) => (
   <>
     <Input
       name={name}

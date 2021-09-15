@@ -6,7 +6,14 @@ import { getDecryptedDetails } from "utils/encryption";
 import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 
-export default function TransactionName({ to, transactionMode }) {
+const DEFAULT_NAME = "Transaction";
+
+type Props = {
+  to: string,
+  transactionMode: number
+};
+
+export default function TransactionName({ to, transactionMode }: Props) {
   const [encryptionKey] = useEncryptionKey();
 
   const organisationType = useSelector(makeSelectOrganisationType());
@@ -43,4 +50,6 @@ export default function TransactionName({ to, transactionMode }) {
       </span>
     );
   }
+
+  return DEFAULT_NAME;
 }

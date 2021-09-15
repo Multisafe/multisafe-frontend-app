@@ -25,6 +25,12 @@ export const mainNavItems = [
     activeIcon: ActivePeopleIcon,
   },
   {
+    link: routeGenerators.dashboard.exchange,
+    name: "Exchange",
+    icon: PeopleIcon,
+    activeIcon: ActivePeopleIcon,
+  },
+  {
     link: routeGenerators.dashboard.assets,
     name: "Assets",
     icon: AssetsIcon,

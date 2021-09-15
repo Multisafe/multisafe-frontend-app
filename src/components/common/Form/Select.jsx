@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Select from "react-select";
 import { Controller } from "react-hook-form";
 
-const inputStyles = {
+export const inputStyles = {
   control: (styles, state) => ({
     ...styles,
     width: state.selectProps.width || "100%",
