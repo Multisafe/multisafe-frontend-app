@@ -9,8 +9,8 @@ import { makeSelectOrganisationType } from "store/global/selectors";
 const DEFAULT_NAME = "Transaction";
 
 type Props = {
-  to: string,
-  transactionMode: number
+  to: string;
+  transactionMode: number;
 };
 
 export default function TransactionName({ to, transactionMode }: Props) {

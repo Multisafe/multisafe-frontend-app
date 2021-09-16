@@ -7,18 +7,13 @@ type Props = {
 
 const DEFAULT_DESCRIPTION = "No description given...";
 
-export const TransactionDescription = ({
-  decryptedDetails
-}: Props) => {
-  const description =
-    decryptedDetails?.[0]?.description || DEFAULT_DESCRIPTION;
+export const TransactionDescription = ({ decryptedDetails }: Props) => {
+  const description = decryptedDetails?.[0]?.description || DEFAULT_DESCRIPTION;
 
   return (
     <DescriptionCard>
       <div className="title">Description</div>
-      <div className="subtitle">
-        {description}
-      </div>
+      <div className="subtitle">{description}</div>
     </DescriptionCard>
   );
 };

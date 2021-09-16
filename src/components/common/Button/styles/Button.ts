@@ -1,8 +1,8 @@
 import styled from "styled-components/macro";
 
 type Props = {
-  width?: string,
-  large?: boolean
+  width?: string;
+  large?: boolean;
 };
 
 export default styled.button<Props>`

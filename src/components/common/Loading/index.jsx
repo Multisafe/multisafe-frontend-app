@@ -2,7 +2,7 @@ import React from "react";
 import { LoadingContainer } from "./styles";
 
 const Loading = ({
-  className = '',
+  className = "",
   color = "#fff",
   width = "2rem",
   height = "2rem",

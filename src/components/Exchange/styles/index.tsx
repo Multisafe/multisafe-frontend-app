@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 import { Card } from "components/common/Card";
 
 export const ExchangePage = styled.div`
@@ -51,24 +51,24 @@ export const ExchangeDetailsGroup = styled.div`
   display: flex;
   justify-content: space-between;
   font-size: 1.4rem;
-`
+`;
 
 export const ExchangeControlsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
+`;
 
 export const ExchangeControls = styled.div`
   display: flex;
   gap: 1rem;
-`
+`;
 
 export const LoadingRateContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   width: 100%;
   height: 100%;
-`
+`;

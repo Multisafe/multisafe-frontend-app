@@ -1,30 +1,35 @@
-import {useState, useEffect} from 'react';
-import {ParaSwap} from 'paraswap';
-import {BigNumber} from '@ethersproject/bignumber';
+import { useState, useEffect } from "react";
+import { ParaSwap } from "paraswap";
+import { BigNumber } from "@ethersproject/bignumber";
 import { getAddress } from "@ethersproject/address";
-import {networkId} from 'constants/networks';
+import { networkId } from "constants/networks";
 import addresses from "constants/addresses";
-import {useSelector} from 'react-redux';
-import {makeSelectOwnerSafeAddress} from '../store/global/selectors';
-import {useBatchTransactions, useContract, useTransactionEffects} from './index';
-import ERC20ABI from '../constants/abis/ERC20.json';
-import useActiveWeb3React from './useActiveWeb3React';
-import {TRANSACTION_MODES} from '../constants/transactions';
-import {makeSelectSelectedGasPriceInWei} from '../store/gas/selectors';
+import { useSelector } from "react-redux";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import {
+  useBatchTransactions,
+  useContract,
+  useTransactionEffects,
+} from "./index";
+import ERC20ABI from "../constants/abis/ERC20.json";
+import useActiveWeb3React from "./useActiveWeb3React";
+import { TRANSACTION_MODES } from "../constants/transactions";
+import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 
 const paraSwap = new ParaSwap(networkId);
 
 const DEFAULT_SLIPPAGE = 1;
 
 export const useExchange = () => {
-  const [proxyAddress, setProxyAddress] = useState<string>('');
+  const [proxyAddress, setProxyAddress] = useState<string>("");
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const { account } = useActiveWeb3React();
 
   const [baseRequestBody, setBaseRequestBody] = useState<Object>();
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
 
-  const { executeBatchTransactions, loadingTx, txHash, txData } = useBatchTransactions();
+  const { executeBatchTransactions, loadingTx, txHash, txData } =
+    useBatchTransactions();
   useTransactionEffects({ txHash, txData, baseRequestBody });
 
   const erc20Contract = useContract(addresses.ZERO_ADDRESS, ERC20ABI, true);
@@ -33,17 +38,22 @@ export const useExchange = () => {
 
   const getProxyAddress = async () => {
     const proxyAddressResponse = await paraSwap.getTokenTransferProxy();
-    if (typeof proxyAddressResponse === 'string') { //check Address | APIError
+    if (typeof proxyAddressResponse === "string") {
+      //check Address | APIError
       setProxyAddress(proxyAddressResponse);
     }
-  }
+  };
 
   useEffect(() => {
     getProxyAddress();
   }, []);
 
-  const getExchangeRate = async (payTokenAddress: string, receiveTokenAddress: string, amount: BigNumber) => {
-    setError('');
+  const getExchangeRate = async (
+    payTokenAddress: string,
+    receiveTokenAddress: string,
+    amount: BigNumber
+  ) => {
+    setError("");
 
     const rate = await paraSwap.getRate(
       payTokenAddress,
@@ -52,20 +62,25 @@ export const useExchange = () => {
       safeAddress
     );
 
-    if ('message' in rate) {
+    if ("message" in rate) {
       console.log(rate.message);
       setError(rate.message);
       return;
     }
 
     return rate;
-  }
+  };
 
-  const approveAndSwap = async (payTokenAddress: string, receiveTokenAddress: string, amount: BigNumber, slippage: number = DEFAULT_SLIPPAGE) => {
-    setError('');
+  const approveAndSwap = async (
+    payTokenAddress: string,
+    receiveTokenAddress: string,
+    amount: BigNumber,
+    slippage: number = DEFAULT_SLIPPAGE
+  ) => {
+    setError("");
 
     if (!erc20Contract || !proxyAddress) {
-      throw new Error('Contract or proxy address not initiated');
+      throw new Error("Contract or proxy address not initiated");
     }
 
     const contract = erc20Contract.attach(payTokenAddress);
@@ -74,7 +89,7 @@ export const useExchange = () => {
       safeAddress,
       createdBy: account,
       to: proxyAddress,
-      transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP
+      transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP,
     });
 
     const rate = await getExchangeRate(
@@ -87,21 +102,16 @@ export const useExchange = () => {
       return;
     }
 
-    console.log(rate)
+    console.log(rate);
 
-    const {
-      srcToken,
-      destToken,
-      srcAmount,
-      destAmount,
-    } = rate;
+    const { srcToken, destToken, srcAmount, destAmount } = rate;
 
     const minAmount = BigNumber.from(destAmount)
       .div(100)
       .mul(100 - slippage)
       .toString();
 
-    console.log(minAmount)
+    console.log(minAmount);
 
     const txParams = await paraSwap.buildTx(
       srcToken,
@@ -120,36 +130,39 @@ export const useExchange = () => {
       }
     );
 
-    if ('message' in txParams) {
+    if ("message" in txParams) {
       console.log(txParams.message);
-      setError(txParams.message)
+      setError(txParams.message);
       return;
     }
 
-    console.log(txParams)
+    console.log(txParams);
 
-    const transactions = [{
-      operation: 0, // CALL
-      to: contract.address,
-      value: 0,
-      data: contract.interface.encodeFunctionData("approve", [
-        proxyAddress,
-        amount
-      ]),
-    }, {
-      operation: 0, // CALL
-      to: txParams.to,
-      value: txParams.value,
-      data: txParams.data
-    }];
+    const transactions = [
+      {
+        operation: 0, // CALL
+        to: contract.address,
+        value: 0,
+        data: contract.interface.encodeFunctionData("approve", [
+          proxyAddress,
+          amount,
+        ]),
+      },
+      {
+        operation: 0, // CALL
+        to: txParams.to,
+        value: txParams.value,
+        data: txParams.data,
+      },
+    ];
 
-    executeBatchTransactions({transactions});
-  }
+    executeBatchTransactions({ transactions });
+  };
 
   return {
     paraSwap,
     error,
     getExchangeRate,
-    approveAndSwap
-  }
-}
+    approveAndSwap,
+  };
+};
