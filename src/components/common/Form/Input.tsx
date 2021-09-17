@@ -15,6 +15,7 @@ type Props = {
   pattern?: RegExp;
   register?: FixMe;
   labelStyle?: CSSProperties;
+  step?: FixMe;
 };
 
 const InputField = ({

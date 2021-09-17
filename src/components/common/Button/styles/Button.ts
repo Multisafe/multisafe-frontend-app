@@ -56,6 +56,18 @@ export default styled.button<Props>`
     }
   }
 
+  &.secondary-3 {
+    //TODO rework button types (style guide)
+    background: white;
+    border: 0.1px solid #dddcdc;
+    color: #989898;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.primary};
+      color: white;
+    }
+  }
+
   &.danger {
     box-shadow: 1rem 1rem 2rem 0 rgba(35, 30, 79, 0.1);
     background-color: #ff4660;

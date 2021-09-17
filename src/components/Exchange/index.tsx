@@ -31,20 +31,18 @@ import { constructLabel } from "utils/tokens";
 import { show } from "redux-modal";
 import { useExchange } from "hooks/useExchange";
 import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
-import { defaultTokenDetails } from "constants/index";
 import { BigNumber } from "@ethersproject/bignumber";
 import { ExchangeDetails } from "./ExhcangeDetails";
+import { DEFAULT_SLIPPAGE } from "./constants";
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
-const DEFAULT_SLIPPAGE = "1";
 
 const PAY_TOKEN = "PAY_TOKEN";
 const RECEIVE_TOKEN = "RECEIVE_TOKEN";
-const SLIPPAGE = "SLIPPAGE";
 
 const PAY_AMOUNT = "PAY_AMOUNT";
 const RECEIVE_AMOUNT = "RECEIVE_AMOUNT";
@@ -56,7 +54,7 @@ const getTokensByAddress = (tokenList: FixMe) =>
     if (current.symbol === "USD") {
       return acc;
     }
-    const address = current.address || ETH_ADDRESS;
+    const address = (current.address || ETH_ADDRESS).toLowerCase();
     acc[address] = current;
     return acc;
   }, {});
@@ -77,8 +75,11 @@ export default function Exchange() {
 
   const [payToken, setPayToken] = useState<string>(ETH_ADDRESS);
   const [receiveToken, setReceiveToken] = useState<string>(DAI_ADDRESS);
-  const [slippage, setSlippage] = useState<number>(1);
+  const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE);
   const [tokensByAddress, setTokensByAddress] = useState<FixMe>(
+    getTokensByAddress([])
+  );
+  const [safeTokensByAddress, setSafeTokensByAddress] = useState<FixMe>(
     getTokensByAddress([])
   );
   const [loadingRate, setLoadingRate] = useState(false);
@@ -104,6 +105,14 @@ export default function Exchange() {
       setTokensByAddress(transformedTokens);
     }
   }, [tokenDetails]);
+
+  useEffect(() => {
+    if (safeTokenList) {
+      const transformedTokens = getTokensByAddress(safeTokenList);
+
+      setSafeTokensByAddress(transformedTokens);
+    }
+  }, [safeTokenList]);
 
   const { register, errors, control, setValue } = useForm({
     mode: "onChange",
@@ -235,7 +244,7 @@ export default function Exchange() {
                     />
                   </div>
                   <div>
-                    Balance: {tokensByAddress?.[payToken]?.balance || 0}
+                    Balance: {safeTokensByAddress?.[payToken]?.balance || 0}
                   </div>
                 </ExchangeGroup>
                 <ExchangeGroup>
@@ -245,6 +254,7 @@ export default function Exchange() {
                     name={PAY_AMOUNT}
                     register={register}
                     placeholder=""
+                    step="any"
                   />
                   <div>USD: {rate?.srcUSD || "-"}</div>
                 </ExchangeGroup>
@@ -275,7 +285,7 @@ export default function Exchange() {
                     />
                   </div>
                   <div>
-                    Balance: {tokensByAddress?.[receiveToken]?.balance || 0}
+                    Balance: {safeTokensByAddress?.[receiveToken]?.balance || 0}
                   </div>
                 </ExchangeGroup>
                 <ExchangeGroup>
@@ -286,6 +296,7 @@ export default function Exchange() {
                     register={register}
                     placeholder=""
                     disabled={true}
+                    step="any"
                   />
                   <div>USD: {rate?.destUSD || "-"}</div>
                 </ExchangeGroup>

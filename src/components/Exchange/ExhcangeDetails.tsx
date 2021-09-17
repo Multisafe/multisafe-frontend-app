@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { OptimalRate } from "paraswap-core";
 import { useSelector } from "react-redux";
+import { useForm, useWatch } from "react-hook-form";
+import { Input, ErrorMessage } from "components/common/Form";
 import {
+  ExchangeCardTitle,
   ExchangeGroup,
   ExchangeDetailsGroup,
   ExchangeControls,
@@ -15,6 +18,7 @@ import Loading from "../common/Loading";
 import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
 import Img from "../common/Img";
 import { makeSelectGasMode } from "store/global/selectors";
+import { DEFAULT_SLIPPAGE } from "./constants";
 
 type Props = {
   loading?: boolean;
@@ -41,16 +45,20 @@ const VIEWS = {
   SETTINGS: "SETTINGS",
 };
 
-const ExchangeSettingsGroup = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.4rem;
-`;
+const CUSTOM_SLIPPAGE = "CUSTOM_SLIPPAGE";
 
 const ExchangeError = styled.div`
   font-size: 1.6rem;
   color: #ff4b55;
+`;
+
+const ExchangeWarning = styled.div`
+  font-size: 1.6rem;
+  color: #fcbc04;
+`;
+
+const SlippageInput = styled(Input)`
+  width: 12rem;
 `;
 
 export const ExchangeDetails = (props: Props) => {
@@ -119,47 +127,116 @@ export const ExchangeDetails = (props: Props) => {
             <ExchangeError>{error}</ExchangeError>
             <ExchangeControls>
               <Button className="secondary-2" onClick={toggleView}>
-                <Img src={SettingsIcon} alt="settings" />
+                <Img src={SettingsIcon} alt="settings" width={16} />
               </Button>
               <Button onClick={onExchangeClick}>Exchange</Button>
             </ExchangeControls>
           </ExchangeControlsContainer>
         </>
       ) : (
-        <>
-          <ExchangeSettingsGroup>
-            <div>Slippage</div>
-            <ExchangeControls>
-              <Button
-                className="secondary-2"
-                onClick={() => onSlippageChange(0.5)}
-              >
-                .5%
-              </Button>
-              <Button
-                className="secondary-2"
-                onClick={() => onSlippageChange(1)}
-              >
-                1%
-              </Button>
-              <Button
-                className="secondary-2"
-                onClick={() => onSlippageChange(2)}
-              >
-                2%
-              </Button>
-            </ExchangeControls>
-          </ExchangeSettingsGroup>
-          <ExchangeControlsContainer>
-            <ExchangeError>{error}</ExchangeError>
-            <ExchangeControls>
-              <Button className="secondary-2" onClick={toggleView}>
-                Back
-              </Button>
-            </ExchangeControls>
-          </ExchangeControlsContainer>
-        </>
+        <ExhcangeSettings
+          {...{
+            error,
+            slippage,
+            onSlippageChange,
+            toggleView,
+          }}
+        />
       )}
     </ExchangeDetailsCard>
+  );
+};
+
+type SettingsProps = {
+  slippage: number;
+  onSlippageChange: (value: number) => void;
+  toggleView: () => void;
+  error: string;
+};
+
+const ExhcangeSettings = ({
+  slippage,
+  onSlippageChange,
+  toggleView,
+  error,
+}: SettingsProps) => {
+  const { register, errors, control, formState, setValue } = useForm({
+    mode: "onChange",
+  });
+
+  useEffect(() => {
+    setValue(CUSTOM_SLIPPAGE, slippage);
+  }, [slippage]);
+
+  const customSlippage = useWatch({
+    control,
+    name: CUSTOM_SLIPPAGE,
+    defaultValue: slippage,
+  });
+  const transformedCustomSlippage = Number(customSlippage);
+
+  const setSlippage = (value: number) => {
+    setValue(CUSTOM_SLIPPAGE, value);
+  };
+
+  const saveSettings = () => {
+    onSlippageChange(transformedCustomSlippage);
+    toggleView();
+  };
+
+  const resetSettings = () => {
+    setValue(CUSTOM_SLIPPAGE, slippage);
+  };
+
+  const onBackClick = () => {
+    resetSettings();
+    toggleView();
+  };
+
+  return (
+    <>
+      <ExchangeGroup>
+        <ExchangeCardTitle>Slippage</ExchangeCardTitle>
+        <ExchangeControls>
+          <SlippageInput
+            type="number"
+            id={CUSTOM_SLIPPAGE}
+            name={CUSTOM_SLIPPAGE}
+            register={register}
+            placeholder=""
+            step="any"
+          />
+          <Button
+            className={transformedCustomSlippage === 1 ? "" : "secondary-3"}
+            onClick={() => setSlippage(1)}
+          >
+            1%
+          </Button>
+          <Button
+            className={transformedCustomSlippage === 2 ? "" : "secondary-3"}
+            onClick={() => setSlippage(2)}
+          >
+            2%
+          </Button>
+        </ExchangeControls>
+        {customSlippage > 1 ? (
+          <ExchangeWarning>Your transaction may be frontrun</ExchangeWarning>
+        ) : null}
+      </ExchangeGroup>
+      <ExchangeControlsContainer>
+        <ExchangeError>{error}</ExchangeError>
+        <ExchangeControls>
+          <Button className="secondary-2" onClick={onBackClick}>
+            Back
+          </Button>
+          <Button
+            disabled={transformedCustomSlippage === slippage}
+            onClick={saveSettings}
+          >
+            Save
+          </Button>
+        </ExchangeControls>
+      </ExchangeControlsContainer>
+    </>
   );
 };
