@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ParaSwap } from "paraswap";
-import { BigNumber } from "@ethersproject/bignumber";
+import {BigNumber} from 'bignumber.js';
 import { getAddress } from "@ethersproject/address";
 import { networkId } from "constants/networks";
 import addresses from "constants/addresses";
@@ -51,7 +51,7 @@ export const useExchange = () => {
   const getExchangeRate = async (
     payTokenAddress: string,
     receiveTokenAddress: string,
-    amount: BigNumber
+    amount: FixMe
   ) => {
     setError("");
 
@@ -74,8 +74,9 @@ export const useExchange = () => {
   const approveAndSwap = async (
     payTokenAddress: string,
     receiveTokenAddress: string,
-    amount: BigNumber,
-    slippage: number = DEFAULT_SLIPPAGE
+    amount: FixMe,
+    slippage: number = DEFAULT_SLIPPAGE,
+    baseRequestBody: FixMe
   ) => {
     setError("");
 
@@ -90,6 +91,7 @@ export const useExchange = () => {
       createdBy: account,
       to: proxyAddress,
       transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP,
+      ...baseRequestBody
     });
 
     const rate = await getExchangeRate(
@@ -106,11 +108,9 @@ export const useExchange = () => {
 
     const { srcToken, destToken, srcAmount, destAmount } = rate;
 
-    const minAmount = BigNumber.from(destAmount)
-      .div(100)
-      .mul(100 - slippage)
-      .toString();
-
+    const minAmount = new BigNumber(destAmount)
+      .times(1 - slippage / 100)
+      .toFixed(0);
     console.log(minAmount);
 
     const txParams = await paraSwap.buildTx(

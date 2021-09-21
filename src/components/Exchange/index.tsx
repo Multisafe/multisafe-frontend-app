@@ -9,6 +9,8 @@ import {
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
 import { useForm, useWatch } from "react-hook-form";
+//@ts-ignore
+import { cryptoUtils } from "coinshift-sdk";
 import {
   ExchangePage,
   ExhangeContainer,
@@ -19,13 +21,14 @@ import {
 } from "./styles";
 import { inputStyles } from "../common/Form";
 import { Input, ErrorMessage } from "components/common/Form";
+import { useLocalStorage } from "hooks";
 import {
   PayTokenModal,
   ReceiveTokenModal,
   PAY_TOKEN_MODAL,
   RECEIVE_TOKEN_MODAL,
 } from "./TokenSelectModal";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import {makeSelectOrganisationType, makeSelectOwnerSafeAddress} from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import { constructLabel } from "utils/tokens";
 import { show } from "redux-modal";
@@ -72,6 +75,9 @@ const getTokenLabel = (tokenDetails: FixMe) => {
 export default function Exchange() {
   const dispatch = useDispatch();
   const { getExchangeRate, approveAndSwap, error } = useExchange();
+
+  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const organisationType = useSelector(makeSelectOrganisationType());
 
   const [payToken, setPayToken] = useState<string>(ETH_ADDRESS);
   const [receiveToken, setReceiveToken] = useState<string>(DAI_ADDRESS);
@@ -198,7 +204,16 @@ export default function Exchange() {
       payToken,
       receiveToken,
       getAmountInWei(payTokenAmount, tokensByAddress[payToken].decimals),
-      slippage
+      slippage,
+      {
+        to: cryptoUtils.encryptDataUsingEncryptionKey(
+          JSON.stringify({
+            description: `Swapping ${payTokenAmount} ${tokensByAddress[payToken].symbol} for ${tokensByAddress[receiveToken].symbol}`
+          }),
+          encryptionKey,
+          organisationType
+        )
+      }
     );
   };
 
