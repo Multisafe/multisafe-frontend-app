@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
 
 import {
-  addTransaction,
+  // addTransaction,
   clearTransactionHash,
 } from "store/transactions/actions";
 import safeReducer from "store/safe/reducer";
@@ -72,17 +72,23 @@ export default function useTransactionEffects({
 
   useEffect(() => {
     if (baseRequestBody) {
+      console.log({ multisigNonce, baseRequestBody, txHash });
       if (txHash) {
         dispatch(
-          addTransaction({ ...baseRequestBody, transactionHash: txHash })
+          createMultisigTransaction({
+            ...baseRequestBody,
+            transactionHash: txHash,
+            nonce: multisigNonce,
+          })
         );
       } else if (txData) {
         if (!isMultiOwner) {
           // threshold = 1 or single owner
           dispatch(
-            addTransaction({
+            createMultisigTransaction({
               ...baseRequestBody,
               txData,
+              nonce: multisigNonce,
             })
           );
         } else {
