@@ -322,11 +322,13 @@ export default function Exchange() {
       <PayTokenModal
         title="Pay with"
         tokenList={tokens}
+        safeTokensByAddress={safeTokensByAddress}
         onTokenSelect={payTokenSelect}
       />
       <ReceiveTokenModal
         title="Receive"
         tokenList={tokens}
+        safeTokensByAddress={safeTokensByAddress}
         onTokenSelect={receiveTokenSelect}
       />
     </>

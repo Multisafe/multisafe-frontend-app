@@ -12,6 +12,7 @@ export const RECEIVE_TOKEN_MODAL = "receive-token-modal";
 type Props = InjectedProps & {
   title: string;
   tokenList: FixMe[];
+  safeTokensByAddress: Record<string, FixMe>;
   onTokenSelect: (tokenDetails: FixMe) => void;
 };
 
@@ -70,8 +71,12 @@ const TokenSymbol = styled.div`
   font-size: 1.2rem;
 `;
 
+const TokenValue = styled.div`
+  font-size: 1.6rem;
+`;
+
 function TokenSelectModalComponent(props: Props) {
-  const { show, handleHide, title, tokenList, onTokenSelect } = props;
+  const { show, handleHide, title, tokenList, onTokenSelect, safeTokensByAddress } = props;
 
   const [query, setQuery] = useState("");
 
@@ -84,8 +89,7 @@ function TokenSelectModalComponent(props: Props) {
     return query
       ? tokenList.filter(({ symbol, name }) => {
           return (
-            symbol.toLowerCase().includes(query.toLowerCase()) ||
-            name.toLowerCase().includes(query.toLowerCase())
+            symbol.toLowerCase().startsWith(query.toLowerCase())
           );
         })
       : tokenList;
@@ -93,12 +97,15 @@ function TokenSelectModalComponent(props: Props) {
 
   const renderRow = useCallback(
     ({ index, style }) => {
-      const { address, name, symbol, logoURI, balance, decimals } =
+      const { address, name, symbol, logoURI } =
         filteredTokensList[index];
 
-      const tokenBalance = balance
-        ? getAmountFromWei(balance, decimals, 2)
-        : null;
+      const tokenBalance = safeTokensByAddress[address]?.balance;
+      const usdBalance = safeTokensByAddress[address]?.usd;
+
+      if (tokenBalance) {
+        console.log(safeTokensByAddress[address])
+      }
 
       const onClick = () => {
         onTokenSelect(address);
@@ -112,10 +119,12 @@ function TokenSelectModalComponent(props: Props) {
               <img src={logoURI} alt={name} width="30" />
               <TokenInfo>
                 <TokenName>{name}</TokenName>
-                <TokenSymbol>{symbol}</TokenSymbol>
+                <TokenSymbol>{tokenBalance ? `${tokenBalance} ` : ''}{symbol}</TokenSymbol>
               </TokenInfo>
             </TokenLabel>
-            <div>{tokenBalance}</div>
+            {usdBalance ? (
+              <TokenValue>≈ US${usdBalance}</TokenValue>
+            ): null}
           </TokenItem>
         </div>
       );
