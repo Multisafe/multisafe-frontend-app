@@ -72,7 +72,6 @@ export default function useTransactionEffects({
 
   useEffect(() => {
     if (baseRequestBody) {
-      console.log({ multisigNonce, baseRequestBody, txHash });
       if (txHash) {
         dispatch(
           createMultisigTransaction({
@@ -83,7 +82,7 @@ export default function useTransactionEffects({
         );
       } else if (txData) {
         if (!isMultiOwner) {
-          // threshold = 1 or single owner
+          // single owner meta transaction
           dispatch(
             createMultisigTransaction({
               ...baseRequestBody,
@@ -122,10 +121,5 @@ export default function useTransactionEffects({
         })
       );
     }
-  }, [
-    dispatch,
-    metaTxHash,
-    singleOwnerTransactionId,
-    // selectedCount,
-  ]);
+  }, [dispatch, metaTxHash, singleOwnerTransactionId]);
 }
