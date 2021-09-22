@@ -47,6 +47,10 @@ export default styled(Card)`
       border-bottom: 0.1rem solid #dddcdc;
       padding: 1.6rem 0;
 
+      &:hover {
+        opacity: 0.8;
+      }
+
       .tx-info {
         display: flex;
         align-items: center;

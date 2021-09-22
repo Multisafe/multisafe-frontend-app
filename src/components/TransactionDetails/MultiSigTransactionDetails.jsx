@@ -258,6 +258,7 @@ export default function MultiSigTransactions() {
       rejectedCount,
       confirmedCount,
     } = transactionDetails;
+    if (!confirmations) return null;
 
     const { transactionHash } = txDetails;
 
@@ -372,6 +373,7 @@ export default function MultiSigTransactions() {
       confirmations,
       txDetails,
       executor,
+      confirmationsRequired,
     } = transactionDetails;
 
     const {
@@ -419,16 +421,18 @@ export default function MultiSigTransactions() {
           )}
         </InfoCard>
 
-        <StepperCard>
-          <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
-            {renderConfirmationStatus({
-              confirmations,
-              createdBy,
-              executor,
-              currentSafeOwners,
-            })}
-          </Stepper>
-        </StepperCard>
+        {confirmationsRequired && (
+          <StepperCard>
+            <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
+              {renderConfirmationStatus({
+                confirmations,
+                createdBy,
+                executor,
+                currentSafeOwners,
+              })}
+            </Stepper>
+          </StepperCard>
+        )}
 
         <TransactionDescription
           decryptedDetails={decryptedDetails}

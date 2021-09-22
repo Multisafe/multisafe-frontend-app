@@ -54,7 +54,11 @@ function* getMultisigTransactions({ safeAddress, offset, limit }) {
       yield put(getMultisigTransactionsSuccess([], 0));
     } else {
       yield put(
-        getMultisigTransactionsSuccess(result.transactions, result.count)
+        getMultisigTransactionsSuccess(
+          result.transactions,
+          result.count,
+          result.isPendingTransactions
+        )
       );
     }
   } catch (err) {

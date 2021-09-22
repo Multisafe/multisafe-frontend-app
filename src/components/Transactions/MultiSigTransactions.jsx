@@ -7,6 +7,7 @@ import { getMultisigTransactions } from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
+  makeSelectIsPendingTransactions,
   makeSelectMultisigTransactionCount,
 } from "store/multisig/selectors";
 import { useInjectReducer } from "utils/injectReducer";
@@ -46,6 +47,7 @@ export default function MultiSigTransactions() {
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
   const txCount = useSelector(makeSelectMultisigTransactionCount());
+  const isPendingTransactions = useSelector(makeSelectIsPendingTransactions());
 
   // for infinite scroll
   const observer = useRef();
@@ -145,6 +147,12 @@ export default function MultiSigTransactions() {
         <div>
           <div className="title">Transactions</div>
           <div className="subtitle">Track your transaction status here</div>
+          {isPendingTransactions && (
+            <div className="subtitle mt-2">
+              One or more transactions have been submitted. They will show up
+              here shortly.
+            </div>
+          )}
         </div>
         <div>
           <ExportButton />
