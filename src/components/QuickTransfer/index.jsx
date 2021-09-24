@@ -52,14 +52,20 @@ export default function QuickTransfer(props) {
 
   const { loadingTx, massPayout } = useMassPayout();
 
-  const { register, errors, handleSubmit, formState, control, watch } = useForm(
-    {
-      mode: "onChange",
-      defaultValues: {
-        receivers: [{ address: "", amount: "" }],
-      },
-    }
-  );
+  const {
+    register,
+    errors,
+    handleSubmit,
+    formState,
+    control,
+    watch,
+    setValue,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      receivers: [{ address: "", amount: "" }],
+    },
+  });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "receivers",
@@ -212,7 +218,6 @@ export default function QuickTransfer(props) {
                   : ""
               }
             />
-
             {selectedToken && (
               <div>
                 <Controller
@@ -251,8 +256,26 @@ export default function QuickTransfer(props) {
                 />
               </div>
             )}
-            <div style={{ minWidth: "2rem" }}>
-              {fields.length > 1 && index === fields.length - 1 && (
+            {selectedTokenDetails && index === 0 && (
+              <div>
+                <Button
+                  type="button"
+                  onClick={() =>
+                    setValue(
+                      "receivers[0].amount",
+                      selectedTokenDetails.balance,
+                      { shouldValidate: true }
+                    )
+                  }
+                  className="py-2"
+                  style={{ fontSize: "1rem", minHeight: "3rem", width: "2rem" }}
+                >
+                  MAX
+                </Button>
+              </div>
+            )}
+            {fields.length > 1 && index === fields.length - 1 && (
+              <div style={{ minWidth: "4rem" }}>
                 <Button
                   type="button"
                   iconOnly
@@ -261,8 +284,11 @@ export default function QuickTransfer(props) {
                 >
                   <Img src={DeleteSvg} alt="remove" width="16" />
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
+            {index !== 0 && index !== fields.length - 1 && (
+              <div style={{ minWidth: "4rem" }}></div>
+            )}
           </div>
           <div className="error-row">
             {errors["receivers"] &&
