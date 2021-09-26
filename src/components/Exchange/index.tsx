@@ -18,6 +18,7 @@ import {
   ExchangeCardTitle,
   ExchangeGroup,
   ExchangeInputGroup,
+  ExchangeInput, SwapExchangeSide
 } from "./styles";
 import { inputStyles } from "../common/Form";
 import { Input, ErrorMessage } from "components/common/Form";
@@ -37,6 +38,8 @@ import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { ExchangeDetails } from "./ExhcangeDetails";
 import { DEFAULT_SLIPPAGE } from "./constants";
+import {formatPrice} from './utils';
+import SwapIcon from 'assets/icons/dashboard/swap-exchange-side.svg';
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
@@ -221,6 +224,11 @@ export default function Exchange() {
     setSlippage(value);
   };
 
+  const onSwapExhcangeSide = () => {
+    setPayToken(receiveToken);
+    setReceiveToken(payToken);
+  };
+
   return (
     <>
       <ExchangePage>
@@ -238,84 +246,86 @@ export default function Exchange() {
             <ExchangeGroup>
               <ExchangeCardTitle>Pay with</ExchangeCardTitle>
               <ExchangeInputGroup>
-                <ExchangeGroup>
-                  <div onClick={onPayTokenClick}>
-                    <Select
-                      name={PAY_TOKEN}
-                      value={
-                        payToken
-                          ? {
-                              value: payToken,
-                              label: getTokenLabel(tokensByAddress[payToken]),
-                            }
-                          : null
-                      }
-                      styles={inputStyles}
-                      width="16rem"
-                      isSearchable={false}
-                      menuIsOpen={false}
-                      className="basic-single"
-                      classNamePrefix="select"
-                    />
-                  </div>
-                  <div>
-                    Balance: {safeTokensByAddress?.[payToken]?.balance || 0}
-                  </div>
-                </ExchangeGroup>
-                <ExchangeGroup>
-                  <Input
-                    type="number"
-                    id={PAY_AMOUNT}
-                    name={PAY_AMOUNT}
-                    register={register}
-                    placeholder=""
-                    step="any"
+                <div onClick={onPayTokenClick}>
+                  <Select
+                    name={PAY_TOKEN}
+                    value={
+                      payToken
+                        ? {
+                          value: payToken,
+                          label: getTokenLabel(tokensByAddress[payToken]),
+                        }
+                        : null
+                    }
+                    styles={inputStyles}
+                    width="12rem"
+                    isSearchable={false}
+                    menuIsOpen={false}
+                    className="basic-single"
+                    classNamePrefix="select"
                   />
-                  <div>USD: {rate?.srcUSD || "-"}</div>
-                </ExchangeGroup>
+                </div>
+                <div>{rate?.srcUSD ? `~$${formatPrice(Number(rate?.srcUSD))}` : ""}</div>
+                <ExchangeInput
+                  type="number"
+                  id={PAY_AMOUNT}
+                  name={PAY_AMOUNT}
+                  register={register}
+                  placeholder=""
+                  step="any"
+                />
               </ExchangeInputGroup>
+              {/*<div>*/}
+              {/*  Balance: {safeTokensByAddress?.[payToken]?.balance || 0}*/}
+              {/*</div>*/}
+              {/*<div>USD: {rate?.srcUSD || "-"}</div>*/}
+
               <ErrorMessage name="name" errors={errors} />
             </ExchangeGroup>
+            <SwapExchangeSide
+              onClick={onSwapExhcangeSide}
+              src={SwapIcon}
+              alt="swap-side"
+              width={30}
+            />
             <ExchangeGroup>
               <ExchangeCardTitle>Receive</ExchangeCardTitle>
               <ExchangeInputGroup>
-                <ExchangeGroup>
-                  <div onClick={onReceiveTokenClick}>
-                    <Select
-                      name={RECEIVE_TOKEN}
-                      value={
-                        receiveToken
-                          ? {
-                              value: receiveToken,
-                              label: getTokenLabel(
-                                tokensByAddress[receiveToken]
-                              ),
-                            }
-                          : null
-                      }
-                      styles={inputStyles}
-                      width="16rem"
-                      isSearchable={false}
-                      menuIsOpen={false}
-                    />
-                  </div>
-                  <div>
-                    Balance: {safeTokensByAddress?.[receiveToken]?.balance || 0}
-                  </div>
-                </ExchangeGroup>
-                <ExchangeGroup>
-                  <Input
-                    type="number"
-                    id={RECEIVE_AMOUNT}
-                    name={RECEIVE_AMOUNT}
-                    register={register}
-                    placeholder=""
-                    disabled={true}
-                    step="any"
+                <div onClick={onReceiveTokenClick}>
+                  <Select
+                    name={RECEIVE_TOKEN}
+                    value={
+                      receiveToken
+                        ? {
+                          value: receiveToken,
+                          label: getTokenLabel(
+                            tokensByAddress[receiveToken]
+                          ),
+                        }
+                        : null
+                    }
+                    styles={inputStyles}
+                    width="12rem"
+                    isSearchable={false}
+                    menuIsOpen={false}
                   />
-                  <div>USD: {rate?.destUSD || "-"}</div>
-                </ExchangeGroup>
+                </div>
+                <div>{rate?.destUSD ? `~$${formatPrice(Number(rate?.destUSD))}` : ""}</div>
+                <ExchangeInput
+                  type="number"
+                  id={RECEIVE_AMOUNT}
+                  name={RECEIVE_AMOUNT}
+                  register={register}
+                  placeholder=""
+                  disabled={true}
+                  step="any"
+                />
               </ExchangeInputGroup>
+              {/*<div>*/}
+              {/*  Balance: {safeTokensByAddress?.[receiveToken]?.balance || 0}*/}
+              {/*</div>*/}
+              {/*<div>USD: {rate?.destUSD || "-"}</div>*/}
+
             </ExchangeGroup>
           </ExchangeCard>
           <ExchangeDetails

@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { Card } from "components/common/Card";
+import { Input } from "components/common/Form";
+import Img from "components/common/Img";
 
 export const ExchangePage = styled.div`
   display: flex;
@@ -19,11 +21,11 @@ export const ExhangeContainer = styled.div`
 
 export const ExchangeCard = styled(Card)`
   width: 100%;
-  height: 28rem;
+  height: 38rem;
 
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 3rem;
 `;
 
 export const ExchangeDetailsCard = styled(ExchangeCard)`
@@ -34,12 +36,29 @@ export const ExchangeGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  font-size: 1.4rem;
 `;
 
 export const ExchangeInputGroup = styled.div`
+  border: 1px solid #dddcdc;
+  padding: 1rem;
+  border-radius: 4px;
   display: flex;
+  align-items: center;
   gap: 1rem;
+`;
+
+export const ExchangeInput = styled(Input)`
+  border: none;
+  text-align: right;
+  font-size: 1.6rem;
+  
+  &:focus {
+    border: none;
+  }
+
+  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
 `;
 
 export const ExchangeCardTitle = styled.div`
@@ -71,4 +90,12 @@ export const LoadingRateContainer = styled.div`
 
   width: 100%;
   height: 100%;
+`;
+
+export const SwapExchangeSide = styled(Img)`
+  align-self: center;
+  
+  &:hover {
+    cursor: pointer;
+  }
 `;

@@ -18,7 +18,7 @@ import Loading from "../common/Loading";
 import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
 import Img from "../common/Img";
 import { makeSelectGasMode } from "store/global/selectors";
-import { DEFAULT_SLIPPAGE } from "./constants";
+import { formatPrice } from "./utils";
 
 type Props = {
   loading?: boolean;
@@ -36,9 +36,6 @@ type Props = {
 const getOneTokenPrice = (payAmount: FixMe, receiveAmount: FixMe) => {
   return formatPrice(receiveAmount / payAmount);
 };
-
-const formatPrice = (num: number) =>
-  num >= 1 ? num.toFixed(2) : num.toFixed(18).replace(/(\.\d{1,4})\d+/, "$1");
 
 const VIEWS = {
   DETAILS: "DETAILS",
@@ -109,10 +106,6 @@ export const ExchangeDetails = (props: Props) => {
                 {getOneTokenPrice(receiveTokenAmount, payTokenAmount)}{" "}
                 {payTokenDetails?.symbol}
               </div>
-            </ExchangeDetailsGroup>
-            <ExchangeDetailsGroup>
-              <div>Price Slippage</div>
-              <div>{slippage}%</div>
             </ExchangeDetailsGroup>
             <ExchangeDetailsGroup>
               <div>Network Fee</div>

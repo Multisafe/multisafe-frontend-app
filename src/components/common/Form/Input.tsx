@@ -4,6 +4,9 @@ import { Input } from "./styles";
 
 type Props = {
   type: string;
+  inputmode?: string;
+  autocomplete?: string;
+  autocorrect?: string;
   name: string;
   id: string;
   value?: FixMe;
@@ -12,7 +15,7 @@ type Props = {
   disabled?: boolean;
   label?: ReactNode;
   required?: boolean;
-  pattern?: RegExp;
+  pattern?: FixMe;
   register?: FixMe;
   labelStyle?: CSSProperties;
   step?: FixMe;
