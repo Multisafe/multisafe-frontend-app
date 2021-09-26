@@ -21,7 +21,7 @@ export const ExhangeContainer = styled.div`
 
 export const ExchangeCard = styled(Card)`
   width: 100%;
-  height: 38rem;
+  height: 42rem;
 
   display: flex;
   flex-direction: column;
@@ -64,6 +64,11 @@ export const ExchangeInput = styled(Input)`
 export const ExchangeCardTitle = styled.div`
   font-size: 1.6rem;
   font-weight: bold;
+`;
+
+export const ExchangeCardSubtitle = styled.span`
+  font-size: 1.6rem;
+  font-weight: normal;
 `;
 
 export const ExchangeDetailsGroup = styled.div`

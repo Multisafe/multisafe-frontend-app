@@ -18,10 +18,9 @@ import {
   ExchangeCardTitle,
   ExchangeGroup,
   ExchangeInputGroup,
-  ExchangeInput, SwapExchangeSide
+  ExchangeInput, SwapExchangeSide, ExchangeCardSubtitle
 } from "./styles";
-import { inputStyles } from "../common/Form";
-import { Input, ErrorMessage } from "components/common/Form";
+import { Input, ErrorMessage, inputStyles } from "components/common/Form";
 import { useLocalStorage } from "hooks";
 import {
   PayTokenModal,
@@ -46,12 +45,14 @@ const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
+const DEFAULT_DESCRIPTION = "";
 
 const PAY_TOKEN = "PAY_TOKEN";
 const RECEIVE_TOKEN = "RECEIVE_TOKEN";
 
 const PAY_AMOUNT = "PAY_AMOUNT";
 const RECEIVE_AMOUNT = "RECEIVE_AMOUNT";
+const DESCRIPTION = "DESCRIPTION";
 
 const DEBOUNCE_TIMEOUT = 300; //ms
 
@@ -123,11 +124,12 @@ export default function Exchange() {
     }
   }, [safeTokenList]);
 
-  const { register, errors, control, setValue } = useForm({
+  const { register, errors, control, setValue, getValues } = useForm({
     mode: "onChange",
     defaultValues: {
       [PAY_AMOUNT]: DEFAULT_PAY_AMOUNT,
       [RECEIVE_AMOUNT]: DEFAULT_RECEIVE_AMOUNT,
+      [DESCRIPTION]: DEFAULT_DESCRIPTION,
     },
   });
 
@@ -203,6 +205,8 @@ export default function Exchange() {
   };
 
   const onExchangeClick = () => {
+    const values = getValues();
+
     approveAndSwap(
       payToken,
       receiveToken,
@@ -211,7 +215,9 @@ export default function Exchange() {
       {
         to: cryptoUtils.encryptDataUsingEncryptionKey(
           JSON.stringify({
-            description: `Swapping ${payTokenAmount} ${tokensByAddress[payToken].symbol} for ${tokensByAddress[receiveToken].symbol}`
+            description: values[DESCRIPTION]
+              ? values[DESCRIPTION]
+              : `Swapping ${payTokenAmount} ${tokensByAddress[payToken].symbol} for ${tokensByAddress[receiveToken].symbol}`
           }),
           encryptionKey,
           organisationType
@@ -326,6 +332,16 @@ export default function Exchange() {
               {/*</div>*/}
               {/*<div>USD: {rate?.destUSD || "-"}</div>*/}
 
+            </ExchangeGroup>
+            <ExchangeGroup>
+              <ExchangeCardTitle>Description <ExchangeCardSubtitle>(optional)</ExchangeCardSubtitle></ExchangeCardTitle>
+              <Input
+                type="text"
+                id={DESCRIPTION}
+                name={DESCRIPTION}
+                register={register}
+                placeholder="Enter description"
+              />
             </ExchangeGroup>
           </ExchangeCard>
           <ExchangeDetails
