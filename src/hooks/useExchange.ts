@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ParaSwap } from "paraswap";
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from "bignumber.js";
 import { getAddress } from "@ethersproject/address";
 import { networkId } from "constants/networks";
 import addresses from "constants/addresses";
@@ -91,7 +91,7 @@ export const useExchange = () => {
       createdBy: account,
       to: proxyAddress,
       transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP,
-      ...baseRequestBody
+      ...baseRequestBody,
     });
 
     const rate = await getExchangeRate(

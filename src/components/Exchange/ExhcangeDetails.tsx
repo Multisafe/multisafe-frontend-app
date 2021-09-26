@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { OptimalRate } from "paraswap-core";
 import { useSelector } from "react-redux";
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from "bignumber.js";
 import { Input, ErrorMessage } from "components/common/Form";
 import {
   ExchangeCardTitle,
@@ -167,7 +167,7 @@ const ExhcangeSettings = ({
 
   const onChange = (e: FixMe) => {
     onSlippageChange(Number(e.target.value));
-  }
+  };
 
   return (
     <>

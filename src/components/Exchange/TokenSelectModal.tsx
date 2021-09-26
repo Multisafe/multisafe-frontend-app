@@ -76,7 +76,14 @@ const TokenValue = styled.div`
 `;
 
 function TokenSelectModalComponent(props: Props) {
-  const { show, handleHide, title, tokenList, onTokenSelect, safeTokensByAddress } = props;
+  const {
+    show,
+    handleHide,
+    title,
+    tokenList,
+    onTokenSelect,
+    safeTokensByAddress,
+  } = props;
 
   const [query, setQuery] = useState("");
 
@@ -88,23 +95,20 @@ function TokenSelectModalComponent(props: Props) {
   const filteredTokensList = useMemo(() => {
     return query
       ? tokenList.filter(({ symbol, name }) => {
-          return (
-            symbol.toLowerCase().startsWith(query.toLowerCase())
-          );
+          return symbol.toLowerCase().startsWith(query.toLowerCase());
         })
       : tokenList;
   }, [tokenList, query]);
 
   const renderRow = useCallback(
     ({ index, style }) => {
-      const { address, name, symbol, logoURI } =
-        filteredTokensList[index];
+      const { address, name, symbol, logoURI } = filteredTokensList[index];
 
       const tokenBalance = safeTokensByAddress[address]?.balance;
       const usdBalance = safeTokensByAddress[address]?.usd;
 
       if (tokenBalance) {
-        console.log(safeTokensByAddress[address])
+        console.log(safeTokensByAddress[address]);
       }
 
       const onClick = () => {
@@ -119,12 +123,13 @@ function TokenSelectModalComponent(props: Props) {
               <img src={logoURI} alt={name} width="30" />
               <TokenInfo>
                 <TokenName>{name}</TokenName>
-                <TokenSymbol>{tokenBalance ? `${tokenBalance} ` : ''}{symbol}</TokenSymbol>
+                <TokenSymbol>
+                  {tokenBalance ? `${tokenBalance} ` : ""}
+                  {symbol}
+                </TokenSymbol>
               </TokenInfo>
             </TokenLabel>
-            {usdBalance ? (
-              <TokenValue>≈ US${usdBalance}</TokenValue>
-            ): null}
+            {usdBalance ? <TokenValue>≈ US${usdBalance}</TokenValue> : null}
           </TokenItem>
         </div>
       );

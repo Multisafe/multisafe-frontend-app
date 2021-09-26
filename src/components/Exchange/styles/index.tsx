@@ -51,12 +51,13 @@ export const ExchangeInput = styled(Input)`
   border: none;
   text-align: right;
   font-size: 1.6rem;
-  
+
   &:focus {
     border: none;
   }
 
-  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
 `;
@@ -99,7 +100,7 @@ export const LoadingRateContainer = styled.div`
 
 export const SwapExchangeSide = styled(Img)`
   align-self: center;
-  
+
   &:hover {
     cursor: pointer;
   }

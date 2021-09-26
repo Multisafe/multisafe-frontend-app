@@ -30,7 +30,7 @@ export const mainNavItems = [
     link: routeGenerators.dashboard.exchange,
     name: "Exchange",
     icon: ExchangeIcon,
-    activeIcon: ExchangeIconActive
+    activeIcon: ExchangeIconActive,
   },
   {
     link: routeGenerators.dashboard.assets,

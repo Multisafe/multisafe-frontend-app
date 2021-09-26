@@ -18,7 +18,9 @@ import {
   ExchangeCardTitle,
   ExchangeGroup,
   ExchangeInputGroup,
-  ExchangeInput, SwapExchangeSide, ExchangeCardSubtitle
+  ExchangeInput,
+  SwapExchangeSide,
+  ExchangeCardSubtitle,
 } from "./styles";
 import { Input, ErrorMessage, inputStyles } from "components/common/Form";
 import { useLocalStorage } from "hooks";
@@ -28,7 +30,10 @@ import {
   PAY_TOKEN_MODAL,
   RECEIVE_TOKEN_MODAL,
 } from "./TokenSelectModal";
-import {makeSelectOrganisationType, makeSelectOwnerSafeAddress} from "store/global/selectors";
+import {
+  makeSelectOrganisationType,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import { constructLabel } from "utils/tokens";
 import { show } from "redux-modal";
@@ -37,8 +42,8 @@ import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { ExchangeDetails } from "./ExhcangeDetails";
 import { DEFAULT_SLIPPAGE } from "./constants";
-import {formatPrice} from './utils';
-import SwapIcon from 'assets/icons/dashboard/swap-exchange-side.svg';
+import { formatPrice } from "./utils";
+import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
@@ -217,11 +222,11 @@ export default function Exchange() {
           JSON.stringify({
             description: values[DESCRIPTION]
               ? values[DESCRIPTION]
-              : `Swapping ${payTokenAmount} ${tokensByAddress[payToken].symbol} for ${tokensByAddress[receiveToken].symbol}`
+              : `Swapping ${payTokenAmount} ${tokensByAddress[payToken].symbol} for ${tokensByAddress[receiveToken].symbol}`,
           }),
           encryptionKey,
           organisationType
-        )
+        ),
       }
     );
   };
@@ -258,9 +263,9 @@ export default function Exchange() {
                     value={
                       payToken
                         ? {
-                          value: payToken,
-                          label: getTokenLabel(tokensByAddress[payToken]),
-                        }
+                            value: payToken,
+                            label: getTokenLabel(tokensByAddress[payToken]),
+                          }
                         : null
                     }
                     styles={inputStyles}
@@ -271,7 +276,9 @@ export default function Exchange() {
                     classNamePrefix="select"
                   />
                 </div>
-                <div>{rate?.srcUSD ? `~$${formatPrice(Number(rate?.srcUSD))}` : ""}</div>
+                <div>
+                  {rate?.srcUSD ? `~$${formatPrice(Number(rate?.srcUSD))}` : ""}
+                </div>
                 <ExchangeInput
                   type="number"
                   id={PAY_AMOUNT}
@@ -303,11 +310,9 @@ export default function Exchange() {
                     value={
                       receiveToken
                         ? {
-                          value: receiveToken,
-                          label: getTokenLabel(
-                            tokensByAddress[receiveToken]
-                          ),
-                        }
+                            value: receiveToken,
+                            label: getTokenLabel(tokensByAddress[receiveToken]),
+                          }
                         : null
                     }
                     styles={inputStyles}
@@ -316,7 +321,11 @@ export default function Exchange() {
                     menuIsOpen={false}
                   />
                 </div>
-                <div>{rate?.destUSD ? `~$${formatPrice(Number(rate?.destUSD))}` : ""}</div>
+                <div>
+                  {rate?.destUSD
+                    ? `~$${formatPrice(Number(rate?.destUSD))}`
+                    : ""}
+                </div>
                 <ExchangeInput
                   type="number"
                   id={RECEIVE_AMOUNT}
@@ -331,10 +340,12 @@ export default function Exchange() {
               {/*  Balance: {safeTokensByAddress?.[receiveToken]?.balance || 0}*/}
               {/*</div>*/}
               {/*<div>USD: {rate?.destUSD || "-"}</div>*/}
-
             </ExchangeGroup>
             <ExchangeGroup>
-              <ExchangeCardTitle>Description <ExchangeCardSubtitle>(optional)</ExchangeCardSubtitle></ExchangeCardTitle>
+              <ExchangeCardTitle>
+                Description{" "}
+                <ExchangeCardSubtitle>(optional)</ExchangeCardSubtitle>
+              </ExchangeCardTitle>
               <Input
                 type="text"
                 id={DESCRIPTION}
