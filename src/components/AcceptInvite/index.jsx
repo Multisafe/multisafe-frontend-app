@@ -25,7 +25,7 @@ import { MESSAGE_TO_SIGN } from "constants/index";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
 import { getPublicKey } from "utils/encryption";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import CoinshiftLogo from "assets/images/logo.svg";
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
 import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
@@ -187,7 +187,7 @@ const AcceptInvite = () => {
       />
       <InnerCard>
         <h2 className="text-center mb-4">
-          <Img src={MultisafeLogo} alt="multisafe" width="80" />
+          <Img src={CoinshiftLogo} alt="coinshift" width="140" />
         </h2>
         <div className="mt-2 title">
           Your one stop for crypto treasury management.
@@ -265,7 +265,7 @@ const AcceptInvite = () => {
         {!hasAlreadySigned ? (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              Please sign and authorize MultiSafe to derive your encryption key.
+              Please sign and authorize Coinshift to derive your encryption key.
             </p>
             <Button
               type="button"
@@ -304,12 +304,12 @@ const AcceptInvite = () => {
         <div className="text-center">
           <img src={AddPeopleIcon} alt="people" />
         </div>
-        <h3 className="title">Accept Invite and join Multisafe</h3>
+        <h3 className="title">Accept Invite and join Coinshift</h3>
 
         <p className="subtitle pb-5">
           Once you accept the invitation, one of the owners will approve you.
           <br />
-          Then, you can login and view the Multisafe dashboard.
+          Then, you can login and view the Coinshift dashboard.
         </p>
 
         <Button
@@ -339,7 +339,7 @@ const AcceptInvite = () => {
         <div className="mt-2 mb-5 text-center subtitle">
           Great! Now, one of the owners will approve you
           <br />
-          and you will be able to login to the Multisafe dashboard.
+          and you will be able to login to the Coinshift dashboard.
         </div>
       </InnerCard>
     </div>

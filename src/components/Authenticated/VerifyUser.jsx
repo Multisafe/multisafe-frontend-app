@@ -25,7 +25,7 @@ import {
 } from "store/loginWizard/selectors";
 import LoadingIndicator from "components/common/Loading/PageLoader";
 import Img from "components/common/Img";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import CoinshiftLogo from "assets/images/logo.svg";
 
 import { Background, InnerCard } from "components/Login/styles";
 import { setReadOnly } from "store/global/actions";
@@ -165,7 +165,7 @@ const VerifyUser = () => {
         />
         <InnerCard>
           <h2 className="text-center mb-4">
-            <Img src={MultisafeLogo} alt="multisafe" width="80" />
+            <Img src={CoinshiftLogo} alt="coinshift" width="140" />
           </h2>
           <div className="mt-2 title">
             Please sign to verify your account and proceed.

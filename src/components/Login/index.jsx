@@ -68,7 +68,7 @@ import { loginUser } from "store/login/actions";
 import { registerUser, getVerificationStatus } from "store/register/actions";
 import Loading from "components/common/Loading";
 import TeamPng from "assets/images/user-team.png";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import CoinshiftLogo from "assets/images/logo.svg";
 import {
   STEPS,
   FLOWS as OWNER_FLOWS,
@@ -442,7 +442,7 @@ const Login = () => {
       />
       <InnerCard>
         <h2 className="text-center mb-4">
-          <Img src={MultisafeLogo} alt="multisafe" width="80" />
+          <Img src={CoinshiftLogo} alt="coinshift" width="140" />
         </h2>
         <div className="mt-2 title">
           Your one stop for crypto treasury management.
@@ -582,7 +582,7 @@ const Login = () => {
         />
         <p className="title">{name}</p>
         <p className="subtitle">
-          You’ll be registered with this name on Multisafe.
+          You’ll be registered with this name on Coinshift.
         </p>
         <div className="mt-2">
           <Input
@@ -676,7 +676,7 @@ const Login = () => {
         {!hasAlreadySigned ? (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              Please sign and authorize MultiSafe to derive your encryption key.
+              Please sign and authorize Coinshift to derive your encryption key.
             </p>
             <Button
               type="button"
@@ -1019,7 +1019,7 @@ const Login = () => {
         </ReviewContent>
 
         <Information style={{ marginBottom: "5rem" }}>
-          <div>You’re about to import this safe to Multisafe.</div>
+          <div>You’re about to import this safe to Coinshift.</div>
         </Information>
 
         <Button

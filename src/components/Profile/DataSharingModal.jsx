@@ -38,7 +38,7 @@ function DataSharingModal(props) {
           If data sharing is enabled, all your data (such as people, transaction
           history etc.) will be{" "}
           <span className="text-bold">publicly visible</span> even outside
-          MultiSafe.
+          Coinshift.
         </div>
         <div className="subtitle">
           This feature is recommended for DAOs. The community can view how the
