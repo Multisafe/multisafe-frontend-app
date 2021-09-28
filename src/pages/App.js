@@ -16,6 +16,7 @@ import AdminStatsPage from "./AdminStats";
 import VerifyUserPage from "./VerifyUser";
 import NotFoundPage from "./NotFound/loadable";
 import { routeTemplates } from "constants/routes/templates";
+import VisitCoinshiftModal from "components/VisitCoinshiftModal";
 
 export default function App() {
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
@@ -45,6 +46,7 @@ export default function App() {
         </Switch>
         <GlobalStyle />
         <NetworkModal />
+        <VisitCoinshiftModal />
       </ThemeProvider>
     </div>
   );
