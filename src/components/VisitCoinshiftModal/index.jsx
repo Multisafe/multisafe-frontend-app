@@ -32,7 +32,9 @@ const VisitCoinshiftModal = () => {
               Visit Coinshift
             </Button>
             <a
-              href={"https://medium.com/@tarungupta/da7dd7bfc648"}
+              href={
+                "https://blog.coinshift.xyz/multisafe-is-now-coinshift-smart-treasury-management-for-crypto-organizations-da7dd7bfc648"
+              }
               rel="noopenner noreferrer"
               target="_blank"
             >
