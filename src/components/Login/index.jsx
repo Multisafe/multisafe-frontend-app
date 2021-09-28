@@ -93,6 +93,7 @@ import {
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
 import QuestionIcon from "assets/icons/login/question-icon.svg";
+import WelcomeImg from "assets/images/register/welcome.svg";
 
 import {
   Background,
@@ -435,9 +436,10 @@ const Login = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        src={WelcomeImg}
         alt="welcome"
-        width="70%"
+        width="100%"
+        style={{ maxWidth: "70rem" }}
         className="d-block mx-auto py-4"
       />
       <InnerCard>

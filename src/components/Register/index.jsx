@@ -101,6 +101,7 @@ import {
   Stepper,
 } from "components/common/Stepper/SimpleStepper";
 import ErrorText from "components/common/ErrorText";
+import WelcomeImg from "assets/images/register/welcome.svg";
 
 const { GNOSIS_SAFE_ADDRESS, PROXY_FACTORY_ADDRESS, ZERO_ADDRESS } = addresses;
 
@@ -601,9 +602,10 @@ const Register = () => {
     return (
       <div>
         <Img
-          src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+          src={WelcomeImg}
           alt="welcome"
-          width="70%"
+          width="100%"
+          style={{ maxWidth: "70rem" }}
           className="d-block mx-auto py-4"
         />
         <InnerCard>
