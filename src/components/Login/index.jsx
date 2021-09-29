@@ -68,7 +68,6 @@ import { loginUser } from "store/login/actions";
 import { registerUser, getVerificationStatus } from "store/register/actions";
 import Loading from "components/common/Loading";
 import TeamPng from "assets/images/user-team.png";
-import CoinshiftLogo from "assets/images/logo.svg";
 import {
   STEPS,
   FLOWS as OWNER_FLOWS,
@@ -443,10 +442,7 @@ const Login = () => {
         className="d-block mx-auto py-4"
       />
       <InnerCard>
-        <h2 className="text-center mb-4">
-          <Img src={CoinshiftLogo} alt="coinshift" width="140" />
-        </h2>
-        <div className="mt-2 title">
+        <div className="mt-5 title">
           Your one stop for crypto treasury management.
         </div>
         <div className="subtitle">

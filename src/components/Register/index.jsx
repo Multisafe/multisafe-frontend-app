@@ -61,7 +61,6 @@ import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { getGasPrice } from "store/gas/actions";
-import CoinshiftLogo from "assets/images/logo.svg";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import LightbulbIcon from "assets/icons/lightbulb.svg";
 import LoadingSafeIcon1 from "assets/images/register/loading-1.svg";
@@ -609,10 +608,7 @@ const Register = () => {
           className="d-block mx-auto py-4"
         />
         <InnerCard>
-          <h2 className="text-center mb-4">
-            <Img src={CoinshiftLogo} alt="coinshift" width="140" />
-          </h2>
-          <div className="mt-2 title">
+          <div className="mt-5 title">
             Your one stop for crypto treasury management.
           </div>
           <div className="subtitle">

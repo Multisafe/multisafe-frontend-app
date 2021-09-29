@@ -25,7 +25,6 @@ import { MESSAGE_TO_SIGN } from "constants/index";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
 import { getPublicKey } from "utils/encryption";
-import CoinshiftLogo from "assets/images/logo.svg";
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
 import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
@@ -188,10 +187,7 @@ const AcceptInvite = () => {
         className="d-block mx-auto py-4"
       />
       <InnerCard>
-        <h2 className="text-center mb-4">
-          <Img src={CoinshiftLogo} alt="coinshift" width="140" />
-        </h2>
-        <div className="mt-2 title">
+        <div className="mt-5 title">
           Your one stop for crypto treasury management.
         </div>
         <div className="subtitle">

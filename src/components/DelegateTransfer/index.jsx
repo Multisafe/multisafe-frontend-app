@@ -19,7 +19,6 @@ import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import CoinshiftLogo from "assets/images/logo.svg";
 import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { TransactionUrl } from "components/common/Web3Utils";
@@ -301,10 +300,7 @@ const DelegateTransfer = () => {
         className="d-block mx-auto py-4"
       />
       <InnerCard height="260px">
-        <h2 className="text-center mb-4">
-          <Img src={CoinshiftLogo} alt="coinshift" width="140" />
-        </h2>
-        <div className="mt-2 title">
+        <div className="mt-5 title">
           Your one stop for crypto treasury management.
         </div>
         <div className="subtitle">

@@ -25,7 +25,6 @@ import {
 } from "store/loginWizard/selectors";
 import LoadingIndicator from "components/common/Loading/PageLoader";
 import Img from "components/common/Img";
-import CoinshiftLogo from "assets/images/logo.svg";
 
 import { Background, InnerCard } from "components/Login/styles";
 import { setReadOnly } from "store/global/actions";
@@ -166,10 +165,7 @@ const VerifyUser = () => {
           className="d-block mx-auto py-4"
         />
         <InnerCard>
-          <h2 className="text-center mb-4">
-            <Img src={CoinshiftLogo} alt="coinshift" width="140" />
-          </h2>
-          <div className="mt-2 title">
+          <div className="mt-5 title">
             Please sign to verify your account and proceed.
           </div>
 
