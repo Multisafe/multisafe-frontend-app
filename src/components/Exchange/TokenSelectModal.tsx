@@ -4,7 +4,6 @@ import { FixedSizeList } from "react-window";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import styled from "styled-components/macro";
 import { Input } from "components/common/Form";
-import { getAmountFromWei } from "utils/tx-helpers";
 
 export const PAY_TOKEN_MODAL = "pay-token-modal";
 export const RECEIVE_TOKEN_MODAL = "receive-token-modal";
@@ -134,7 +133,7 @@ function TokenSelectModalComponent(props: Props) {
         </div>
       );
     },
-    [onTokenSelect, handleHide, filteredTokensList]
+    [onTokenSelect, handleHide, filteredTokensList, safeTokensByAddress]
   );
 
   return (

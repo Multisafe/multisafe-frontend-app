@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
+import React from "react";
 import { OptimalRate } from "paraswap-core";
-import { useSelector } from "react-redux";
-import { BigNumber } from "bignumber.js";
-import { Input, ErrorMessage } from "components/common/Form";
+import Button from "../common/Button";
+import Loading from "../common/Loading";
+import { formatNumber } from "utils/number-helpers";
 import {
+  SlippageInput,
+  ExchangeWarning,
+  ExchangeError,
+  DetailsContainer,
   ExchangeCardTitle,
   ExchangeGroup,
   ExchangeDetailsGroup,
@@ -13,12 +16,6 @@ import {
   ExchangeDetailsCard,
   ExchangeControlsContainer,
 } from "./styles";
-import Button from "../common/Button";
-import Loading from "../common/Loading";
-import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
-import Img from "../common/Img";
-import { makeSelectGasMode } from "store/global/selectors";
-import { formatPrice } from "./utils";
 
 type Props = {
   loading?: boolean;
@@ -34,30 +31,10 @@ type Props = {
 };
 
 const getOneTokenPrice = (payAmount: FixMe, receiveAmount: FixMe) => {
-  return formatPrice(receiveAmount / payAmount);
+  return formatNumber(receiveAmount / payAmount);
 };
 
 const CUSTOM_SLIPPAGE = "CUSTOM_SLIPPAGE";
-
-const DetailsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-`;
-
-const ExchangeError = styled.div`
-  font-size: 1.6rem;
-  color: #ff4b55;
-`;
-
-const ExchangeWarning = styled.div`
-  font-size: 1.6rem;
-  color: #fcbc04;
-`;
-
-const SlippageInput = styled(Input)`
-  width: 12rem;
-`;
 
 export const ExchangeDetails = (props: Props) => {
   const {
@@ -72,8 +49,6 @@ export const ExchangeDetails = (props: Props) => {
     slippage,
     onSlippageChange,
   } = props;
-
-  const selectedGasMode = useSelector(makeSelectGasMode());
 
   return (
     <ExchangeDetailsCard>

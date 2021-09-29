@@ -3,13 +3,37 @@ import Select from "react-select";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { OptimalRate } from "paraswap-core";
+import { useForm, useWatch } from "react-hook-form";
+import { show } from "redux-modal";
+import { BigNumber } from "@ethersproject/bignumber";
+//@ts-ignore
+import { cryptoUtils } from "coinshift-sdk";
 import {
   makeSelectTokenList,
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
-import { useForm, useWatch } from "react-hook-form";
-//@ts-ignore
-import { cryptoUtils } from "coinshift-sdk";
+import { Input, ErrorMessage, inputStyles } from "components/common/Form";
+import { useLocalStorage } from "hooks";
+import {
+  PayTokenModal,
+  ReceiveTokenModal,
+  PAY_TOKEN_MODAL,
+  RECEIVE_TOKEN_MODAL,
+} from "./TokenSelectModal";
+import { Card } from "components/common/Card";
+import {
+  makeSelectOrganisationType,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
+import { getTokens } from "store/tokens/actions";
+import { constructLabel } from "utils/tokens";
+import { useExchange } from "hooks/useExchange";
+import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
+import { ExchangeDetails } from "./ExchangeDetails";
+import { DEFAULT_SLIPPAGE } from "./constants";
+import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
+import { formatNumber } from "utils/number-helpers";
+import { InfoCard } from "../People/styles";
 import {
   ExchangePage,
   ExhangeContainer,
@@ -33,35 +57,9 @@ import {
   RouteNode,
   TokenRouteNode,
   Route,
-  SrcLabelDot,
-  DestLabelDot,
   RouteDotLabels,
   RouteLabelDot,
 } from "./styles";
-import { Input, ErrorMessage, inputStyles } from "components/common/Form";
-import { useLocalStorage } from "hooks";
-import {
-  PayTokenModal,
-  ReceiveTokenModal,
-  PAY_TOKEN_MODAL,
-  RECEIVE_TOKEN_MODAL,
-} from "./TokenSelectModal";
-import { InfoCard } from "../People/styles";
-import { Card } from "components/common/Card";
-import {
-  makeSelectOrganisationType,
-  makeSelectOwnerSafeAddress,
-} from "store/global/selectors";
-import { getTokens } from "store/tokens/actions";
-import { constructLabel } from "utils/tokens";
-import { show } from "redux-modal";
-import { useExchange } from "hooks/useExchange";
-import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
-import { BigNumber } from "@ethersproject/bignumber";
-import { ExchangeDetails } from "./ExhcangeDetails";
-import { DEFAULT_SLIPPAGE } from "./constants";
-import { formatPrice } from "./utils";
-import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
@@ -167,6 +165,7 @@ export default function Exchange() {
     defaultValue: DEFAULT_RECEIVE_AMOUNT,
   });
 
+  // eslint-disable-next-line
   const updateExchangeRate = useCallback(
     debounce(async (amount: BigNumber) => {
       const exchangeRate = await getExchangeRate(
@@ -199,7 +198,14 @@ export default function Exchange() {
 
       updateExchangeRate(getAmountInWei(payTokenAmount, tokenDetails.decimals));
     }
-  }, [payToken, receiveToken, payTokenAmount, tokensByAddress]);
+  }, [
+    payToken,
+    receiveToken,
+    payTokenAmount,
+    tokensByAddress,
+    setValue,
+    updateExchangeRate,
+  ]);
 
   const onPayTokenClick = () => {
     dispatch(show(PAY_TOKEN_MODAL));
@@ -295,7 +301,9 @@ export default function Exchange() {
                   />
                 </div>
                 <TokenUSDValue>
-                  {rate?.srcUSD ? `~$${formatPrice(Number(rate?.srcUSD))}` : ""}
+                  {rate?.srcUSD
+                    ? `~$${formatNumber(Number(rate?.srcUSD))}`
+                    : ""}
                 </TokenUSDValue>
                 <ExchangeInput
                   type="number"
@@ -341,7 +349,7 @@ export default function Exchange() {
                 </div>
                 <TokenUSDValue>
                   {rate?.destUSD
-                    ? `~$${formatPrice(Number(rate?.destUSD))}`
+                    ? `~$${formatNumber(Number(rate?.destUSD))}`
                     : ""}
                 </TokenUSDValue>
                 <ExchangeInput

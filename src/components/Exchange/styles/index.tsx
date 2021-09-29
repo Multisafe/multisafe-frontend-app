@@ -212,3 +212,23 @@ export const TokenRouteNode = styled(RouteNode)`
   background-color: #f6f8fa;
   border-radius: 4px;
 `;
+
+export const DetailsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
+
+export const ExchangeError = styled.div`
+  font-size: 1.6rem;
+  color: #ff4b55;
+`;
+
+export const ExchangeWarning = styled.div`
+  font-size: 1.6rem;
+  color: #fcbc04;
+`;
+
+export const SlippageInput = styled(Input)`
+  width: 12rem;
+`;

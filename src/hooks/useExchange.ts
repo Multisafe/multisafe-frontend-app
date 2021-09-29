@@ -14,11 +14,8 @@ import {
 import ERC20ABI from "../constants/abis/ERC20.json";
 import useActiveWeb3React from "./useActiveWeb3React";
 import { TRANSACTION_MODES } from "../constants/transactions";
-import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 
 const paraSwap = new ParaSwap(networkId);
-
-const DEFAULT_SLIPPAGE = 1;
 
 export const useExchange = () => {
   const [proxyAddress, setProxyAddress] = useState<string>("");
@@ -28,13 +25,10 @@ export const useExchange = () => {
   const [baseRequestBody, setBaseRequestBody] = useState<Object>();
   const [error, setError] = useState<string>("");
 
-  const { executeBatchTransactions, loadingTx, txHash, txData } =
-    useBatchTransactions();
+  const { executeBatchTransactions, txHash, txData } = useBatchTransactions();
   useTransactionEffects({ txHash, txData, baseRequestBody });
 
   const erc20Contract = useContract(addresses.ZERO_ADDRESS, ERC20ABI, true);
-
-  const selectedGasPrice = useSelector(makeSelectSelectedGasPriceInWei());
 
   const getProxyAddress = async () => {
     const proxyAddressResponse = await paraSwap.getTokenTransferProxy();
@@ -63,7 +57,6 @@ export const useExchange = () => {
     );
 
     if ("message" in rate) {
-      console.log(rate.message);
       setError(rate.message);
       return;
     }
@@ -75,7 +68,7 @@ export const useExchange = () => {
     payTokenAddress: string,
     receiveTokenAddress: string,
     amount: FixMe,
-    slippage: number = DEFAULT_SLIPPAGE,
+    slippage: number,
     baseRequestBody: FixMe
   ) => {
     setError("");
@@ -104,14 +97,11 @@ export const useExchange = () => {
       return;
     }
 
-    console.log(rate);
-
     const { srcToken, destToken, srcAmount, destAmount } = rate;
 
     const minAmount = new BigNumber(destAmount)
       .times(1 - slippage / 100)
       .toFixed(0);
-    console.log(minAmount);
 
     const txParams = await paraSwap.buildTx(
       srcToken,
@@ -131,12 +121,9 @@ export const useExchange = () => {
     );
 
     if ("message" in txParams) {
-      console.log(txParams.message);
       setError(txParams.message);
       return;
     }
-
-    console.log(txParams);
 
     const transactions = [
       {
