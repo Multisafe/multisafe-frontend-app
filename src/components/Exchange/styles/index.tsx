@@ -62,6 +62,10 @@ export const ExchangeInput = styled(Input)`
   }
 `;
 
+export const TokenUSDValue = styled.div`
+  font-size: 1.2rem;
+`;
+
 export const ExchangeCardTitle = styled.div`
   font-size: 1.6rem;
   font-weight: bold;
@@ -104,4 +108,107 @@ export const SwapExchangeSide = styled(Img)`
   &:hover {
     cursor: pointer;
   }
+`;
+
+export const RouteLablesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  background-color: white;
+  z-index: 1;
+`;
+
+export const RouteLabel = styled.div`
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  font-size: 1.6rem;
+`;
+
+export const RouteLables = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const RouteDotLabels = styled(RouteLables)`
+  padding: 0 4px;
+`;
+
+export const RouteLabelDot = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #1452f5;
+`;
+
+export const SrcLabelDot = styled(RouteLabelDot)`
+  position: relative;
+  left: 4px;
+`;
+
+export const DestLabelDot = styled(RouteLabelDot)`
+  position: relative;
+  right: 4px;
+`;
+
+export const RouteContainer = styled.div`
+  position: relative;
+  margin: 0 54px;
+`;
+
+export const RouteLine = styled.svg`
+  position: absolute;
+  top: 50%;
+  left: 0;
+`;
+
+export const RouteLeftCurve = styled.svg`
+  position: absolute;
+  bottom: 12px;
+  left: -47px;
+`;
+
+export const RouteRightCurve = styled.svg`
+  position: absolute;
+  bottom: 12px;
+  right: -47px;
+  transform: scaleX(-1);
+`;
+
+export const RouteList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  margin-top: 16px;
+`;
+
+export const Route = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const RouteNodes = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  padding: 0 4rem;
+  font-size: 1.2rem;
+`;
+
+export const RouteNode = styled.div`
+  z-index: 1;
+  min-width: 24px;
+  text-align: center;
+  padding: 0.6rem 0.8rem;
+  background-color: white;
+`;
+
+export const TokenRouteNode = styled(RouteNode)`
+  background-color: #f6f8fa;
+  border-radius: 4px;
 `;

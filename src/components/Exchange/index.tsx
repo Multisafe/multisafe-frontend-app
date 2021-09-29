@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Select from "react-select";
 import { debounce } from "lodash";
-import { InfoCard } from "../People/styles";
 import { useDispatch, useSelector } from "react-redux";
 import { OptimalRate } from "paraswap-core";
 import {
@@ -19,8 +18,25 @@ import {
   ExchangeGroup,
   ExchangeInputGroup,
   ExchangeInput,
+  TokenUSDValue,
   SwapExchangeSide,
   ExchangeCardSubtitle,
+  RouteLabel,
+  RouteLablesContainer,
+  RouteLables,
+  RouteContainer,
+  RouteLine,
+  RouteLeftCurve,
+  RouteRightCurve,
+  RouteList,
+  RouteNodes,
+  RouteNode,
+  TokenRouteNode,
+  Route,
+  SrcLabelDot,
+  DestLabelDot,
+  RouteDotLabels,
+  RouteLabelDot,
 } from "./styles";
 import { Input, ErrorMessage, inputStyles } from "components/common/Form";
 import { useLocalStorage } from "hooks";
@@ -30,6 +46,8 @@ import {
   PAY_TOKEN_MODAL,
   RECEIVE_TOKEN_MODAL,
 } from "./TokenSelectModal";
+import { InfoCard } from "../People/styles";
+import { Card } from "components/common/Card";
 import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
@@ -276,9 +294,9 @@ export default function Exchange() {
                     classNamePrefix="select"
                   />
                 </div>
-                <div>
+                <TokenUSDValue>
                   {rate?.srcUSD ? `~$${formatPrice(Number(rate?.srcUSD))}` : ""}
-                </div>
+                </TokenUSDValue>
                 <ExchangeInput
                   type="number"
                   id={PAY_AMOUNT}
@@ -321,11 +339,11 @@ export default function Exchange() {
                     menuIsOpen={false}
                   />
                 </div>
-                <div>
+                <TokenUSDValue>
                   {rate?.destUSD
                     ? `~$${formatPrice(Number(rate?.destUSD))}`
                     : ""}
-                </div>
+                </TokenUSDValue>
                 <ExchangeInput
                   type="number"
                   id={RECEIVE_AMOUNT}
@@ -352,6 +370,7 @@ export default function Exchange() {
                 name={DESCRIPTION}
                 register={register}
                 placeholder="Enter description"
+                autoComplete="off"
               />
             </ExchangeGroup>
           </ExchangeCard>
@@ -370,6 +389,120 @@ export default function Exchange() {
             }}
           />
         </ExhangeContainer>
+        {!loadingRate && rate ? (
+          <Card>
+            <ExchangeGroup>
+              <ExchangeCardTitle>Order Routing</ExchangeCardTitle>
+              <RouteLablesContainer>
+                <RouteLables>
+                  <div>
+                    <RouteLabel>
+                      <img
+                        src={tokensByAddress[payToken].logoURI}
+                        alt={tokensByAddress[payToken].name}
+                        width="16"
+                      />
+                      <div>
+                        {payTokenAmount} {tokensByAddress[payToken].symbol}
+                      </div>
+                    </RouteLabel>
+                  </div>
+                  <div>
+                    <RouteLabel>
+                      <div>
+                        {receiveTokenAmount}{" "}
+                        {tokensByAddress[receiveToken].symbol}
+                      </div>
+                      <img
+                        src={tokensByAddress[receiveToken].logoURI}
+                        alt={tokensByAddress[receiveToken].name}
+                        width="16"
+                      />
+                    </RouteLabel>
+                  </div>
+                </RouteLables>
+                <RouteDotLabels>
+                  <RouteLabelDot />
+                  <RouteLabelDot />
+                </RouteDotLabels>
+              </RouteLablesContainer>
+              <RouteList>
+                {rate.bestRoute.map(({ percent, swaps }) => {
+                  return (
+                    <RouteContainer>
+                      <RouteLine
+                        width="100%"
+                        height="2"
+                        viewBox="0 0 100 2"
+                        fill="none"
+                        preserveAspectRatio="xMinYMid meet"
+                        stroke="#B7CDFB"
+                      >
+                        <path
+                          d="M0 1C240.5 1 9999 1 9999 1"
+                          stroke-dasharray="4 4"
+                        ></path>
+                      </RouteLine>
+                      <Route>
+                        <RouteLeftCurve
+                          width="42"
+                          height="74"
+                          viewBox="0 0 42 74"
+                          fill="none"
+                        >
+                          <path
+                            d="M1 0V61C1 67.6274 6.37258 73 13 73H42"
+                            stroke="#B7CDFB"
+                            stroke-dasharray="4 4"
+                          ></path>
+                        </RouteLeftCurve>
+                        <RouteRightCurve
+                          width="42"
+                          height="74"
+                          viewBox="0 0 42 74"
+                          fill="none"
+                        >
+                          <path
+                            d="M1 0V61C1 67.6274 6.37258 73 13 73H42"
+                            stroke="#B7CDFB"
+                            stroke-dasharray="4 4"
+                          ></path>
+                        </RouteRightCurve>
+                        <RouteNode>{percent}%</RouteNode>
+                        <RouteNodes>
+                          {swaps.map(({ srcToken, destToken }, index) => {
+                            const previousToken = swaps[index - 1]?.destToken;
+
+                            const src = tokensByAddress[srcToken.toLowerCase()];
+                            const dest =
+                              tokensByAddress[destToken.toLowerCase()];
+
+                            const srcTokenLabel =
+                              previousToken === srcToken ? null : (
+                                <TokenRouteNode>
+                                  {getTokenLabel(src)}
+                                </TokenRouteNode>
+                              );
+
+                            return (
+                              <>
+                                {srcTokenLabel}
+                                <TokenRouteNode>
+                                  {getTokenLabel(dest)}
+                                </TokenRouteNode>
+                              </>
+                            );
+                          })}
+                        </RouteNodes>
+                        <RouteNode>{percent}%</RouteNode>
+                      </Route>
+                    </RouteContainer>
+                  );
+                })}
+              </RouteList>
+            </ExchangeGroup>
+          </Card>
+        ) : null}
       </ExchangePage>
       <PayTokenModal
         title="Pay with"

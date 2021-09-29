@@ -5,8 +5,8 @@ import { Input } from "./styles";
 type Props = {
   type: string;
   inputmode?: string;
-  autocomplete?: string;
-  autocorrect?: string;
+  autoComplete?: string;
+  autoCorrect?: string;
   name: string;
   id: string;
   value?: FixMe;

@@ -37,11 +37,6 @@ const getOneTokenPrice = (payAmount: FixMe, receiveAmount: FixMe) => {
   return formatPrice(receiveAmount / payAmount);
 };
 
-const VIEWS = {
-  DETAILS: "DETAILS",
-  SETTINGS: "SETTINGS",
-};
-
 const CUSTOM_SLIPPAGE = "CUSTOM_SLIPPAGE";
 
 const DetailsContainer = styled.div`
@@ -78,17 +73,7 @@ export const ExchangeDetails = (props: Props) => {
     onSlippageChange,
   } = props;
 
-  const [view, setView] = useState(VIEWS.DETAILS);
-
   const selectedGasMode = useSelector(makeSelectGasMode());
-
-  useEffect(() => {
-    setView(VIEWS.DETAILS);
-  }, [loading]);
-
-  const toggleView = () => {
-    setView(view === VIEWS.DETAILS ? VIEWS.SETTINGS : VIEWS.DETAILS);
-  };
 
   return (
     <ExchangeDetailsCard>
@@ -132,16 +117,12 @@ export const ExchangeDetails = (props: Props) => {
                 error,
                 slippage,
                 onSlippageChange,
-                toggleView,
               }}
             />
           </DetailsContainer>
           <ExchangeControlsContainer>
             <ExchangeError>{error}</ExchangeError>
             <ExchangeControls>
-              <Button className="secondary-2" onClick={toggleView}>
-                <Img src={SettingsIcon} alt="settings" width={16} />
-              </Button>
               <Button onClick={onExchangeClick}>Exchange</Button>
             </ExchangeControls>
           </ExchangeControlsContainer>
@@ -154,7 +135,6 @@ export const ExchangeDetails = (props: Props) => {
 type SettingsProps = {
   slippage: number;
   onSlippageChange: (value: number) => void;
-  toggleView: () => void;
   error: string;
 };
 
