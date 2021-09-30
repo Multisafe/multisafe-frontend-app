@@ -9,7 +9,7 @@ export const ExchangePage = styled.div`
   gap: 3rem;
 `;
 
-export const ExhangeContainer = styled.div`
+export const ExchangeContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3rem;
@@ -74,6 +74,12 @@ export const ExchangeCardTitle = styled.div`
 export const ExchangeCardSubtitle = styled.span`
   font-size: 1.6rem;
   font-weight: normal;
+`;
+
+export const TitleGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const ExchangeDetailsGroup = styled.div`
@@ -231,4 +237,10 @@ export const ExchangeWarning = styled.div`
 
 export const SlippageInput = styled(Input)`
   width: 8rem;
+`;
+
+export const TokenBalance = styled.div<{ insufficientBalance?: boolean }>`
+  font-size: 1.2rem;
+  
+  color: ${props => props.insufficientBalance ? "#ff4b55" : "#373737"}
 `;

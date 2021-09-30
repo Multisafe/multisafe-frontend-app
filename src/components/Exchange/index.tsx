@@ -36,7 +36,7 @@ import { formatNumber } from "utils/number-helpers";
 import { InfoCard } from "../People/styles";
 import {
   ExchangePage,
-  ExhangeContainer,
+  ExchangeContainer,
   ExchangeCard,
   ExchangeCardTitle,
   ExchangeGroup,
@@ -58,7 +58,7 @@ import {
   TokenRouteNode,
   Route,
   RouteDotLabels,
-  RouteLabelDot,
+  RouteLabelDot, TitleGroup, TokenBalance,
 } from "./styles";
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
@@ -264,6 +264,10 @@ export default function Exchange() {
     setReceiveToken(payToken);
   };
 
+  const payTokenBalance = safeTokensByAddress?.[payToken]?.balance || 0;
+  const receiveTokenBalance = safeTokensByAddress?.[receiveToken]?.balance || 0;
+  const insufficientBalance = payTokenAmount > payTokenBalance;
+
   return (
     <>
       <ExchangePage>
@@ -276,10 +280,17 @@ export default function Exchange() {
           </div>
         </InfoCard>
 
-        <ExhangeContainer>
+        <ExchangeContainer>
           <ExchangeCard>
             <ExchangeGroup>
-              <ExchangeCardTitle>Pay with</ExchangeCardTitle>
+              <TitleGroup>
+                <ExchangeCardTitle>Pay with</ExchangeCardTitle>
+                {tokensByAddress[payToken] ? (
+                  <TokenBalance insufficientBalance={insufficientBalance}>
+                    Balance: {payTokenBalance} {tokensByAddress[payToken].symbol}
+                  </TokenBalance>
+                ) : null}
+              </TitleGroup>
               <ExchangeInputGroup>
                 <div onClick={onPayTokenClick}>
                   <Select
@@ -314,11 +325,6 @@ export default function Exchange() {
                   step="any"
                 />
               </ExchangeInputGroup>
-              {/*<div>*/}
-              {/*  Balance: {safeTokensByAddress?.[payToken]?.balance || 0}*/}
-              {/*</div>*/}
-              {/*<div>USD: {rate?.srcUSD || "-"}</div>*/}
-
             </ExchangeGroup>
             <SwapExchangeSide
               onClick={onSwapExhcangeSide}
@@ -327,7 +333,14 @@ export default function Exchange() {
               width={30}
             />
             <ExchangeGroup>
-              <ExchangeCardTitle>Receive</ExchangeCardTitle>
+              <TitleGroup>
+                <ExchangeCardTitle>Receive</ExchangeCardTitle>
+                {tokensByAddress[receiveToken] ? (
+                  <TokenBalance>
+                    Balance: {receiveTokenBalance} {tokensByAddress[receiveToken].symbol}
+                  </TokenBalance>
+                ) : null}
+              </TitleGroup>
               <ExchangeInputGroup>
                 <div onClick={onReceiveTokenClick}>
                   <Select
@@ -392,10 +405,10 @@ export default function Exchange() {
               slippage,
               onSlippageChange,
               onExchangeClick,
-              error,
+              error
             }}
           />
-        </ExhangeContainer>
+        </ExchangeContainer>
         {!loadingRate && rate ? (
           <Card>
             <ExchangeGroup>
