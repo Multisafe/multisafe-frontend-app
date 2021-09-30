@@ -37,6 +37,16 @@ const getOneTokenPrice = (payAmount: FixMe, receiveAmount: FixMe) => {
 
 const CUSTOM_SLIPPAGE = "CUSTOM_SLIPPAGE";
 
+const getErrorMessage = (error: string) => {
+  switch (error) {
+    case 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT':
+      return 'Price Impact Too High';
+
+    default:
+      return error;
+  }
+}
+
 export const ExchangeDetails = (props: Props) => {
   const {
     error,
@@ -96,7 +106,7 @@ export const ExchangeDetails = (props: Props) => {
                 )}
               </ExchangeDetailsGroup>
               <ExchangeDetailsGroup>
-                <div>MultiSafe Fee</div>
+                <div>Coinshift Fee</div>
                 <div>$0</div>
               </ExchangeDetailsGroup>
             </ExchangeGroup>
@@ -109,9 +119,9 @@ export const ExchangeDetails = (props: Props) => {
             />
           </DetailsContainer>
           <ExchangeControlsContainer>
-            <ExchangeError>{error}</ExchangeError>
+            <ExchangeError>{getErrorMessage(error)}</ExchangeError>
             <ExchangeControls>
-              <Button onClick={onExchangeClick}>Exchange</Button>
+              <Button disabled={!!error} onClick={onExchangeClick}>Exchange</Button>
             </ExchangeControls>
           </ExchangeControlsContainer>
         </>
@@ -128,8 +138,7 @@ type SettingsProps = {
 
 const ExhcangeSettings = ({
   slippage,
-  onSlippageChange,
-  error,
+  onSlippageChange
 }: SettingsProps) => {
   const transformedCustomSlippage = Number(slippage);
 

@@ -216,7 +216,7 @@ export const TokenRouteNode = styled(RouteNode)`
 export const DetailsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 3rem;
 `;
 
 export const ExchangeError = styled.div`

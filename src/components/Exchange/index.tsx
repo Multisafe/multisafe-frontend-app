@@ -319,7 +319,6 @@ export default function Exchange() {
               {/*</div>*/}
               {/*<div>USD: {rate?.srcUSD || "-"}</div>*/}
 
-              <ErrorMessage name="name" errors={errors} />
             </ExchangeGroup>
             <SwapExchangeSide
               onClick={onSwapExhcangeSide}
