@@ -17,6 +17,8 @@ type Props = InjectedProps & {
 
 const ITEM_HEIGHT = 60;
 
+const CONTAINER_HEIGHT = 400;
+
 const Container = styled.div`
   padding: 3rem;
   display: flex;
@@ -74,6 +76,15 @@ const TokenValue = styled.div`
   font-size: 1.6rem;
 `;
 
+const NotFound = styled.div`
+  height: ${CONTAINER_HEIGHT}px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+`
+
 function TokenSelectModalComponent(props: Props) {
   const {
     show,
@@ -87,7 +98,6 @@ function TokenSelectModalComponent(props: Props) {
   const [query, setQuery] = useState("");
 
   const onChange = (e: FixMe) => {
-    console.log(e.target.value);
     setQuery(e.target.value || "");
   };
 
@@ -151,17 +161,21 @@ function TokenSelectModalComponent(props: Props) {
               placeholder="Search Assets"
             />
           </div>
-          <FixedSizeList
-            {...{
-              itemCount: filteredTokensList.length,
-              itemSize: ITEM_HEIGHT,
-              height: 400,
-              width: "100%",
-              overscanCount: 20,
-            }}
-          >
-            {renderRow}
-          </FixedSizeList>
+          {filteredTokensList.length ? (
+            <FixedSizeList
+              {...{
+                itemCount: filteredTokensList.length,
+                itemSize: ITEM_HEIGHT,
+                height: CONTAINER_HEIGHT,
+                width: "100%",
+                overscanCount: 20,
+              }}
+            >
+              {renderRow}
+            </FixedSizeList>
+          ) : (
+            <NotFound>Token Not Found</NotFound>
+          )}
         </Container>
       </ModalBody>
     </Modal>
