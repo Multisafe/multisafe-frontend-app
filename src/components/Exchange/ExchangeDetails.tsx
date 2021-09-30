@@ -3,6 +3,7 @@ import { OptimalRate } from "paraswap-core";
 import Button from "../common/Button";
 import Loading from "../common/Loading";
 import { formatNumber } from "utils/number-helpers";
+import {DEFAULT_SLIPPAGE} from './constants';
 import {
   SlippageInput,
   ExchangeWarning,
@@ -62,17 +63,25 @@ export const ExchangeDetails = (props: Props) => {
             <ExchangeGroup>
               <ExchangeDetailsGroup>
                 <div>Min. Received</div>
-                <div>
-                  {String(receiveTokenAmount)} {receiveTokenDetails?.symbol}
-                </div>
+                {receiveTokenAmount ? (
+                  <div>
+                    {String(receiveTokenAmount)} {receiveTokenDetails?.symbol}
+                  </div>
+                ) : (
+                  <div>-</div>
+                )}
               </ExchangeDetailsGroup>
               <ExchangeDetailsGroup>
                 <div>Rate</div>
-                <div>
-                  1 {receiveTokenDetails?.symbol} ={" "}
-                  {getOneTokenPrice(receiveTokenAmount, payTokenAmount)}{" "}
-                  {payTokenDetails?.symbol}
-                </div>
+                {receiveTokenAmount ? (
+                  <div>
+                    1 {receiveTokenDetails?.symbol} ={" "}
+                    {getOneTokenPrice(receiveTokenAmount, payTokenAmount)}{" "}
+                    {payTokenDetails?.symbol}
+                  </div>
+                ) : (
+                  <div>-</div>
+                )}
               </ExchangeDetailsGroup>
               <ExchangeDetailsGroup>
                 <div>Price Slippage</div>
@@ -80,7 +89,11 @@ export const ExchangeDetails = (props: Props) => {
               </ExchangeDetailsGroup>
               <ExchangeDetailsGroup>
                 <div>Network Fee</div>
-                <div>${rate?.gasCostUSD} · Fast</div>
+                {rate ? (
+                  <div>~${formatNumber(rate.gasCostUSD)}</div>
+                ) : (
+                  <div>-</div>
+                )}
               </ExchangeDetailsGroup>
               <ExchangeDetailsGroup>
                 <div>MultiSafe Fee</div>
@@ -121,8 +134,15 @@ const ExhcangeSettings = ({
   const transformedCustomSlippage = Number(slippage);
 
   const onChange = (e: FixMe) => {
-    onSlippageChange(Number(e.target.value));
+    const value = e.target.value;
+    onSlippageChange(value ? Number(value) : value);
   };
+
+  const onBlur = () => {
+    if (!slippage) {
+      onSlippageChange(DEFAULT_SLIPPAGE);
+    }
+  }
 
   return (
     <>
@@ -149,6 +169,8 @@ const ExhcangeSettings = ({
             onChange={onChange}
             placeholder=""
             step="any"
+            max={100}
+            onBlur={onBlur}
           />
         </ExchangeControls>
         {transformedCustomSlippage > 1 ? (

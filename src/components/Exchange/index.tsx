@@ -271,7 +271,7 @@ export default function Exchange() {
           <div>
             <div className="title">Exchange</div>
             <div className="subtitle">
-              Trade any token, LP share or Vault in a single transaction
+              Trade tokens in a single transaction at the best price
             </div>
           </div>
         </InfoCard>
@@ -435,9 +435,9 @@ export default function Exchange() {
                 </RouteDotLabels>
               </RouteLablesContainer>
               <RouteList>
-                {rate.bestRoute.map(({ percent, swaps }) => {
+                {rate.bestRoute.map(({ percent, swaps }, index) => {
                   return (
-                    <RouteContainer>
+                    <RouteContainer key={`${index}${percent}`}>
                       <RouteLine
                         width="100%"
                         height="2"
@@ -448,7 +448,7 @@ export default function Exchange() {
                       >
                         <path
                           d="M0 1C240.5 1 9999 1 9999 1"
-                          stroke-dasharray="4 4"
+                          strokeDasharray="4 4"
                         ></path>
                       </RouteLine>
                       <Route>
@@ -461,7 +461,7 @@ export default function Exchange() {
                           <path
                             d="M1 0V61C1 67.6274 6.37258 73 13 73H42"
                             stroke="#B7CDFB"
-                            stroke-dasharray="4 4"
+                            strokeDasharray="4 4"
                           ></path>
                         </RouteLeftCurve>
                         <RouteRightCurve
@@ -473,7 +473,7 @@ export default function Exchange() {
                           <path
                             d="M1 0V61C1 67.6274 6.37258 73 13 73H42"
                             stroke="#B7CDFB"
-                            stroke-dasharray="4 4"
+                            strokeDasharray="4 4"
                           ></path>
                         </RouteRightCurve>
                         <RouteNode>{percent}%</RouteNode>
@@ -493,12 +493,12 @@ export default function Exchange() {
                               );
 
                             return (
-                              <>
+                              <React.Fragment key={`${index}${destToken}`}>
                                 {srcTokenLabel}
                                 <TokenRouteNode>
                                   {getTokenLabel(dest)}
                                 </TokenRouteNode>
-                              </>
+                              </React.Fragment>
                             );
                           })}
                         </RouteNodes>

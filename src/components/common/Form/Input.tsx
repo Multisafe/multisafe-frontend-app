@@ -11,6 +11,7 @@ type Props = {
   id: string;
   value?: FixMe;
   onChange?: FixMe;
+  onBlur?: FixMe;
   placeholder?: string;
   disabled?: boolean;
   label?: ReactNode;
@@ -19,6 +20,8 @@ type Props = {
   register?: FixMe;
   labelStyle?: CSSProperties;
   step?: FixMe;
+  min?: number;
+  max?: number;
 };
 
 const InputField = ({

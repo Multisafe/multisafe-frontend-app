@@ -230,5 +230,5 @@ export const ExchangeWarning = styled.div`
 `;
 
 export const SlippageInput = styled(Input)`
-  width: 12rem;
+  width: 8rem;
 `;
