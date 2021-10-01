@@ -116,6 +116,15 @@ export const SwapExchangeSide = styled(Img)`
   }
 `;
 
+export const RouteCard = styled(Card)`
+  padding-bottom: 4rem;
+  display: none;
+
+  @media (min-width: 978px) {
+    display: block;
+  }
+`;
+
 export const RouteLablesContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -212,6 +221,7 @@ export const RouteNode = styled.div`
   text-align: center;
   padding: 0.6rem 0.8rem;
   background-color: white;
+  font-size: 1.2rem;
 `;
 
 export const TokenRouteNode = styled(RouteNode)`

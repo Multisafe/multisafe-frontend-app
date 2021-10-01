@@ -29,6 +29,7 @@ type Props = {
   slippage: number;
   onSlippageChange: (value: number) => void;
   error: string;
+  swapDisabled: boolean;
 };
 
 const getOneTokenPrice = (payAmount: FixMe, receiveAmount: FixMe) => {
@@ -59,6 +60,7 @@ export const ExchangeDetails = (props: Props) => {
     onExchangeClick,
     slippage,
     onSlippageChange,
+    swapDisabled
   } = props;
 
   return (
@@ -121,7 +123,7 @@ export const ExchangeDetails = (props: Props) => {
           <ExchangeControlsContainer>
             <ExchangeError>{getErrorMessage(error)}</ExchangeError>
             <ExchangeControls>
-              <Button disabled={!!error} onClick={onExchangeClick}>Exchange</Button>
+              <Button disabled={swapDisabled} onClick={onExchangeClick}>Exchange</Button>
             </ExchangeControls>
           </ExchangeControlsContainer>
         </>
@@ -182,6 +184,9 @@ const ExhcangeSettings = ({
             onBlur={onBlur}
           />
         </ExchangeControls>
+        {slippage > 100 ? (
+          <ExchangeError>Incorrect slippage</ExchangeError>
+        ) : null}
         {transformedCustomSlippage > 1 ? (
           <ExchangeWarning>Your transaction may be frontrun</ExchangeWarning>
         ) : null}

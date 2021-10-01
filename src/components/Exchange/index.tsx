@@ -58,8 +58,12 @@ import {
   TokenRouteNode,
   Route,
   RouteDotLabels,
-  RouteLabelDot, TitleGroup, TokenBalance,
+  RouteLabelDot,
+  TitleGroup,
+  TokenBalance,
+  RouteCard,
 } from "./styles";
+import {ExchangeAlert} from './ExchangeAlert';
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
@@ -268,6 +272,8 @@ export default function Exchange() {
   const receiveTokenBalance = safeTokensByAddress?.[receiveToken]?.balance || 0;
   const insufficientBalance = payTokenAmount > payTokenBalance;
 
+  const swapDisabled = insufficientBalance || slippage > 100;
+
   return (
     <>
       <ExchangePage>
@@ -279,6 +285,8 @@ export default function Exchange() {
             </div>
           </div>
         </InfoCard>
+
+        <ExchangeAlert/>
 
         <ExchangeContainer>
           <ExchangeCard>
@@ -405,12 +413,13 @@ export default function Exchange() {
               slippage,
               onSlippageChange,
               onExchangeClick,
-              error
+              error,
+              swapDisabled
             }}
           />
         </ExchangeContainer>
         {!loadingRate && rate ? (
-          <Card>
+          <RouteCard>
             <ExchangeGroup>
               <ExchangeCardTitle>Order Routing</ExchangeCardTitle>
               <RouteLablesContainer>
@@ -521,7 +530,7 @@ export default function Exchange() {
                 })}
               </RouteList>
             </ExchangeGroup>
-          </Card>
+          </RouteCard>
         ) : null}
       </ExchangePage>
       <PayTokenModal
