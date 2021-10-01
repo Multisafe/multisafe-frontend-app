@@ -23,9 +23,10 @@ export const useExchange = () => {
   const { account } = useActiveWeb3React();
 
   const [baseRequestBody, setBaseRequestBody] = useState<Object>();
+  const [loadingSwap, setLoadingSwap] = useState(false);
   const [error, setError] = useState<string>("");
 
-  const { executeBatchTransactions, txHash, txData } = useBatchTransactions();
+  const { executeBatchTransactions, txHash, txData, loadingTx } = useBatchTransactions();
   useTransactionEffects({ txHash, txData, baseRequestBody });
 
   const erc20Contract = useContract(addresses.ZERO_ADDRESS, ERC20ABI, true);
@@ -72,8 +73,10 @@ export const useExchange = () => {
     baseRequestBody: FixMe
   ) => {
     setError("");
+    setLoadingSwap(true);
 
     if (!erc20Contract || !proxyAddress) {
+      setLoadingSwap(false);
       throw new Error("Contract or proxy address not initiated");
     }
 
@@ -94,6 +97,7 @@ export const useExchange = () => {
     );
 
     if (!rate) {
+      setLoadingSwap(false);
       return;
     }
 
@@ -119,6 +123,7 @@ export const useExchange = () => {
         // gasPrice: selectedGasPrice
       }
     );
+    setLoadingSwap(false);
 
     if ("message" in txParams) {
       setError(txParams.message);
@@ -146,7 +151,11 @@ export const useExchange = () => {
     executeBatchTransactions({ transactions });
   };
 
+  console.log(loadingTx);
+
   return {
+    loadingTx,
+    loadingSwap,
     paraSwap,
     error,
     getExchangeRate,

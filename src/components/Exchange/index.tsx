@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import Select from "react-select";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import {
   makeSelectTokenList,
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
-import { Input, ErrorMessage, inputStyles } from "components/common/Form";
+import { Input, inputStyles } from "components/common/Form";
 import { useLocalStorage } from "hooks";
 import {
   PayTokenModal,
@@ -20,7 +20,6 @@ import {
   PAY_TOKEN_MODAL,
   RECEIVE_TOKEN_MODAL,
 } from "./TokenSelectModal";
-import { Card } from "components/common/Card";
 import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
@@ -103,7 +102,7 @@ const getTokenLabel = (tokenDetails: FixMe) => {
 
 export default function Exchange() {
   const dispatch = useDispatch();
-  const { getExchangeRate, approveAndSwap, error } = useExchange();
+  const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } = useExchange();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
@@ -149,7 +148,7 @@ export default function Exchange() {
     }
   }, [safeTokenList]);
 
-  const { register, errors, control, setValue, getValues } = useForm({
+  const { register, control, setValue, getValues } = useForm({
     mode: "onChange",
     defaultValues: {
       [PAY_AMOUNT]: DEFAULT_PAY_AMOUNT,
@@ -263,10 +262,14 @@ export default function Exchange() {
     setSlippage(value);
   };
 
-  const onSwapExhcangeSide = () => {
+  const onSwapExchangeSide = () => {
     setPayToken(receiveToken);
     setReceiveToken(payToken);
   };
+
+  const safeTokens = useMemo(() => {
+    return Object.keys(safeTokensByAddress).map((address: string) => tokensByAddress[address]);
+  }, [safeTokensByAddress, tokensByAddress])
 
   const payTokenBalance = safeTokensByAddress?.[payToken]?.balance || 0;
   const receiveTokenBalance = safeTokensByAddress?.[receiveToken]?.balance || 0;
@@ -335,7 +338,7 @@ export default function Exchange() {
               </ExchangeInputGroup>
             </ExchangeGroup>
             <SwapExchangeSide
-              onClick={onSwapExhcangeSide}
+              onClick={onSwapExchangeSide}
               src={SwapIcon}
               alt="swap-side"
               width={30}
@@ -382,10 +385,6 @@ export default function Exchange() {
                   step="any"
                 />
               </ExchangeInputGroup>
-              {/*<div>*/}
-              {/*  Balance: {safeTokensByAddress?.[receiveToken]?.balance || 0}*/}
-              {/*</div>*/}
-              {/*<div>USD: {rate?.destUSD || "-"}</div>*/}
             </ExchangeGroup>
             <ExchangeGroup>
               <ExchangeCardTitle>
@@ -414,7 +413,8 @@ export default function Exchange() {
               onSlippageChange,
               onExchangeClick,
               error,
-              swapDisabled
+              swapDisabled,
+              swapLoading: loadingSwap || loadingTx
             }}
           />
         </ExchangeContainer>
@@ -535,7 +535,7 @@ export default function Exchange() {
       </ExchangePage>
       <PayTokenModal
         title="Pay with"
-        tokenList={tokens}
+        tokenList={safeTokens}
         safeTokensByAddress={safeTokensByAddress}
         onTokenSelect={payTokenSelect}
       />

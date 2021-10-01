@@ -16,6 +16,7 @@ import {
   LoadingRateContainer,
   ExchangeDetailsCard,
   ExchangeControlsContainer,
+  ExchangeButton,
 } from "./styles";
 
 type Props = {
@@ -30,6 +31,7 @@ type Props = {
   onSlippageChange: (value: number) => void;
   error: string;
   swapDisabled: boolean;
+  swapLoading: boolean;
 };
 
 const getOneTokenPrice = (payAmount: FixMe, receiveAmount: FixMe) => {
@@ -60,7 +62,8 @@ export const ExchangeDetails = (props: Props) => {
     onExchangeClick,
     slippage,
     onSlippageChange,
-    swapDisabled
+    swapDisabled,
+    swapLoading
   } = props;
 
   return (
@@ -123,7 +126,7 @@ export const ExchangeDetails = (props: Props) => {
           <ExchangeControlsContainer>
             <ExchangeError>{getErrorMessage(error)}</ExchangeError>
             <ExchangeControls>
-              <Button disabled={swapDisabled} onClick={onExchangeClick}>Exchange</Button>
+              <ExchangeButton loading={swapLoading} disabled={swapDisabled || swapLoading} onClick={onExchangeClick}>Exchange</ExchangeButton>
             </ExchangeControls>
           </ExchangeControlsContainer>
         </>
@@ -186,10 +189,11 @@ const ExhcangeSettings = ({
         </ExchangeControls>
         {slippage > 100 ? (
           <ExchangeError>Incorrect slippage</ExchangeError>
-        ) : null}
-        {transformedCustomSlippage > 1 ? (
-          <ExchangeWarning>Your transaction may be frontrun</ExchangeWarning>
-        ) : null}
+        ) : (
+          transformedCustomSlippage > 1 ? (
+            <ExchangeWarning>Your transaction may be frontrun</ExchangeWarning>
+          ) : null
+        )}
       </ExchangeGroup>
     </>
   );

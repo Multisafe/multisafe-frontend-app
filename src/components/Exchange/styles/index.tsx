@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Card } from "components/common/Card";
 import { Input } from "components/common/Form";
 import Img from "components/common/Img";
+import Button from 'components/common/Button';
 
 export const ExchangePage = styled.div`
   display: flex;
@@ -30,6 +31,10 @@ export const ExchangeCard = styled(Card)`
 
 export const ExchangeDetailsCard = styled(ExchangeCard)`
   justify-content: space-between;
+`;
+
+export const ExchangeButton = styled(Button)`
+  padding: 1.2rem 4rem;
 `;
 
 export const ExchangeGroup = styled.div`
