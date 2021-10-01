@@ -13,7 +13,7 @@ import {
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
 import { Input, inputStyles } from "components/common/Form";
-import Img from 'components/common/Img';
+import Img from "components/common/Img";
 import { useLocalStorage } from "hooks";
 import {
   PayTokenModal,
@@ -63,7 +63,7 @@ import {
   TokenBalance,
   RouteCard,
 } from "./styles";
-import {ExchangeAlert} from './ExchangeAlert';
+import { ExchangeAlert } from "./ExchangeAlert";
 
 const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
 const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
@@ -103,7 +103,8 @@ const getTokenLabel = (tokenDetails: FixMe) => {
 
 export default function Exchange() {
   const dispatch = useDispatch();
-  const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } = useExchange();
+  const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } =
+    useExchange();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
@@ -255,6 +256,15 @@ export default function Exchange() {
           encryptionKey,
           organisationType
         ),
+        metaData: {
+          payToken,
+          payTokenSymbol: tokensByAddress[payToken].symbol,
+          payTokenAmount,
+          receiveToken,
+          receiveTokenSymbol: tokensByAddress[receiveToken].symbol,
+          slippage,
+          serviceFee: 0, // Coinshift fee
+        },
       }
     );
   };
@@ -269,14 +279,16 @@ export default function Exchange() {
   };
 
   const safeTokens = useMemo(() => {
-    return Object.keys(safeTokensByAddress).map((address: string) => tokensByAddress[address]);
-  }, [safeTokensByAddress, tokensByAddress])
+    return Object.keys(safeTokensByAddress).map(
+      (address: string) => tokensByAddress[address]
+    );
+  }, [safeTokensByAddress, tokensByAddress]);
 
   const payTokenBalance = safeTokensByAddress?.[payToken]?.balance || 0;
   const receiveTokenBalance = safeTokensByAddress?.[receiveToken]?.balance || 0;
   const insufficientBalance = payTokenAmount > payTokenBalance;
 
-  const swapDisabled = insufficientBalance || slippage > 100;
+  const swapDisabled = insufficientBalance || slippage > 100 || slippage < 0;
 
   return (
     <>
@@ -289,7 +301,7 @@ export default function Exchange() {
             </div>
           </div>
         </InfoCard>
-        <ExchangeAlert/>
+        <ExchangeAlert />
         <ExchangeContainer>
           <ExchangeCard>
             <ExchangeGroup>
@@ -297,7 +309,8 @@ export default function Exchange() {
                 <ExchangeCardTitle>Pay with</ExchangeCardTitle>
                 {tokensByAddress[payToken] ? (
                   <TokenBalance insufficientBalance={insufficientBalance}>
-                    Balance: {payTokenBalance} {tokensByAddress[payToken].symbol}
+                    Balance: {payTokenBalance}{" "}
+                    {tokensByAddress[payToken].symbol}
                   </TokenBalance>
                 ) : null}
               </TitleGroup>
@@ -347,7 +360,8 @@ export default function Exchange() {
                 <ExchangeCardTitle>Receive</ExchangeCardTitle>
                 {tokensByAddress[receiveToken] ? (
                   <TokenBalance>
-                    Balance: {receiveTokenBalance} {tokensByAddress[receiveToken].symbol}
+                    Balance: {receiveTokenBalance}{" "}
+                    {tokensByAddress[receiveToken].symbol}
                   </TokenBalance>
                 ) : null}
               </TitleGroup>
@@ -413,7 +427,7 @@ export default function Exchange() {
               onExchangeClick,
               error,
               swapDisabled,
-              swapLoading: loadingSwap || loadingTx
+              swapLoading: loadingSwap || loadingTx,
             }}
           />
         </ExchangeContainer>

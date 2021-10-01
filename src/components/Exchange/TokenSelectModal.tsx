@@ -83,7 +83,7 @@ const NotFound = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 1.6rem;
-`
+`;
 
 function TokenSelectModalComponent(props: Props) {
   const {

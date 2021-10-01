@@ -3,7 +3,7 @@ import { OptimalRate } from "paraswap-core";
 import Button from "components/common/Button";
 import Loading from "components/common/Loading";
 import { formatNumber } from "utils/number-helpers";
-import {DEFAULT_SLIPPAGE} from './constants';
+import { DEFAULT_SLIPPAGE } from "./constants";
 import {
   SlippageInput,
   ExchangeWarning,
@@ -42,13 +42,13 @@ const CUSTOM_SLIPPAGE = "CUSTOM_SLIPPAGE";
 
 const getErrorMessage = (error: string) => {
   switch (error) {
-    case 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT':
-      return 'Price Impact Too High';
+    case "ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT":
+      return "Price Impact Too High";
 
     default:
       return error;
   }
-}
+};
 
 export const ExchangeDetails = (props: Props) => {
   const {
@@ -63,7 +63,7 @@ export const ExchangeDetails = (props: Props) => {
     slippage,
     onSlippageChange,
     swapDisabled,
-    swapLoading
+    swapLoading,
   } = props;
 
   return (
@@ -126,7 +126,13 @@ export const ExchangeDetails = (props: Props) => {
           <ExchangeControlsContainer>
             <ExchangeError>{getErrorMessage(error)}</ExchangeError>
             <ExchangeControls>
-              <ExchangeButton loading={swapLoading} disabled={swapDisabled || swapLoading} onClick={onExchangeClick}>Exchange</ExchangeButton>
+              <ExchangeButton
+                loading={swapLoading}
+                disabled={swapDisabled || swapLoading}
+                onClick={onExchangeClick}
+              >
+                Exchange
+              </ExchangeButton>
             </ExchangeControls>
           </ExchangeControlsContainer>
         </>
@@ -141,10 +147,7 @@ type SettingsProps = {
   error: string;
 };
 
-const ExhcangeSettings = ({
-  slippage,
-  onSlippageChange
-}: SettingsProps) => {
+const ExhcangeSettings = ({ slippage, onSlippageChange }: SettingsProps) => {
   const transformedCustomSlippage = Number(slippage);
 
   const onChange = (e: FixMe) => {
@@ -156,7 +159,7 @@ const ExhcangeSettings = ({
     if (!slippage) {
       onSlippageChange(DEFAULT_SLIPPAGE);
     }
-  }
+  };
 
   return (
     <>
@@ -187,13 +190,11 @@ const ExhcangeSettings = ({
             onBlur={onBlur}
           />
         </ExchangeControls>
-        {slippage > 100 ? (
+        {slippage > 100 || slippage < 0 ? (
           <ExchangeError>Incorrect slippage</ExchangeError>
-        ) : (
-          transformedCustomSlippage > 1 ? (
-            <ExchangeWarning>Your transaction may be frontrun</ExchangeWarning>
-          ) : null
-        )}
+        ) : transformedCustomSlippage > 1 ? (
+          <ExchangeWarning>Your transaction may be frontrun</ExchangeWarning>
+        ) : null}
       </ExchangeGroup>
     </>
   );

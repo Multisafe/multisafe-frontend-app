@@ -1,7 +1,7 @@
-import React, {ReactNode} from 'react';
-import styled from 'styled-components';
+import React, { ReactNode } from "react";
+import styled from "styled-components";
 import CloseIcon from "assets/icons/dashboard/close-icon.svg";
-import Img from '../Img';
+import Img from "components/common/Img";
 
 type Props = {
   onClose?: () => void;
@@ -14,7 +14,7 @@ const StyledAlert = styled.div`
   border-radius: 0.4rem;
   background-color: rgba(245, 133, 32, 0.1);
   font-size: 1.4rem;
-  
+
   @media (min-width: 978px) {
     padding: 2.2rem 3rem;
   }
@@ -25,7 +25,7 @@ const CloseAlert = styled(Img)`
   right: 2rem;
   top: 50%;
   transform: translateY(-50%);
-  
+
   &:hover {
     cursor: pointer;
   }
@@ -35,13 +35,17 @@ const CloseAlert = styled(Img)`
   }
 `;
 
-export const Alert = ({onClose, children}: Props) => {
+export const Alert = ({ onClose, children }: Props) => {
   return (
     <StyledAlert>
       {children}
       {onClose ? (
-        <CloseAlert src={CloseIcon} alt="close-exchange-alert" onClick={onClose}/>
+        <CloseAlert
+          src={CloseIcon}
+          alt="close-exchange-alert"
+          onClick={onClose}
+        />
       ) : null}
     </StyledAlert>
   );
-}
+};

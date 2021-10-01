@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Card } from "components/common/Card";
 import { Input } from "components/common/Form";
 import Img from "components/common/Img";
-import Button from 'components/common/Button';
+import Button from "components/common/Button";
 
 export const ExchangePage = styled.div`
   display: flex;
@@ -256,6 +256,6 @@ export const SlippageInput = styled(Input)`
 
 export const TokenBalance = styled.div<{ insufficientBalance?: boolean }>`
   font-size: 1.2rem;
-  
-  color: ${props => props.insufficientBalance ? "#ff4b55" : "#373737"}
+
+  color: ${(props) => (props.insufficientBalance ? "#ff4b55" : "#373737")};
 `;

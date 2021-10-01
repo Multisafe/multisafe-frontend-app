@@ -26,7 +26,8 @@ export const useExchange = () => {
   const [loadingSwap, setLoadingSwap] = useState(false);
   const [error, setError] = useState<string>("");
 
-  const { executeBatchTransactions, txHash, txData, loadingTx } = useBatchTransactions();
+  const { executeBatchTransactions, txHash, txData, loadingTx } =
+    useBatchTransactions();
   useTransactionEffects({ txHash, txData, baseRequestBody });
 
   const erc20Contract = useContract(addresses.ZERO_ADDRESS, ERC20ABI, true);
@@ -39,7 +40,7 @@ export const useExchange = () => {
         setProxyAddress(proxyAddressResponse);
       }
     } catch (e) {
-      setError('Error fetching proxy address');
+      setError("Error fetching proxy address");
     }
   };
 
@@ -86,14 +87,6 @@ export const useExchange = () => {
 
     const contract = erc20Contract.attach(payTokenAddress);
 
-    setBaseRequestBody({
-      safeAddress,
-      createdBy: account,
-      to: proxyAddress,
-      transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP,
-      ...baseRequestBody,
-    });
-
     const rate = await getExchangeRate(
       getAddress(payTokenAddress),
       getAddress(receiveTokenAddress),
@@ -102,8 +95,21 @@ export const useExchange = () => {
 
     if (!rate) {
       setLoadingSwap(false);
+      setError("Error getting swap rate");
       return;
     }
+
+    setBaseRequestBody({
+      safeAddress,
+      createdBy: account,
+      to: proxyAddress,
+      transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP,
+      ...baseRequestBody,
+      metaData: {
+        ...(baseRequestBody?.metaData || {}),
+        rate,
+      },
+    });
 
     const { srcToken, destToken, srcAmount, destAmount } = rate;
 
@@ -124,7 +130,6 @@ export const useExchange = () => {
       safeAddress,
       {
         ignoreChecks: true,
-        // gasPrice: selectedGasPrice
       }
     );
     setLoadingSwap(false);
