@@ -116,10 +116,6 @@ function TokenSelectModalComponent(props: Props) {
       const tokenBalance = safeTokensByAddress[address]?.balance;
       const usdBalance = safeTokensByAddress[address]?.usd;
 
-      if (tokenBalance) {
-        console.log(safeTokensByAddress[address]);
-      }
-
       const onClick = () => {
         onTokenSelect(address);
         handleHide();

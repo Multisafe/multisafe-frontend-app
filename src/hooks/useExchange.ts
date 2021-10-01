@@ -151,8 +151,6 @@ export const useExchange = () => {
     executeBatchTransactions({ transactions });
   };
 
-  console.log(loadingTx);
-
   return {
     loadingTx,
     loadingSwap,
