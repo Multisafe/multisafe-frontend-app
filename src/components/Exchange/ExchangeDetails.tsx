@@ -1,7 +1,7 @@
 import React from "react";
 import { OptimalRate } from "paraswap-core";
-import Button from "../common/Button";
-import Loading from "../common/Loading";
+import Button from "components/common/Button";
+import Loading from "components/common/Loading";
 import { formatNumber } from "utils/number-helpers";
 import {DEFAULT_SLIPPAGE} from './constants';
 import {

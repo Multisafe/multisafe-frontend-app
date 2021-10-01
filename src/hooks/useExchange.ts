@@ -11,7 +11,7 @@ import {
   useContract,
   useTransactionEffects,
 } from "./index";
-import ERC20ABI from "../constants/abis/ERC20.json";
+import ERC20ABI from "constants/abis/ERC20.json";
 import useActiveWeb3React from "./useActiveWeb3React";
 import { TRANSACTION_MODES } from "../constants/transactions";
 
@@ -32,10 +32,14 @@ export const useExchange = () => {
   const erc20Contract = useContract(addresses.ZERO_ADDRESS, ERC20ABI, true);
 
   const getProxyAddress = async () => {
-    const proxyAddressResponse = await paraSwap.getTokenTransferProxy();
-    if (typeof proxyAddressResponse === "string") {
-      //check Address | APIError
-      setProxyAddress(proxyAddressResponse);
+    try {
+      const proxyAddressResponse = await paraSwap.getTokenTransferProxy();
+      if (typeof proxyAddressResponse === "string") {
+        //check Address | APIError
+        setProxyAddress(proxyAddressResponse);
+      }
+    } catch (e) {
+      setError('Error fetching proxy address');
     }
   };
 

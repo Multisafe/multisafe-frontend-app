@@ -13,6 +13,7 @@ import {
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
 import { Input, inputStyles } from "components/common/Form";
+import Img from 'components/common/Img';
 import { useLocalStorage } from "hooks";
 import {
   PayTokenModal,
@@ -288,9 +289,7 @@ export default function Exchange() {
             </div>
           </div>
         </InfoCard>
-
         <ExchangeAlert/>
-
         <ExchangeContainer>
           <ExchangeCard>
             <ExchangeGroup>
@@ -426,7 +425,7 @@ export default function Exchange() {
                 <RouteLables>
                   <div>
                     <RouteLabel>
-                      <img
+                      <Img
                         src={tokensByAddress[payToken].logoURI}
                         alt={tokensByAddress[payToken].name}
                         width="16"
@@ -442,7 +441,7 @@ export default function Exchange() {
                         {receiveTokenAmount}{" "}
                         {tokensByAddress[receiveToken].symbol}
                       </div>
-                      <img
+                      <Img
                         src={tokensByAddress[receiveToken].logoURI}
                         alt={tokensByAddress[receiveToken].name}
                         width="16"
