@@ -306,8 +306,8 @@ export default function DisbursementDetails({
       gasCostUSD,
     } = rate;
 
-    const payAmount = getAmountFromWei(srcAmount, srcDecimals, 8);
-    const receiveAmount = getAmountFromWei(destAmount, destDecimals, 8);
+    const payAmount = getAmountFromWei(srcAmount, srcDecimals, 2);
+    const receiveAmount = getAmountFromWei(destAmount, destDecimals, 2);
     const priceRate = formatNumber(receiveAmount / payAmount);
 
     return (

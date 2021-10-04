@@ -4,7 +4,7 @@ import { FixedSizeList } from "react-window";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import styled from "styled-components/macro";
 import { Input } from "components/common/Form";
-import {ETH_ADDRESS} from "./constants";
+import { ETH_ADDRESS } from "./constants";
 
 export const PAY_TOKEN_MODAL = "pay-token-modal";
 export const RECEIVE_TOKEN_MODAL = "receive-token-modal";

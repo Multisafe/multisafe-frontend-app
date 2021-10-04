@@ -38,6 +38,8 @@ export const useExchange = () => {
       if (typeof proxyAddressResponse === "string") {
         //check Address | APIError
         setProxyAddress(proxyAddressResponse);
+      } else {
+        setError("Error fetching proxy address");
       }
     } catch (e) {
       setError("Error fetching proxy address");
@@ -82,7 +84,8 @@ export const useExchange = () => {
 
     if (!erc20Contract || !proxyAddress) {
       setLoadingSwap(false);
-      throw new Error("Contract or proxy address not initiated");
+      setError("ParaSwap Proxy initiating error");
+      return;
     }
 
     const contract = erc20Contract.attach(payTokenAddress);
@@ -125,7 +128,7 @@ export const useExchange = () => {
       rate,
       safeAddress,
       undefined,
-      undefined,
+      addresses.COINSHIFT_FEE_ADDRESS,
       undefined,
       safeAddress,
       {
