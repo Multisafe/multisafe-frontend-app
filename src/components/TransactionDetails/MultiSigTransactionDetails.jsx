@@ -32,6 +32,7 @@ import {
   makeSelectSafeOwners,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
 } from "store/global/selectors";
 import Loading from "components/common/Loading";
 import { Stepper, StepCircle } from "components/common/Stepper";
@@ -92,6 +93,7 @@ export default function MultiSigTransactions() {
   const multisigTransactionId = useSelector(makeSelectMultisigTransactionId());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -139,13 +141,14 @@ export default function MultiSigTransactions() {
     rejectedCount,
     isExecuted,
     txDetailsHash,
+    confirmationsRequired,
   }) => {
-    if (txDetailsHash && !isExecuted) {
+    if (txDetailsHash && (!isExecuted || !confirmationsRequired)) {
       return <div className="pending">Transaction Submitted</div>;
     }
-    if (isExecuted && confirmedCount >= threshold)
+    if (isExecuted && confirmedCount >= confirmationsRequired)
       return <div className="success">Success</div>;
-    else if (isExecuted && rejectedCount >= threshold)
+    else if (isExecuted && rejectedCount >= confirmationsRequired)
       return <div className="rejected">Rejected</div>;
 
     return <div className="failed">Failed</div>;
@@ -416,12 +419,13 @@ export default function MultiSigTransactions() {
                 rejectedCount,
                 isExecuted,
                 txDetailsHash,
+                confirmationsRequired,
               })}
             </FinalStatus>
           )}
         </InfoCard>
 
-        {confirmationsRequired && (
+        {!isMultiOwner && !confirmationsRequired ? null : (
           <StepperCard>
             <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
               {renderConfirmationStatus({
@@ -429,6 +433,7 @@ export default function MultiSigTransactions() {
                 createdBy,
                 executor,
                 currentSafeOwners,
+                confirmationsRequired,
               })}
             </Stepper>
           </StepperCard>

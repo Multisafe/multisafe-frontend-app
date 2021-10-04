@@ -12,7 +12,10 @@ import {
 } from "store/multisig/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import {
+  makeSelectIsMultiOwner,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
 import { InfoCard } from "../People/styles";
 import ExportButton from "./ExportButton";
 import {
@@ -46,6 +49,7 @@ export default function MultiSigTransactions() {
   const transactions = useSelector(makeSelectMultisigTransactions());
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const txCount = useSelector(makeSelectMultisigTransactionCount());
   const isPendingTransactions = useSelector(makeSelectIsPendingTransactions());
 
@@ -147,7 +151,7 @@ export default function MultiSigTransactions() {
         <div>
           <div className="title">Transactions</div>
           <div className="subtitle">Track your transaction status here</div>
-          {isPendingTransactions && (
+          {isPendingTransactions && !isMultiOwner && (
             <div className="subtitle mt-2">
               One or more transactions have been submitted. They will show up
               here shortly.

@@ -22,7 +22,6 @@ import {
   makeSelectMetaTransactionHash,
   makeSelectTransactionId as makeSelectSingleOwnerTransactionId,
 } from "store/transactions/selectors";
-import { makeSelectIsMultiOwner } from "store/global/selectors";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
@@ -57,7 +56,6 @@ export default function useTransactionEffects({
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const singleOwnerTransactionId = useSelector(
     makeSelectSingleOwnerTransactionId()
   );
@@ -81,28 +79,17 @@ export default function useTransactionEffects({
           })
         );
       } else if (txData) {
-        if (!isMultiOwner) {
-          // single owner meta transaction
-          dispatch(
-            createMultisigTransaction({
-              ...baseRequestBody,
-              txData,
-              nonce: multisigNonce,
-            })
-          );
-        } else {
-          // threshold > 1
-          dispatch(
-            createMultisigTransaction({
-              ...baseRequestBody,
-              txData,
-              nonce: multisigNonce,
-            })
-          );
-        }
+        // single owner meta tx or threshold > 0
+        dispatch(
+          createMultisigTransaction({
+            ...baseRequestBody,
+            txData,
+            nonce: multisigNonce,
+          })
+        );
       }
     }
-  }, [txHash, dispatch, baseRequestBody, txData, isMultiOwner, multisigNonce]);
+  }, [txHash, dispatch, baseRequestBody, txData, multisigNonce]);
 
   useEffect(() => {
     if (txHashFromMetaTx) {
