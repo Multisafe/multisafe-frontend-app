@@ -64,6 +64,9 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.CHANGE_THRESHOLD:
       return "Changed Threshold";
 
+    case TRANSACTION_MODES.APPROVE_AND_SWAP:
+      return "Swap Tokens";
+
     default:
       return "";
   }

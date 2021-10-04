@@ -314,28 +314,30 @@ export default function DisbursementDetails({
       <Table>
         <TableHead>
           <tr>
-            <th>Pay</th>
-            <th>Receive</th>
-            <th>Slippage</th>
-            <th>Rate</th>
-            <th>Swap Fee</th>
-            <th>Coinshift Fee</th>
+            <th style={{ width: "25%" }}>Pay</th>
+            <th style={{ width: "25%" }}>Receive</th>
+            <th style={{ width: "10%" }}>Slippage</th>
+            <th style={{ width: "20%" }}>Rate</th>
+            <th style={{ width: "10%" }}>Swap Fee</th>
+            <th style={{ width: "10%" }}>Coinshift Fee</th>
           </tr>
         </TableHead>
         <TableBody>
           <tr>
-            <td>
-              {payAmount} {payTokenSymbol} (${formatNumber(srcUSD)})
+            <td style={{ width: "25%" }}>
+              <div>{payAmount} {payTokenSymbol}</div>
+              <div>~${formatNumber(srcUSD)}</div>
             </td>
-            <td>
-              {receiveAmount} {receiveTokenSymbol} (${formatNumber(destUSD)})
+            <td style={{ width: "25%" }}>
+              <div>{receiveAmount} {receiveTokenSymbol}</div>
+              <div>~${formatNumber(destUSD)}</div>
             </td>
-            <td>{slippage}%</td>
-            <td>
+            <td style={{ width: "10%" }}>{slippage}%</td>
+            <td style={{ width: "20%" }}>
               1 {receiveTokenSymbol} = {priceRate} {payTokenSymbol}
             </td>
-            <td>~${formatNumber(gasCostUSD)}</td>
-            <td>${serviceFee}</td>
+            <td style={{ width: "10%" }}>~${formatNumber(gasCostUSD)}</td>
+            <td style={{ width: "10%" }}>${serviceFee}</td>
           </tr>
         </TableBody>
       </Table>
