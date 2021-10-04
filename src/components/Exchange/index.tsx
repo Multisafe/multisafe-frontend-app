@@ -279,8 +279,8 @@ export default function Exchange() {
   };
 
   const safeTokens = useMemo(() => {
-    return Object.keys(safeTokensByAddress).map(
-      (address: string) => tokensByAddress[address]
+    return Object.keys(safeTokensByAddress).flatMap(
+      (address: string) => tokensByAddress[address] ? [tokensByAddress[address]] : []
     );
   }, [safeTokensByAddress, tokensByAddress]);
 
