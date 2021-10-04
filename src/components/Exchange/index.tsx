@@ -30,7 +30,7 @@ import { constructLabel } from "utils/tokens";
 import { useExchange } from "hooks/useExchange";
 import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { ExchangeDetails } from "./ExchangeDetails";
-import { DEFAULT_SLIPPAGE } from "./constants";
+import {DEFAULT_SLIPPAGE, ETH_ADDRESS, DAI_ADDRESS} from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
 import { InfoCard } from "../People/styles";
@@ -65,8 +65,7 @@ import {
 } from "./styles";
 import { ExchangeAlert } from "./ExchangeAlert";
 
-const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
-const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f"; // DAI
+
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
