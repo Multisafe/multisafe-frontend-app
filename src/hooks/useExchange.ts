@@ -52,7 +52,9 @@ export const useExchange = () => {
 
   const getExchangeRate = async (
     payTokenAddress: string,
+    payTokenDeciamls: number,
     receiveTokenAddress: string,
+    receiveTokenDecimals: number,
     amount: FixMe
   ) => {
     setError("");
@@ -61,7 +63,11 @@ export const useExchange = () => {
       payTokenAddress,
       receiveTokenAddress,
       String(amount),
-      safeAddress
+      safeAddress,
+      undefined,
+      undefined,
+      payTokenDeciamls,
+      receiveTokenDecimals,
     );
 
     if ("message" in rate) {
@@ -74,7 +80,9 @@ export const useExchange = () => {
 
   const approveAndSwap = async (
     payTokenAddress: string,
+    payTokenDeciamls: number,
     receiveTokenAddress: string,
+    receiveTokenDecimals: number,
     amount: FixMe,
     slippage: number,
     baseRequestBody: FixMe
@@ -92,7 +100,9 @@ export const useExchange = () => {
 
     const rate = await getExchangeRate(
       getAddress(payTokenAddress),
+      payTokenDeciamls,
       getAddress(receiveTokenAddress),
+      receiveTokenDecimals,
       amount
     );
 

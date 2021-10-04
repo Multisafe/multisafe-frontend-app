@@ -172,7 +172,9 @@ export default function Exchange() {
     debounce(async (amount: BigNumber) => {
       const exchangeRate = await getExchangeRate(
         payToken,
+        tokensByAddress[payToken]?.decimals || 18,
         receiveToken,
+        tokensByAddress[receiveToken]?.decimals || 18,
         amount
       );
 
@@ -240,7 +242,9 @@ export default function Exchange() {
 
     approveAndSwap(
       payToken,
+      tokensByAddress[payToken]?.decimals || 18,
       receiveToken,
+      tokensByAddress[receiveToken]?.decimals || 18,
       getAmountInWei(payTokenAmount, tokensByAddress[payToken].decimals),
       slippage,
       {
