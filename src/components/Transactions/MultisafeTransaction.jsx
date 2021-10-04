@@ -15,7 +15,7 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { TRANSACTION_MODES } from "constants/transactions";
 
 import { TxRow } from "./styles";
-import {getAmountFromWei} from "../../utils/tx-helpers";
+import { getAmountFromWei } from "utils/tx-helpers";
 
 const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
@@ -33,7 +33,7 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
     createdOn,
     transactionMode,
     to,
-    metaData
+    metaData,
   } = txDetails;
 
   const renderSwapTokenValue = () => {
@@ -42,11 +42,7 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
 
     if (!rate) return null;
 
-    const {
-      srcAmount,
-      srcDecimals,
-      srcUSD
-    } = rate;
+    const { srcAmount, srcDecimals, srcUSD } = rate;
 
     const payAmount = getAmountFromWei(srcAmount, srcDecimals, 2);
 
@@ -55,12 +51,10 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
         <div className="amount">
           {payAmount} {payTokenSymbol}
         </div>
-        <div className="usd">
-          ${formatNumber(srcUSD)}
-        </div>
+        <div className="usd">${formatNumber(srcUSD)}</div>
       </React.Fragment>
     );
-  }
+  };
 
   const renderDefaultTokenValue = () => {
     return (
@@ -75,7 +69,8 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
           <div className="usd">
             {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
             {formatNumber(fiatValue, 5)}
-          </div>) : null}
+          </div>
+        ) : null}
       </React.Fragment>
     );
   };
@@ -87,7 +82,7 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
       default:
         return renderDefaultTokenValue();
     }
-  }
+  };
 
   return (
     <TxRow
@@ -120,9 +115,7 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
           </div>
         </div>
       </td>
-      <td style={{ width: "30%" }}>
-        {renderTokenValue()}
-      </td>
+      <td style={{ width: "30%" }}>{renderTokenValue()}</td>
       <td style={{ width: "23%" }}>
         <StatusText status={status} textOnly className="status" />
       </td>
