@@ -48,7 +48,7 @@ export default styled(Card)`
       padding: 1.6rem 0;
 
       &:hover {
-        opacity: 0.8;
+        opacity: 0.7;
       }
 
       .tx-info {
