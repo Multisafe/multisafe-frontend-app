@@ -118,6 +118,7 @@ export const useExchange = () => {
       to: proxyAddress,
       transactionMode: TRANSACTION_MODES.APPROVE_AND_SWAP,
       ...baseRequestBody,
+      fiatValue: Number(rate.srcUSD),
       metaData: {
         ...(baseRequestBody?.metaData || {}),
         rate,

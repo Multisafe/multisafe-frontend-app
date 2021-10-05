@@ -257,6 +257,8 @@ export default function Exchange() {
           encryptionKey,
           organisationType
         ),
+        tokenValue: Number(payTokenAmount),
+        tokenCurrency: tokensByAddress[payToken].symbol,
         metaData: {
           payToken,
           payTokenSymbol: tokensByAddress[payToken].symbol,
