@@ -18,6 +18,8 @@ export const routeGenerators = {
       generatePath(routeTemplates.dashboard.root, { safeAddress }),
     people: ({ safeAddress }) =>
       generatePath(routeTemplates.dashboard.people, { safeAddress }),
+    exchange: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.exchange, { safeAddress }),
     settings: ({ safeAddress }) =>
       generatePath(routeTemplates.dashboard.settings, { safeAddress }),
     assets: ({ safeAddress }) =>
