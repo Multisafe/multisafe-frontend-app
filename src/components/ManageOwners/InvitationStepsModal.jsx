@@ -13,7 +13,7 @@ export const MODAL_NAME = "how-invitation-works-modal";
 const invitationSteps = [
   {
     title: "STEP 1",
-    subtitle: "Invite the owners to Multisafe",
+    subtitle: "Invite the owners to Coinshift",
     icon: Step1Icon,
   },
   {
@@ -38,7 +38,8 @@ function InvitationStepsModal(props) {
         <InvitationSteps>
           <div className="title">Owners</div>
           <div className="subtitle">
-            To allow other owners to use Multisafe, follow these simple steps.
+            To allow other owners to access the Coinshift dashboard, follow
+            these simple steps.
           </div>
           <div className="steps-container">
             {invitationSteps.map(({ title, subtitle, icon }) => (

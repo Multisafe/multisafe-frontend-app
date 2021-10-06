@@ -84,7 +84,7 @@ export default function AdminStats() {
         <AmountCardContainer>
           <AmountCard>
             <div>
-              <div className="title">Total Amount Managed using MultiSafe</div>
+              <div className="title">Total Amount Managed using Coinshift</div>
               <div className="amount d-flex justify-content-center">
                 ${formatNumber(totalAssetsImported, 0)}
               </div>
@@ -93,7 +93,7 @@ export default function AdminStats() {
           <AmountCard>
             <div>
               <div className="title">
-                Total Transaction Amount through MultiSafe
+                Total Transaction Amount through Coinshift
               </div>
               <div className="amount">
                 ${formatNumber(totalTransactionAmount, 0)}

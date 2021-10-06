@@ -67,7 +67,7 @@ export default styled.div`
     cursor: pointer;
   }
 
-  .multisafe-logo {
+  .logo {
     height: 10vh;
     display: flex;
     justify-content: center;

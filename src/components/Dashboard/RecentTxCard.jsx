@@ -166,7 +166,7 @@ function RecentTxCard() {
     );
   };
 
-  const renderMultisafeAmounts = ({
+  const renderCoinshiftAmounts = ({
     tokenValue,
     tokenCurrency,
     fiatValue,
@@ -237,7 +237,7 @@ function RecentTxCard() {
               fiatValue,
               direction,
             })
-          : renderMultisafeAmounts({
+          : renderCoinshiftAmounts({
               tokenValue,
               tokenCurrency,
               fiatValue,

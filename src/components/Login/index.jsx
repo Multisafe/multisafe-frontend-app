@@ -68,7 +68,6 @@ import { loginUser } from "store/login/actions";
 import { registerUser, getVerificationStatus } from "store/register/actions";
 import Loading from "components/common/Loading";
 import TeamPng from "assets/images/user-team.png";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import {
   STEPS,
   FLOWS as OWNER_FLOWS,
@@ -93,6 +92,7 @@ import {
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
 import QuestionIcon from "assets/icons/login/question-icon.svg";
+import WelcomeImg from "assets/images/register/welcome.svg";
 
 import {
   Background,
@@ -435,16 +435,14 @@ const Login = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        src={WelcomeImg}
         alt="welcome"
-        width="70%"
+        width="100%"
+        style={{ maxWidth: "70rem" }}
         className="d-block mx-auto py-4"
       />
       <InnerCard>
-        <h2 className="text-center mb-4">
-          <Img src={MultisafeLogo} alt="multisafe" width="80" />
-        </h2>
-        <div className="mt-2 title">
+        <div className="mt-5 title">
           Your one stop for crypto treasury management.
         </div>
         <div className="subtitle">
@@ -582,7 +580,7 @@ const Login = () => {
         />
         <p className="title">{name}</p>
         <p className="subtitle">
-          You’ll be registered with this name on Multisafe.
+          You’ll be registered with this name on Coinshift.
         </p>
         <div className="mt-2">
           <Input
@@ -676,7 +674,7 @@ const Login = () => {
         {!hasAlreadySigned ? (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              Please sign and authorize MultiSafe to derive your encryption key.
+              Please sign and authorize Coinshift to derive your encryption key.
             </p>
             <Button
               type="button"
@@ -1019,7 +1017,7 @@ const Login = () => {
         </ReviewContent>
 
         <Information style={{ marginBottom: "5rem" }}>
-          <div>You’re about to import this safe to Multisafe.</div>
+          <div>You’re about to import this safe to Coinshift.</div>
         </Information>
 
         <Button

@@ -1,21 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import multisigReducer from "store/multisig/reducer";
-import multisigSaga from "store/multisig/saga";
-import { getMultisigTransactions } from "store/multisig/actions";
+import transactionsReducer from "store/transactions/reducer";
+import transactionsSaga from "store/transactions/saga";
+import { viewTransactions } from "store/transactions/actions";
 import {
-  makeSelectMultisigTransactions,
+  makeSelectTransactions,
   makeSelectFetching,
-  makeSelectIsPendingTransactions,
-  makeSelectMultisigTransactionCount,
-} from "store/multisig/selectors";
+  makeSelectTransactionCount,
+} from "store/transactions/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import {
-  makeSelectIsMultiOwner,
-  makeSelectOwnerSafeAddress,
-} from "store/global/selectors";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { InfoCard } from "../People/styles";
 import ExportButton from "./ExportButton";
 import {
@@ -31,27 +27,23 @@ import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 
-const multisigKey = "multisig";
+const transactionsKey = "transactions";
 const LIMIT = 10;
 
-export default function MultiSigTransactions() {
+export default function Transactions() {
   const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false); // eslint-disable-line
 
-  // Reducers
-  useInjectReducer({ key: multisigKey, reducer: multisigReducer });
+  useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
 
-  // Sagas
-  useInjectSaga({ key: multisigKey, saga: multisigSaga });
+  useInjectSaga({ key: transactionsKey, saga: transactionsSaga });
 
   const dispatch = useDispatch();
 
-  const transactions = useSelector(makeSelectMultisigTransactions());
+  const transactions = useSelector(makeSelectTransactions());
   const loading = useSelector(makeSelectFetching());
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
-  const txCount = useSelector(makeSelectMultisigTransactionCount());
-  const isPendingTransactions = useSelector(makeSelectIsPendingTransactions());
+  const txCount = useSelector(makeSelectTransactionCount());
 
   // for infinite scroll
   const observer = useRef();
@@ -79,40 +71,38 @@ export default function MultiSigTransactions() {
   }, [txCount]);
 
   useEffect(() => {
-    if (ownerSafeAddress && hasMore && offset > 0) {
-      dispatch(getMultisigTransactions(ownerSafeAddress, offset, LIMIT));
+    if (ownerSafeAddress) {
+      // dispatch(viewTransactions(ownerSafeAddress, offset, LIMIT)); // with pagination
+      dispatch(viewTransactions(ownerSafeAddress));
     }
-  }, [dispatch, ownerSafeAddress, offset, hasMore]);
+  }, [dispatch, ownerSafeAddress]);
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getMultisigTransactions(ownerSafeAddress, 0, LIMIT));
+      dispatch(viewTransactions(ownerSafeAddress, 0, LIMIT));
     }
   }, [dispatch, ownerSafeAddress]);
 
   const renderNoTransactionsFound = () => {
     return (
-      !loading &&
-      offset === 0 && (
-        <TableInfo
-          style={{
-            textAlign: "center",
-            height: "40rem",
-            fontSize: "16px",
-            fontWeight: "bold",
-            color: "#8b8b8b",
-          }}
-        >
-          <td colSpan={4}>
-            <div className="d-flex align-items-center justify-content-center">
-              <div>
-                <Img src={NoTransactionsImg} alt="no-assets" className="mb-4" />
-                <div className="text-center">No Transactions</div>
-              </div>
+      <TableInfo
+        style={{
+          textAlign: "center",
+          height: "40rem",
+          fontSize: "16px",
+          fontWeight: "bold",
+          color: "#8b8b8b",
+        }}
+      >
+        <td colSpan={4}>
+          <div className="d-flex align-items-center justify-content-center">
+            <div>
+              <Img src={NoTransactionsImg} alt="no-assets" className="mb-4" />
+              <div className="text-center">No Transactions</div>
             </div>
-          </td>
-        </TableInfo>
-      )
+          </div>
+        </td>
+      </TableInfo>
     );
   };
 
@@ -144,19 +134,12 @@ export default function MultiSigTransactions() {
         })
       : renderNoTransactionsFound();
   };
-
   return (
     <div>
       <InfoCard>
         <div>
           <div className="title">Transactions</div>
           <div className="subtitle">Track your transaction status here</div>
-          {isPendingTransactions && !isMultiOwner && (
-            <div className="subtitle mt-2">
-              One or more transactions have been submitted. They will show up
-              here shortly.
-            </div>
-          )}
         </div>
         <div>
           <ExportButton />
@@ -173,7 +156,7 @@ export default function MultiSigTransactions() {
           </tr>
         </TableHead>
 
-        <TableBody style={{ maxHeight: "62vh", overflow: "auto" }}>
+        <TableBody style={{ maxHeight: "48rem", overflow: "auto" }}>
           {renderAllTransactions()}
           {loading && offset > 0 && <TableLoader height="8rem" colSpan={4} />}
         </TableBody>

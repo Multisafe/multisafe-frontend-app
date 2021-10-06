@@ -19,12 +19,13 @@ import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { TransactionUrl } from "components/common/Web3Utils";
 import { DEFAULT_GAS_PRICE } from "constants/index";
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
+import WelcomeImg from "assets/images/register/welcome.svg";
+
 import {
   Background,
   StyledCard,
@@ -292,16 +293,14 @@ const DelegateTransfer = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        src={WelcomeImg}
         alt="welcome"
-        width="70%"
+        width="100%"
+        style={{ maxWidth: "70rem" }}
         className="d-block mx-auto py-4"
       />
       <InnerCard height="260px">
-        <h2 className="text-center mb-4">
-          <Img src={MultisafeLogo} alt="multisafe" width="80" />
-        </h2>
-        <div className="mt-2 title">
+        <div className="mt-5 title">
           Your one stop for crypto treasury management.
         </div>
         <div className="subtitle">
@@ -446,10 +445,10 @@ const DelegateTransfer = () => {
   const renderSuccess = () => (
     <div>
       <Img
-        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        src={WelcomeImg}
         alt="welcome"
-        height="370px"
-        className="d-block mx-auto"
+        style={{ maxWidth: "70rem" }}
+        className="d-block mx-auto my-5"
       />
       <InnerCard height="257px">
         <h2 className="text-center">Transaction Submitted</h2>

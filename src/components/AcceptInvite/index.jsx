@@ -25,7 +25,6 @@ import { MESSAGE_TO_SIGN } from "constants/index";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
 import { getPublicKey } from "utils/encryption";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import LeftArrowIcon from "assets/icons/left-arrow.svg";
 import RightArrowIcon from "assets/icons/right-arrow.svg";
 import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
@@ -37,6 +36,7 @@ import {
   StepInfo,
 } from "components/Login/styles";
 import ErrorText from "components/common/ErrorText";
+import WelcomeImg from "assets/images/register/welcome.svg";
 
 const invitationKey = "invitation";
 
@@ -180,16 +180,14 @@ const AcceptInvite = () => {
   const renderConnect = () => (
     <div>
       <Img
-        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        src={WelcomeImg}
         alt="welcome"
-        width="70%"
+        width="100%"
+        style={{ maxWidth: "70rem" }}
         className="d-block mx-auto py-4"
       />
       <InnerCard>
-        <h2 className="text-center mb-4">
-          <Img src={MultisafeLogo} alt="multisafe" width="80" />
-        </h2>
-        <div className="mt-2 title">
+        <div className="mt-5 title">
           Your one stop for crypto treasury management.
         </div>
         <div className="subtitle">
@@ -265,7 +263,7 @@ const AcceptInvite = () => {
         {!hasAlreadySigned ? (
           <React.Fragment>
             <p className="subtitle mb-5 pb-5">
-              Please sign and authorize MultiSafe to derive your encryption key.
+              Please sign and authorize Coinshift to derive your encryption key.
             </p>
             <Button
               type="button"
@@ -304,12 +302,12 @@ const AcceptInvite = () => {
         <div className="text-center">
           <img src={AddPeopleIcon} alt="people" />
         </div>
-        <h3 className="title">Accept Invite and join Multisafe</h3>
+        <h3 className="title">Accept Invite and join Coinshift</h3>
 
         <p className="subtitle pb-5">
           Once you accept the invitation, one of the owners will approve you.
           <br />
-          Then, you can login and view the Multisafe dashboard.
+          Then, you can login and view the Coinshift dashboard.
         </p>
 
         <Button
@@ -329,17 +327,17 @@ const AcceptInvite = () => {
   const renderSuccess = () => (
     <div>
       <Img
-        src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+        src={WelcomeImg}
+        style={{ maxWidth: "70rem" }}
         alt="welcome"
-        height="370"
-        className="d-block mx-auto"
+        className="d-block mx-auto my-5"
       />
       <InnerCard>
         <h2 className="text-center">Invitation Accepted</h2>
         <div className="mt-2 mb-5 text-center subtitle">
           Great! Now, one of the owners will approve you
           <br />
-          and you will be able to login to the Multisafe dashboard.
+          and you will be able to login to the Coinshift dashboard.
         </div>
       </InnerCard>
     </div>
