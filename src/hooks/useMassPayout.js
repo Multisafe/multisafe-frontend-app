@@ -48,7 +48,7 @@ export default function useMassPayout() {
           tokenDetails.decimals
         );
 
-        console.log({ transferAmount });
+        console.log({ transferAmount, address });
         // ERC20
         tx.push({
           operation: 0, // CALL
