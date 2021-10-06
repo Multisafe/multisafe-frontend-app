@@ -16,7 +16,7 @@ import { TRANSACTION_MODES } from "constants/transactions";
 
 import { TxRow } from "./styles";
 
-const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
+const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -115,4 +115,4 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
   );
 });
 
-export default MultisafeTransaction;
+export default CoinshiftTransaction;

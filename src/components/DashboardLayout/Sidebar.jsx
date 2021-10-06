@@ -12,7 +12,7 @@ import {
   makeSelectIsReadOnly,
 } from "store/global/selectors";
 import Img from "components/common/Img";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import CoinshiftLogo from "assets/images/logo.svg";
 import InviteIcon from "assets/icons/sidebar/invite-icon.svg";
 import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
 import SwapAccountIcon from "assets/icons/sidebar/swap-account-icon.svg";
@@ -115,8 +115,8 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       <div className="close-btn" onClick={closeSidebar}>
         <FontAwesomeIcon icon={faTimesCircle} />
       </div>
-      <div className="multisafe-logo">
-        <Img src={MultisafeLogo} alt="multisafe" width="80" />
+      <div className="logo">
+        <Img src={CoinshiftLogo} alt="coinshift" width="140" />
       </div>
 
       <div className="settings-container">

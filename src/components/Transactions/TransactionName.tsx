@@ -53,5 +53,5 @@ export default function TransactionName({ to, transactionMode }: Props) {
     );
   }
 
-  return DEFAULT_NAME;
+  return "Transaction";
 }

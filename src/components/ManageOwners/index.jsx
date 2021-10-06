@@ -118,7 +118,7 @@ export default function ManageOwners() {
         toAddress: owner,
         fromAddress: account,
         toEmail: "",
-        fromEmail: "hello@multisafe.finance", // TODO: change this later
+        fromEmail: "hello@coinshift.xyz", // TODO: change this later
       })
     );
   };

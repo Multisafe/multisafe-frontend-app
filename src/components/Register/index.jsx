@@ -61,7 +61,6 @@ import gasPriceSaga from "store/gas/saga";
 import gasPriceReducer from "store/gas/reducer";
 import { makeSelectAverageGasPrice } from "store/gas/selectors";
 import { getGasPrice } from "store/gas/actions";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import LightbulbIcon from "assets/icons/lightbulb.svg";
 import LoadingSafeIcon1 from "assets/images/register/loading-1.svg";
@@ -101,6 +100,7 @@ import {
   Stepper,
 } from "components/common/Stepper/SimpleStepper";
 import ErrorText from "components/common/ErrorText";
+import WelcomeImg from "assets/images/register/welcome.svg";
 
 const { GNOSIS_SAFE_ADDRESS, PROXY_FACTORY_ADDRESS, ZERO_ADDRESS } = addresses;
 
@@ -379,7 +379,7 @@ const Register = () => {
         const { events } = result;
         if (events) {
           const proxy = events[0].args.proxy;
-          await registerUserToMultisafe(proxy);
+          await registerUserToCoinshift(proxy);
         }
 
         setLoadingTx(false);
@@ -502,7 +502,7 @@ const Register = () => {
     }
   };
 
-  const registerUserToMultisafe = async (safeAddress) => {
+  const registerUserToCoinshift = async (safeAddress) => {
     const encryptionKey = cryptoUtils.getEncryptionKey(sign, safeAddress);
     const organisationType = parseInt(formData.organisationType);
 
@@ -601,16 +601,14 @@ const Register = () => {
     return (
       <div>
         <Img
-          src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+          src={WelcomeImg}
           alt="welcome"
-          width="70%"
+          width="100%"
+          style={{ maxWidth: "70rem" }}
           className="d-block mx-auto py-4"
         />
         <InnerCard>
-          <h2 className="text-center mb-4">
-            <Img src={MultisafeLogo} alt="multisafe" width="80" />
-          </h2>
-          <div className="mt-2 title">
+          <div className="mt-5 title">
             Your one stop for crypto treasury management.
           </div>
           <div className="subtitle">
@@ -740,7 +738,7 @@ const Register = () => {
         />
         <p className="title">{name}</p>
         <p className="subtitle">
-          You’ll be registered with this name on Multisafe.
+          You’ll be registered with this name on Coinshift.
         </p>
         <div className="mt-2">
           <Input
@@ -931,7 +929,7 @@ const Register = () => {
         />
         <h3 className="title">We care for Your Privacy </h3>
         <p className="subtitle mb-5 pb-5">
-          Please sign and authorize MultiSafe to derive your encryption key.
+          Please sign and authorize Coinshift to derive your encryption key.
         </p>
         <Button
           type="button"
@@ -1021,7 +1019,7 @@ const Register = () => {
 
     return loadingTx ? (
       <LoadingTransaction>
-        <div className="loading-heading">Creating account on MultiSafe</div>
+        <div className="loading-heading">Creating account on Coinshift</div>
         {renderLoadingImageByStep(txLoadingStep)}
         <div className="loading-title">Please do not leave this page</div>
         <div className="loading-subtitle">

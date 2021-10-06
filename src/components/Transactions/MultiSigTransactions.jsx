@@ -23,7 +23,7 @@ import {
 } from "components/common/Table";
 import { TX_ORIGIN } from "store/transactions/constants";
 import GnosisTransaction from "./GnosisTransaction";
-import MultisafeTransaction from "./MultisafeTransaction";
+import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 
@@ -129,7 +129,7 @@ export default function MultiSigTransactions() {
           }
 
           return (
-            <MultisafeTransaction
+            <CoinshiftTransaction
               transaction={transaction}
               key={`${transaction.transactionId}-${idx}`}
               ref={idx === transactions.length - 1 ? lastTxElementRef : null}

@@ -298,7 +298,7 @@ export default function MultiSigTransactions() {
 
     if (!isConsensusReached) {
       // show approve and reject
-      return executionAllowed ? (
+      return (
         <ConfirmSection>
           <div className="buttons">
             {!shouldShowOnlyReject && (
@@ -325,15 +325,9 @@ export default function MultiSigTransactions() {
             </div>
           </div>
         </ConfirmSection>
-      ) : (
-        <ConfirmSection className="d-flex justify-content-center align-items-center">
-          <ErrorText>
-            You have some pending transactions. Please execute them first.
-          </ErrorText>
-        </ConfirmSection>
       );
     } else {
-      return (
+      return executionAllowed ? (
         <ConfirmSection>
           <div className="buttons">
             <div className="approve-button">
@@ -347,6 +341,12 @@ export default function MultiSigTransactions() {
               </Button>
             </div>
           </div>
+        </ConfirmSection>
+      ) : (
+        <ConfirmSection className="d-flex justify-content-center align-items-center">
+          <ErrorText>
+            You have some pending transactions. Please execute them first.
+          </ErrorText>
         </ConfirmSection>
       );
     }

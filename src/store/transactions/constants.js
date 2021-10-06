@@ -1,5 +1,5 @@
 export const TX_ORIGIN = {
-  MULTISAFE: "MULTISAFE",
+  COINSHIFT: "COINSHIFT",
   GNOSIS: "GNOSIS",
 };
 

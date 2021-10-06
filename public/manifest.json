@@ -1,14 +1,14 @@
 {
-  "short_name": "Multisafe",
-  "name": "Multisafe",
+  "short_name": "Coinshift",
+  "name": "Coinshift",
   "icons": [
     {
-      "src": "logo256.svg",
+      "src": "favicon.svg",
       "sizes": "256x256 64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo256.svg",
+      "src": "favicon.svg",
       "type": "image/svg",
       "sizes": "256x256"
     }

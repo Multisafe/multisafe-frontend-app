@@ -25,7 +25,6 @@ import {
 } from "store/loginWizard/selectors";
 import LoadingIndicator from "components/common/Loading/PageLoader";
 import Img from "components/common/Img";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
 
 import { Background, InnerCard } from "components/Login/styles";
 import { setReadOnly } from "store/global/actions";
@@ -35,6 +34,7 @@ import {
 } from "store/global/selectors";
 import { routeGenerators } from "constants/routes/generators";
 import { getPassword } from "utils/encryption";
+import WelcomeImg from "assets/images/register/welcome.svg";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -158,16 +158,14 @@ const VerifyUser = () => {
     <Background>
       <div>
         <Img
-          src={"https://images.multisafe.finance/landing-page/welcome-new.png"}
+          src={WelcomeImg}
           alt="welcome"
-          width="70%"
+          width="100%"
+          style={{ maxWidth: "70rem" }}
           className="d-block mx-auto py-4"
         />
         <InnerCard>
-          <h2 className="text-center mb-4">
-            <Img src={MultisafeLogo} alt="multisafe" width="80" />
-          </h2>
-          <div className="mt-2 title">
+          <div className="mt-5 title">
             Please sign to verify your account and proceed.
           </div>
 

@@ -89,3 +89,5 @@ export const WALLET_STATES = {
   CONNECTED: "CONNECTED",
   NOT_CONNECTED: "NOT_CONNECTED",
 };
+
+// dummy commit
