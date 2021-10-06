@@ -43,6 +43,5 @@ export default function TransactionName({ to, transactionMode }) {
       </span>
     );
   }
-
   return "Transaction";
 }

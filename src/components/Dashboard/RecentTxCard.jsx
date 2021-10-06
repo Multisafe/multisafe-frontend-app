@@ -201,7 +201,14 @@ function RecentTxCard() {
     } = txDetails;
     const isGnosisTx = txOrigin === TX_ORIGIN.GNOSIS;
     return (
-      <div className="tx" key={transactionId}>
+      <Link
+        to={routeGenerators.dashboard.transactionById({
+          safeAddress,
+          transactionId,
+        })}
+        className="tx"
+        key={transactionId}
+      >
         <div className="tx-info">
           <Img
             src={
@@ -237,7 +244,7 @@ function RecentTxCard() {
               direction,
             })}
         <div className="tx-status">{renderStatusText(status)}</div>
-      </div>
+      </Link>
     );
   };
   return (

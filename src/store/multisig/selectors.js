@@ -51,6 +51,12 @@ const makeSelectTransactionId = () =>
     (multisigState) => multisigState.transactionId
   );
 
+const makeSelectIsPendingTransactions = () =>
+  createSelector(
+    selectMultisig,
+    (multisigState) => multisigState.isPendingTransactions
+  );
+
 export {
   selectMultisig,
   makeSelectMultisigTransactions,
@@ -64,4 +70,5 @@ export {
   makeSelectError,
   makeSelectTransactionId,
   makeSelectMultisigTransactionCount,
+  makeSelectIsPendingTransactions,
 };
