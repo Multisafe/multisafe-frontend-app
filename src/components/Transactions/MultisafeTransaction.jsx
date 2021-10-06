@@ -15,7 +15,6 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { TRANSACTION_MODES } from "constants/transactions";
 
 import { TxRow } from "./styles";
-import { getAmountFromWei } from "utils/tx-helpers";
 
 const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
@@ -33,25 +32,15 @@ const MultisafeTransaction = forwardRef(({ transaction }, ref) => {
     createdOn,
     transactionMode,
     to,
-    metaData,
   } = txDetails;
 
   const renderSwapTokenValue = () => {
-    if (!metaData) return null;
-    const { rate, payTokenSymbol } = metaData;
-
-    if (!rate) return null;
-
-    const { srcAmount, srcDecimals, srcUSD } = rate;
-
-    const payAmount = getAmountFromWei(srcAmount, srcDecimals, 2);
-
     return (
       <React.Fragment>
         <div className="amount">
-          {payAmount} {payTokenSymbol}
+          {formatNumber(tokenValue, 5)} {tokenCurrency}
         </div>
-        <div className="usd">${formatNumber(srcUSD)}</div>
+        <div className="usd">${formatNumber(fiatValue, 2)}</div>
       </React.Fragment>
     );
   };
