@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Dashboard from "components/Dashboard/loadable";
 import People from "components/People/loadable";
+import Exchange from "components/Exchange/loadable";
 import Transactions from "components/Transactions/loadable";
 import Assets from "components/Assets/loadable";
 import TransactionDetails from "components/TransactionDetails/loadable";
@@ -62,6 +63,11 @@ const DashboardPage = () => {
             exact
             path={routeTemplates.dashboard.people}
             component={People}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.exchange}
+            component={Exchange}
           />
           <Route
             exact
