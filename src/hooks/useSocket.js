@@ -7,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { networkId } from "constants/networks";
 import { ROOT_BE_URL } from "constants/endpoints";
 import { showToast, toaster } from "components/common/Toast";
-import { getTransactionByIdSuccess } from "store/transactions/actions";
 import { getMultisigTransactionByIdSuccess } from "store/multisig/actions";
 import { getNotificationsSuccess } from "store/notifications/actions";
 import { getTokensSuccess } from "store/tokens/actions";
@@ -15,45 +14,14 @@ import Button from "components/common/Button";
 import { routeGenerators } from "constants/routes/generators";
 
 export default function useSocket(props) {
-  const { safeAddress, isMultiOwner, isReadOnly } = props;
+  const { safeAddress, isReadOnly } = props;
   const socketRef = useRef();
 
   const dispatch = useDispatch();
 
   const showTxConfirmedToast = useCallback(
     (message) => {
-      if (!isMultiOwner && safeAddress) {
-        toaster.dismiss();
-        showToast(
-          <div className="d-flex align-items-center">
-            <div>
-              <FontAwesomeIcon
-                className="arrow"
-                icon={faCheckCircle}
-                color="#6cb44c"
-                style={{ fontSize: "1.8rem" }}
-              />
-            </div>
-            <div className="ml-3">
-              <div>Transaction Confirmed</div>
-              <Button
-                iconOnly
-                style={{ minHeight: "0" }}
-                to={routeGenerators.dashboard.transactionById({
-                  safeAddress,
-                  transactionId: message.transaction.transactionId,
-                })}
-                className="p-0 mt-2"
-              >
-                View Transaction
-              </Button>
-            </div>
-          </div>,
-          { toastId: `${message.transaction.transactionId}-txConfirmed` }
-        );
-        // repopulate transaction details
-        dispatch(getTransactionByIdSuccess(message.transaction, message.log));
-      } else {
+      if (safeAddress) {
         toaster.dismiss();
         showToast(
           <div className="d-flex align-items-center">
@@ -92,7 +60,7 @@ export default function useSocket(props) {
         );
       }
     },
-    [dispatch, isMultiOwner, safeAddress]
+    [dispatch, safeAddress]
   );
 
   useEffect(() => {
