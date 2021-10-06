@@ -52,6 +52,5 @@ export default function TransactionName({ to, transactionMode }: Props) {
       </span>
     );
   }
-
   return "Transaction";
 }

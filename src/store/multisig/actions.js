@@ -26,11 +26,16 @@ export function getMultisigTransactions(safeAddress, offset, limit) {
   };
 }
 
-export function getMultisigTransactionsSuccess(transactions, count) {
+export function getMultisigTransactionsSuccess(
+  transactions,
+  count,
+  isPendingTransactions
+) {
   return {
     type: GET_MULTISIG_TRANSACTIONS_SUCCESS,
     transactions,
     count,
+    isPendingTransactions,
   };
 }
 
