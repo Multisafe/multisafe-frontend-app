@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
 
 import {
-  addTransaction,
+  // addTransaction,
   clearTransactionHash,
 } from "store/transactions/actions";
 import safeReducer from "store/safe/reducer";
@@ -22,7 +22,6 @@ import {
   makeSelectMetaTransactionHash,
   makeSelectTransactionId as makeSelectSingleOwnerTransactionId,
 } from "store/transactions/selectors";
-import { makeSelectIsMultiOwner } from "store/global/selectors";
 import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
@@ -57,7 +56,6 @@ export default function useTransactionEffects({
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const txHashFromMetaTx = useSelector(makeSelectMetaTransactionHash());
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const singleOwnerTransactionId = useSelector(
     makeSelectSingleOwnerTransactionId()
   );
@@ -74,30 +72,24 @@ export default function useTransactionEffects({
     if (baseRequestBody) {
       if (txHash) {
         dispatch(
-          addTransaction({ ...baseRequestBody, transactionHash: txHash })
+          createMultisigTransaction({
+            ...baseRequestBody,
+            transactionHash: txHash,
+            nonce: multisigNonce,
+          })
         );
       } else if (txData) {
-        if (!isMultiOwner) {
-          // threshold = 1 or single owner
-          dispatch(
-            addTransaction({
-              ...baseRequestBody,
-              txData,
-            })
-          );
-        } else {
-          // threshold > 1
-          dispatch(
-            createMultisigTransaction({
-              ...baseRequestBody,
-              txData,
-              nonce: multisigNonce,
-            })
-          );
-        }
+        // single owner meta tx or threshold > 0
+        dispatch(
+          createMultisigTransaction({
+            ...baseRequestBody,
+            txData,
+            nonce: multisigNonce,
+          })
+        );
       }
     }
-  }, [txHash, dispatch, baseRequestBody, txData, isMultiOwner, multisigNonce]);
+  }, [txHash, dispatch, baseRequestBody, txData, multisigNonce]);
 
   useEffect(() => {
     if (txHashFromMetaTx) {
@@ -116,10 +108,5 @@ export default function useTransactionEffects({
         })
       );
     }
-  }, [
-    dispatch,
-    metaTxHash,
-    singleOwnerTransactionId,
-    // selectedCount,
-  ]);
+  }, [dispatch, metaTxHash, singleOwnerTransactionId]);
 }
