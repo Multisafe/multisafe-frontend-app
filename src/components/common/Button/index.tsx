@@ -1,21 +1,21 @@
-import {CSSProperties, ReactNode, MouseEvent} from 'react';
+import { CSSProperties, ReactNode, MouseEvent } from "react";
 import { Link } from "react-router-dom";
 
 import { Button } from "./styles";
 import LoadingSvg from "assets/icons/loading.svg";
 
 type Props = {
-  children: ReactNode,
-  style?: CSSProperties,
-  className?: string,
-  type?: 'submit' | 'reset' | 'button' | undefined;
-  onClick?: (e: MouseEvent<HTMLButtonElement>) => any,
-  width?: string,
-  to?: string,
-  href?: string,
-  iconOnly?: boolean,
-  loading?: boolean,
-  disabled?: boolean
+  children: ReactNode;
+  style?: CSSProperties;
+  className?: string;
+  type?: "submit" | "reset" | "button" | undefined;
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => any;
+  width?: string;
+  to?: string;
+  href?: string;
+  iconOnly?: boolean;
+  loading?: boolean;
+  disabled?: boolean;
 };
 
 const CustomButton = ({

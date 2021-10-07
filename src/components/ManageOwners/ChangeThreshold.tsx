@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 //@ts-ignore
 import { cryptoUtils } from "coinshift-sdk";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm, useWatch } from "react-hook-form";
 import { useActiveWeb3React, useLocalStorage, useManageOwners } from "hooks";
 import { STEPS } from "store/login/resources";
-import {useForm, useWatch} from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
 import {
   makeSelectIsReadOnly,
   makeSelectOrganisationType,
@@ -47,7 +47,11 @@ export const ChangeThreshold = () => {
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const safeOwners = useSelector(makeSelectSafeOwners());
 
-  const {value: thresholdValue} = useWatch({control, name: THRESHOLD_CONTROL, defaultValue: threshold});
+  const { value: thresholdValue } = useWatch({
+    control,
+    name: THRESHOLD_CONTROL,
+    defaultValue: threshold,
+  });
 
   useEffect(() => {
     if (safeOwners) {
