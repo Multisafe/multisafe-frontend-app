@@ -378,7 +378,7 @@ const Register = () => {
         const result = await tx.wait();
         const { events } = result;
         if (events) {
-          const proxy = events[0].args.proxy;
+          const proxy = events[1].args.proxy;
           await registerUserToCoinshift(proxy);
         }
 
