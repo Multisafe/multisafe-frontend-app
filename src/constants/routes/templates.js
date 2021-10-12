@@ -10,6 +10,7 @@ export const routeTemplates = {
   dashboard: {
     root: "/dashboard/:safeAddress",
     people: "/dashboard/:safeAddress/people",
+    exchange: "/dashboard/:safeAddress/exchange",
     settings: "/dashboard/:safeAddress/settings",
     assets: "/dashboard/:safeAddress/assets",
     transactions: "/dashboard/:safeAddress/transactions",

@@ -7,14 +7,12 @@ import Img from "components/common/Img";
 import ExportIcon from "assets/icons/dashboard/export-icon.svg";
 import { getDecryptedDetails } from "utils/encryption";
 import {
-  makeSelectIsMultiOwner,
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
   makeSelectSafeOwners,
 } from "store/global/selectors";
 import { useEncryptionKey } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
-import { makeSelectTransactions } from "store/transactions/selectors";
 import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getEtherscanLink } from "components/common/Web3Utils";
@@ -64,6 +62,9 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.CHANGE_THRESHOLD:
       return "Changed Threshold";
 
+    case TRANSACTION_MODES.APPROVE_AND_SWAP:
+      return "Swap Tokens";
+
     default:
       return "";
   }
@@ -74,8 +75,6 @@ export default function ExportButton() {
   const [csvData, setCsvData] = useState([]);
 
   const multisigTransactions = useSelector(makeSelectMultisigTransactions());
-  const singleOwnerTransactions = useSelector(makeSelectTransactions());
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const organisationType = useSelector(makeSelectOrganisationType());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -83,13 +82,7 @@ export default function ExportButton() {
   useEffect(() => {
     let csvData = [];
 
-    let transactions;
-
-    if (isMultiOwner) {
-      transactions = multisigTransactions;
-    } else {
-      transactions = singleOwnerTransactions;
-    }
+    let transactions = multisigTransactions;
 
     if (transactions && transactions.length > 0) {
       for (let i = 0; i < transactions.length; i++) {
@@ -196,14 +189,7 @@ export default function ExportButton() {
         setCsvData(csvData);
       }
     }
-  }, [
-    encryptionKey,
-    organisationType,
-    multisigTransactions,
-    singleOwnerTransactions,
-    isMultiOwner,
-    safeOwners,
-  ]);
+  }, [encryptionKey, organisationType, multisigTransactions, safeOwners]);
 
   return (
     <CSVLink

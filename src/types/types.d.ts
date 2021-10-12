@@ -1,3 +1,3 @@
-declare module "*.otf"
+declare module "*.otf";
 
 declare type FixMe = any;
