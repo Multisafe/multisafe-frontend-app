@@ -31,7 +31,6 @@ export default function useMassPayout() {
   const massPayout = async ({ receivers, tokenDetails, baseRequestBody }) => {
     setBaseRequestBody(baseRequestBody);
 
-    console.log({ tokenDetails, receivers });
     if (!tokenDetails) return;
 
     let transactions = [];
@@ -48,7 +47,6 @@ export default function useMassPayout() {
           tokenDetails.decimals
         );
 
-        console.log({ transferAmount });
         // ERC20
         tx.push({
           operation: 0, // CALL
@@ -68,8 +66,6 @@ export default function useMassPayout() {
           salaryAmount,
           tokenDetails.decimals
         );
-
-        console.log({ transferAmount });
 
         // ETH
         tx.push({
