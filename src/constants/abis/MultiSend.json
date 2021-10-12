@@ -1,6 +1,10 @@
 [
   {
-    "constant": false,
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes",
@@ -10,8 +14,7 @@
     ],
     "name": "multiSend",
     "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   }
 ]

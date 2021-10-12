@@ -29,6 +29,7 @@ export const initialState = {
   dataSharingAllowed: undefined,
   gasMode: GAS_MODES.FAST,
   success: false,
+  version: "",
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -95,6 +96,7 @@ const reducer = (state = initialState, action) =>
         draft.ownerName = action.name;
         draft.ownerSafeAddress = action.safeAddress;
         draft.dataSharingAllowed = action.dataSharingAllowed;
+        draft.version = action.version;
         draft.success = true;
         break;
       case GET_SAFE_INFO_ERROR:

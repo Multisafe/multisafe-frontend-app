@@ -55,6 +55,9 @@ const makeSelectGasMode = () =>
 const makeSelectSafeInfoSuccess = () =>
   createSelector(selectGlobal, (globalState) => globalState.success);
 
+const makeSelectSafeVersion = () =>
+  createSelector(selectGlobal, (globalState) => globalState.version);
+
 export {
   makeSelectOwnerName,
   makeSelectOwnerSafeAddress,
@@ -70,4 +73,5 @@ export {
   makeSelectIsDataSharingAllowed,
   makeSelectGasMode,
   makeSelectSafeInfoSuccess,
+  makeSelectSafeVersion,
 };
