@@ -19,6 +19,7 @@ import MultiSendABI from "constants/abis/MultiSend.json";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectIsMultiOwner,
+  makeSelectSafeVersion,
 } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
@@ -44,6 +45,7 @@ export default function useBatchTransaction() {
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const multisigNonce = useSelector(makeSelectNonce());
+  const safeVersion = useSelector(makeSelectSafeVersion());
 
   // contracts
   const proxyContractBeforeV130 = useContract(
@@ -69,11 +71,7 @@ export default function useBatchTransaction() {
   }, [connector]);
 
   useEffect(() => {
-    async function getSafeVersion() {
-      if (!proxyContractBeforeV130) return;
-
-      const safeVersion = await proxyContractBeforeV130.VERSION();
-
+    function setContractVersion() {
       const isVersionAfterV130 = semverSatisfies(safeVersion, ">=1.3.0");
 
       if (isVersionAfterV130) {
@@ -83,8 +81,8 @@ export default function useBatchTransaction() {
       }
     }
 
-    getSafeVersion();
-  }, [proxyContractBeforeV130, proxyContractAfterV130]);
+    if (safeVersion) setContractVersion();
+  }, [proxyContractBeforeV130, proxyContractAfterV130, safeVersion]);
 
   const encodeMultiSendCallData = (transactions, ethLibAdapter) => {
     const standardizedTxs = transactions.map(standardizeTransaction);
@@ -231,8 +229,6 @@ export default function useBatchTransaction() {
     nonce,
     contractTransactionHash
   ) => {
-    const safeVersion = await proxyContract.VERSION();
-    console.log({ safeVersion });
     const eip712WithChainId = semverSatisfies(safeVersion, ">=1.3.0");
 
     const domain = {

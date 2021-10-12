@@ -95,6 +95,7 @@ export function getSafeInfoSuccess({
   organisationType,
   safeAddress,
   dataSharingAllowed,
+  version,
 }) {
   return {
     type: GET_SAFE_INFO_SUCCESS,
@@ -105,6 +106,7 @@ export function getSafeInfoSuccess({
     organisationType,
     safeAddress,
     dataSharingAllowed,
+    version,
   };
 }
 
