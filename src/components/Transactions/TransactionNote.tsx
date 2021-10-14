@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { TxDetails } from "./types";
-import {Input} from "../common/Form";
 import StyledTextArea from "../common/Form/styles/TextArea";
 import Button from "components/common/Button";
 import { useTransactionNote } from "hooks/useTransactionNote";
