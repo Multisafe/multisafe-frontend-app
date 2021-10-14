@@ -15,6 +15,10 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { TRANSACTION_MODES } from "constants/transactions";
 
 import { TxRow } from "./styles";
+import {
+  QuickViewTransaction,
+  useQuickViewTransactionState,
+} from "./QuickViewTransaction";
 
 const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
@@ -22,6 +26,9 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const history = useHistory();
+
+  const { quickViewOpen, onQuickViewOpen, onQuickViewClose } =
+    useQuickViewTransactionState();
 
   const {
     transactionId,
@@ -73,45 +80,57 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
     }
   };
 
+  const navigateToTransaction = () => {
+    history.push(
+      routeGenerators.dashboard.transactionById({
+        safeAddress,
+        transactionId,
+      })
+    );
+  };
+
   return (
-    <TxRow
-      onClick={() =>
-        history.push(
-          routeGenerators.dashboard.transactionById({
-            safeAddress,
-            transactionId,
-          })
-        )
-      }
-      ref={ref}
-    >
-      <td style={{ width: "35%" }}>
-        <div className="d-flex align-items-center">
-          <Img
-            src={
-              direction === TX_DIRECTION.INCOMING ? IncomingIcon : OutgoingIcon
-            }
-            alt={direction}
-            className="direction"
-          />
-          <div>
-            <div className="name">
-              <TransactionName to={to} transactionMode={transactionMode} />
-            </div>
-            <div className="date">
-              {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+    <React.Fragment>
+      <TxRow onClick={navigateToTransaction} ref={ref}>
+        <td style={{ width: "35%" }}>
+          <div className="d-flex align-items-center">
+            <Img
+              src={
+                direction === TX_DIRECTION.INCOMING
+                  ? IncomingIcon
+                  : OutgoingIcon
+              }
+              alt={direction}
+              className="direction"
+            />
+            <div>
+              <div className="name">
+                <TransactionName to={to} transactionMode={transactionMode} />
+              </div>
+              <div className="date">
+                {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+              </div>
             </div>
           </div>
-        </div>
-      </td>
-      <td style={{ width: "30%" }}>{renderTokenValue()}</td>
-      <td style={{ width: "23%" }}>
-        <StatusText status={status} textOnly className="status" />
-      </td>
-      <td style={{ width: "12%" }}>
-        <div className="view">View</div>
-      </td>
-    </TxRow>
+        </td>
+        <td style={{ width: "30%" }}>{renderTokenValue()}</td>
+        <td style={{ width: "20%" }}>
+          <StatusText status={status} textOnly className="status" />
+        </td>
+        <td style={{ width: "15%" }} onClick={onQuickViewOpen}>
+          <div className="view">Quick View</div>
+        </td>
+      </TxRow>
+      <QuickViewTransaction
+        {...{
+          isOpen: quickViewOpen,
+          onClose: onQuickViewClose,
+          txDetails,
+          safeAddress,
+          navigateToTransaction,
+        }}
+      />
+    </React.Fragment>
   );
 });
 

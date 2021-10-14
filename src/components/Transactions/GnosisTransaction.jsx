@@ -9,62 +9,82 @@ import Img from "components/common/Img";
 import { TX_DIRECTION } from "store/transactions/constants";
 import { formatNumber } from "utils/number-helpers";
 import TokenImg from "components/common/TokenImg";
+import {
+  QuickViewTransaction,
+  useQuickViewTransactionState,
+} from "./QuickViewTransaction";
 
 const GnosisTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
 
-  const { status, createdOn, fiatValue, tokenCurrencies } = txDetails;
+  const { quickViewOpen, onQuickViewOpen, onQuickViewClose } =
+    useQuickViewTransactionState();
+
+  const { status, createdOn, fiatValue, tokenCurrencies, transactionHash } =
+    txDetails;
+
+  const navigateToTransaction = () => {
+    window.open(txDetails.txLink);
+  };
+
   return (
-    <TxRow ref={ref}>
-      <td style={{ width: "35%" }}>
-        {/* https://getbootstrap.com/docs/4.3/utilities/stretched-link/ */}
-        {/* eslint-disable-next-line jsx-a11y/anchor-has-content*/}
-        <a
-          href={txDetails.txLink}
-          rel="noreferrer noopener"
-          target="blank"
-          className="stretched-link"
-        ></a>
-        <div className="d-flex align-items-center">
-          <Img
-            src={
-              direction === TX_DIRECTION.INCOMING ? IncomingIcon : OutgoingIcon
-            }
-            alt={direction}
-            className="direction"
-          />
-          <div>
-            <div className="name">
-              {direction === TX_DIRECTION.INCOMING ? `Incoming` : `Gnosis`}
-            </div>
-            <div className="date">
-              {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+    <React.Fragment>
+      <TxRow onClick={navigateToTransaction} ref={ref}>
+        <td style={{ width: "35%" }}>
+          <div className="d-flex align-items-center">
+            <Img
+              src={
+                direction === TX_DIRECTION.INCOMING
+                  ? IncomingIcon
+                  : OutgoingIcon
+              }
+              alt={direction}
+              className="direction"
+            />
+            <div>
+              <div className="name">
+                {direction === TX_DIRECTION.INCOMING ? `Incoming` : `Gnosis`}
+              </div>
+              <div className="date">
+                {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+              </div>
             </div>
           </div>
-        </div>
-      </td>
-      <td style={{ width: "30%" }}>
-        {tokenCurrencies && tokenCurrencies.length > 0 && (
-          <div className="amount">
-            {tokenCurrencies.map((token) => (
-              <TokenImg token={token} key={token} />
-            ))}
-          </div>
-        )}
-        {fiatValue > 0 && (
-          <div className="usd">
-            {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
-            {formatNumber(fiatValue, 5)}
-          </div>
-        )}
-      </td>
-      <td style={{ width: "23%" }}>
-        <StatusText status={status} textOnly />
-      </td>
-      <td style={{ width: "12%" }}>
-        <div className="view">View</div>
-      </td>
-    </TxRow>
+        </td>
+        <td style={{ width: "30%" }}>
+          {tokenCurrencies && tokenCurrencies.length > 0 && (
+            <div className="amount">
+              {tokenCurrencies.map((token) => (
+                <TokenImg token={token} key={token} />
+              ))}
+            </div>
+          )}
+          {fiatValue > 0 && (
+            <div className="usd">
+              {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
+              {formatNumber(fiatValue, 5)}
+            </div>
+          )}
+        </td>
+        <td style={{ width: "20%" }}>
+          <StatusText status={status} textOnly />
+        </td>
+        <td
+          onClick={transactionHash ? onQuickViewOpen : null}
+          style={{ width: "15%" }}
+        >
+          {transactionHash ? <div className="view">Quick View</div> : null}
+        </td>
+      </TxRow>
+      <QuickViewTransaction
+        {...{
+          isOpen: quickViewOpen,
+          onClose: onQuickViewClose,
+          txDetails,
+          navigateToTransaction,
+        }}
+      />
+    </React.Fragment>
   );
 });
 
