@@ -16,6 +16,8 @@ import {
 import { useActiveWeb3React } from "hooks";
 import { useEncryptionKey } from "./index";
 
+const SUCCESS_TIMEOUT = 5000;
+
 export const useTransactionNote = (txDetails: TxDetails) => {
   const dispatch = useDispatch();
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -25,7 +27,6 @@ export const useTransactionNote = (txDetails: TxDetails) => {
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const { notes, transactionId, transactionHash, origin } = txDetails;
-  console.log(notes);
 
   const [initialNote, setInitialNote] = useState(
     notes
@@ -47,6 +48,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
   );
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -57,7 +59,6 @@ export const useTransactionNote = (txDetails: TxDetails) => {
           organisationType
         )
       : "";
-    console.log("effect", newNote);
     setInitialNote(newNote);
     setEditedNote(newNote);
   }, [notes, encryptionKey, organisationType]);
@@ -76,6 +77,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
       : "";
 
     setError("");
+    setSuccess("");
     setLoading(true);
     let result;
 
@@ -101,7 +103,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     }
 
     if (result.flag !== 200) {
-      setError("Error setting note");
+      setError("Error updating note");
     } else {
       dispatch(
         updateMultisigTransactionNote(
@@ -113,10 +115,17 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     }
 
     setLoading(false);
+    onSuccessUpdate();
   };
 
-  console.log("redner", initialNote, editedNote);
-  console.log(initialNote === editedNote);
+  const onSuccessUpdate = () => {
+    setSuccess("Note updated");
+
+    setTimeout(() => {
+      setSuccess("");
+    }, SUCCESS_TIMEOUT);
+  }
+
   return {
     notes,
     editedNote,
@@ -125,5 +134,6 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     disabled: initialNote === editedNote,
     loading,
     error,
+    success
   };
 };
