@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
+import { cryptoUtils } from "coinshift-sdk";
 
 import Img from "components/common/Img";
 import ExportIcon from "assets/icons/dashboard/export-icon.svg";
@@ -185,7 +186,11 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
-            "Note": notes
+            "Note": cryptoUtils.decryptDataUsingEncryptionKey(
+              notes,
+              encryptionKey,
+              organisationType
+            )
           });
         }
         setCsvData(csvData);
