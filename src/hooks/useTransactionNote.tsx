@@ -15,6 +15,7 @@ import {
 } from "store/global/selectors";
 import { useActiveWeb3React } from "hooks";
 import { useEncryptionKey } from "./index";
+import {safeDecrypt} from 'utils/safeDecrypt';
 
 const SUCCESS_TIMEOUT = 5000;
 
@@ -30,7 +31,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   const [initialNote, setInitialNote] = useState(
     notes
-      ? cryptoUtils.decryptDataUsingEncryptionKey(
+      ? safeDecrypt(
           notes,
           encryptionKey,
           organisationType
@@ -39,7 +40,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
   );
   const [editedNote, setEditedNote] = useState(
     notes
-      ? cryptoUtils.decryptDataUsingEncryptionKey(
+      ? safeDecrypt(
           notes,
           encryptionKey,
           organisationType
@@ -53,7 +54,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   useEffect(() => {
     const newNote = notes
-      ? cryptoUtils.decryptDataUsingEncryptionKey(
+      ? safeDecrypt(
           notes,
           encryptionKey,
           organisationType

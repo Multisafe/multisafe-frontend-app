@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { CSVLink } from "react-csv";
 import { format } from "date-fns";
 import { useSelector } from "react-redux";
-import { cryptoUtils } from "coinshift-sdk";
 
 import Img from "components/common/Img";
 import ExportIcon from "assets/icons/dashboard/export-icon.svg";
@@ -19,6 +18,7 @@ import { TRANSACTION_MODES } from "constants/transactions";
 import { getEtherscanLink } from "components/common/Web3Utils";
 import { networkId } from "constants/networks";
 import { getDecryptedOwnerName } from "store/invitation/utils";
+import {safeDecrypt} from "utils/safeDecrypt";
 
 const joinArray = (arr) => {
   return arr && arr.join("\n");
@@ -186,7 +186,7 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
-            "Note": cryptoUtils.decryptDataUsingEncryptionKey(
+            "Note": safeDecrypt(
               notes,
               encryptionKey,
               organisationType
