@@ -9,10 +9,10 @@ import {
 } from "components/common/Web3Utils";
 import { SideDrawer } from "components/common/SideDrawer";
 import { formatNumber } from "utils/number-helpers";
-import StatusText from "./StatusText";
+import StatusText from "components/Transactions/StatusText";
 import { TRANSACTION_MODES } from "constants/transactions";
-import { TxDetails } from "./types";
-import { TransactionNote } from "./TransactionNote";
+import { TxDetails } from "store/multisig/types";
+import { TransactionNote } from "components/Transactions/TransactionNote";
 
 type Props = {
   isOpen: boolean;

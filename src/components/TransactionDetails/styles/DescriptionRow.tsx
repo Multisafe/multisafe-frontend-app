@@ -5,4 +5,5 @@ export const DescriptionRow = styled.div`
   flex-grow: 1;
   gap: 1rem;
   margin-top: 3rem;
+  flex-wrap: wrap;
 `;

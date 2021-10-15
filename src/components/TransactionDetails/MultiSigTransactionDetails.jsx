@@ -451,7 +451,7 @@ export default function MultiSigTransactions() {
             transactionMode={transactionMode}
             metaData={metaData}
           />
-          <TransactionDetailsNote txDetails={txDetails} />
+          <TransactionDetailsNote txDetails={txDetails}/>
         </DescriptionRow>
 
         <DisbursementDetails
