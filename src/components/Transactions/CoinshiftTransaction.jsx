@@ -18,7 +18,7 @@ import { TxRow } from "./styles";
 import {
   QuickViewTransaction,
   useQuickViewTransactionState,
-} from "./QuickViewTransaction";
+} from "components/QuickViewTransaction";
 
 const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;

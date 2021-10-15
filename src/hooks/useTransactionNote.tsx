@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, SyntheticEvent} from "react";
 import { useDispatch, useSelector } from "react-redux";
+import xss from 'xss';
 //@ts-ignore
 import { cryptoUtils } from "coinshift-sdk";
-import { TxDetails } from "components/Transactions/types";
+import { TxDetails } from "store/multisig/types";
 import request from "utils/request";
 import { updateMultisigTransactionNote } from "store/multisig/actions";
 import {
@@ -18,6 +19,7 @@ import { useEncryptionKey } from "./index";
 import {safeDecrypt} from 'utils/safeDecrypt';
 
 const SUCCESS_TIMEOUT = 5000;
+const MAX_LENGTH = 500;
 
 export const useTransactionNote = (txDetails: TxDetails) => {
   const dispatch = useDispatch();
@@ -50,6 +52,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [warning, setWarning] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -65,13 +68,22 @@ export const useTransactionNote = (txDetails: TxDetails) => {
   }, [notes, encryptionKey, organisationType]);
 
   const onChange = (e: FixMe) => {
+    const value = e.target?.value;
     setEditedNote(e.target?.value || "");
+
+    if (value.length > MAX_LENGTH) {
+      setWarning('Limit 500 characters');
+    } else if (!!warning) {
+      setWarning('');
+    }
   };
 
   const onUpdateClick = async () => {
-    const encryptedNote = editedNote
+    const sanitizedNote = xss(editedNote, {stripIgnoreTag: true, whiteList: {}}).trim();
+
+    const encryptedNote = sanitizedNote
       ? cryptoUtils.encryptDataUsingEncryptionKey(
-          editedNote,
+          sanitizedNote,
           encryptionKey,
           organisationType
         )
@@ -132,9 +144,10 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     editedNote,
     onChange,
     onUpdateClick,
-    disabled: initialNote === editedNote,
+    disabled: initialNote === editedNote || !!warning,
     loading,
     error,
+    warning,
     success
   };
 };

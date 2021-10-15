@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { TxDetails } from "./types";
+import { TxDetails } from "store/multisig/types";
 import StyledTextArea from "../common/Form/styles/TextArea";
 import Button from "components/common/Button";
 import { useTransactionNote } from "hooks/useTransactionNote";
@@ -31,8 +31,13 @@ const NoteSuccess = styled.div`
   font-size: 1.6rem;
 `;
 
+const NoteWarning = styled.div`
+  color: #fcbc04;
+  font-size: 1.6rem;
+`;
+
 export const TransactionNote = ({ txDetails }: Props) => {
-  const { editedNote, onChange, onUpdateClick, loading, disabled, error, success } =
+  const { editedNote, onChange, onUpdateClick, loading, disabled, error, warning, success } =
     useTransactionNote(txDetails);
 
   const renderInfo = () => {
@@ -40,6 +45,8 @@ export const TransactionNote = ({ txDetails }: Props) => {
       return <NoteError>{error}</NoteError>
     } else if (success) {
       return <NoteSuccess>{success}</NoteSuccess>
+    } else if (warning) {
+      return <NoteWarning>{warning}</NoteWarning>
     } else {
       return <div/>
     }

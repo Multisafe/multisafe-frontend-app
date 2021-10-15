@@ -143,9 +143,11 @@ const reducer = (state = initialState, action) =>
             (!!transactionHash && transactionHash === txDetails.transactionHash)
         );
 
-        draft.transactions = state.transactions;
-        draft.transactions[index].txDetails.notes = note;
-        draft.transactions[index].txDetails.transactionId = transactionId;
+        if (index >= 0) {
+          draft.transactions = state.transactions;
+          draft.transactions[index].txDetails.notes = note;
+          draft.transactions[index].txDetails.transactionId = transactionId;
+        }
 
         if (
           state.transactionDetails?.txDetails?.transactionId === transactionId

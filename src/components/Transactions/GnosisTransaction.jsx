@@ -12,7 +12,7 @@ import TokenImg from "components/common/TokenImg";
 import {
   QuickViewTransaction,
   useQuickViewTransactionState,
-} from "./QuickViewTransaction";
+} from "components/QuickViewTransaction";
 
 const GnosisTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
