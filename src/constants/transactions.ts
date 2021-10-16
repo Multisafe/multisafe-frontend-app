@@ -7,6 +7,7 @@ export const TRANSACTION_MODES: Record<string, number> = {
   REPLACE_SAFE_OWNER: 5,
   CHANGE_THRESHOLD: 6,
   APPROVE_AND_SWAP: 7,
+  FLEXIBLE_MASS_PAYOUT: 8,
 };
 
 export const TRANSACTION_STATUS: Record<string, number> = {

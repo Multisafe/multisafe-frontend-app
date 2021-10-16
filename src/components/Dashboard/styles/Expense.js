@@ -93,7 +93,7 @@ export default styled(Card)`
 
   .divider {
     width: 100%;
-    height: 1px;
+    height: 0.1rem;
     margin-top: 1rem;
     background-color: rgba(221, 220, 220, 0.5);
   }

@@ -42,6 +42,13 @@ export default styled.div`
     gap: 0 4rem;
   }
 
+  .divider {
+    width: 100%;
+    height: 0.1rem;
+    margin: 2rem 0;
+    background-color: rgba(221, 220, 220, 0.5);
+  }
+
   @media (max-width: 978px) {
     padding: 3rem 2rem;
     .outer-flex {

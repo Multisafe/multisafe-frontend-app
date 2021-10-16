@@ -325,11 +325,15 @@ export default function DisbursementDetails({
         <TableBody>
           <tr>
             <td style={{ width: "25%" }}>
-              <div>{payAmount} {payTokenSymbol}</div>
+              <div>
+                {payAmount} {payTokenSymbol}
+              </div>
               <div>~${formatNumber(srcUSD)}</div>
             </td>
             <td style={{ width: "25%" }}>
-              <div>{receiveAmount} {receiveTokenSymbol}</div>
+              <div>
+                {receiveAmount} {receiveTokenSymbol}
+              </div>
               <div>~${formatNumber(destUSD)}</div>
             </td>
             <td style={{ width: "10%" }}>{slippage}%</td>
@@ -347,6 +351,7 @@ export default function DisbursementDetails({
   const renderTransactionDetails = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
+      case TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT:
         return renderMassPayoutDetails();
       case TRANSACTION_MODES.QUICK_TRANSFER:
         return renderQuickTransferDetails();
@@ -369,6 +374,7 @@ export default function DisbursementDetails({
   const renderTitle = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
+      case TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT:
       case TRANSACTION_MODES.QUICK_TRANSFER:
         return <div className="title">Disbursement Details</div>;
 

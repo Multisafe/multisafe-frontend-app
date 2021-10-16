@@ -27,6 +27,7 @@ export default function Summary({ txDetails, paidTeammates }) {
   const renderOptionalCards = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
+      case TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT:
       case TRANSACTION_MODES.QUICK_TRANSFER:
         return (
           <React.Fragment>

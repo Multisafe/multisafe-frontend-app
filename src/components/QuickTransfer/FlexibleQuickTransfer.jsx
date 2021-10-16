@@ -36,136 +36,221 @@ import DeleteSvg from "assets/icons/delete-bin.svg";
 import Img from "components/common/Img";
 import ErrorText from "components/common/ErrorText";
 
-import { Error } from "components/common/Form/styles";
+// import { Error } from "components/common/Form/styles";
 import { QuickTransferContainer } from "./styles";
 
 const defaultValues = {
-  test: [
+  batch: [
     {
-      name: "useFieldArray1",
-      nestedArray: [{ field1: "field1", field2: "field2" }],
-    },
-    {
-      name: "useFieldArray2",
-      nestedArray: [{ field1: "field1", field2: "field2" }],
+      receivers: [{ address: "" }],
     },
   ],
 };
 
-function NestedReceivers({ nestIndex, control, register }) {
+function NestedReceivers({
+  nestIndex,
+  control,
+  register,
+  watch,
+  existingTokenDetails,
+}) {
   const { fields, remove, append } = useFieldArray({
     control,
-    name: `test[${nestIndex}].nestedArray`,
+    name: `batch[${nestIndex}].receivers`,
   });
+
+  const selectedToken = watch(`batch[${nestIndex}].token`);
+
+  const [selectedTokenDetails, setSelectedTokenDetails] = useState();
+
+  // Selectors
+  const prices = useSelector(makeSelectPrices());
+
+  useEffect(() => {
+    if (selectedToken && selectedToken.value && existingTokenDetails) {
+      setSelectedTokenDetails(
+        existingTokenDetails.filter(
+          ({ name }) => name === selectedToken.value
+        )[0]
+      );
+    }
+  }, [selectedToken, existingTokenDetails]);
+
+  // useEffect(() => {
+  //   if (watchedReceivers && selectedTokenDetails) {
+  //     const totalAmountInToken = watchedReceivers.reduce(
+  //       (total, { amount }) => {
+  //         return amount ? total + Number(amount) : total;
+  //       },
+  //       0
+  //     );
+
+  //     if (totalAmountInToken > selectedTokenDetails.balance) {
+  //       setInsufficientBalanceError(true);
+  //     } else {
+  //       setInsufficientBalanceError(false);
+  //     }
+  //   }
+  // }, [watchedReceivers, selectedTokenDetails]);
 
   return (
     <div>
       {fields.map((item, k) => {
         return (
-          <div key={item.id} style={{ marginLeft: 20 }}>
-            <label>Nested Array:</label>
-            <input
-              name={`test[${nestIndex}].nestedArray[${k}].field1`}
-              ref={register({ required: true })}
-              defaultValue={item.field1}
-              style={{ marginRight: "25px" }}
-            />
+          <div key={item.id} className="mb-4">
+            <div className="details-row">
+              <Input
+                type="text"
+                name={`batch[${nestIndex}].receivers[${k}].address`}
+                register={register}
+                required={`Wallet Address is required`}
+                pattern={{
+                  value: /^0x[a-fA-F0-9]{40}$/,
+                  message: "Invalid Ethereum Address",
+                }}
+                placeholder="Wallet Address"
+                style={{ maxWidth: "32rem" }}
+                defaultValue={item.address || ""}
+              />
 
-            <input
-              name={`test[${nestIndex}].nestedArray[${k}].field2`}
-              ref={register()}
-              defaultValue={item.field2}
-            />
-            <button type="button" onClick={() => remove(k)}>
-              Delete Nested
-            </button>
+              {selectedToken && selectedToken.value && (
+                <div>
+                  <Controller
+                    control={control}
+                    name={`batch[${nestIndex}].receivers[${k}].amount`}
+                    rules={{
+                      required: "Amount is required",
+                      validate: (value) => {
+                        if (value <= 0) return "Please check your input";
+
+                        return true;
+                      },
+                    }}
+                    defaultValue={item.amount || ""}
+                    render={({ onChange, value }) => (
+                      <CurrencyInput
+                        type="number"
+                        name={`batch[${nestIndex}].receivers[${k}].amount`}
+                        value={value}
+                        onChange={onChange}
+                        placeholder="0.00"
+                        conversionRate={
+                          prices &&
+                          selectedTokenDetails &&
+                          prices[selectedTokenDetails.name]
+                        }
+                        tokenName={
+                          selectedTokenDetails ? selectedTokenDetails.name : ""
+                        }
+                      />
+                    )}
+                  />
+                </div>
+              )}
+
+              <div style={{ minWidth: "2rem" }}>
+                {fields.length > 1 && k === fields.length - 1 && (
+                  <Button
+                    type="button"
+                    iconOnly
+                    onClick={() => remove(k)}
+                    className="p-0"
+                  >
+                    <Img src={DeleteSvg} alt="remove" width="16" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         );
       })}
 
-      <button
-        type="button"
-        onClick={() =>
-          append({
-            field1: "",
-            field2: "",
-          })
-        }
-      >
-        Append Nested
-      </button>
+      <div className="my-4">
+        <Button
+          type="button"
+          onClick={() => append({})}
+          className="secondary"
+          width="16rem"
+          style={{ fontSize: "1.2rem" }}
+        >
+          <span className="mr-2">+</span>
+          Add
+        </Button>
+      </div>
 
-      <hr />
+      <div className="divider" />
     </div>
   );
 }
 
-function PayoutBatches({ control, register, setValue, getValues }) {
-  const { fields, append, remove } = useFieldArray({
+function TokenBatches({
+  control,
+  register,
+  watch,
+  tokensDropdown,
+  loadingTokens,
+  existingTokenDetails,
+  setValue,
+  getValues,
+}) {
+  const { fields, remove } = useFieldArray({
     control,
     name: "batch",
   });
 
   return (
     <>
-      <ul>
+      <div>
         {fields.map((item, index) => {
           return (
-            <li key={item.id}>
-              <input
-                name={`batch[${index}].name`}
-                ref={register()}
-                defaultValue={item.name}
-              />
+            <div key={item.id}>
+              <div className="d-flex justify-content-between align-items-center">
+                <div>
+                  <div className="title">Paying From</div>
+                  <div className="mb-3">
+                    <SelectToken
+                      name={`batch[${index}].token`}
+                      control={control}
+                      required={`Token is required`}
+                      width="20rem"
+                      options={tokensDropdown}
+                      isSearchable
+                      placeholder={`Select Currency...`}
+                      defaultValue={item.token}
+                      isLoading={loadingTokens}
+                    />
+                  </div>
+                </div>
+                <Button type="button" onClick={() => remove(index)}>
+                  Delete
+                </Button>
+              </div>
 
-              <button type="button" onClick={() => remove(index)}>
-                Delete
-              </button>
-              <NestedReceivers nestIndex={index} {...{ control, register }} />
-            </li>
+              <div className="title mt-5">Paying To</div>
+              <NestedReceivers
+                nestIndex={index}
+                {...{ control, register, watch, existingTokenDetails }}
+              />
+            </div>
           );
         })}
-      </ul>
+      </div>
 
       <section>
-        <button
-          type="button"
-          onClick={() => {
-            append({ name: "append" });
-          }}
-        >
-          append
-        </button>
-
-        <button
+        <Button
           type="button"
           onClick={() => {
             setValue("batch", [
               ...getValues().batch,
               {
-                name: "append",
-                nestedArray: [{ field1: "append", field2: "append" }],
+                token: undefined,
+                receivers: [{ address: "", amount: "" }],
               },
             ]);
           }}
         >
-          Append Nested
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setValue("batch", [
-              {
-                name: "append",
-                nestedArray: [{ field1: "Prepend", field2: "Prepend" }],
-              },
-              ...getValues().batch,
-            ]);
-          }}
-        >
-          prepend Nested
-        </button>
+          Add Batch
+        </Button>
       </section>
     </>
   );
@@ -174,15 +259,14 @@ function PayoutBatches({ control, register, setValue, getValues }) {
 export default function FlexibleQuickTransfer(props) {
   const [encryptionKey] = useEncryptionKey();
 
-  const { handleHide, defaultValues } = props;
+  const { handleHide } = props;
   const { account } = useActiveWeb3React();
-  const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
-  const [insufficientBalanceError, setInsufficientBalanceError] =
-    useState(false);
+  // const [insufficientBalanceError, setInsufficientBalanceError] =
+  //   useState(false);
 
-  const { loadingTx, massPayout } = useMassPayout();
+  const { loadingTx, multiTokenMassPayout } = useMassPayout();
 
   const {
     register,
@@ -196,27 +280,7 @@ export default function FlexibleQuickTransfer(props) {
   } = useForm({
     mode: "onChange",
     defaultValues,
-    // defaultValues: {
-    //   receivers: [{ address: "", amount: "" }],
-    // },
   });
-  const {
-    fields: batches,
-    append: appendBatch,
-    remove: removeBatch,
-  } = useFieldArray({
-    control,
-    name: "batch",
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "receivers",
-  });
-
-  const selectedToken = watch("token");
-  const receivers = watch("receivers");
-  console.log({ selectedToken });
 
   const dispatch = useDispatch();
 
@@ -229,7 +293,6 @@ export default function FlexibleQuickTransfer(props) {
   const addingSingleOwnerTx = useSelector(makeSelectSingleOwnerAddTxLoading());
   const threshold = useSelector(makeSelectThreshold());
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
-  const prices = useSelector(makeSelectPrices());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
 
@@ -261,160 +324,69 @@ export default function FlexibleQuickTransfer(props) {
 
   const onSubmit = async (values) => {
     console.log({ values });
-  };
 
-  console.log({ batches, receivers });
+    // const receivers = values.receivers.map(({ address, amount }) => ({
+    //   address,
+    //   salaryAmount: amount,
+    //   salaryToken: selectedTokenDetails.name,
+    //   description: values.description || "",
+    //   usd: selectedTokenDetails.usdConversionRate * amount,
+    // }));
+
+    // const totalAmountToPay = receivers.reduce(
+    //   (total, { usd }) => (total += usd),
+    //   0
+    // );
+
+    const addresses = [];
+
+    for (let { receivers } of values.batch) {
+      for (let { address } of receivers) {
+        addresses.push(address);
+      }
+    }
+
+    console.log({ addresses });
+
+    const to = cryptoUtils.encryptDataUsingEncryptionKey(
+      JSON.stringify([]),
+      encryptionKey,
+      organisationType
+    );
+    const baseRequestBody = {
+      to,
+      safeAddress: safeAddress,
+      createdBy: account,
+      tokenValue: 0,
+      tokenCurrency: "USDT",
+      fiatValue: "100",
+      fiatCurrency: "USD",
+      addresses,
+      transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
+    };
+
+    await multiTokenMassPayout({
+      batch: values.batch,
+      allTokenDetails: existingTokenDetails,
+      baseRequestBody,
+    });
+  };
 
   const renderFlexibleQuickTransfer = () => (
     <div>
-      <PayoutBatches
-        {...{ control, register, defaultValues, getValues, setValue, errors }}
+      <TokenBatches
+        {...{
+          control,
+          register,
+          watch,
+          getValues,
+          setValue,
+          errors,
+          tokensDropdown,
+          loadingTokens,
+          existingTokenDetails,
+        }}
       />
-      {/* {batches.map(({ id: batchId }, batchIdx) => {
-        console.log({ batchId, batchIdx });
-        return (
-          <div key={batchId}>
-            <div>
-              <div className="title">Paying From</div>
-              <div className="mb-3">
-                <SelectToken
-                  name={`token[${batchIdx}]`}
-                  control={control}
-                  required={`Token is required`}
-                  width="20rem"
-                  options={tokensDropdown}
-                  isSearchable
-                  placeholder={`Select Currency...`}
-                  defaultValue={defaultValues ? defaultValues.token : null}
-                  isLoading={loadingTokens}
-                />
-              </div>
-            </div>
-
-            <div className="title mt-5">Paying To</div>
-            {fields.map(({ id }, index) => (
-              <div key={id} className="mb-4">
-                <div className="details-row">
-                  <Input
-                    type="text"
-                    name={`receivers[${index + batchIdx}].${batchIdx}.address`}
-                    register={register}
-                    required={`Wallet Address is required`}
-                    pattern={{
-                      value: /^0x[a-fA-F0-9]{40}$/,
-                      message: "Invalid Ethereum Address",
-                    }}
-                    placeholder="Wallet Address"
-                    style={{ maxWidth: "32rem" }}
-                    // defaultValue={
-                    //   defaultValues && defaultValues.receivers[index]
-                    //     ? defaultValues.receivers[index].address
-                    //     : ""
-                    // }
-                  />
-
-                  {selectedToken &&
-                    selectedToken[batchIdx] &&
-                    selectedToken[batchIdx].value && (
-                      <div>
-                        <Controller
-                          control={control}
-                          name={`receivers[${
-                            index + batchIdx
-                          }].${batchIdx}.amount`}
-                          rules={{
-                            required: "Amount is required",
-                            validate: (value) => {
-                              if (value <= 0) return "Please check your input";
-
-                              return true;
-                            },
-                          }}
-                          // defaultValue={
-                          //   defaultValues && defaultValues.receivers[index]
-                          //     ? defaultValues.receivers[index].amount
-                          //     : ""
-                          // }
-                          render={({ onChange, value }) => (
-                            <CurrencyInput
-                              type="number"
-                              name={`receivers[${
-                                index + batchIdx
-                              }].${batchIdx}.amount`}
-                              value={value}
-                              onChange={onChange}
-                              placeholder="0.00"
-                              conversionRate={
-                                prices &&
-                                selectedTokenDetails &&
-                                prices[selectedTokenDetails.name]
-                              }
-                              tokenName={
-                                selectedTokenDetails
-                                  ? selectedTokenDetails.name
-                                  : ""
-                              }
-                            />
-                          )}
-                        />
-                      </div>
-                    )}
-                  <div style={{ minWidth: "2rem" }}>
-                    {fields.length > 1 && index === fields.length - 1 && (
-                      <Button
-                        type="button"
-                        iconOnly
-                        onClick={() => remove([index + batchIdx])}
-                        className="p-0"
-                      >
-                        <Img src={DeleteSvg} alt="remove" width="16" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="error-row">
-                {errors["receivers"] &&
-                  errors["receivers"][index] &&
-                  errors["receivers"][index].address && (
-                    <Error>{errors["receivers"][index].address.message}</Error>
-                  )}
-                {errors["receivers"] &&
-                  errors["receivers"][index] &&
-                  errors["receivers"][index].amount && (
-                    <Error>{errors["receivers"][index].amount.message}</Error>
-                  )}
-              </div>
-              </div>
-            ))}
-            <div className="my-4">
-              <Button
-                type="button"
-                onClick={() => append({})}
-                className="secondary"
-                width="16rem"
-                style={{ fontSize: "1.2rem" }}
-              >
-                <span className="mr-2">+</span>
-                Add
-              </Button>
-            </div>
-          </div>
-        );
-      })} */}
-
-      {/* <div className="my-4">
-        <Button
-          type="button"
-          onClick={() => appendBatch({})}
-          className="secondary"
-          width="16rem"
-          style={{ fontSize: "1.2rem" }}
-        >
-          <span className="mr-2">+</span>
-          Add Batch
-        </Button>
-      </div> */}
 
       <div className="title mt-5">Description (Optional)</div>
       <div>

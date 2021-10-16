@@ -65,6 +65,9 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.APPROVE_AND_SWAP:
       return "Swap Tokens";
 
+    case TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT:
+      return "Mass Payout";
+
     default:
       return "";
   }
