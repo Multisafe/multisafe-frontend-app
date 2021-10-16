@@ -15,8 +15,8 @@ import {
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
 import { useActiveWeb3React } from "hooks";
-import { useEncryptionKey } from "./index";
-import {safeDecrypt} from 'utils/safeDecrypt';
+import { useEncryptionKey } from "hooks";
+import {getDecryptedDetails} from 'utils/encryption';
 
 const SUCCESS_TIMEOUT = 5000;
 const MAX_LENGTH = 500;
@@ -33,7 +33,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   const [initialNote, setInitialNote] = useState(
     notes
-      ? safeDecrypt(
+      ? getDecryptedDetails(
           notes,
           encryptionKey,
           organisationType
@@ -42,7 +42,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
   );
   const [editedNote, setEditedNote] = useState(
     notes
-      ? safeDecrypt(
+      ? getDecryptedDetails(
           notes,
           encryptionKey,
           organisationType
@@ -57,7 +57,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   useEffect(() => {
     const newNote = notes
-      ? safeDecrypt(
+      ? getDecryptedDetails(
           notes,
           encryptionKey,
           organisationType
