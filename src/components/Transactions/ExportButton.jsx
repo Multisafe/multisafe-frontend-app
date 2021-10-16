@@ -18,7 +18,6 @@ import { TRANSACTION_MODES } from "constants/transactions";
 import { getEtherscanLink } from "components/common/Web3Utils";
 import { networkId } from "constants/networks";
 import { getDecryptedOwnerName } from "store/invitation/utils";
-import {safeDecrypt} from "utils/safeDecrypt";
 
 const joinArray = (arr) => {
   return arr && arr.join("\n");
@@ -159,7 +158,7 @@ export default function ExportButton() {
           }
 
           csvData.push({
-            Date: format(new Date(createdOn), "dd/MM/yyyy"),
+            Date: format(new Date(createdOn), "MMM-dd-yyyy"),
             Time: format(new Date(createdOn), "HH:mm:ss"),
             Origin: txOrigin,
             "Transaction Type": direction,
@@ -186,7 +185,7 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
-            "Note": safeDecrypt(
+            "Note": getDecryptedDetails(
               notes,
               encryptionKey,
               organisationType
@@ -203,7 +202,7 @@ export default function ExportButton() {
       data={csvData}
       filename={`${safeAddress}-transactions-${format(
         Date.now(),
-        "dd/MM/yyyy-HH:mm:ss"
+        "MMM-dd-yyyy HH:mm:ss"
       )}.csv`}
     >
       <Export>

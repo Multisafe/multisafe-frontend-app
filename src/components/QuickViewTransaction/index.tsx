@@ -190,7 +190,7 @@ export const QuickViewTransaction = ({
         <DetailsItem>
           <DetailsTitle>Created Date & Time</DetailsTitle>
           <DetailsContent>
-            {createdOn && format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+            {createdOn && format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
           </DetailsContent>
         </DetailsItem>
 

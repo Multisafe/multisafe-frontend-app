@@ -108,7 +108,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
                 <TransactionName to={to} transactionMode={transactionMode} />
               </div>
               <div className="date">
-                {format(new Date(createdOn), "dd/MM/yyyy HH:mm:ss")}
+                {format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
               </div>
             </div>
           </div>
