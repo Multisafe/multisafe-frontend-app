@@ -42,6 +42,10 @@ export const getMultisigTransactionByIdEndpoint = `${ROOT_BE_URL}/api/v1/transac
 export const submitMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/submit`;
 export const confirmMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/confirm`;
 
+// COMMON TRANSACTIONS
+export const createTransactionNote = `${ROOT_BE_URL}/api/v1/transactions/notes/create`;
+export const updateTransactionNote = `${ROOT_BE_URL}/api/v1/transactions/notes/update`;
+
 // METATX
 export const getMetaTxLimitsEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getMetaTxLimits`;
 
