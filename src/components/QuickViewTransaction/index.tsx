@@ -104,13 +104,6 @@ export const QuickViewTransaction = ({
       case TRANSACTION_MODES.QUICK_TRANSFER:
         return (
           <React.Fragment>
-            {/*<DetailsItem>*/}
-            {/*  <DetailsTitle>Paid To</DetailsTitle>*/}
-            {/*  <DetailsContent>*/}
-            {/*    {paidTeammates && paidTeammates.length} people*/}
-            {/*  </DetailsContent>*/}
-            {/*</DetailsItem>*/}
-
             <DetailsItem>
               <DetailsTitle>Total Amount</DetailsTitle>
               <DetailsContent>
