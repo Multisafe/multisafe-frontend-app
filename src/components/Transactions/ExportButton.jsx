@@ -105,7 +105,7 @@ export default function ExportButton() {
             addresses,
             tokenCurrency,
             tokenValue,
-            notes
+            notes,
           } = transaction;
 
           const paidTeammates = getDecryptedDetails(
@@ -185,11 +185,12 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
-            "Note": getDecryptedDetails(
+            Note: getDecryptedDetails(
               notes,
               encryptionKey,
-              organisationType
-            )
+              organisationType,
+              false
+            ),
           });
         }
         setCsvData(csvData);

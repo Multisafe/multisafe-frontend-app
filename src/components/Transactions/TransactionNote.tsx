@@ -37,18 +37,26 @@ const NoteWarning = styled.div`
 `;
 
 export const TransactionNote = ({ txDetails }: Props) => {
-  const { editedNote, onChange, onUpdateClick, loading, disabled, error, warning, success } =
-    useTransactionNote(txDetails);
+  const {
+    editedNote,
+    onChange,
+    onUpdateClick,
+    loading,
+    disabled,
+    error,
+    warning,
+    success,
+  } = useTransactionNote(txDetails);
 
   const renderInfo = () => {
     if (error) {
-      return <NoteError>{error}</NoteError>
+      return <NoteError>{error}</NoteError>;
     } else if (success) {
-      return <NoteSuccess>{success}</NoteSuccess>
+      return <NoteSuccess>{success}</NoteSuccess>;
     } else if (warning) {
-      return <NoteWarning>{warning}</NoteWarning>
+      return <NoteWarning>{warning}</NoteWarning>;
     } else {
-      return <div/>
+      return <div />;
     }
   };
 

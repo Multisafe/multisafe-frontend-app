@@ -3,9 +3,12 @@ import styled from "styled-components";
 import Button from "components/common/Button";
 import { TxDetails } from "store/multisig/types";
 import { useTransactionNote } from "hooks/useTransactionNote";
-import {QuickViewTransaction, useQuickViewTransactionState} from '../QuickViewTransaction';
-import Img from 'components/common/Img';
-import EditNoteIcon from 'assets/icons/dashboard/edit-note-icon.svg';
+import {
+  QuickViewTransaction,
+  useQuickViewTransactionState,
+} from "../QuickViewTransaction";
+import Img from "components/common/Img";
+import EditNoteIcon from "assets/icons/dashboard/edit-note-icon.svg";
 
 type Props = {
   txDetails: TxDetails;
@@ -41,7 +44,7 @@ const NoteContent = styled.div`
 
 const EditButton = styled(Button)`
   padding: 1rem;
-  
+
   &:hover {
     opacity: 0.7;
   }
@@ -54,8 +57,7 @@ const AddNoteMessage = styled.div`
 `;
 
 export const TransactionDetailsNote = ({ txDetails }: Props) => {
-  const { editedNote } =
-    useTransactionNote(txDetails);
+  const { editedNote } = useTransactionNote(txDetails);
 
   const { quickViewOpen, onQuickViewOpen, onQuickViewClose } =
     useQuickViewTransactionState();
@@ -71,22 +73,15 @@ export const TransactionDetailsNote = ({ txDetails }: Props) => {
             <AddNoteMessage>Add Note</AddNoteMessage>
           )}
         </NoteContainer>
-        <EditButton
-          iconOnly
-          onClick={onQuickViewOpen}
-        >
-          <Img
-            src={EditNoteIcon}
-            alt="edit-note"
-            width="16"
-          />
+        <EditButton iconOnly onClick={onQuickViewOpen}>
+          <Img src={EditNoteIcon} alt="edit-note" width="16" />
         </EditButton>
       </ItemContainer>
       <QuickViewTransaction
         {...{
           isOpen: quickViewOpen,
           onClose: onQuickViewClose,
-          txDetails
+          txDetails,
         }}
       />
     </React.Fragment>

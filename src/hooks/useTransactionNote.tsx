@@ -1,6 +1,6 @@
-import {useState, useEffect, SyntheticEvent} from "react";
+import { useState, useEffect, SyntheticEvent } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import xss from 'xss';
+import xss from "xss";
 //@ts-ignore
 import { cryptoUtils } from "coinshift-sdk";
 import { TxDetails } from "store/multisig/types";
@@ -16,7 +16,7 @@ import {
 } from "store/global/selectors";
 import { useActiveWeb3React } from "hooks";
 import { useEncryptionKey } from "hooks";
-import {getDecryptedDetails} from 'utils/encryption';
+import { getDecryptedDetails } from "utils/encryption";
 
 const SUCCESS_TIMEOUT = 5000;
 const MAX_LENGTH = 500;
@@ -31,24 +31,11 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   const { notes, transactionId, transactionHash, origin } = txDetails;
 
-  const [initialNote, setInitialNote] = useState(
-    notes
-      ? getDecryptedDetails(
-          notes,
-          encryptionKey,
-          organisationType
-        )
-      : ""
-  );
-  const [editedNote, setEditedNote] = useState(
-    notes
-      ? getDecryptedDetails(
-          notes,
-          encryptionKey,
-          organisationType
-        )
-      : ""
-  );
+  const decrypedTransactionNote = notes
+    ? getDecryptedDetails(notes, encryptionKey, organisationType, false)
+    : "";
+  const [initialNote, setInitialNote] = useState(decrypedTransactionNote);
+  const [editedNote, setEditedNote] = useState(decrypedTransactionNote);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -57,11 +44,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
 
   useEffect(() => {
     const newNote = notes
-      ? getDecryptedDetails(
-          notes,
-          encryptionKey,
-          organisationType
-        )
+      ? getDecryptedDetails(notes, encryptionKey, organisationType, false)
       : "";
     setInitialNote(newNote);
     setEditedNote(newNote);
@@ -72,14 +55,17 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     setEditedNote(e.target?.value || "");
 
     if (value.length > MAX_LENGTH) {
-      setWarning('Limit 500 characters');
+      setWarning("Limit 500 characters");
     } else if (!!warning) {
-      setWarning('');
+      setWarning("");
     }
   };
 
   const onUpdateClick = async () => {
-    const sanitizedNote = xss(editedNote, {stripIgnoreTag: true, whiteList: {}}).trim();
+    const sanitizedNote = xss(editedNote, {
+      stripIgnoreTag: true,
+      whiteList: {},
+    }).trim();
 
     const encryptedNote = sanitizedNote
       ? cryptoUtils.encryptDataUsingEncryptionKey(
@@ -137,7 +123,7 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     setTimeout(() => {
       setSuccess("");
     }, SUCCESS_TIMEOUT);
-  }
+  };
 
   return {
     notes,
@@ -148,6 +134,6 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     loading,
     error,
     warning,
-    success
+    success,
   };
 };
