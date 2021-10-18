@@ -346,8 +346,6 @@ export default function FlexibleQuickTransfer(props) {
       }
     }
 
-    console.log({ addresses });
-
     const to = cryptoUtils.encryptDataUsingEncryptionKey(
       JSON.stringify([]),
       encryptionKey,
