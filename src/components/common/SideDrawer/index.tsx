@@ -7,18 +7,13 @@ import Img from "components/common/Img";
 import { PORTAL_CONTAINER_ID } from "components/common/PortalContainer";
 
 const styles = {
-  bmCrossButton: {
-    height: "24px",
-    width: "24px",
-  },
   bmMenuWrap: {
     position: "fixed",
     height: "100%",
     top: "0",
   },
   bmMenu: {
-    background: "#fff",
-    fontSize: "1.15em",
+    background: "#fff"
   },
   bmMorphShape: {
     fill: "#fff",
