@@ -325,11 +325,15 @@ export default function DisbursementDetails({
         <TableBody>
           <tr>
             <td style={{ width: "25%" }}>
-              <div>{payAmount} {payTokenSymbol}</div>
+              <div>
+                {payAmount} {payTokenSymbol}
+              </div>
               <div>~${formatNumber(srcUSD)}</div>
             </td>
             <td style={{ width: "25%" }}>
-              <div>{receiveAmount} {receiveTokenSymbol}</div>
+              <div>
+                {receiveAmount} {receiveTokenSymbol}
+              </div>
               <div>~${formatNumber(destUSD)}</div>
             </td>
             <td style={{ width: "10%" }}>{slippage}%</td>

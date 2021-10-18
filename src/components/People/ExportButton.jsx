@@ -47,7 +47,7 @@ export default function ExportButton() {
     <CSVLink
       uFEFF={false}
       data={csvData}
-      filename={`people-${format(Date.now(), "dd/MM/yyyy-HH:mm:ss")}.csv`}
+      filename={`people-${format(Date.now(), "MMM-dd-yyyy HH:mm:ss")}.csv`}
     >
       <Export>
         <div className="text">Export</div>

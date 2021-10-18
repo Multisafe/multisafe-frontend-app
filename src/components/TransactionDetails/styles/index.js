@@ -7,3 +7,4 @@ export { default as TransactionDetails } from "./TransactionDetails";
 export { default as TxRow } from "./TxRow";
 export { default as ColoredText } from "./ColoredText";
 export { default as StepperCard } from "./StepperCard";
+export { DescriptionRow } from "./DescriptionRow";

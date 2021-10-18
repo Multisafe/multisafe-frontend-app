@@ -105,6 +105,7 @@ export default function ExportButton() {
             addresses,
             tokenCurrency,
             tokenValue,
+            notes,
           } = transaction;
 
           const paidTeammates = getDecryptedDetails(
@@ -157,7 +158,7 @@ export default function ExportButton() {
           }
 
           csvData.push({
-            Date: format(new Date(createdOn), "dd/MM/yyyy"),
+            Date: format(new Date(createdOn), "MMM-dd-yyyy"),
             Time: format(new Date(createdOn), "HH:mm:ss"),
             Origin: txOrigin,
             "Transaction Type": direction,
@@ -184,6 +185,12 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
+            Note: getDecryptedDetails(
+              notes,
+              encryptionKey,
+              organisationType,
+              false
+            ),
           });
         }
         setCsvData(csvData);
@@ -196,7 +203,7 @@ export default function ExportButton() {
       data={csvData}
       filename={`${safeAddress}-transactions-${format(
         Date.now(),
-        "dd/MM/yyyy-HH:mm:ss"
+        "MMM-dd-yyyy HH:mm:ss"
       )}.csv`}
     >
       <Export>
