@@ -89,9 +89,11 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
     );
   };
 
+  const transactionName = <TransactionName to={to} transactionMode={transactionMode} />;
+
   return (
     <React.Fragment>
-      <TxRow onClick={navigateToTransaction} ref={ref}>
+      <TxRow onClick={navigateToTransaction} ref={ref} quickViewOpen={quickViewOpen}>
         <td style={{ width: "35%" }}>
           <div className="d-flex align-items-center">
             <Img
@@ -105,7 +107,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
             />
             <div>
               <div className="name">
-                <TransactionName to={to} transactionMode={transactionMode} />
+                {transactionName}
               </div>
               <div className="date">
                 {format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
@@ -128,6 +130,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
           txDetails,
           safeAddress,
           navigateToTransaction,
+          transactionName
         }}
       />
     </React.Fragment>

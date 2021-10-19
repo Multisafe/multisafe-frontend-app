@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, {ReactNode, SyntheticEvent, useState} from "react";
 import styled from "styled-components";
 import { format } from "date-fns";
 import CopyButton from "components/common/Copy";
@@ -19,6 +19,7 @@ type Props = {
   onClose: () => void;
   txDetails: TxDetails;
   navigateToTransaction?: () => void;
+  transactionName?: ReactNode;
 };
 
 const HeaderContainer = styled.div`
@@ -85,6 +86,7 @@ export const QuickViewTransaction = ({
   isOpen,
   onClose,
   txDetails,
+  transactionName,
   navigateToTransaction,
 }: Props) => {
   const {
@@ -102,6 +104,7 @@ export const QuickViewTransaction = ({
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
       case TRANSACTION_MODES.QUICK_TRANSFER:
+      case TRANSACTION_MODES.APPROVE_AND_SWAP:
         return (
           <React.Fragment>
             <DetailsItem>
@@ -116,14 +119,21 @@ export const QuickViewTransaction = ({
 
       case TRANSACTION_MODES.SPENDING_LIMITS:
         return (
-          <div className="detail-card">
-            <div className="detail-title">Allowance</div>
-            <div className="detail-subtitle">US ${formatNumber(fiatValue)}</div>
-          </div>
+          <DetailsItem>
+            <DetailsTitle>Allowance</DetailsTitle>
+            <DetailsContent>US ${formatNumber(fiatValue)}</DetailsContent>
+          </DetailsItem>
         );
 
       default:
-        return null;
+        return fiatValue ? (
+          <React.Fragment>
+            <DetailsItem>
+              <DetailsTitle>Total Amount</DetailsTitle>
+              <DetailsContent>US ${formatNumber(fiatValue)}</DetailsContent>
+            </DetailsItem>
+          </React.Fragment>
+        ) : null;
     }
   };
 
@@ -143,6 +153,15 @@ export const QuickViewTransaction = ({
       onClose={onClose}
     >
       <DetailsList>
+        {transactionName ? (
+          <DetailsItem>
+            <DetailsTitle>Transaction</DetailsTitle>
+            <DetailsContent>
+              {transactionName}
+            </DetailsContent>
+          </DetailsItem>
+        ) : null}
+
         <DetailsItem>
           <DetailsTitle>Transaction Hash</DetailsTitle>
           {transactionHash ? (
@@ -171,14 +190,14 @@ export const QuickViewTransaction = ({
 
         {renderOptionalCards()}
 
-        <DetailsItem>
-          <DetailsTitle>Transaction Fee</DetailsTitle>
-          <DetailsContent>
-            {transactionFees > 0
-              ? `${formatNumber(transactionFees, 5)} ETH`
-              : `-`}
-          </DetailsContent>
-        </DetailsItem>
+        {transactionFees > 0 ? (
+          <DetailsItem>
+            <DetailsTitle>Transaction Fee</DetailsTitle>
+            <DetailsContent>
+              ${formatNumber(transactionFees, 5)} ETH
+            </DetailsContent>
+          </DetailsItem>
+        ) : null}
 
         <DetailsItem>
           <DetailsTitle>Created Date & Time</DetailsTitle>
