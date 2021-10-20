@@ -13,6 +13,7 @@ import StatusText from "components/Transactions/StatusText";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { TxDetails } from "store/multisig/types";
 import { TransactionNote } from "components/Transactions/TransactionNote";
+import TokenImg from 'components/common/TokenImg';
 
 type Props = {
   isOpen: boolean;
@@ -57,9 +58,14 @@ const DetailsContent = styled.div`
   font-weight: 700;
 `;
 
-const IconsContainer = styled.div`
+const TransactionHashContainer = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+`;
+
+const AmountContainer = styled.div`
+  display: flex;
+  gap: 1rem;
 `;
 
 export const useQuickViewTransactionState = () => {
@@ -98,6 +104,7 @@ export const QuickViewTransaction = ({
     tokenValue,
     tokenCurrency,
     fiatValue,
+    tokenCurrencies
   } = txDetails;
 
   const renderOptionalCards = () => {
@@ -130,7 +137,17 @@ export const QuickViewTransaction = ({
           <React.Fragment>
             <DetailsItem>
               <DetailsTitle>Total Amount</DetailsTitle>
-              <DetailsContent>US ${formatNumber(fiatValue)}</DetailsContent>
+              <AmountContainer>
+                {tokenCurrencies && tokenCurrencies.length > 0 && (
+                  <div className="amount">
+                    {tokenCurrencies.map((token) => (
+                      //@ts-ignore
+                      <TokenImg token={token} key={token} />
+                    ))}
+                  </div>
+                )}
+                <DetailsContent>US ${formatNumber(fiatValue)}</DetailsContent>
+              </AmountContainer>
             </DetailsItem>
           </React.Fragment>
         ) : null;
@@ -165,24 +182,21 @@ export const QuickViewTransaction = ({
         <DetailsItem>
           <DetailsTitle>Transaction Hash</DetailsTitle>
           {transactionHash ? (
-            <React.Fragment>
+            <TransactionHashContainer>
               <DetailsContent>{minifyAddress(transactionHash)}</DetailsContent>
-              <IconsContainer>
-                {/*@ts-ignore*/}
-                <CopyButton
-                  id="address"
-                  tooltip="Transaction Hash"
-                  value={transactionHash}
-                  className="mr-3"
-                />
-                {/*@ts-ignore*/}
-                <EtherscanLink
-                  id="etherscan-link"
-                  type={ETHERSCAN_LINK_TYPES.TX}
-                  hash={transactionHash}
-                />
-              </IconsContainer>
-            </React.Fragment>
+              {/*@ts-ignore*/}
+              <CopyButton
+                id="address"
+                tooltip="Transaction Hash"
+                value={transactionHash}
+              />
+              {/*@ts-ignore*/}
+              <EtherscanLink
+                id="etherscan-link"
+                type={ETHERSCAN_LINK_TYPES.TX}
+                hash={transactionHash}
+              />
+            </TransactionHashContainer>
           ) : (
             <DetailsContent>-</DetailsContent>
           )}
