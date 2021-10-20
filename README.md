@@ -33,4 +33,3 @@ The interface will currently work on Rinkeby and Mainnet
 
 **Please open all pull requests against the `master` branch.**
 CI checks will run against all PRs.
-
