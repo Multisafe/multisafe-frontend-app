@@ -1,4 +1,4 @@
-import React, {ReactNode, SyntheticEvent, useState} from "react";
+import React, { ReactNode, SyntheticEvent, useState } from "react";
 import styled from "styled-components";
 import { format } from "date-fns";
 import CopyButton from "components/common/Copy";
@@ -13,7 +13,7 @@ import StatusText from "components/Transactions/StatusText";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { TxDetails } from "store/multisig/types";
 import { TransactionNote } from "components/Transactions/TransactionNote";
-import TokenImg from 'components/common/TokenImg';
+import TokenImg from "components/common/TokenImg";
 
 type Props = {
   isOpen: boolean;
@@ -104,7 +104,7 @@ export const QuickViewTransaction = ({
     tokenValue,
     tokenCurrency,
     fiatValue,
-    tokenCurrencies
+    tokenCurrencies,
   } = txDetails;
 
   const renderOptionalCards = () => {
@@ -173,9 +173,7 @@ export const QuickViewTransaction = ({
         {transactionName ? (
           <DetailsItem>
             <DetailsTitle>Transaction</DetailsTitle>
-            <DetailsContent>
-              {transactionName}
-            </DetailsContent>
+            <DetailsContent>{transactionName}</DetailsContent>
           </DetailsItem>
         ) : null}
 

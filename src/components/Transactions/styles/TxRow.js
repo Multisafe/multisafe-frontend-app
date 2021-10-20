@@ -5,7 +5,8 @@ export default styled.tr`
   position: relative;
 
   //TODO refactor table body nested styles specificity
-  background-color: ${({theme, quickViewOpen}) => quickViewOpen ? theme.accent : "#ffffff"} !important; 
+  background-color: ${({ theme, quickViewOpen }) =>
+    quickViewOpen ? theme.accent : "#ffffff"} !important; 
 
   .direction {
     margin-right: 3rem;
