@@ -55,7 +55,6 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
-import ControlledInput from "../common/Input";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
