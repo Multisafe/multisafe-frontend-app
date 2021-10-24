@@ -507,7 +507,7 @@ export default function Payments() {
         }
       });
 
-    const shouldRenderRows = peopleRows.some(value => !!value);
+    const shouldRenderRows = peopleRows?.some(value => !!value);
 
     return (
       <div>
