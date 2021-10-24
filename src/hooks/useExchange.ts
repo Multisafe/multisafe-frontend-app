@@ -67,7 +67,7 @@ export const useExchange = () => {
       undefined,
       undefined,
       payTokenDeciamls,
-      receiveTokenDecimals,
+      receiveTokenDecimals
     );
 
     if ("message" in rate) {

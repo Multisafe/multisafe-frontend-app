@@ -16,6 +16,7 @@
     "@types/lodash": "^4.14.172",
     "@types/node": "^16.7.1",
     "@types/react": "^17.0.19",
+    "@types/react-burger-menu": "^2.8.1",
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-select": "^4.0.17",
@@ -68,7 +69,8 @@
     "socket.io-client": "^3.1.1",
     "styled-components": "^5.2.0",
     "typescript": "4.3.5",
-    "web-vitals": "^0.2.4"
+    "web-vitals": "^0.2.4",
+    "xss": "^1.0.10"
   },
   "scripts": {
     "start": "PORT=7000 react-scripts start",
