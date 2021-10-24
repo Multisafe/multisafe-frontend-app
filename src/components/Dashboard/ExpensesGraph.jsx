@@ -31,18 +31,21 @@ const CustomTooltip = ({ active, payload }) => {
   return null;
 };
 
+const TX_TYPES = { MONEY_IN: "Incoming", MONEY_OUT: "Outgoing" };
+
 export default function ExpensesGraph({ moneyIn, moneyOut }) {
   const [chartData, setChartData] = useState();
+
   useEffect(() => {
     if (!moneyIn && !moneyOut) setChartData();
     else {
       setChartData([
         {
-          name: "Income",
+          name: TX_TYPES.MONEY_IN,
           value: moneyIn,
         },
         {
-          name: "Expense",
+          name: TX_TYPES.MONEY_OUT,
           value: moneyOut,
         },
       ]);
@@ -54,14 +57,14 @@ export default function ExpensesGraph({ moneyIn, moneyOut }) {
     return (
       <ExpensesLegend>
         {payload.map((entry, index) => {
-          const isIncome = entry.value === "Income";
+          const isMoneyIn = entry.value === TX_TYPES.MONEY_IN;
 
           return (
             <div className="legend-item" key={`item-${index}`}>
               <div
-                className={`${isIncome ? "income-circle" : "expense-circle"}`}
+                className={`${isMoneyIn ? "income-circle" : "expense-circle"}`}
               ></div>
-              <div>{isIncome ? "Income" : "Expense"}</div>
+              <div>{isMoneyIn ? TX_TYPES.MONEY_IN : TX_TYPES.MONEY_OUT}</div>
             </div>
           );
         })}
@@ -92,7 +95,7 @@ export default function ExpensesGraph({ moneyIn, moneyOut }) {
   ) : (
     <EmptyExpenses>
       <Img src={ExpensesIcon} alt="no-expense" width="200" />
-      <div className="text mt-4">No Income and Expense</div>
+      <div className="text mt-4">No Incoming and Outgoing Transactions</div>
     </EmptyExpenses>
   );
 }
