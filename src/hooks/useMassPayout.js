@@ -81,7 +81,7 @@ export default function useMassPayout() {
     await executeBatchTransactions({ transactions });
   };
 
-  const multiTokenMassPayout = async ({
+  const batchMassPayout = async ({
     batch,
     allTokenDetails,
     baseRequestBody,
@@ -157,7 +157,7 @@ export default function useMassPayout() {
     loadingTx,
     txHash,
     massPayout,
-    multiTokenMassPayout,
+    batchMassPayout,
     txData,
   };
 }

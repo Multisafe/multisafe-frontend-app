@@ -256,7 +256,7 @@ function TokenBatches({
   );
 }
 
-export default function FlexibleQuickTransfer(props) {
+export default function FlexibleMassPayout(props) {
   const [encryptionKey] = useEncryptionKey();
 
   const { handleHide } = props;
@@ -266,7 +266,7 @@ export default function FlexibleQuickTransfer(props) {
   // const [insufficientBalanceError, setInsufficientBalanceError] =
   //   useState(false);
 
-  const { loadingTx, multiTokenMassPayout } = useMassPayout();
+  const { loadingTx, batchMassPayout } = useMassPayout();
 
   const {
     register,
@@ -363,14 +363,14 @@ export default function FlexibleQuickTransfer(props) {
       transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
     };
 
-    await multiTokenMassPayout({
+    await batchMassPayout({
       batch: values.batch,
       allTokenDetails: existingTokenDetails,
       baseRequestBody,
     });
   };
 
-  const renderFlexibleQuickTransfer = () => (
+  const renderFlexibleMassPayout = () => (
     <div>
       <TokenBatches
         {...{
@@ -431,7 +431,7 @@ export default function FlexibleQuickTransfer(props) {
   return (
     <QuickTransferContainer>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {renderFlexibleQuickTransfer()}
+        {renderFlexibleMassPayout()}
       </form>
     </QuickTransferContainer>
   );
