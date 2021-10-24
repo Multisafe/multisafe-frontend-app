@@ -6,6 +6,7 @@ export default styled.label`
   padding-left: 1rem;
   cursor: pointer;
   margin-bottom: 0;
+  white-space: nowrap;
 
   input[type="checkbox"] {
     visibility: hidden;

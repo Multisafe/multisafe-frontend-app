@@ -55,6 +55,7 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
+import ControlledInput from "../common/Input";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -83,6 +84,7 @@ export default function Payments() {
   const [teamsDropdown, setTeamsDropdown] = useState();
   const [tokenError, setTokenError] = useState(false);
   const [amountError, setAmountError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { loadingTx, massPayout } = useMassPayout();
 
@@ -426,12 +428,90 @@ export default function Payments() {
     </TableInfo>
   );
 
+  const onSearchQueryChange = (e) => {
+    setSearchQuery(e?.target?.value || "");
+  }
+
   const renderPayTable = () => {
     if (!people || !selectedToken) return;
 
+    const peopleRows = !loadingTeammates &&
+      people.length > 0 &&
+      people.map(({ peopleId, data, ...rest }, idx) => {
+        const {
+          firstName,
+          lastName,
+          salaryAmount,
+          salaryToken,
+          address,
+        } = getDecryptedDetails(data, encryptionKey, organisationType);
+
+        if (firstName.includes(searchQuery) || lastName.includes(searchQuery)) {
+          const teammateDetails = {
+            firstName,
+            lastName,
+            salaryToken,
+            salaryAmount,
+            address,
+            peopleId,
+            index: idx,
+            ...rest,
+          };
+
+          return (
+            <tr
+              key={`${address}-${idx}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleChecked(teammateDetails, idx);
+              }}
+              style={{
+                backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
+              }}
+            >
+              <td style={{ width: "30%" }}>
+                <div className="d-flex align-items-center">
+                  <CheckBox
+                    type="checkbox"
+                    id={`checkbox${idx}`}
+                    name={`checkbox${idx}`}
+                    checked={checked[idx] || false}
+                    onChange={() => handleChecked(teammateDetails, idx)}
+                  />
+                  <div>
+                    {firstName} {lastName}
+                  </div>
+                </div>
+              </td>
+              <td style={{ width: "25%" }}>
+                <TokenImg token={salaryToken} />
+                <span className="mr-2">
+                        <Input
+                          type="number"
+                          name={`amounts[${idx}]`}
+                          register={register}
+                          style={{ width: "7rem" }}
+                          placeholder="0"
+                          defaultValue={salaryAmount}
+                          onClick={(e) => e.stopPropagation()}
+                          step=".0001"
+                        />
+                      </span>
+                <span>{salaryToken}</span>
+              </td>
+              <td style={{ width: "45%" }}>{address}</td>
+            </tr>
+          );
+        } else {
+          return null;
+        }
+      });
+
+    const shouldRenderRows = peopleRows.some(value => !!value);
+
     return (
       <div>
-        <div className="outer-flex mt-5">
+        <div className="outer-flex mt-5 mb-1">
           <div className="title">Team Details</div>
 
           {!loadingTeammates && people.length > 0 && (
@@ -442,6 +522,13 @@ export default function Payments() {
                 checked={isCheckedAll}
                 onChange={handleCheckAll}
                 label={`Select All`}
+              />
+              <Input
+                type="text"
+                name="search"
+                placeholder="Search Name"
+                value={searchQuery}
+                onChange={onSearchQueryChange}
               />
             </div>
           )}
@@ -456,73 +543,8 @@ export default function Payments() {
           </TableHead>
           <TableBody style={{ maxHeight: "25rem", overflow: "auto" }}>
             {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
-            {!loadingTeammates && !people.length && renderNoPeopleFound()}
-            {!loadingTeammates &&
-              people.length > 0 &&
-              people.map(({ peopleId, data, ...rest }, idx) => {
-                const {
-                  firstName,
-                  lastName,
-                  salaryAmount,
-                  salaryToken,
-                  address,
-                } = getDecryptedDetails(data, encryptionKey, organisationType);
-
-                const teammateDetails = {
-                  firstName,
-                  lastName,
-                  salaryToken,
-                  salaryAmount,
-                  address,
-                  peopleId,
-                  index: idx,
-                  ...rest,
-                };
-                return (
-                  <tr
-                    key={`${address}-${idx}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleChecked(teammateDetails, idx);
-                    }}
-                    style={{
-                      backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
-                    }}
-                  >
-                    <td style={{ width: "30%" }}>
-                      <div className="d-flex align-items-center">
-                        <CheckBox
-                          type="checkbox"
-                          id={`checkbox${idx}`}
-                          name={`checkbox${idx}`}
-                          checked={checked[idx] || false}
-                          onChange={() => handleChecked(teammateDetails, idx)}
-                        />
-                        <div>
-                          {firstName} {lastName}
-                        </div>
-                      </div>
-                    </td>
-                    <td style={{ width: "25%" }}>
-                      <TokenImg token={salaryToken} />
-                      <span className="mr-2">
-                        <Input
-                          type="number"
-                          name={`amounts[${idx}]`}
-                          register={register}
-                          style={{ width: "7rem" }}
-                          placeholder="0"
-                          defaultValue={salaryAmount}
-                          onClick={(e) => e.stopPropagation()}
-                          step=".0001"
-                        />
-                      </span>
-                      <span>{salaryToken}</span>
-                    </td>
-                    <td style={{ width: "45%" }}>{address}</td>
-                  </tr>
-                );
-              })}
+            {!shouldRenderRows || (!loadingTeammates && !people.length) ? renderNoPeopleFound() : null}
+            {peopleRows}
           </TableBody>
         </Table>
       </div>
