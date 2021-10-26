@@ -170,6 +170,7 @@ const reducer = (state = initialState, action) =>
       case GET_LABELS:
         draft.labelsError = null;
         draft.labelsLoading = true;
+        draft.labels = [];
         break;
 
       case GET_LABELS_ERROR:

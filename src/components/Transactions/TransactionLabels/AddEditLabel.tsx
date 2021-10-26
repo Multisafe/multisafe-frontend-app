@@ -43,6 +43,7 @@ export const AddEditLabel = ({label, anchor}: Props) => {
 
   const [name, setName] = useState(label?.name || "");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -64,6 +65,7 @@ export const AddEditLabel = ({label, anchor}: Props) => {
 
   const onError = () => {
     setError(`Couldn't ${!label ? "create" : "update"} label`);
+    setLoading(false);
   };
 
   const onSuccess = () => {
@@ -72,6 +74,7 @@ export const AddEditLabel = ({label, anchor}: Props) => {
 
   const onSubmit = () => {
     setError("");
+    setLoading(true);
 
     const newLabel = {
       ...(label ? label : {}),
@@ -117,7 +120,8 @@ export const AddEditLabel = ({label, anchor}: Props) => {
               <Button
                 onClick={onSubmit}
                 style={{ minWidth: "16rem" }}
-                disabled={!name || name === label?.name}
+                disabled={loading || !name || name === label?.name}
+                loading={loading}
               >
                 {!label ? "Create" : "Update"}
               </Button>
