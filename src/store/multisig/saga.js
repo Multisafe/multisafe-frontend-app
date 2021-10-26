@@ -9,7 +9,7 @@ import {
   GET_MULTISIG_TRANSACTION_BY_ID,
   SUBMIT_MULTISIG_TRANSACTION,
   GET_LABELS,
-  CREATE_OR_UPDATE_LABEL
+  CREATE_OR_UPDATE_LABEL,
 } from "./action-types";
 import {
   getMultisigTransactionsSuccess,
@@ -25,7 +25,7 @@ import {
   getMultisigTransactionByIdSuccess,
   getLabels as getLabelsAction,
   getLabelsError,
-  getLabelsSuccess
+  getLabelsSuccess,
 } from "./actions";
 import request from "utils/request";
 import {
@@ -36,7 +36,7 @@ import {
   getMultisigTransactionByIdEndpoint,
   getLabelsEndpoint,
   createLabelEndpoint,
-  updateLabelEndpoint
+  updateLabelEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
 import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
@@ -212,8 +212,8 @@ function* createOrUpdateLabel(action) {
   const body = {
     safeAddress: action.safeAddress,
     [action.create ? "createdBy" : "updatedBy"]: action.userAddress,
-    labels: [action.label]
-  }
+    labels: [action.label],
+  };
 
   const options = {
     method: "POST",
@@ -228,7 +228,13 @@ function* createOrUpdateLabel(action) {
     if (result.flag !== 200) {
       action.onError();
     } else {
-      yield put(getLabelsAction(action.networkId, action.safeAddress, action.userAddress));
+      yield put(
+        getLabelsAction(
+          action.networkId,
+          action.safeAddress,
+          action.userAddress
+        )
+      );
       action.onSuccess();
     }
   } catch (err) {

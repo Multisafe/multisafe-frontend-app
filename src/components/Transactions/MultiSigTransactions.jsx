@@ -30,7 +30,7 @@ import GnosisTransaction from "./GnosisTransaction";
 import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
-import {MULTISIG_KEY} from "store/multisig/constants";
+import { MULTISIG_KEY } from "store/multisig/constants";
 
 const LIMIT = 10;
 

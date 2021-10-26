@@ -1,5 +1,5 @@
 export type Label = {
-  labelId: string,
+  labelId: string;
   active: boolean;
   name: string;
   colorCode: string;

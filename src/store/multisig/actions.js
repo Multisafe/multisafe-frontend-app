@@ -20,7 +20,7 @@ import {
   GET_LABELS_ERROR,
   GET_LABELS_SUCCESS,
   CREATE_OR_UPDATE_LABEL,
-  UPDATE_LABEL_DATA
+  UPDATE_LABEL_DATA,
 } from "./action-types";
 
 export function getMultisigTransactions(safeAddress, offset, limit) {
@@ -173,8 +173,8 @@ export function getLabels(networkId, safeAddress, userAddress) {
     type: GET_LABELS,
     networkId,
     safeAddress,
-    userAddress
-  }
+    userAddress,
+  };
 }
 
 export function getLabelsSuccess(labels) {
@@ -191,7 +191,15 @@ export function getLabelsError(error) {
   };
 }
 
-export function createOrUpdateLabel(networkId, safeAddress, userAddress, label, create, onError, onSuccess) {
+export function createOrUpdateLabel(
+  networkId,
+  safeAddress,
+  userAddress,
+  label,
+  create,
+  onError,
+  onSuccess
+) {
   return {
     type: CREATE_OR_UPDATE_LABEL,
     networkId,
@@ -200,8 +208,8 @@ export function createOrUpdateLabel(networkId, safeAddress, userAddress, label, 
     label,
     create,
     onError,
-    onSuccess
-  }
+    onSuccess,
+  };
 }
 
 export function updateLabelData(label) {

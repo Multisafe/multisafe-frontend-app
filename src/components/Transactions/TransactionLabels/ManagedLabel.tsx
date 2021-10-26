@@ -1,12 +1,12 @@
-import React from 'react';
-import styled from 'styled-components';
-import {format} from 'date-fns';
-import Img from 'components/common/Img';
+import React from "react";
+import styled from "styled-components";
+import { format } from "date-fns";
+import Img from "components/common/Img";
 import EditNoteIcon from "assets/icons/dashboard/edit-note-icon.svg";
 import ArchiveIcon from "assets/icons/dashboard/archive-icon.svg";
-import Button from 'components/common/Button';
-import {Label} from './types';
-import {AddEditLabel} from './AddEditLabel';
+import Button from "components/common/Button";
+import { Label } from "./types";
+import { AddEditLabel } from "./AddEditLabel";
 
 type Props = {
   label: Label;
@@ -59,36 +59,33 @@ const IconButton = styled(Button)`
 
 const DEFAULT_COLOR_CODE = "#1452f5";
 
-export const ManagedLabel = ({label}: Props) => {
-  const {name, colorCode, createdOn} = label;
+export const ManagedLabel = ({ label }: Props) => {
+  const { name, colorCode, createdOn } = label;
 
   const color = colorCode || DEFAULT_COLOR_CODE;
 
   return (
     <LabelContainer>
-      <ColorContainer style={{backgroundColor: color}}/>
+      <ColorContainer style={{ backgroundColor: color }} />
       <DataContainer>
         <LabelName>{name}</LabelName>
-        <LabelDate>Created: {format(new Date(createdOn), "MMM-dd-yyyy")}</LabelDate>
+        <LabelDate>
+          Created: {format(new Date(createdOn), "MMM-dd-yyyy")}
+        </LabelDate>
       </DataContainer>
       <ControlsContainer>
-        <AddEditLabel label={label} anchor={(
-          <IconButton iconOnly>
-            <Img
-              src={EditNoteIcon}
-              alt="edit"
-              width="16"
-            />
-          </IconButton>
-        )}/>
+        <AddEditLabel
+          label={label}
+          anchor={
+            <IconButton iconOnly>
+              <Img src={EditNoteIcon} alt="edit" width="16" />
+            </IconButton>
+          }
+        />
         <IconButton iconOnly>
-          <Img
-            src={ArchiveIcon}
-            alt="archive"
-            width="16"
-          />
+          <Img src={ArchiveIcon} alt="archive" width="16" />
         </IconButton>
       </ControlsContainer>
     </LabelContainer>
   );
-}
+};

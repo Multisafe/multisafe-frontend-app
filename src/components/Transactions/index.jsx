@@ -1,12 +1,12 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 
 import MultiSigTransactions from "./MultiSigTransactions";
-import {TransactionLabels} from "./TransactionLabels";
+import { TransactionLabels } from "./TransactionLabels";
 
 const TABS = {
   TRANSACTIONS: "1",
-  LABELS: "2"
+  LABELS: "2",
 };
 
 const navStyles = `
@@ -78,36 +78,36 @@ export default function Transactions() {
   return (
     <div>
       <style>{navStyles}</style>
-        <Nav tabs>
-          <NavItem>
-            <NavLink
-              className={`${activeTab === TABS.TRANSACTIONS ? "active" : ""}`}
-              onClick={() => toggleTab(TABS.TRANSACTIONS)}
-            >
-              Transactions
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={`${activeTab === TABS.LABELS ? "active" : ""}`}
-              onClick={() => toggleTab(TABS.LABELS)}
-            >
-              Labels
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <TabContent activeTab={activeTab}>
-          <TabPane tabId={TABS.TRANSACTIONS}>
-            <div className="mt-5">
-              <MultiSigTransactions />
-            </div>
-          </TabPane>
-          <TabPane tabId={TABS.LABELS}>
-            <div className="mt-5">
-              <TransactionLabels/>
-            </div>
-          </TabPane>
-        </TabContent>
+      <Nav tabs>
+        <NavItem>
+          <NavLink
+            className={`${activeTab === TABS.TRANSACTIONS ? "active" : ""}`}
+            onClick={() => toggleTab(TABS.TRANSACTIONS)}
+          >
+            Transactions
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={`${activeTab === TABS.LABELS ? "active" : ""}`}
+            onClick={() => toggleTab(TABS.LABELS)}
+          >
+            Labels
+          </NavLink>
+        </NavItem>
+      </Nav>
+      <TabContent activeTab={activeTab}>
+        <TabPane tabId={TABS.TRANSACTIONS}>
+          <div className="mt-5">
+            <MultiSigTransactions />
+          </div>
+        </TabPane>
+        <TabPane tabId={TABS.LABELS}>
+          <div className="mt-5">
+            <TransactionLabels />
+          </div>
+        </TabPane>
+      </TabContent>
     </div>
   );
 }

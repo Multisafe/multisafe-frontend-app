@@ -19,7 +19,7 @@ import {
   UPDATE_MULTISIG_TRANSACTION_NOTE,
   GET_LABELS,
   GET_LABELS_ERROR,
-  GET_LABELS_SUCCESS
+  GET_LABELS_SUCCESS,
 } from "./action-types";
 
 export const initialState = {
@@ -38,7 +38,7 @@ export const initialState = {
   isPendingTransactions: false,
   labels: null,
   labelsLoading: false,
-  labelsError: null
+  labelsError: null,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -179,7 +179,6 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_LABELS_SUCCESS:
-        console.log(action)
         draft.labelsLoading = false;
         draft.labels = action.labels;
         break;
