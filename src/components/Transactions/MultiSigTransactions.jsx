@@ -30,8 +30,8 @@ import GnosisTransaction from "./GnosisTransaction";
 import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
+import {MULTISIG_KEY} from "store/multisig/constants";
 
-const multisigKey = "multisig";
 const LIMIT = 10;
 
 export default function MultiSigTransactions() {
@@ -39,10 +39,10 @@ export default function MultiSigTransactions() {
   const [hasMore, setHasMore] = useState(false);
 
   // Reducers
-  useInjectReducer({ key: multisigKey, reducer: multisigReducer });
+  useInjectReducer({ key: MULTISIG_KEY, reducer: multisigReducer });
 
   // Sagas
-  useInjectSaga({ key: multisigKey, saga: multisigSaga });
+  useInjectSaga({ key: MULTISIG_KEY, saga: multisigSaga });
 
   const dispatch = useDispatch();
 

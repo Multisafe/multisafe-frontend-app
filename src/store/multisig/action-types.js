@@ -38,3 +38,16 @@ export const UPDATE_MULTISIG_TRANSACTION_NOTE =
 
 export const CLEAR_MULTISIG_TRANSACTION =
   "coinshift/multisig/CLEAR_MULTISIG_TRANSACTION";
+
+export const GET_LABELS =
+  "coinshift/transactions/GET_LABELS";
+export const GET_LABELS_SUCCESS =
+  "coinshift/transactions/GET_LABELS_SUCCESS";
+export const GET_LABELS_ERROR =
+  "coinshift/transactions/GET_LABELS_ERROR";
+
+export const CREATE_OR_UPDATE_LABEL =
+  "coinshift/transactions/CREATE_OR_UPDATE_LABEL";
+
+export const UPDATE_LABEL_DATA =
+  "coinshift/transactions/UPDATE_LABEL_DATA";

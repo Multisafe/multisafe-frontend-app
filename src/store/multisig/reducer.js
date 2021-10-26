@@ -17,6 +17,9 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
   UPDATE_MULTISIG_TRANSACTION_NOTE,
+  GET_LABELS,
+  GET_LABELS_ERROR,
+  GET_LABELS_SUCCESS
 } from "./action-types";
 
 export const initialState = {
@@ -33,6 +36,9 @@ export const initialState = {
   executionAllowed: false,
   transactionCount: 1,
   isPendingTransactions: false,
+  labels: null,
+  labelsLoading: false,
+  labelsError: null
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -159,6 +165,22 @@ const reducer = (state = initialState, action) =>
 
       case CLEAR_MULTISIG_TRANSACTION:
         draft.transactionHash = "";
+        break;
+
+      case GET_LABELS:
+        draft.labelsError = null;
+        draft.labelsLoading = true;
+        break;
+
+      case GET_LABELS_ERROR:
+        draft.labelsLoading = false;
+        draft.labelsError = action.error;
+        break;
+
+      case GET_LABELS_SUCCESS:
+        console.log(action)
+        draft.labelsLoading = false;
+        draft.labels = action.labels;
         break;
     }
   });

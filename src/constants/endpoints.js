@@ -35,6 +35,11 @@ export const getTransactionsEndpoint = `${ROOT_BE_URL}/api/v1/transactions/get`;
 export const getTransactionByIdEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getById`;
 export const getMoneyInOutEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getMoneyInMoneyOut`;
 
+//LABELS
+export const getLabelsEndpoint = `${ROOT_BE_URL}/api/v1/labels/get`;
+export const createLabelEndpoint = `${ROOT_BE_URL}/api/v1/labels/create`;
+export const updateLabelEndpoint = `${ROOT_BE_URL}/api/v1/labels/update`;
+
 // MULTISIG
 export const createMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/create`;
 export const getMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/get`;

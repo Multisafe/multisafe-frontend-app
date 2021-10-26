@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Dashboard from "components/Dashboard/loadable";
 import People from "components/People/loadable";
 import Exchange from "components/Exchange/loadable";
-import Transactions from "components/Transactions/loadable";
+import Transactions from "components/Transactions";
 import Assets from "components/Assets/loadable";
 import TransactionDetails from "components/TransactionDetails/loadable";
 import Settings from "components/Settings/loadable";

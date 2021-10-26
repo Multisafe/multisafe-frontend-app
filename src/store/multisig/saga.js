@@ -8,6 +8,8 @@ import {
   GET_MULTISIG_TRANSACTIONS,
   GET_MULTISIG_TRANSACTION_BY_ID,
   SUBMIT_MULTISIG_TRANSACTION,
+  GET_LABELS,
+  CREATE_OR_UPDATE_LABEL
 } from "./action-types";
 import {
   getMultisigTransactionsSuccess,
@@ -21,6 +23,9 @@ import {
   getMultisigTransactionById,
   getMultisigTransactionByIdError,
   getMultisigTransactionByIdSuccess,
+  getLabels as getLabelsAction,
+  getLabelsError,
+  getLabelsSuccess
 } from "./actions";
 import request from "utils/request";
 import {
@@ -29,6 +34,9 @@ import {
   confirmMultisigTransactionEndpoint,
   submitMultisigTransactionEndpoint,
   getMultisigTransactionByIdEndpoint,
+  getLabelsEndpoint,
+  createLabelEndpoint,
+  updateLabelEndpoint
 } from "constants/endpoints";
 import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
 import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
@@ -180,6 +188,54 @@ function* submitMultisigTransaction(action) {
   }
 }
 
+function* getLabels(action) {
+  const requestUrl = `${getLabelsEndpoint}?networkId=${action.networkId}&safeAddress=${action.safeAddress}&userAddress=${action.userAddress}&onlyActive=0`;
+  const options = {
+    method: "GET",
+  };
+
+  try {
+    const result = yield call(request, requestUrl, options);
+    if (result.flag !== 200) {
+      yield put(getLabelsError(result.log));
+    } else {
+      yield put(getLabelsSuccess(result.data));
+    }
+  } catch (err) {
+    yield put(getLabelsError(err));
+  }
+}
+
+function* createOrUpdateLabel(action) {
+  const requestUrl = action.create ? createLabelEndpoint : updateLabelEndpoint;
+
+  const body = {
+    safeAddress: action.safeAddress,
+    [action.create ? "createdBy" : "updatedBy"]: action.userAddress,
+    labels: [action.label]
+  }
+
+  const options = {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "content-type": "application/json",
+    },
+  };
+
+  try {
+    const result = yield call(request, requestUrl, options);
+    if (result.flag !== 200) {
+      action.onError();
+    } else {
+      yield put(getLabelsAction(action.networkId, action.safeAddress, action.userAddress));
+      action.onSuccess();
+    }
+  } catch (err) {
+    action.onError();
+  }
+}
+
 function* watchGetMultisigTransactions() {
   yield takeLatest(GET_MULTISIG_TRANSACTIONS, getMultisigTransactions);
 }
@@ -189,6 +245,14 @@ function* watchGetMultisigTransactionById() {
     GET_MULTISIG_TRANSACTION_BY_ID,
     fetchMultisigTransactionById
   );
+}
+
+function* watchGetLabels() {
+  yield takeLatest(GET_LABELS, getLabels);
+}
+
+function* watchCreateOrUpdateLabel() {
+  yield takeLatest(CREATE_OR_UPDATE_LABEL, createOrUpdateLabel);
 }
 
 function* watchCreateMultisigTransaction() {
@@ -209,4 +273,6 @@ export default function* multisig() {
   yield fork(watchCreateMultisigTransaction);
   yield fork(watchConfirmMultisigTransaction);
   yield fork(watchSubmitMultisigTransaction);
+  yield fork(watchGetLabels);
+  yield fork(watchCreateOrUpdateLabel);
 }
