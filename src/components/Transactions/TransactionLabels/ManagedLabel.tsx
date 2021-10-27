@@ -3,9 +3,9 @@ import styled from "styled-components";
 import { format } from "date-fns";
 import Img from "components/common/Img";
 import EditNoteIcon from "assets/icons/dashboard/edit-note-icon.svg";
-import ArchiveIcon from "assets/icons/dashboard/archive-icon.svg";
+// import ArchiveIcon from "assets/icons/dashboard/archive-icon.svg";
 import Button from "components/common/Button";
-import { Label } from "./types";
+import { Label } from "store/multisig/types";
 import { AddEditLabel } from "./AddEditLabel";
 
 type Props = {
@@ -82,9 +82,9 @@ export const ManagedLabel = ({ label }: Props) => {
             </IconButton>
           }
         />
-        <IconButton iconOnly>
-          <Img src={ArchiveIcon} alt="archive" width="16" />
-        </IconButton>
+        {/*<IconButton iconOnly>*/}
+        {/*  <Img src={ArchiveIcon} alt="archive" width="16" />*/}
+        {/*</IconButton>*/}
       </ControlsContainer>
     </LabelContainer>
   );

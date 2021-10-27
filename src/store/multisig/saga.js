@@ -10,6 +10,8 @@ import {
   SUBMIT_MULTISIG_TRANSACTION,
   GET_LABELS,
   CREATE_OR_UPDATE_LABEL,
+  CREATE_TRANSACTION_LABELS,
+  UPDATE_TRANSACTION_LABELS,
 } from "./action-types";
 import {
   getMultisigTransactionsSuccess,
@@ -26,6 +28,7 @@ import {
   getLabels as getLabelsAction,
   getLabelsError,
   getLabelsSuccess,
+  updateTransactionLabelsData,
 } from "./actions";
 import request from "utils/request";
 import {
@@ -37,6 +40,8 @@ import {
   getLabelsEndpoint,
   createLabelEndpoint,
   updateLabelEndpoint,
+  createTransactionLabelEndpoint,
+  updateTransactionLabelEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
 import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
@@ -242,6 +247,78 @@ function* createOrUpdateLabel(action) {
   }
 }
 
+function* updateTransactionLabels(action) {
+  const requestUrl = updateTransactionLabelEndpoint;
+
+  const body = {
+    transactionId: action.transactionId,
+    labels: action.labels,
+    updatedBy: action.userAddress,
+  };
+
+  const options = {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "content-type": "application/json",
+    },
+  };
+
+  try {
+    const result = yield call(request, requestUrl, options);
+    if (result.flag !== 200) {
+      action.onError();
+    } else {
+      yield put(
+        updateTransactionLabelsData({
+          labels: action.labels,
+          transactionId: action.transactionId,
+        })
+      );
+      action.onSuccess();
+    }
+  } catch (err) {
+    action.onError();
+  }
+}
+
+function* createTransactionLabels(action) {
+  const requestUrl = createTransactionLabelEndpoint;
+
+  const body = {
+    transactionHash: action.transactionHash,
+    safeAddress: action.safeAddress,
+    origin: action.origin,
+    labels: action.labels,
+    createdBy: action.userAddress,
+  };
+
+  const options = {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: {
+      "content-type": "application/json",
+    },
+  };
+
+  try {
+    const result = yield call(request, requestUrl, options);
+    if (result.flag !== 200) {
+      action.onError();
+    } else {
+      yield put(
+        updateTransactionLabelsData({
+          labels: action.labels,
+          transactionHash: action.transactionHash,
+        })
+      );
+      action.onSuccess();
+    }
+  } catch (err) {
+    action.onError();
+  }
+}
+
 function* watchGetMultisigTransactions() {
   yield takeLatest(GET_MULTISIG_TRANSACTIONS, getMultisigTransactions);
 }
@@ -273,6 +350,14 @@ function* watchSubmitMultisigTransaction() {
   yield takeLatest(SUBMIT_MULTISIG_TRANSACTION, submitMultisigTransaction);
 }
 
+function* watchUpdateTransactionLabels() {
+  yield takeLatest(UPDATE_TRANSACTION_LABELS, updateTransactionLabels);
+}
+
+function* watchCreateTransactionLabels() {
+  yield takeLatest(CREATE_TRANSACTION_LABELS, createTransactionLabels);
+}
+
 export default function* multisig() {
   yield fork(watchGetMultisigTransactions);
   yield fork(watchGetMultisigTransactionById);
@@ -281,4 +366,6 @@ export default function* multisig() {
   yield fork(watchSubmitMultisigTransaction);
   yield fork(watchGetLabels);
   yield fork(watchCreateOrUpdateLabel);
+  yield fork(watchUpdateTransactionLabels);
+  yield fork(watchCreateTransactionLabels);
 }

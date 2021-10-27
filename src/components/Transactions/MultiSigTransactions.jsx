@@ -16,7 +16,7 @@ import {
   makeSelectIsMultiOwner,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
-import { InfoCard } from "../People/styles";
+import { InfoCard } from "components/People/styles";
 import ExportButton from "./ExportButton";
 import {
   Table,
@@ -166,9 +166,10 @@ export default function MultiSigTransactions() {
       <Table style={{ marginTop: "4rem" }}>
         <TableHead>
           <tr>
-            <th style={{ width: "35%" }}>Transaction</th>
-            <th style={{ width: "30%" }}>Total Amount</th>
-            <th style={{ width: "20%" }}>Status</th>
+            <th style={{ width: "30%" }}>Transaction</th>
+            <th style={{ width: "20%" }}>Total Amount</th>
+            <th style={{ width: "15%" }}>Status</th>
+            <th style={{ width: "20%" }}>Labels</th>
             <th style={{ width: "15%" }}></th>
           </tr>
         </TableHead>

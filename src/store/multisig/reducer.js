@@ -20,6 +20,7 @@ import {
   GET_LABELS,
   GET_LABELS_ERROR,
   GET_LABELS_SUCCESS,
+  UPDATE_TRANSACTION_LABELS_DATA,
 } from "./action-types";
 
 export const initialState = {
@@ -159,6 +160,45 @@ const reducer = (state = initialState, action) =>
           state.transactionDetails?.txDetails?.transactionId === transactionId
         ) {
           draft.transactionDetails.txDetails.notes = note;
+        }
+
+        break;
+
+      case UPDATE_TRANSACTION_LABELS_DATA:
+        const transactionIndex = state.transactions.findIndex(
+          ({ txDetails }) =>
+            (!!action.transactionId &&
+              action.transactionId === txDetails.transactionId) ||
+            (!!action.transactionHash &&
+              action.transactionHash === txDetails.transactionHash)
+        );
+
+        if (transactionIndex >= 0) {
+          draft.transactions = state.transactions;
+          draft.transactions[transactionIndex].txDetails.transactionId =
+            action.transactionId;
+          draft.transactions[transactionIndex].txDetails.labels =
+            action.labels.flatMap((id) => {
+              const labelDetails = state.labels.find(
+                ({ labelId }) => labelId === id
+              );
+
+              return labelDetails ? [labelDetails] : [];
+            });
+        }
+
+        if (
+          state.transactionDetails?.txDetails?.transactionId ===
+          action.transactionId
+        ) {
+          draft.transactions[transactionIndex].txDetails.labels =
+            action.labels.flatMap((id) => {
+              const labelDetails = state.labels.find(
+                ({ labelId }) => labelId === id
+              );
+
+              return labelDetails ? [labelDetails] : [];
+            });
         }
 
         break;

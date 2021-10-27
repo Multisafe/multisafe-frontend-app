@@ -46,4 +46,10 @@ export const GET_LABELS_ERROR = "coinshift/transactions/GET_LABELS_ERROR";
 export const CREATE_OR_UPDATE_LABEL =
   "coinshift/transactions/CREATE_OR_UPDATE_LABEL";
 
-export const UPDATE_LABEL_DATA = "coinshift/transactions/UPDATE_LABEL_DATA";
+export const CREATE_TRANSACTION_LABELS =
+  "coinshift/transactions/CREATE_TRANSACTION_LABELS";
+export const UPDATE_TRANSACTION_LABELS =
+  "coinshift/transactions/UPDATE_TRANSACTION_LABELS";
+
+export const UPDATE_TRANSACTION_LABELS_DATA =
+  "coinshift/transactions/UPDATE_TRANSACTION_LABELS_DATA";

@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from "react";
 import Button from "components/common/Button";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import styled from "styled-components/macro";
-import { Label } from "./types";
+import { Label } from "store/multisig/types";
 import Input from "components/common/Form/Input";
 import { useDispatch, useSelector } from "react-redux";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";

@@ -20,7 +20,9 @@ import {
   GET_LABELS_ERROR,
   GET_LABELS_SUCCESS,
   CREATE_OR_UPDATE_LABEL,
-  UPDATE_LABEL_DATA,
+  CREATE_TRANSACTION_LABELS,
+  UPDATE_TRANSACTION_LABELS,
+  UPDATE_TRANSACTION_LABELS_DATA,
 } from "./action-types";
 
 export function getMultisigTransactions(safeAddress, offset, limit) {
@@ -212,9 +214,52 @@ export function createOrUpdateLabel(
   };
 }
 
-export function updateLabelData(label) {
+export function updateTransactionLabels({
+  transactionId,
+  userAddress,
+  labels,
+  onError,
+  onSuccess,
+}) {
   return {
-    type: UPDATE_LABEL_DATA,
-    label,
+    type: UPDATE_TRANSACTION_LABELS,
+    transactionId,
+    userAddress,
+    labels,
+    onError,
+    onSuccess,
+  };
+}
+export function createTransactionLabels({
+  transactionHash,
+  safeAddress,
+  userAddress,
+  origin,
+  labels,
+  onError,
+  onSuccess,
+}) {
+  return {
+    type: CREATE_TRANSACTION_LABELS,
+    transactionHash,
+    safeAddress,
+    userAddress,
+    origin,
+    labels,
+    onError,
+    onSuccess,
+  };
+}
+
+export function updateTransactionLabelsData({
+  labels,
+  transactionId,
+  transactionHash,
+}) {
+  return {
+    type: UPDATE_TRANSACTION_LABELS_DATA,
+    labels,
+    transactionId,
+    transactionHash,
   };
 }

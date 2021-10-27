@@ -19,6 +19,7 @@ import {
   QuickViewTransaction,
   useQuickViewTransactionState,
 } from "components/QuickViewTransaction";
+import { TransactionLabels } from "./TransactionLabels";
 
 const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
@@ -39,6 +40,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
     createdOn,
     transactionMode,
     to,
+    labels,
   } = txDetails;
 
   const renderSwapTokenValue = () => {
@@ -92,7 +94,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   return (
     <React.Fragment>
       <TxRow onClick={navigateToTransaction} ref={ref}>
-        <td style={{ width: "35%" }}>
+        <td style={{ width: "30%" }}>
           <div className="d-flex align-items-center">
             <Img
               src={
@@ -113,9 +115,12 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
             </div>
           </div>
         </td>
-        <td style={{ width: "30%" }}>{renderTokenValue()}</td>
-        <td style={{ width: "20%" }}>
+        <td style={{ width: "20%" }}>{renderTokenValue()}</td>
+        <td style={{ width: "15%" }}>
           <StatusText status={status} textOnly className="status" />
+        </td>
+        <td style={{ width: "20%" }}>
+          <TransactionLabels labels={labels} />
         </td>
         <td style={{ width: "15%" }} onClick={onQuickViewOpen}>
           <div className="view">Quick View</div>
