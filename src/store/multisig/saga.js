@@ -185,7 +185,13 @@ function* submitMultisigTransaction(action) {
 }
 
 function* getLabels(action) {
-  const requestUrl = `${getLabelsEndpoint}?networkId=${action.networkId}&safeAddress=${action.safeAddress}&userAddress=${action.userAddress}&onlyActive=0`;
+  const urlParams = new URLSearchParams({
+    networkId: action.networkId,
+    safeAddress: action.safeAddress,
+    userAddress: action.userAddress,
+    onlyActive: 0
+  });
+  const requestUrl = `${getLabelsEndpoint}?${urlParams.toString()}`;
   const options = {
     method: "GET",
   };
