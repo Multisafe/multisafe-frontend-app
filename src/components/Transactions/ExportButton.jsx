@@ -106,7 +106,7 @@ export default function ExportButton() {
             tokenCurrency,
             tokenValue,
             notes,
-            labels
+            labels,
           } = transaction;
 
           const paidTeammates = getDecryptedDetails(
@@ -186,13 +186,14 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
-            Labels: joinArray(labels.map(({name}) => name)),
-            Note: getDecryptedDetails(
-              notes,
-              encryptionKey,
-              organisationType,
-              false
-            ) || " ",
+            Labels: joinArray(labels.map(({ name }) => name)),
+            Note:
+              getDecryptedDetails(
+                notes,
+                encryptionKey,
+                organisationType,
+                false
+              ) || " ",
           });
         }
         setCsvData(csvData);

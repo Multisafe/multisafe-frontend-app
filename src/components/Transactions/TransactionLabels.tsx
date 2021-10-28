@@ -17,6 +17,11 @@ const LabelBlock = styled.div`
   border-radius: 4px;
 `;
 
+const AddLabel = styled.div`
+  font-size: 1.4rem;
+  color: #989898;
+`;
+
 export const TransactionLabels = ({ labels }: Props) => {
   return labels?.length ? (
     <LabelsContainer>
@@ -26,5 +31,7 @@ export const TransactionLabels = ({ labels }: Props) => {
         </LabelBlock>
       ))}
     </LabelsContainer>
-  ) : null;
+  ) : (
+    <AddLabel>Add Label</AddLabel>
+  );
 };

@@ -119,7 +119,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
         <td style={{ width: "15%" }}>
           <StatusText status={status} textOnly className="status" />
         </td>
-        <td style={{ width: "20%" }}>
+        <td style={{ width: "20%" }} onClick={onQuickViewOpen}>
           <TransactionLabels labels={labels} />
         </td>
         <td style={{ width: "15%" }} onClick={onQuickViewOpen}>
