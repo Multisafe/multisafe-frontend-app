@@ -18,7 +18,7 @@ const LabelBlock = styled.div`
 `;
 
 export const TransactionLabels = ({ labels }: Props) => {
-  return (
+  return labels?.length ? (
     <LabelsContainer>
       {labels.map(({ labelId, name, colorCode }) => (
         <LabelBlock key={labelId} style={{ backgroundColor: colorCode }}>
@@ -26,5 +26,5 @@ export const TransactionLabels = ({ labels }: Props) => {
         </LabelBlock>
       ))}
     </LabelsContainer>
-  );
+  ) : null;
 };
