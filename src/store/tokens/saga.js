@@ -24,9 +24,6 @@ function* addCustomToken(action) {
       safeAddress: action.safeAddress,
       contractAddress: action.contractAddress,
     }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
   try {
     const result = yield call(request, requestURL, options);

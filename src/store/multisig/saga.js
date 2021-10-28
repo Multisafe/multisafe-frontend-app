@@ -115,9 +115,6 @@ function* createMultisigTransaction(action) {
   const options = {
     method: "POST",
     body: JSON.stringify(action.body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -147,9 +144,6 @@ function* confirmMultisigTransaction(action) {
   const options = {
     method: "POST",
     body: JSON.stringify(action.body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -174,9 +168,6 @@ function* submitMultisigTransaction(action) {
   const options = {
     method: "POST",
     body: JSON.stringify(action.body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -223,9 +214,6 @@ function* createOrUpdateLabel(action) {
   const options = {
     method: "POST",
     body: JSON.stringify(body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -259,9 +247,6 @@ function* updateTransactionLabels(action) {
   const options = {
     method: "POST",
     body: JSON.stringify(body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -296,9 +281,6 @@ function* createTransactionLabels(action) {
   const options = {
     method: "POST",
     body: JSON.stringify(body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {

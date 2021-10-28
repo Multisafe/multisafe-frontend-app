@@ -65,9 +65,6 @@ export function* createBulkTeammates({ safeAddress, createdBy, data }) {
       createdBy,
       data,
     }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {

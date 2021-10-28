@@ -20,9 +20,6 @@ function* updateNotification(action) {
       safeAddress: action.safeAddress,
       userAddress: action.userAddress,
     }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
   try {
     const result = yield call(request, requestURL, options);
