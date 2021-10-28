@@ -11,6 +11,7 @@ export type TxDetails = {
   fiatValue?: number;
   origin: number;
   notes: string;
+  tokenCurrencies?: string[];
   labels: Label[];
 };
 

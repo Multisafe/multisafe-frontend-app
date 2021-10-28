@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, { ReactNode, SyntheticEvent, useState } from "react";
 import styled from "styled-components";
 import { format } from "date-fns";
 import CopyButton from "components/common/Copy";
@@ -13,6 +13,7 @@ import StatusText from "components/Transactions/StatusText";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { TxDetails } from "store/multisig/types";
 import { TransactionNote } from "components/Transactions/TransactionNote";
+import TokenImg from "components/common/TokenImg";
 import { LabelSelect } from "./LabelSelect";
 
 type Props = {
@@ -20,6 +21,7 @@ type Props = {
   onClose: () => void;
   txDetails: TxDetails;
   navigateToTransaction?: () => void;
+  transactionName?: ReactNode;
 };
 
 const HeaderContainer = styled.div`
@@ -57,9 +59,14 @@ const DetailsContent = styled.div`
   font-weight: 700;
 `;
 
-const IconsContainer = styled.div`
+const TransactionHashContainer = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+`;
+
+const AmountContainer = styled.div`
+  display: flex;
+  gap: 1rem;
 `;
 
 export const useQuickViewTransactionState = () => {
@@ -86,6 +93,7 @@ export const QuickViewTransaction = ({
   isOpen,
   onClose,
   txDetails,
+  transactionName,
   navigateToTransaction,
 }: Props) => {
   const {
@@ -97,12 +105,14 @@ export const QuickViewTransaction = ({
     tokenValue,
     tokenCurrency,
     fiatValue,
+    tokenCurrencies,
   } = txDetails;
 
   const renderOptionalCards = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
       case TRANSACTION_MODES.QUICK_TRANSFER:
+      case TRANSACTION_MODES.APPROVE_AND_SWAP:
         return (
           <React.Fragment>
             <DetailsItem>
@@ -117,14 +127,31 @@ export const QuickViewTransaction = ({
 
       case TRANSACTION_MODES.SPENDING_LIMITS:
         return (
-          <div className="detail-card">
-            <div className="detail-title">Allowance</div>
-            <div className="detail-subtitle">US ${formatNumber(fiatValue)}</div>
-          </div>
+          <DetailsItem>
+            <DetailsTitle>Allowance</DetailsTitle>
+            <DetailsContent>US ${formatNumber(fiatValue)}</DetailsContent>
+          </DetailsItem>
         );
 
       default:
-        return null;
+        return fiatValue ? (
+          <React.Fragment>
+            <DetailsItem>
+              <DetailsTitle>Total Amount</DetailsTitle>
+              <AmountContainer>
+                {tokenCurrencies && tokenCurrencies.length > 0 && (
+                  <div className="amount">
+                    {tokenCurrencies.map((token) => (
+                      //@ts-ignore
+                      <TokenImg token={token} key={token} />
+                    ))}
+                  </div>
+                )}
+                <DetailsContent>US ${formatNumber(fiatValue)}</DetailsContent>
+              </AmountContainer>
+            </DetailsItem>
+          </React.Fragment>
+        ) : null;
     }
   };
 
@@ -144,27 +171,31 @@ export const QuickViewTransaction = ({
       onClose={onClose}
     >
       <DetailsList>
+        {transactionName ? (
+          <DetailsItem>
+            <DetailsTitle>Transaction</DetailsTitle>
+            <DetailsContent>{transactionName}</DetailsContent>
+          </DetailsItem>
+        ) : null}
+
         <DetailsItem>
           <DetailsTitle>Transaction Hash</DetailsTitle>
           {transactionHash ? (
-            <React.Fragment>
+            <TransactionHashContainer>
               <DetailsContent>{minifyAddress(transactionHash)}</DetailsContent>
-              <IconsContainer>
-                {/*@ts-ignore*/}
-                <CopyButton
-                  id="address"
-                  tooltip="Transaction Hash"
-                  value={transactionHash}
-                  className="mr-3"
-                />
-                {/*@ts-ignore*/}
-                <EtherscanLink
-                  id="etherscan-link"
-                  type={ETHERSCAN_LINK_TYPES.TX}
-                  hash={transactionHash}
-                />
-              </IconsContainer>
-            </React.Fragment>
+              {/*@ts-ignore*/}
+              <CopyButton
+                id="address"
+                tooltip="Transaction Hash"
+                value={transactionHash}
+              />
+              {/*@ts-ignore*/}
+              <EtherscanLink
+                id="etherscan-link"
+                type={ETHERSCAN_LINK_TYPES.TX}
+                hash={transactionHash}
+              />
+            </TransactionHashContainer>
           ) : (
             <DetailsContent>-</DetailsContent>
           )}
@@ -172,14 +203,14 @@ export const QuickViewTransaction = ({
 
         {renderOptionalCards()}
 
-        <DetailsItem>
-          <DetailsTitle>Transaction Fee</DetailsTitle>
-          <DetailsContent>
-            {transactionFees > 0
-              ? `${formatNumber(transactionFees, 5)} ETH`
-              : `-`}
-          </DetailsContent>
-        </DetailsItem>
+        {transactionFees > 0 ? (
+          <DetailsItem>
+            <DetailsTitle>Transaction Fee</DetailsTitle>
+            <DetailsContent>
+              ${formatNumber(transactionFees, 5)} ETH
+            </DetailsContent>
+          </DetailsItem>
+        ) : null}
 
         <DetailsItem>
           <DetailsTitle>Created Date & Time</DetailsTitle>
