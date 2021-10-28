@@ -4,6 +4,10 @@ export default styled.tr`
   min-height: 8rem;
   position: relative;
 
+  //TODO refactor table body nested styles specificity
+  background-color: ${({ theme, quickViewOpen }) =>
+    quickViewOpen ? theme.accent : "#ffffff"} !important; 
+
   .direction {
     margin-right: 3rem;
   }
