@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
 
 import MultiSigTransactions from "./MultiSigTransactions";
-import { TransactionLabels } from "./TransactionLabels";
+import { TransactionLabelsTab } from "./TransactionLabelsTab";
 
 const TABS = {
   TRANSACTIONS: "1",
@@ -104,7 +104,7 @@ export default function Transactions() {
         </TabPane>
         <TabPane tabId={TABS.LABELS}>
           <div className="mt-5">
-            <TransactionLabels />
+            <TransactionLabelsTab />
           </div>
         </TabPane>
       </TabContent>

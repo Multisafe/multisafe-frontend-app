@@ -71,6 +71,7 @@ export const LabelColorPicker = ({
         <MenuContainer>
           {COLORS.map((color) => (
             <SelectColor
+              key={color}
               style={{ backgroundColor: color }}
               onClick={() => onSelectColor(color)}
             />

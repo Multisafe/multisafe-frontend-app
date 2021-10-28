@@ -35,7 +35,7 @@ const ListContainer = styled.div`
   flex-wrap: wrap;
 `;
 
-export const TransactionLabels = () => {
+export const TransactionLabelsTab = () => {
   const dispatch = useDispatch();
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const labels = useSelector(selectLabels);
