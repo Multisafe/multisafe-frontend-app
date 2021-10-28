@@ -14,7 +14,7 @@ const LabelsContainer = styled.div`
 
 const LabelBlock = styled.div`
   padding: 0.6rem 1rem;
-  border-radius: 4px;
+  border-radius: 0.4rem;
 `;
 
 const AddLabel = styled.div`

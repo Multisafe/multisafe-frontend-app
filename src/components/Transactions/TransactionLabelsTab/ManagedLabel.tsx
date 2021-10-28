@@ -13,12 +13,12 @@ type Props = {
 };
 
 const LabelContainer = styled.div`
-  width: 320px;
-  height: 60px;
+  width: 32rem;
+  height: 6rem;
   padding: 1rem;
   display: flex;
   gap: 1rem;
-  border-radius: 5px;
+  border-radius: 0.5rem;
   background-color: white;
 `;
 
@@ -41,7 +41,7 @@ const LabelDate = styled.div`
 const ColorContainer = styled.div`
   width: 2rem;
   height: 2rem;
-  border-radius: 5px;
+  border-radius: 0.5rem;
 `;
 
 const ControlsContainer = styled.div`

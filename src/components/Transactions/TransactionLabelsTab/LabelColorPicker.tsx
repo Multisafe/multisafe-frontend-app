@@ -16,7 +16,7 @@ const DropdownAnchor = styled.div`
 const ColorContainer = styled.div`
   width: 2rem;
   height: 2rem;
-  border-radius: 5px;
+  border-radius: 0.5rem;
 `;
 
 const SelectColor = styled(ColorContainer)`
