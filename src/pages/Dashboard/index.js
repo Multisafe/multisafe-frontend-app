@@ -4,14 +4,14 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Dashboard from "components/Dashboard/loadable";
 import People from "components/People/loadable";
+import Exchange from "components/Exchange/loadable";
 import Transactions from "components/Transactions/loadable";
 import Assets from "components/Assets/loadable";
 import TransactionDetails from "components/TransactionDetails/loadable";
 import Settings from "components/Settings/loadable";
-import Authenticated from "components/hoc/Authenticated";
+import Authenticated from "components/Authenticated";
 import NotFoundPage from "pages/NotFound/loadable";
 import {
-  makeSelectIsMultiOwner,
   makeSelectIsReadOnly,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
@@ -30,12 +30,11 @@ import globalSaga from "store/global/saga";
 const globalKey = "global";
 
 const DashboardPage = () => {
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const { account } = useActiveWeb3React();
   const params = useParams();
-  useSocket({ isMultiOwner, safeAddress: params.safeAddress, isReadOnly });
+  useSocket({ safeAddress: params.safeAddress, isReadOnly });
 
   useInjectSaga({ key: globalKey, saga: globalSaga });
 
@@ -46,7 +45,9 @@ const DashboardPage = () => {
       dispatch(clearGlobalState());
       dispatch(setSafeAddress(params.safeAddress));
     }
-    dispatch(getSafeInfo(params.safeAddress, account));
+
+    if (safeAddress && safeAddress === params.safeAddress)
+      dispatch(getSafeInfo(safeAddress, account));
   }, [dispatch, params.safeAddress, account, safeAddress]);
 
   return (
@@ -62,6 +63,11 @@ const DashboardPage = () => {
             exact
             path={routeTemplates.dashboard.people}
             component={People}
+          />
+          <Route
+            exact
+            path={routeTemplates.dashboard.exchange}
+            component={Exchange}
           />
           <Route
             exact

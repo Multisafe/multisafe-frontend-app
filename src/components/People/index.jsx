@@ -45,7 +45,7 @@ import {
   TableLoader,
 } from "components/common/Table";
 import { InfoCard, TeamContainer } from "./styles";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { getDecryptedDetails } from "utils/encryption";
 import Img from "components/common/Img";
 import { togglePeopleDetails, setPeopleDetails } from "store/layout/actions";
@@ -71,7 +71,7 @@ const viewTeamsKey = "viewTeams";
 const viewPeopleKey = "viewPeople";
 
 export default function People() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const [isNewUser, setIsNewUser] = useState();
   const [allPeople, setAllPeople] = useState();

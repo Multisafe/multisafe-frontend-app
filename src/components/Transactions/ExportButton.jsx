@@ -7,14 +7,12 @@ import Img from "components/common/Img";
 import ExportIcon from "assets/icons/dashboard/export-icon.svg";
 import { getDecryptedDetails } from "utils/encryption";
 import {
-  makeSelectIsMultiOwner,
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
   makeSelectSafeOwners,
 } from "store/global/selectors";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
-import { makeSelectTransactions } from "store/transactions/selectors";
 import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getEtherscanLink } from "components/common/Web3Utils";
@@ -61,18 +59,22 @@ const getTransactionMode = (transactionMode) => {
     case TRANSACTION_MODES.ADD_SAFE_OWNER:
       return "Added Owner";
 
+    case TRANSACTION_MODES.CHANGE_THRESHOLD:
+      return "Changed Threshold";
+
+    case TRANSACTION_MODES.APPROVE_AND_SWAP:
+      return "Swap Tokens";
+
     default:
       return "";
   }
 };
 
 export default function ExportButton() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const [csvData, setCsvData] = useState([]);
 
   const multisigTransactions = useSelector(makeSelectMultisigTransactions());
-  const singleOwnerTransactions = useSelector(makeSelectTransactions());
-  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const organisationType = useSelector(makeSelectOrganisationType());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
@@ -80,13 +82,7 @@ export default function ExportButton() {
   useEffect(() => {
     let csvData = [];
 
-    let transactions;
-
-    if (isMultiOwner) {
-      transactions = multisigTransactions;
-    } else {
-      transactions = singleOwnerTransactions;
-    }
+    let transactions = multisigTransactions;
 
     if (transactions && transactions.length > 0) {
       for (let i = 0; i < transactions.length; i++) {
@@ -109,6 +105,7 @@ export default function ExportButton() {
             addresses,
             tokenCurrency,
             tokenValue,
+            notes,
           } = transaction;
 
           const paidTeammates = getDecryptedDetails(
@@ -135,10 +132,17 @@ export default function ExportButton() {
           let spentCurrencies = [];
           let spentFiatAmounts = [];
           let spentFiatCurrencies = [];
+          let txDescription = "";
 
           for (let i = 0; i < paidTeammates.length; i++) {
-            const { firstName, lastName, salaryAmount, salaryToken, usd } =
-              paidTeammates[i];
+            const {
+              firstName,
+              lastName,
+              salaryAmount,
+              salaryToken,
+              usd,
+              description,
+            } = paidTeammates[i];
 
             names.push(`${firstName || ""} ${lastName || ""}`);
             spentAmounts.push(salaryAmount);
@@ -147,15 +151,20 @@ export default function ExportButton() {
             );
             spentFiatAmounts.push(usd);
             spentFiatCurrencies.push("USD");
+
+            if (!txDescription) {
+              txDescription = description;
+            }
           }
 
           csvData.push({
-            Date: format(new Date(createdOn), "dd/MM/yyyy"),
+            Date: format(new Date(createdOn), "MMM-dd-yyyy"),
             Time: format(new Date(createdOn), "HH:mm:ss"),
             Origin: txOrigin,
             "Transaction Type": direction,
             "Transaction Mode": getTransactionMode(transactionMode),
             Status: getStatus(status),
+            Description: txDescription,
             To: joinArray(names),
             "Spent Amount": joinArray(spentAmounts),
             "Spent Currency": joinArray(spentCurrencies),
@@ -176,26 +185,25 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
+            Note: getDecryptedDetails(
+              notes,
+              encryptionKey,
+              organisationType,
+              false
+            ),
           });
         }
         setCsvData(csvData);
       }
     }
-  }, [
-    encryptionKey,
-    organisationType,
-    multisigTransactions,
-    singleOwnerTransactions,
-    isMultiOwner,
-    safeOwners,
-  ]);
+  }, [encryptionKey, organisationType, multisigTransactions, safeOwners]);
 
   return (
     <CSVLink
       data={csvData}
       filename={`${safeAddress}-transactions-${format(
         Date.now(),
-        "dd/MM/yyyy-HH:mm:ss"
+        "MMM-dd-yyyy HH:mm:ss"
       )}.csv`}
     >
       <Export>

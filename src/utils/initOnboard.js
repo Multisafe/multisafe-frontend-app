@@ -7,7 +7,6 @@ const RPC_URLS = {
 };
 
 const rpcUrl = RPC_URLS[networkId];
-const apiUrl = process.env.REACT_APP_API_URL;
 const dappId = process.env.REACT_APP_BLOCKNATIVE_API_KEY;
 
 export function initOnboard(subscriptions) {
@@ -15,7 +14,6 @@ export function initOnboard(subscriptions) {
     dappId,
     hideBranding: false,
     networkId,
-    apiUrl,
     // darkMode: true,
     subscriptions,
     walletSelect: {

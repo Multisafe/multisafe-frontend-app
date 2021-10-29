@@ -6,6 +6,9 @@ import {
   CREATE_META_TX,
   CREATE_META_TX_SUCCESS,
   CREATE_META_TX_ERROR,
+  GET_VERIFICATION_STATUS,
+  GET_VERIFICATION_STATUS_SUCCESS,
+  GET_VERIFICATION_STATUS_ERROR,
 } from "./action-types";
 
 export const initialState = {
@@ -14,6 +17,9 @@ export const initialState = {
   transactionHash: "",
   log: "",
   registering: false,
+  fetching: false,
+  isVerified: false,
+  errorInVerify: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -48,6 +54,23 @@ const reducer = (state = initialState, action) =>
         draft.error = action.error;
         draft.loading = false;
         draft.registering = false;
+        break;
+
+      case GET_VERIFICATION_STATUS:
+        draft.fetching = true;
+        draft.error = false;
+        draft.log = "";
+        break;
+
+      case GET_VERIFICATION_STATUS_SUCCESS:
+        draft.isVerified = action.isVerified;
+        draft.log = action.log;
+        draft.fetching = false;
+        break;
+
+      case GET_VERIFICATION_STATUS_ERROR:
+        draft.error = action.error;
+        draft.fetching = false;
         break;
     }
   });

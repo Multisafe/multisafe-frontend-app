@@ -18,6 +18,7 @@ import CheckBox from "components/common/CheckBox";
 import {
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
+  makeSelectMultisigExecutionAllowed,
 } from "store/multisig/selectors";
 import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
@@ -58,6 +59,7 @@ function ApproveTxModal(props) {
   const threshold = useSelector(makeSelectThreshold());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const updating = useSelector(makeSelectUpdating());
+  const executionAllowed = useSelector(makeSelectMultisigExecutionAllowed());
 
   const dispatch = useDispatch();
 
@@ -95,6 +97,13 @@ function ApproveTxModal(props) {
       }
     }
   }, [transactionDetails, threshold]);
+
+  useEffect(() => {
+    if (!executionAllowed) {
+      setShowExecute(false);
+      setShouldExecute(false);
+    }
+  }, [executionAllowed]);
 
   useEffect(() => {
     if (confirmTxData && transactionDetails) {

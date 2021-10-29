@@ -5,10 +5,12 @@ import { Table, TableHead, TableBody } from "components/common/Table";
 import { TRANSACTION_MODES } from "constants/transactions";
 import TokenImg from "components/common/TokenImg";
 import { formatNumber } from "utils/number-helpers";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 import { getDecryptedDetails } from "utils/encryption";
 import Avatar from "components/common/Avatar";
+import { DisbursementCard } from "./styles";
+import { getAmountFromWei } from "utils/tx-helpers";
 
 export default function DisbursementDetails({
   paidTeammates,
@@ -16,7 +18,7 @@ export default function DisbursementDetails({
   tokenCurrency,
   metaData,
 }) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const renderMassPayoutDetails = () => (
@@ -287,6 +289,65 @@ export default function DisbursementDetails({
     );
   };
 
+  const renderSwapDetails = () => {
+    if (!metaData) return null;
+    const { rate, payTokenSymbol, receiveTokenSymbol, slippage, serviceFee } =
+      metaData;
+
+    if (!rate) return null;
+
+    const {
+      srcAmount,
+      srcDecimals,
+      srcUSD,
+      destAmount,
+      destDecimals,
+      destUSD,
+      gasCostUSD,
+    } = rate;
+
+    const payAmount = getAmountFromWei(srcAmount, srcDecimals, 2);
+    const receiveAmount = getAmountFromWei(destAmount, destDecimals, 2);
+    const priceRate = formatNumber(receiveAmount / payAmount);
+
+    return (
+      <Table>
+        <TableHead>
+          <tr>
+            <th style={{ width: "25%" }}>Pay</th>
+            <th style={{ width: "25%" }}>Receive</th>
+            <th style={{ width: "10%" }}>Slippage</th>
+            <th style={{ width: "20%" }}>Rate</th>
+            <th style={{ width: "10%" }}>Swap Fee</th>
+            <th style={{ width: "10%" }}>Coinshift Fee</th>
+          </tr>
+        </TableHead>
+        <TableBody>
+          <tr>
+            <td style={{ width: "25%" }}>
+              <div>
+                {payAmount} {payTokenSymbol}
+              </div>
+              <div>~${formatNumber(srcUSD)}</div>
+            </td>
+            <td style={{ width: "25%" }}>
+              <div>
+                {receiveAmount} {receiveTokenSymbol}
+              </div>
+              <div>~${formatNumber(destUSD)}</div>
+            </td>
+            <td style={{ width: "10%" }}>{slippage}%</td>
+            <td style={{ width: "20%" }}>
+              1 {receiveTokenSymbol} = {priceRate} {payTokenSymbol}
+            </td>
+            <td style={{ width: "10%" }}>~${formatNumber(gasCostUSD)}</td>
+            <td style={{ width: "10%" }}>${serviceFee}</td>
+          </tr>
+        </TableBody>
+      </Table>
+    );
+  };
+
   const renderTransactionDetails = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
@@ -301,6 +362,8 @@ export default function DisbursementDetails({
         return renderReplaceOwnerDetails();
       case TRANSACTION_MODES.ADD_SAFE_OWNER:
         return renderAddOwnerDetails();
+      case TRANSACTION_MODES.APPROVE_AND_SWAP:
+        return renderSwapDetails();
 
       default:
         return null;
@@ -320,16 +383,21 @@ export default function DisbursementDetails({
       case TRANSACTION_MODES.DELETE_SAFE_OWNER:
       case TRANSACTION_MODES.REPLACE_SAFE_OWNER:
         return <div className="title">Owner Details</div>;
+      case TRANSACTION_MODES.APPROVE_AND_SWAP:
+        return <div className="title">Swap Details</div>;
 
       default:
         return null;
     }
   };
 
-  return (
-    <React.Fragment>
-      {renderTitle()}
-      {renderTransactionDetails()}
-    </React.Fragment>
-  );
+  const title = renderTitle();
+  const transactionDetails = renderTransactionDetails();
+
+  return title || transactionDetails ? (
+    <DisbursementCard>
+      {title}
+      {transactionDetails}
+    </DisbursementCard>
+  ) : null;
 }

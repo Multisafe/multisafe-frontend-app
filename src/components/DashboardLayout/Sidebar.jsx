@@ -12,9 +12,10 @@ import {
   makeSelectIsReadOnly,
 } from "store/global/selectors";
 import Img from "components/common/Img";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import CoinshiftLogo from "assets/images/logo.svg";
 import InviteIcon from "assets/icons/sidebar/invite-icon.svg";
 import SettingsIcon from "assets/icons/sidebar/settings-icon.svg";
+import SwapAccountIcon from "assets/icons/sidebar/swap-account-icon.svg";
 import LogoutIcon from "assets/icons/sidebar/logout-icon.svg";
 import { logoutUser } from "store/logout/actions";
 import logoutSaga from "store/logout/saga";
@@ -32,6 +33,7 @@ import { useActiveWeb3React, useDropdown } from "hooks";
 import { minifyAddress } from "components/common/Web3Utils";
 import { routeGenerators } from "constants/routes/generators";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
+import { toggleSwitchAccount } from "store/layout/actions";
 
 import { DashboardSidebar } from "./styles";
 
@@ -69,6 +71,10 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       dispatch(getInvitations(safeAddress));
     }
   }, [dispatch, safeAddress]);
+
+  const openSwitchAccountSidebar = () => {
+    dispatch(toggleSwitchAccount(true));
+  };
 
   const renderNavItem = ({ link, href, name, icon, activeIcon }) => {
     if (link) {
@@ -109,8 +115,8 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
       <div className="close-btn" onClick={closeSidebar}>
         <FontAwesomeIcon icon={faTimesCircle} />
       </div>
-      <div className="multisafe-logo">
-        <Img src={MultisafeLogo} alt="multisafe" width="80" />
+      <div className="logo">
+        <Img src={CoinshiftLogo} alt="coinshift" width="140" />
       </div>
 
       <div className="settings-container">
@@ -150,6 +156,17 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
               </div>
               <div className="name">Settings</div>
             </Link>
+            {!isReadOnly && (
+              <div
+                className="settings-option"
+                onClick={openSwitchAccountSidebar}
+              >
+                <div className="icon">
+                  <Img src={SwapAccountIcon} alt="switch-account" />
+                </div>
+                <div className="name">Switch Account</div>
+              </div>
+            )}
             {!isReadOnly && (
               <div className="settings-option" onClick={logout}>
                 <div className="icon">

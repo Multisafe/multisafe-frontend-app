@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
 
-import { useActiveWeb3React, useLocalStorage } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import Button from "components/common/Button";
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
@@ -32,15 +32,15 @@ import {
   makeSelectSafeOwners,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
 } from "store/global/selectors";
 import Loading from "components/common/Loading";
 import { Stepper, StepCircle } from "components/common/Stepper";
 import { InfoCard } from "components/People/styles";
 import {
   ConfirmSection,
+  DescriptionRow,
   FinalStatus,
-  DescriptionCard,
-  DisbursementCard,
   StepperCard,
 } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
@@ -56,6 +56,8 @@ import ExecuteTxModal, {
   MODAL_NAME as EXECUTE_TX_MODAL,
 } from "./ExecuteTxModal";
 import { getDecryptedOwnerName } from "store/invitation/utils";
+import { TransactionDescription } from "./TransactionDescription";
+import { TransactionDetailsNote } from "./TransactionDetailsNote";
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -67,7 +69,7 @@ const DECISIONS = {
 };
 
 export default function MultiSigTransactions() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { account } = useActiveWeb3React();
 
@@ -97,6 +99,7 @@ export default function MultiSigTransactions() {
   const multisigTransactionId = useSelector(makeSelectMultisigTransactionId());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -144,13 +147,14 @@ export default function MultiSigTransactions() {
     rejectedCount,
     isExecuted,
     txDetailsHash,
+    confirmationsRequired,
   }) => {
-    if (txDetailsHash && !isExecuted) {
+    if (txDetailsHash && (!isExecuted || !confirmationsRequired)) {
       return <div className="pending">Transaction Submitted</div>;
     }
-    if (isExecuted && confirmedCount >= threshold)
+    if (isExecuted && confirmedCount >= confirmationsRequired)
       return <div className="success">Success</div>;
-    else if (isExecuted && rejectedCount >= threshold)
+    else if (isExecuted && rejectedCount >= confirmationsRequired)
       return <div className="rejected">Rejected</div>;
 
     return <div className="failed">Failed</div>;
@@ -263,6 +267,7 @@ export default function MultiSigTransactions() {
       rejectedCount,
       confirmedCount,
     } = transactionDetails;
+    if (!confirmations) return null;
 
     const { transactionHash } = txDetails;
 
@@ -303,7 +308,7 @@ export default function MultiSigTransactions() {
 
     if (!isConsensusReached) {
       // show approve and reject
-      return executionAllowed ? (
+      return (
         <ConfirmSection>
           <div className="buttons">
             {!shouldShowOnlyReject && (
@@ -330,15 +335,9 @@ export default function MultiSigTransactions() {
             </div>
           </div>
         </ConfirmSection>
-      ) : (
-        <ConfirmSection className="d-flex justify-content-center align-items-center">
-          <ErrorText>
-            You have some pending transactions. Please execute them first.
-          </ErrorText>
-        </ConfirmSection>
       );
     } else {
-      return (
+      return executionAllowed ? (
         <ConfirmSection>
           <div className="buttons">
             <div className="approve-button">
@@ -352,6 +351,12 @@ export default function MultiSigTransactions() {
               </Button>
             </div>
           </div>
+        </ConfirmSection>
+      ) : (
+        <ConfirmSection className="d-flex justify-content-center align-items-center">
+          <ErrorText>
+            You have some pending transactions. Please execute them first.
+          </ErrorText>
         </ConfirmSection>
       );
     }
@@ -377,6 +382,7 @@ export default function MultiSigTransactions() {
       confirmations,
       txDetails,
       executor,
+      confirmationsRequired,
     } = transactionDetails;
 
     const {
@@ -389,7 +395,7 @@ export default function MultiSigTransactions() {
       safeOwners: currentSafeOwners,
     } = txDetails;
 
-    const paidTeammates = getDecryptedDetails(
+    const decryptedDetails = getDecryptedDetails(
       to,
       encryptionKey,
       organisationType
@@ -419,43 +425,43 @@ export default function MultiSigTransactions() {
                 rejectedCount,
                 isExecuted,
                 txDetailsHash,
+                confirmationsRequired,
               })}
             </FinalStatus>
           )}
         </InfoCard>
 
-        <StepperCard>
-          <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
-            {renderConfirmationStatus({
-              confirmations,
-              createdBy,
-              executor,
-              currentSafeOwners,
-            })}
-          </Stepper>
-        </StepperCard>
+        {!isMultiOwner && !confirmationsRequired ? null : (
+          <StepperCard>
+            <Stepper count={currentSafeOwners ? currentSafeOwners.length : 0}>
+              {renderConfirmationStatus({
+                confirmations,
+                createdBy,
+                executor,
+                currentSafeOwners,
+                confirmationsRequired,
+              })}
+            </Stepper>
+          </StepperCard>
+        )}
 
-        <DescriptionCard>
-          <div className="title">Description</div>
-          <div className="subtitle">
-            {paidTeammates &&
-            paidTeammates.length > 0 &&
-            paidTeammates[0].description
-              ? paidTeammates[0].description
-              : `No description given...`}
-          </div>
-        </DescriptionCard>
-
-        <DisbursementCard>
-          <DisbursementDetails
-            paidTeammates={paidTeammates}
+        <DescriptionRow>
+          <TransactionDescription
+            decryptedDetails={decryptedDetails}
             transactionMode={transactionMode}
-            tokenCurrency={tokenCurrency}
             metaData={metaData}
           />
-        </DisbursementCard>
+          <TransactionDetailsNote txDetails={txDetails} />
+        </DescriptionRow>
 
-        <Summary txDetails={txDetails} paidTeammates={paidTeammates} />
+        <DisbursementDetails
+          paidTeammates={decryptedDetails}
+          transactionMode={transactionMode}
+          tokenCurrency={tokenCurrency}
+          metaData={metaData}
+        />
+
+        <Summary txDetails={txDetails} paidTeammates={decryptedDetails} />
         {renderConfirmSection()}
         <ApproveTxModal />
         <RejectTxModal />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
 import {
@@ -10,7 +10,7 @@ import {
   CurrencyInput,
   SelectToken,
 } from "components/common/Form";
-import { useMassPayout, useLocalStorage, useActiveWeb3React } from "hooks";
+import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -40,7 +40,7 @@ import { Error } from "components/common/Form/styles";
 import { QuickTransferContainer } from "./styles";
 
 export default function QuickTransfer(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { handleHide, defaultValues } = props;
   const { account } = useActiveWeb3React();

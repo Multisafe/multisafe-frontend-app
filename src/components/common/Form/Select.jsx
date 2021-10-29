@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Select from "react-select";
 import { Controller } from "react-hook-form";
 
-const inputStyles = {
+export const inputStyles = {
   control: (styles, state) => ({
     ...styles,
     width: state.selectProps.width || "100%",
@@ -51,10 +51,10 @@ const SelectField = ({
   control,
   required,
   options,
-  isDisabled,
-  isLoading,
-  isClearable,
-  isSearchable,
+  isDisabled = false,
+  isLoading = false,
+  isClearable = false,
+  isSearchable = false,
   width,
   placeholder,
   defaultValue,

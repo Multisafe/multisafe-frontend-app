@@ -16,6 +16,7 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
+  UPDATE_MULTISIG_TRANSACTION_NOTE,
 } from "./action-types";
 
 export const initialState = {
@@ -31,6 +32,7 @@ export const initialState = {
   transactionHash: "",
   executionAllowed: false,
   transactionCount: 1,
+  isPendingTransactions: false,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -47,6 +49,9 @@ const reducer = (state = initialState, action) =>
         draft.fetching = false;
         draft.transactions = [...state.transactions, ...action.transactions];
         draft.transactionCount = action.count;
+        draft.isPendingTransactions = action.isPendingTransactions
+          ? true
+          : false;
         break;
 
       case GET_MULTISIG_TRANSACTIONS_ERROR:
@@ -127,6 +132,29 @@ const reducer = (state = initialState, action) =>
         draft.error = action.error;
         draft.success = false;
         draft.transactionId = "";
+        break;
+
+      case UPDATE_MULTISIG_TRANSACTION_NOTE:
+        const { transactionId, transactionHash, note } = action;
+
+        const index = state.transactions.findIndex(
+          ({ txDetails }) =>
+            (!!transactionId && transactionId === txDetails.transactionId) ||
+            (!!transactionHash && transactionHash === txDetails.transactionHash)
+        );
+
+        if (index >= 0) {
+          draft.transactions = state.transactions;
+          draft.transactions[index].txDetails.notes = note;
+          draft.transactions[index].txDetails.transactionId = transactionId;
+        }
+
+        if (
+          state.transactionDetails?.txDetails?.transactionId === transactionId
+        ) {
+          draft.transactionDetails.txDetails.notes = note;
+        }
+
         break;
 
       case CLEAR_MULTISIG_TRANSACTION:

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import transactionsReducer from "store/transactions/reducer";
 import transactionsSaga from "store/transactions/saga";
 import { viewTransactions } from "store/transactions/actions";
@@ -52,7 +52,7 @@ const STATES = {
 };
 
 function RecentTxCard() {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const [state, setState] = useState(STATES.EMPTY_STATE);
   const [loading, setLoading] = useState();
   const [transactionData, setTransactionData] = useState();
@@ -166,7 +166,7 @@ function RecentTxCard() {
     );
   };
 
-  const renderMultisafeAmounts = ({
+  const renderCoinshiftAmounts = ({
     tokenValue,
     tokenCurrency,
     fiatValue,
@@ -201,7 +201,14 @@ function RecentTxCard() {
     } = txDetails;
     const isGnosisTx = txOrigin === TX_ORIGIN.GNOSIS;
     return (
-      <div className="tx" key={transactionId}>
+      <Link
+        to={routeGenerators.dashboard.transactionById({
+          safeAddress,
+          transactionId,
+        })}
+        className="tx"
+        key={transactionId}
+      >
         <div className="tx-info">
           <Img
             src={
@@ -230,14 +237,14 @@ function RecentTxCard() {
               fiatValue,
               direction,
             })
-          : renderMultisafeAmounts({
+          : renderCoinshiftAmounts({
               tokenValue,
               tokenCurrency,
               fiatValue,
               direction,
             })}
         <div className="tx-status">{renderStatusText(status)}</div>
-      </div>
+      </Link>
     );
   };
   return (

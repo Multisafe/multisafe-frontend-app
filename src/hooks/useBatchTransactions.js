@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { arrayify } from "@ethersproject/bytes";
 import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
+import semverSatisfies from "semver/functions/satisfies";
 
 import { useActiveWeb3React, useContract } from "hooks";
 import {
@@ -12,16 +13,19 @@ import {
 } from "utils/tx-helpers";
 import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE } from "constants/index";
-import GnosisSafeABI from "constants/abis/GnosisSafe.json";
+import GnosisSafeABIBeforeV130 from "constants/abis/GnosisSafeBeforeV130.json";
+import GnosisSafeABIAfterV130 from "constants/abis/GnosisSafe.json";
 import MultiSendABI from "constants/abis/MultiSend.json";
 import {
   makeSelectOwnerSafeAddress,
   makeSelectIsMultiOwner,
+  makeSelectSafeVersion,
 } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { makeSelectNonce } from "store/safe/selectors";
+import { networkId } from "constants/networks";
 
 const { MULTISEND_ADDRESS, ZERO_ADDRESS } = addresses;
 
@@ -34,15 +38,26 @@ export default function useBatchTransaction() {
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [isHardwareWallet, setIsHardwareWallet] = useState(false);
+  const [proxyContract, setProxyContract] = useState();
 
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const selectedGasPrice = useSelector(makeSelectSelectedGasPriceInWei());
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
   const isMetaEnabled = useSelector(makeSelectIsMetaTxEnabled());
   const multisigNonce = useSelector(makeSelectNonce());
+  const safeVersion = useSelector(makeSelectSafeVersion());
 
   // contracts
-  const proxyContract = useContract(safeAddress, GnosisSafeABI, true);
+  const proxyContractBeforeV130 = useContract(
+    safeAddress,
+    GnosisSafeABIBeforeV130,
+    true
+  );
+  const proxyContractAfterV130 = useContract(
+    safeAddress,
+    GnosisSafeABIAfterV130,
+    true
+  );
   const multiSend = useContract(MULTISEND_ADDRESS, MultiSendABI);
 
   useEffect(() => {
@@ -54,6 +69,20 @@ export default function useBatchTransaction() {
       }
     }
   }, [connector]);
+
+  useEffect(() => {
+    function setContractVersion() {
+      const isVersionAfterV130 = semverSatisfies(safeVersion, ">=1.3.0");
+
+      if (isVersionAfterV130) {
+        setProxyContract(proxyContractAfterV130);
+      } else {
+        setProxyContract(proxyContractBeforeV130);
+      }
+    }
+
+    if (safeVersion) setContractVersion();
+  }, [proxyContractBeforeV130, proxyContractAfterV130, safeVersion]);
 
   const encodeMultiSendCallData = (transactions, ethLibAdapter) => {
     const standardizedTxs = transactions.map(standardizeTransaction);
@@ -145,25 +174,33 @@ export default function useBatchTransaction() {
     });
   };
 
-  const eip712Signer = async (
-    to,
-    value,
-    data,
-    operation,
-    safeTxGas,
-    baseGas,
-    gasPrice,
-    gasToken,
-    refundReceiver,
-    nonce,
-    contractTransactionHash
-  ) => {
-    const domain = {
-      verifyingContract: safeAddress,
-    };
+  // This function returns the types structure for signing offchain messages
+  // following EIP712
+  const getEip712MessageTypes = (safeVersion) => {
+    const EIP712_DOMAIN_BEFORE_V130 = [
+      {
+        type: "address",
+        name: "verifyingContract",
+      },
+    ];
 
-    const types = {
-      EIP712Domain: [{ type: "address", name: "verifyingContract" }],
+    const EIP712_DOMAIN = [
+      {
+        type: "uint256",
+        name: "chainId",
+      },
+      {
+        type: "address",
+        name: "verifyingContract",
+      },
+    ];
+
+    const eip712WithChainId = semverSatisfies(safeVersion, ">=1.3.0");
+
+    return {
+      EIP712Domain: eip712WithChainId
+        ? EIP712_DOMAIN
+        : EIP712_DOMAIN_BEFORE_V130,
       SafeTx: [
         { type: "address", name: "to" },
         { type: "uint256", name: "value" },
@@ -177,6 +214,29 @@ export default function useBatchTransaction() {
         { type: "uint256", name: "nonce" },
       ],
     };
+  };
+
+  const eip712Signer = async (
+    to,
+    value,
+    data,
+    operation,
+    safeTxGas,
+    baseGas,
+    gasPrice,
+    gasToken,
+    refundReceiver,
+    nonce,
+    contractTransactionHash
+  ) => {
+    const eip712WithChainId = semverSatisfies(safeVersion, ">=1.3.0");
+
+    const domain = {
+      verifyingContract: safeAddress,
+      chainId: eip712WithChainId ? networkId : undefined,
+    };
+
+    const types = getEip712MessageTypes(safeVersion);
 
     const message = {
       to,

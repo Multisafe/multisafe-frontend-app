@@ -8,4 +8,5 @@ export { default as Currency } from "./Currency";
 export { default as NotificationBell } from "./NotificationBell";
 export { default as Notifications } from "./Notifications";
 export { default as NotificationMenu } from "./NotificationMenu";
+export { default as SwitchAccountMenu } from "./SwitchAccountMenu";
 export { default as Gas } from "./Gas";

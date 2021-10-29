@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
 import {
@@ -12,7 +12,7 @@ import {
 } from "components/common/Form";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import { useLocalStorage, useSpendingLimits } from "hooks";
+import { useEncryptionKey, useSpendingLimits } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -61,8 +61,8 @@ const resetOptions = [
   },
 ];
 
-export default function SpendingLimits(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+export default function SpendingLimits() {
+  const [encryptionKey] = useEncryptionKey();
 
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();

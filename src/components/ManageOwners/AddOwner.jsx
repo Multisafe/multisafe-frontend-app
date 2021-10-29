@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
 import { Input, ErrorMessage, Select } from "components/common/Form";
-import { useLocalStorage, useActiveWeb3React, useManageOwners } from "hooks";
+import { useActiveWeb3React, useManageOwners, useEncryptionKey } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -28,7 +28,7 @@ import { Information } from "components/Register/styles";
 import { DeleteContainer, ReplaceContainer, OwnerDetails } from "./styles";
 
 export default function AddOwner(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { handleHide } = props;
 

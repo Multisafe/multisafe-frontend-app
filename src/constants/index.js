@@ -13,6 +13,7 @@ export const DEFAULT_GAS_PRICE = "10000000000"; // 100 gwei
 export const ONE_GWEI = "1000000000";
 
 export const MESSAGE_TO_SIGN = "I hereby sign and authorize.";
+export const MESSAGE_TO_AUTHENTICATE = "PASSWORD";
 
 export const tokens = {
   DAI: "DAI",
@@ -82,3 +83,11 @@ export const defaultTokenDetails = [
     usdConversionRate: 1,
   },
 ];
+
+export const WALLET_STATES = {
+  UNDETECTED: "UNDETECTED",
+  CONNECTED: "CONNECTED",
+  NOT_CONNECTED: "NOT_CONNECTED",
+};
+
+// dummy commit

@@ -14,10 +14,6 @@ export default function Web3ReactProvider({ children }) {
 
   const [onboard, setOnboard] = useState(null);
 
-  // const [darkMode, setDarkMode] = useState(false)
-  // const [desktopPosition, setDesktopPosition] = useState('bottomRight')
-  // const [mobilePosition, setMobilePosition] = useState('top')
-
   useEffect(() => {
     const onboard = initOnboard({
       address: setAddress,
@@ -30,12 +26,10 @@ export default function Web3ReactProvider({ children }) {
 
           const ethersProvider = new Web3Provider(wallet.provider, "any");
 
-          // provider = ethersProvider;
           setProvider(ethersProvider);
 
           window.localStorage.setItem("selectedWallet", wallet.name);
         } else {
-          // provider = null;
           setProvider(null);
           setWallet({});
         }
@@ -45,14 +39,14 @@ export default function Web3ReactProvider({ children }) {
     setOnboard(onboard);
   }, []);
 
-  useEffect(() => {
-    const previouslySelectedWallet =
-      window.localStorage.getItem("selectedWallet");
+  // useEffect(() => {
+  //   const previouslySelectedWallet =
+  //     window.localStorage.getItem("selectedWallet");
 
-    if (previouslySelectedWallet && onboard) {
-      onboard.walletSelect(previouslySelectedWallet);
-    }
-  }, [onboard]);
+  //   if (previouslySelectedWallet && onboard) {
+  //     onboard.walletSelect(previouslySelectedWallet);
+  //   }
+  // }, [onboard]);
 
   return (
     <Web3ReactContext.Provider

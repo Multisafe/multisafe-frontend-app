@@ -6,7 +6,7 @@ import { HeaderLink, NavBar, NavBarContent, NavGroup } from "./styles";
 import ConnectButton from "components/Connect";
 import { useActiveWeb3React } from "hooks";
 import Button from "components/common/Button";
-import MultisafeLogo from "assets/images/multisafe-logo.svg";
+import CoinshiftLogo from "assets/images/logo.svg";
 import Img from "components/common/Img";
 import { routeTemplates } from "constants/routes/templates";
 
@@ -54,7 +54,7 @@ function PlainHeader() {
         <NavBarContent>
           <div className="d-flex justify-content-center align-items-center">
             <HeaderLink to={routeTemplates.root} className="dashboard-link">
-              <Img src={MultisafeLogo} alt="multisafe" width="80" />
+              <Img src={CoinshiftLogo} alt="coinshift" width="140" />
             </HeaderLink>
           </div>
           <NavGroup>

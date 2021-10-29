@@ -5,6 +5,7 @@ export const ROOT_BE_URL = process.env.REACT_APP_BE_URL;
 // REGISTER
 export const registerEndpoint = `${ROOT_BE_URL}/api/v1/users/create`;
 export const createMetaTxEndpoint = `${ROOT_BE_URL}/api/v1/users/create/meta-tx`;
+export const getVerificationStatusEndpoint = `${ROOT_BE_URL}/api/v1/users/getVerificationStatus`;
 
 // LOGIN
 export const fetchSafesEndpoint = `${ROOT_BE_URL}/api/v1/users/fetch-safes`;
@@ -40,6 +41,10 @@ export const getMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transaction
 export const getMultisigTransactionByIdEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/getById`;
 export const submitMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/submit`;
 export const confirmMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/confirm`;
+
+// COMMON TRANSACTIONS
+export const createTransactionNote = `${ROOT_BE_URL}/api/v1/transactions/notes/create`;
+export const updateTransactionNote = `${ROOT_BE_URL}/api/v1/transactions/notes/update`;
 
 // METATX
 export const getMetaTxLimitsEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getMetaTxLimits`;

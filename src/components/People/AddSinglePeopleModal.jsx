@@ -3,7 +3,7 @@ import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { Row, Col } from "reactstrap";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { AddPeopleContainer } from "./styles";
@@ -40,7 +40,7 @@ import {
 } from "store/modify-people/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useActiveWeb3React, useLocalStorage } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import {
   makeSelectTeamIdToDetailsMap,
   makeSelectTeams,
@@ -54,7 +54,7 @@ const modifyPeopleKey = "modifyPeople";
 
 function AddSinglePeopleModal(props) {
   const { show, handleHide, isEditMode, defaultValues, peopleId } = props;
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
 
   const { account } = useActiveWeb3React();
 

@@ -15,6 +15,7 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
+  UPDATE_MULTISIG_TRANSACTION_NOTE,
 } from "./action-types";
 
 export function getMultisigTransactions(safeAddress, offset, limit) {
@@ -26,11 +27,16 @@ export function getMultisigTransactions(safeAddress, offset, limit) {
   };
 }
 
-export function getMultisigTransactionsSuccess(transactions, count) {
+export function getMultisigTransactionsSuccess(
+  transactions,
+  count,
+  isPendingTransactions
+) {
   return {
     type: GET_MULTISIG_TRANSACTIONS_SUCCESS,
     transactions,
     count,
+    isPendingTransactions,
   };
 }
 
@@ -137,6 +143,20 @@ export function submitMultisigTransactionError(error) {
     error,
   };
 }
+
+export function updateMultisigTransactionNote(
+  transactionId,
+  transactionHash,
+  note
+) {
+  return {
+    type: UPDATE_MULTISIG_TRANSACTION_NOTE,
+    transactionId,
+    transactionHash,
+    note,
+  };
+}
+
 export function clearMultisigTransactionHash() {
   return {
     type: CLEAR_MULTISIG_TRANSACTION,

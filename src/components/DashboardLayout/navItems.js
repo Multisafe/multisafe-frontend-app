@@ -9,6 +9,8 @@ import ActivePeopleIcon from "assets/icons/sidebar/people-icon-active.svg";
 import ActiveAssetsIcon from "assets/icons/sidebar/assets-icon-active.svg";
 import ActiveTransactionsIcon from "assets/icons/sidebar/transactions-icon-active.svg";
 import ActiveSupportIcon from "assets/icons/sidebar/support-icon-active.svg";
+import ExchangeIcon from "assets/icons/sidebar/exchange-icon.svg";
+import ExchangeIconActive from "assets/icons/sidebar/exchange-icon-active.svg";
 import { routeGenerators } from "constants/routes/generators";
 
 export const mainNavItems = [
@@ -23,6 +25,12 @@ export const mainNavItems = [
     name: "People",
     icon: PeopleIcon,
     activeIcon: ActivePeopleIcon,
+  },
+  {
+    link: routeGenerators.dashboard.exchange,
+    name: "Exchange",
+    icon: ExchangeIcon,
+    activeIcon: ExchangeIconActive,
   },
   {
     link: routeGenerators.dashboard.assets,

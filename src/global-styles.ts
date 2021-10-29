@@ -3,6 +3,8 @@ import AvenirLTProBook from "assets/fonts/AvenirLTProBook.otf";
 import AvenirLTProHeavy from "assets/fonts/AvenirLTProHeavy.otf";
 import AvenirLTProMedium from "assets/fonts/AvenirLTProMedium.otf";
 
+export type Theme = typeof lightTheme;
+
 export const lightTheme = {
   primary: "#1452f5",
   accent: "#e7eefe",

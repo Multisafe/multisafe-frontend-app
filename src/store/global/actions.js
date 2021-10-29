@@ -78,11 +78,12 @@ export function clearGlobalState() {
   };
 }
 
-export function getSafeInfo(safeAddress, ownerAddress) {
+export function getSafeInfo(safeAddress, ownerAddress, isCached = 1) {
   return {
     type: GET_SAFE_INFO,
     safeAddress,
     ownerAddress,
+    isCached,
   };
 }
 
@@ -94,6 +95,7 @@ export function getSafeInfoSuccess({
   organisationType,
   safeAddress,
   dataSharingAllowed,
+  version,
 }) {
   return {
     type: GET_SAFE_INFO_SUCCESS,
@@ -104,6 +106,7 @@ export function getSafeInfoSuccess({
     organisationType,
     safeAddress,
     dataSharingAllowed,
+    version,
   };
 }
 

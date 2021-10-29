@@ -67,7 +67,7 @@ export const organisationInfo = [
       <span>
         All your information like organization details and transaction history
         would be <span className="bold">publicly available</span> even outside
-        Multisafe
+        Coinshift
       </span>,
     ],
   },
@@ -87,6 +87,7 @@ export const STEPS = {
   FOUR: 4,
   FIVE: 5,
   SIX: 6,
+  SEVEN: 7,
 };
 
 export const COMPANY_REGISTER_STEPS = {

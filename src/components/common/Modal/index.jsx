@@ -58,7 +58,7 @@ function CustomModal({ children, isOpen, toggle, ...rest }) {
   );
 }
 
-function CustomModalHeader({ children, title, toggle, ...rest }) {
+function CustomModalHeader({ children = null, title, toggle, ...rest }) {
   return (
     <ModalHeader style={{ borderBottom: "none" }} {...rest}>
       <div className="header-flex">
@@ -72,7 +72,7 @@ function CustomModalHeader({ children, title, toggle, ...rest }) {
   );
 }
 
-function CustomModalBody({ children, width, padding, minHeight, ...rest }) {
+function CustomModalBody({ children, width, minHeight, ...rest }) {
   return (
     <ModalBody {...rest}>
       <Card

@@ -3,11 +3,18 @@ import { useSelector } from "react-redux";
 
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getDecryptedDetails } from "utils/encryption";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 import { makeSelectOrganisationType } from "store/global/selectors";
 
-export default function TransactionName({ to, transactionMode }) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+const DEFAULT_NAME = "Transaction";
+
+type Props = {
+  to: string;
+  transactionMode: number;
+};
+
+export default function TransactionName({ to, transactionMode }: Props) {
+  const [encryptionKey] = useEncryptionKey();
 
   const organisationType = useSelector(makeSelectOrganisationType());
 
@@ -21,6 +28,10 @@ export default function TransactionName({ to, transactionMode }) {
     return "Remove Owner";
   } else if (transactionMode === TRANSACTION_MODES.ADD_SAFE_OWNER) {
     return "Add Owner";
+  } else if (transactionMode === TRANSACTION_MODES.CHANGE_THRESHOLD) {
+    return "Change Threshold";
+  } else if (transactionMode === TRANSACTION_MODES.APPROVE_AND_SWAP) {
+    return "Swap Tokens";
   } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
     const payeeDetails = getDecryptedDetails(
       to,
@@ -41,4 +52,6 @@ export default function TransactionName({ to, transactionMode }) {
       </span>
     );
   }
+
+  return DEFAULT_NAME;
 }

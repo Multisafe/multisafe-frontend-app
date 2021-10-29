@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import { cryptoUtils } from "parcel-sdk";
+import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
 import { EditContainer } from "./styles";
@@ -20,13 +20,13 @@ import safeReducer from "store/safe/reducer";
 import { updateOwnerName } from "store/safe/actions";
 import { makeSelectUpdating } from "store/safe/selectors";
 import { Input, ErrorMessage } from "components/common/Form";
-import { useLocalStorage } from "hooks";
+import { useEncryptionKey } from "hooks";
 
 export const MODAL_NAME = "edit-owner-modal";
 const safeKey = "safe";
 
 function EditOwnerModal(props) {
-  const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
+  const [encryptionKey] = useEncryptionKey();
   const { show, handleHide, ownerName, ownerAddress } = props;
 
   const { register, errors, handleSubmit, formState } = useForm({

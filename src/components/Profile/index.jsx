@@ -138,7 +138,7 @@ export default function Profile() {
           data-tip={`
           If data sharing is enabled, all your data (such as people, transaction history etc.)
           <br /> 
-          will be publicly visible even outside MultiSafe`}
+          will be publicly visible even outside Coinshift`}
         />
         <ReactTooltip
           id={`data-sharing`}
@@ -180,7 +180,9 @@ export default function Profile() {
         </div>
       </InfoCard>
       <ProfileContainer>{renderOrganisationDetails()}</ProfileContainer>
-      {isOrganisationPublic && <ProfileContainer>{renderShareData()}</ProfileContainer>}
+      {isOrganisationPublic && (
+        <ProfileContainer>{renderShareData()}</ProfileContainer>
+      )}
     </div>
   );
 }

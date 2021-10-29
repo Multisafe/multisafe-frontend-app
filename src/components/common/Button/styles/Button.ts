@@ -1,7 +1,12 @@
 import styled from "styled-components/macro";
 
-export default styled.button`
-  width: ${({ width }) => width};
+type Props = {
+  width?: string;
+  large?: boolean;
+};
+
+export default styled.button<Props>`
+  ${({ width }) => width && `width: ${width};`}
   min-height: 4rem;
   padding: 1.2rem 2rem;
   background-color: ${({ theme }) => theme.primary};
@@ -48,6 +53,18 @@ export default styled.button`
     color: #8b8b8b;
     &:hover {
       opacity: 0.85;
+    }
+  }
+
+  &.secondary-3 {
+    //TODO rework button types (style guide)
+    background: white;
+    border: 0.1px solid #dddcdc;
+    color: #989898;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.primary};
+      color: white;
     }
   }
 
