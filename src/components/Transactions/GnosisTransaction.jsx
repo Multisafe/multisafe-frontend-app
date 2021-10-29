@@ -27,9 +27,16 @@ const GnosisTransaction = forwardRef(({ transaction }, ref) => {
     window.open(txDetails.txLink);
   };
 
+  const transactionName =
+    direction === TX_DIRECTION.INCOMING ? `Incoming` : `Gnosis`;
+
   return (
     <React.Fragment>
-      <TxRow onClick={navigateToTransaction} ref={ref}>
+      <TxRow
+        onClick={navigateToTransaction}
+        ref={ref}
+        quickViewOpen={quickViewOpen}
+      >
         <td style={{ width: "35%" }}>
           <div className="d-flex align-items-center">
             <Img
@@ -42,9 +49,7 @@ const GnosisTransaction = forwardRef(({ transaction }, ref) => {
               className="direction"
             />
             <div>
-              <div className="name">
-                {direction === TX_DIRECTION.INCOMING ? `Incoming` : `Gnosis`}
-              </div>
+              <div className="name">{transactionName}</div>
               <div className="date">
                 {format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
               </div>
@@ -82,6 +87,7 @@ const GnosisTransaction = forwardRef(({ transaction }, ref) => {
           onClose: onQuickViewClose,
           txDetails,
           navigateToTransaction,
+          transactionName,
         }}
       />
     </React.Fragment>
