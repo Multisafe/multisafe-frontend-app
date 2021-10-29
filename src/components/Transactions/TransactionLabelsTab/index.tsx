@@ -14,7 +14,6 @@ import { getLabels } from "store/multisig/actions";
 import {
   selectLabels,
   selectLabelsLoading,
-  selectLabelsError,
 } from "store/multisig/selectors";
 import Loading from "components/common/Loading";
 import { ManagedLabel } from "./ManagedLabel";
@@ -40,7 +39,6 @@ export const TransactionLabelsTab = () => {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const labels = useSelector(selectLabels);
   const labelsLoading = useSelector(selectLabelsLoading);
-  const labelsError = useSelector(selectLabelsError);
 
   const { account: userAddress, chainId: networkId } = useActiveWeb3React();
 
