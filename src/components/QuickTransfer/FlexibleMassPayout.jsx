@@ -38,6 +38,7 @@ import ErrorText from "components/common/ErrorText";
 
 // import { Error } from "components/common/Form/styles";
 import { QuickTransferContainer } from "./styles";
+import { PaymentSummary } from "components/Payments/styles";
 
 const defaultValues = {
   batch: [
@@ -183,6 +184,85 @@ function NestedReceivers({
   );
 }
 
+const TokenSummary = ({ selectedToken, receivers, existingTokenDetails }) => {
+  const [totalAmountInToken, setTotalAmountInToken] = useState(0);
+  const [totalAmountInUSD, setTotalAmountInUSD] = useState(0);
+  const [selectedCount, setSelectedCount] = useState(0);
+
+  // Selectors
+  const prices = useSelector(makeSelectPrices());
+  useEffect(() => {
+    if (prices && receivers && selectedToken) {
+      const amountInToken = receivers.reduce((sum, { amount }) => {
+        if (amount) sum += Number(amount);
+        return sum;
+      }, 0);
+
+      setTotalAmountInToken(amountInToken);
+      setTotalAmountInUSD(amountInToken * prices[selectedToken.value]);
+      setSelectedCount(receivers.length);
+    }
+  }, [receivers, prices, selectedToken]);
+
+  // if (tokenError) return <ErrorText>{tokenError}</ErrorText>;
+  if (!selectedToken || !existingTokenDetails) return null;
+
+  const tokenDetails = existingTokenDetails.find(
+    ({ name }) => name === selectedToken.value
+  );
+
+  const insufficientBalance =
+    tokenDetails.balance - totalAmountInToken < 0 ? true : false;
+
+  return (
+    <PaymentSummary>
+      <div className="payment-info">
+        <div>
+          <div className="payment-title">Current Balance</div>
+          <div className="payment-subtitle text-bold">
+            {`${formatNumber(tokenDetails.balance, 5)} ${tokenDetails.name}`}
+          </div>
+          <div className="payment-subtitle">
+            {`US$ ${formatNumber(tokenDetails.usd)}`}
+          </div>
+        </div>
+        <div>
+          <div className="payment-title">Balance after payment</div>
+          <div className="payment-subtitle text-bold">
+            {!insufficientBalance
+              ? `${formatNumber(tokenDetails.balance - totalAmountInToken)} ${
+                  tokenDetails.name
+                }`
+              : `Insufficient Balance`}
+          </div>
+          <div className="payment-subtitle">
+            {!insufficientBalance
+              ? `US$ ${formatNumber(tokenDetails.usd - totalAmountInUSD)}`
+              : ``}
+          </div>
+        </div>
+        <div>
+          <div className="payment-title">Total Selected</div>
+          <div className="payment-subtitle">{selectedCount} people</div>
+        </div>
+        <div>
+          <div className="payment-title">Total Amount</div>
+          <div className="payment-subtitle text-bold">
+            {!isNaN(totalAmountInToken)
+              ? `${formatNumber(totalAmountInToken)} ${tokenDetails.name}`
+              : `0`}
+          </div>
+          <div className="payment-subtitle">
+            {!isNaN(totalAmountInUSD)
+              ? `US$ ${formatNumber(totalAmountInUSD)}`
+              : `0`}
+          </div>
+        </div>
+      </div>
+    </PaymentSummary>
+  );
+};
+
 function TokenBatches({
   control,
   register,
@@ -202,6 +282,8 @@ function TokenBatches({
     <>
       <div>
         {fields.map((item, index) => {
+          const selectedToken = watch(`batch[${index}].token`);
+          const receivers = watch(`batch[${index}].receivers`);
           return (
             <div key={item.id}>
               <div className="d-flex justify-content-between align-items-center">
@@ -216,7 +298,7 @@ function TokenBatches({
                       options={tokensDropdown}
                       isSearchable
                       placeholder={`Select Currency...`}
-                      defaultValue={item.token}
+                      defaultValue={item.token || null}
                       isLoading={loadingTokens}
                     />
                   </div>
@@ -231,6 +313,11 @@ function TokenBatches({
                 nestIndex={index}
                 {...{ control, register, watch, existingTokenDetails }}
               />
+              <div className="mb-5">
+                <TokenSummary
+                  {...{ selectedToken, receivers, existingTokenDetails }}
+                />
+              </div>
             </div>
           );
         })}
@@ -356,7 +443,7 @@ export default function FlexibleMassPayout(props) {
       safeAddress: safeAddress,
       createdBy: account,
       tokenValue: 0,
-      tokenCurrency: "USDT",
+      tokenCurrency: "USDT", // TODO: Fix
       fiatValue: "100",
       fiatCurrency: "USD",
       addresses,
