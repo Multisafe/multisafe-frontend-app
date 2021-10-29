@@ -186,7 +186,7 @@ export default function ExportButton() {
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
-            Labels: joinArray(labels.map(({ name }) => name)),
+            Labels: joinArray(labels.map(({ name }) => name)) || " ",
             Note:
               getDecryptedDetails(
                 notes,
