@@ -23,7 +23,7 @@ const SelectColor = styled(ColorContainer)`
   cursor: pointer;
 
   &:hover {
-    border: 1px solid #1452f5;
+    border: 0.1rem solid #1452f5;
   }
 `;
 
