@@ -14,6 +14,7 @@ import { TRANSACTION_MODES } from "constants/transactions";
 import { TxDetails } from "store/multisig/types";
 import { TransactionNote } from "components/Transactions/TransactionNote";
 import TokenImg from "components/common/TokenImg";
+import { LabelSelect } from "./LabelSelect";
 
 type Props = {
   isOpen: boolean;
@@ -229,6 +230,11 @@ export const QuickViewTransaction = ({
         <DetailsItem>
           <DetailsTitle>Note</DetailsTitle>
           <TransactionNote txDetails={txDetails} />
+        </DetailsItem>
+
+        <DetailsItem>
+          <DetailsTitle>Labels</DetailsTitle>
+          <LabelSelect txDetails={txDetails} />
         </DetailsItem>
       </DetailsList>
     </SideDrawer>

@@ -16,6 +16,13 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
   UPDATE_MULTISIG_TRANSACTION_NOTE,
+  GET_LABELS,
+  GET_LABELS_ERROR,
+  GET_LABELS_SUCCESS,
+  CREATE_OR_UPDATE_LABEL,
+  CREATE_TRANSACTION_LABELS,
+  UPDATE_TRANSACTION_LABELS,
+  UPDATE_TRANSACTION_LABELS_DATA,
 } from "./action-types";
 
 export function getMultisigTransactions(safeAddress, offset, limit) {
@@ -160,5 +167,99 @@ export function updateMultisigTransactionNote(
 export function clearMultisigTransactionHash() {
   return {
     type: CLEAR_MULTISIG_TRANSACTION,
+  };
+}
+
+export function getLabels(networkId, safeAddress, userAddress) {
+  return {
+    type: GET_LABELS,
+    networkId,
+    safeAddress,
+    userAddress,
+  };
+}
+
+export function getLabelsSuccess(labels) {
+  return {
+    type: GET_LABELS_SUCCESS,
+    labels,
+  };
+}
+
+export function getLabelsError(error) {
+  return {
+    type: GET_LABELS_ERROR,
+    error,
+  };
+}
+
+export function createOrUpdateLabel(
+  networkId,
+  safeAddress,
+  userAddress,
+  label,
+  create,
+  onError,
+  onSuccess
+) {
+  return {
+    type: CREATE_OR_UPDATE_LABEL,
+    networkId,
+    safeAddress,
+    userAddress,
+    label,
+    create,
+    onError,
+    onSuccess,
+  };
+}
+
+export function updateTransactionLabels({
+  transactionId,
+  userAddress,
+  labels,
+  onError,
+  onSuccess,
+}) {
+  return {
+    type: UPDATE_TRANSACTION_LABELS,
+    transactionId,
+    userAddress,
+    labels,
+    onError,
+    onSuccess,
+  };
+}
+export function createTransactionLabels({
+  transactionHash,
+  safeAddress,
+  userAddress,
+  origin,
+  labels,
+  onError,
+  onSuccess,
+}) {
+  return {
+    type: CREATE_TRANSACTION_LABELS,
+    transactionHash,
+    safeAddress,
+    userAddress,
+    origin,
+    labels,
+    onError,
+    onSuccess,
+  };
+}
+
+export function updateTransactionLabelsData({
+  labels,
+  transactionId,
+  transactionHash,
+}) {
+  return {
+    type: UPDATE_TRANSACTION_LABELS_DATA,
+    labels,
+    transactionId,
+    transactionHash,
   };
 }
