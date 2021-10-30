@@ -168,8 +168,8 @@ export default function MultiSigTransactions() {
           <tr>
             <th style={{ width: "35%" }}>Transaction</th>
             <th style={{ width: "30%" }}>Total Amount</th>
-            <th style={{ width: "23%" }}>Status</th>
-            <th style={{ width: "12%" }}></th>
+            <th style={{ width: "20%" }}>Status</th>
+            <th style={{ width: "15%" }}></th>
           </tr>
         </TableHead>
 
