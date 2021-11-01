@@ -29,6 +29,7 @@ export default styled.div`
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    gap: 3rem;
     font-size: 1.4rem;
     font-weight: 500;
     font-stretch: normal;

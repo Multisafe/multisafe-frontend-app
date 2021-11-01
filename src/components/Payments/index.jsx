@@ -55,6 +55,7 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
+import {SearchNameInput} from "./styles/SearchNameInput";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -515,19 +516,19 @@ export default function Payments() {
 
           {!loadingTeammates && people.length > 0 && (
             <div className="select-all">
+              <SearchNameInput
+                type="text"
+                name="search"
+                placeholder="Search Teammates"
+                value={searchQuery}
+                onChange={onSearchQueryChange}
+              />
               <CheckBox
                 type="checkbox"
                 id="allCheckbox"
                 checked={isCheckedAll}
                 onChange={handleCheckAll}
                 label={`Select All`}
-              />
-              <Input
-                type="text"
-                name="search"
-                placeholder="Search Name"
-                value={searchQuery}
-                onChange={onSearchQueryChange}
               />
             </div>
           )}
