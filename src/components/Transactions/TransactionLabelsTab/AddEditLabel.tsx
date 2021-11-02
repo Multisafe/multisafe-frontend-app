@@ -11,6 +11,8 @@ import { createOrUpdateLabel } from "store/multisig/actions";
 import ErrorText from "components/common/ErrorText";
 import { LabelColorPicker } from "./LabelColorPicker";
 import { DEFAULT_COLOR } from "./constants";
+import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
+import Img from "components/common/Img";
 
 const Container = styled.div`
   display: flex;
@@ -33,6 +35,11 @@ const Title = styled.div`
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: center;
+`;
+
+const AddLabelButton = styled(Button)`
+  display: flex;
+  gap: 1rem;
 `;
 
 const ControlsContainer = styled.div`
@@ -133,7 +140,14 @@ export const AddEditLabel = ({ label, anchor }: Props) => {
   return (
     <React.Fragment>
       <div onClick={toggleModal}>
-        {anchor ? anchor : <Button>Add Label</Button>}
+        {anchor ? (
+          anchor
+        ) : (
+          <AddLabelButton>
+            <Img src={PlusIcon} alt="plus" />
+            <div>Add Label</div>
+          </AddLabelButton>
+        )}
       </div>
       <Modal isOpen={shown} toggle={toggleModal}>
         <ModalHeader
