@@ -191,14 +191,15 @@ const reducer = (state = initialState, action) =>
           state.transactionDetails?.txDetails?.transactionId ===
           action.transactionId
         ) {
-          draft.transactions[transactionIndex].txDetails.labels =
-            action.labels.flatMap((id) => {
+          draft.transactionDetails.txDetails.labels = action.labels.flatMap(
+            (id) => {
               const labelDetails = state.labels.find(
                 ({ labelId }) => labelId === id
               );
 
               return labelDetails ? [labelDetails] : [];
-            });
+            }
+          );
         }
 
         break;

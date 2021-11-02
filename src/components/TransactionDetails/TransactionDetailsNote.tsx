@@ -18,6 +18,7 @@ import { useActiveWeb3React } from "hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { getLabels } from "store/multisig/actions";
+import { TransactionLabels } from "components/Transactions/TransactionLabels";
 
 type Props = {
   txDetails: TxDetails;
@@ -39,7 +40,7 @@ const ItemTitle = styled.div`
   color: #989898;
 `;
 
-const NoteContainer = styled.div`
+const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -86,14 +87,27 @@ export const TransactionDetailsNote = ({ txDetails }: Props) => {
   return (
     <React.Fragment>
       <ItemContainer>
-        <NoteContainer>
+        <ContentContainer>
           <ItemTitle>Note</ItemTitle>
           {editedNote ? (
             <NoteContent>{editedNote}</NoteContent>
           ) : (
             <AddNoteMessage>Add Note</AddNoteMessage>
           )}
-        </NoteContainer>
+        </ContentContainer>
+        <EditButton iconOnly onClick={onQuickViewOpen}>
+          <Img src={EditNoteIcon} alt="edit-note" width="16" />
+        </EditButton>
+      </ItemContainer>
+      <ItemContainer>
+        <ContentContainer>
+          <ItemTitle>Label</ItemTitle>
+          {txDetails.labels.length ? (
+            <TransactionLabels labels={txDetails.labels} />
+          ) : (
+            <AddNoteMessage>Add Labels</AddNoteMessage>
+          )}
+        </ContentContainer>
         <EditButton iconOnly onClick={onQuickViewOpen}>
           <Img src={EditNoteIcon} alt="edit-note" width="16" />
         </EditButton>

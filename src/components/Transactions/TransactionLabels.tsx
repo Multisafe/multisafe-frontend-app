@@ -13,6 +13,7 @@ const LabelsContainer = styled.div`
 `;
 
 const LabelBlock = styled.div`
+  font-size: 1.4rem;
   padding: 0.6rem 1rem;
   border-radius: 0.4rem;
 `;
