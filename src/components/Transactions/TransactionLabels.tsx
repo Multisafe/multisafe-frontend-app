@@ -13,6 +13,7 @@ const LabelsContainer = styled.div`
 `;
 
 const LabelBlock = styled.div`
+  font-size: 1.4rem;
   padding: 0.6rem 1rem;
   border-radius: 0.4rem;
 `;
@@ -20,6 +21,10 @@ const LabelBlock = styled.div`
 const AddLabel = styled.div`
   font-size: 1.4rem;
   color: #989898;
+  
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export const TransactionLabels = ({ labels }: Props) => {

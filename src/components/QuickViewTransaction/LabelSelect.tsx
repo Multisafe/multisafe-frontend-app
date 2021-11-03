@@ -121,7 +121,7 @@ export const LabelSelect = ({ txDetails }: Props) => {
           onChange,
           onBlur,
           disabled: loading,
-          closeMenuOnSelect: false
+          closeMenuOnSelect: false,
         }}
       />
       {error ? <ErrorText>{error}</ErrorText> : null}

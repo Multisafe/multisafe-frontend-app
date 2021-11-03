@@ -12,6 +12,7 @@ import {
   CREATE_OR_UPDATE_LABEL,
   CREATE_TRANSACTION_LABELS,
   UPDATE_TRANSACTION_LABELS,
+  CREATE_OR_UPDATE_TRANSACTION_NOTE,
 } from "./action-types";
 import {
   getMultisigTransactionsSuccess,
@@ -29,6 +30,7 @@ import {
   getLabelsError,
   getLabelsSuccess,
   updateTransactionLabelsData,
+  updateTransactionNoteData,
 } from "./actions";
 import request from "utils/request";
 import {
@@ -42,6 +44,8 @@ import {
   updateLabelEndpoint,
   createTransactionLabelEndpoint,
   updateTransactionLabelEndpoint,
+  updateTransactionNoteEndpoint,
+  createTransactionNoteEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
 import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
@@ -189,7 +193,7 @@ function* getLabels(action) {
     networkId: action.networkId,
     safeAddress: action.safeAddress,
     userAddress: action.userAddress,
-    onlyActive: 0
+    onlyActive: 0,
   });
   const requestUrl = `${getLabelsEndpoint}?${urlParams.toString()}`;
   const options = {
@@ -307,6 +311,33 @@ function* createTransactionLabels(action) {
   }
 }
 
+function* createOrUpdateTransactionNote(action) {
+  const endpoint = action.transactionId
+    ? updateTransactionNoteEndpoint
+    : createTransactionNoteEndpoint;
+
+  try {
+    const result = yield call(request, endpoint, {
+      method: "POST",
+      body: JSON.stringify(action.body),
+    });
+    if (result.flag !== 200) {
+      action.onError();
+    } else {
+      yield put(
+        updateTransactionNoteData(
+          action.transactionId,
+          action.transactionHash,
+          action.note
+        )
+      );
+      action.onSuccess();
+    }
+  } catch (err) {
+    action.onError();
+  }
+}
+
 function* watchGetMultisigTransactions() {
   yield takeLatest(GET_MULTISIG_TRANSACTIONS, getMultisigTransactions);
 }
@@ -346,6 +377,13 @@ function* watchCreateTransactionLabels() {
   yield takeLatest(CREATE_TRANSACTION_LABELS, createTransactionLabels);
 }
 
+function* watchCreateOrUpdateTransactionNote() {
+  yield takeLatest(
+    CREATE_OR_UPDATE_TRANSACTION_NOTE,
+    createOrUpdateTransactionNote
+  );
+}
+
 export default function* multisig() {
   yield fork(watchGetMultisigTransactions);
   yield fork(watchGetMultisigTransactionById);
@@ -356,4 +394,5 @@ export default function* multisig() {
   yield fork(watchCreateOrUpdateLabel);
   yield fork(watchUpdateTransactionLabels);
   yield fork(watchCreateTransactionLabels);
+  yield fork(watchCreateOrUpdateTransactionNote);
 }

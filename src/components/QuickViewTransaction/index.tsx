@@ -228,13 +228,13 @@ export const QuickViewTransaction = ({
         </DetailsItem>
 
         <DetailsItem>
-          <DetailsTitle>Note</DetailsTitle>
-          <TransactionNote txDetails={txDetails} />
+          <DetailsTitle>Labels</DetailsTitle>
+          <LabelSelect txDetails={txDetails} />
         </DetailsItem>
 
         <DetailsItem>
-          <DetailsTitle>Labels</DetailsTitle>
-          <LabelSelect txDetails={txDetails} />
+          <DetailsTitle>Note</DetailsTitle>
+          <TransactionNote txDetails={txDetails} />
         </DetailsItem>
       </DetailsList>
     </SideDrawer>
