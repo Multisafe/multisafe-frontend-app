@@ -4,12 +4,7 @@ import xss from "xss";
 //@ts-ignore
 import { cryptoUtils } from "coinshift-sdk";
 import { TxDetails } from "store/multisig/types";
-import request from "utils/request";
-import { updateMultisigTransactionNote } from "store/multisig/actions";
-import {
-  updateTransactionNote,
-  createTransactionNote,
-} from "constants/endpoints";
+import { createOrUpdateTransactionNote } from "store/multisig/actions";
 import {
   makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
@@ -61,6 +56,11 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     }
   };
 
+  const onError = () => {
+    setLoading(false);
+    setError("Error updating note");
+  };
+
   const onUpdateClick = async () => {
     const sanitizedNote = xss(editedNote, {
       stripIgnoreTag: true,
@@ -78,46 +78,36 @@ export const useTransactionNote = (txDetails: TxDetails) => {
     setError("");
     setSuccess("");
     setLoading(true);
-    let result;
 
-    if (transactionId) {
-      const body = JSON.stringify({
-        transactionId,
-        notes: encryptedNote,
-        updatedBy: account,
-      });
-
-      result = await request(updateTransactionNote, { method: "POST", body });
-    } else if (transactionHash) {
-      const body = JSON.stringify({
-        networkId: chainId,
-        transactionHash,
-        notes: encryptedNote,
-        createdBy: account,
-        safeAddress,
-        origin,
-      });
-
-      result = await request(createTransactionNote, { method: "POST", body });
-    }
-
-    if (result.flag !== 200) {
-      setError("Error updating note");
-    } else {
-      dispatch(
-        updateMultisigTransactionNote(
-          transactionId || result.transactionId,
+    const body = transactionId
+      ? {
+          transactionId,
+          notes: encryptedNote,
+          updatedBy: account,
+        }
+      : {
+          networkId: chainId,
           transactionHash,
-          encryptedNote
-        )
-      );
-    }
+          notes: encryptedNote,
+          createdBy: account,
+          safeAddress,
+          origin,
+        };
 
-    setLoading(false);
-    onSuccessUpdate();
+    dispatch(
+      createOrUpdateTransactionNote(
+        transactionId,
+        transactionHash,
+        encryptedNote,
+        body,
+        onError,
+        onSuccessUpdate
+      )
+    );
   };
 
   const onSuccessUpdate = () => {
+    setLoading(false);
     setSuccess("Note updated");
 
     setTimeout(() => {

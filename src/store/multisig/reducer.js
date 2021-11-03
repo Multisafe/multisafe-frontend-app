@@ -16,7 +16,7 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
-  UPDATE_MULTISIG_TRANSACTION_NOTE,
+  UPDATE_TRANSACTION_NOTE_DATA,
   GET_LABELS,
   GET_LABELS_ERROR,
   GET_LABELS_SUCCESS,
@@ -141,7 +141,7 @@ const reducer = (state = initialState, action) =>
         draft.transactionId = "";
         break;
 
-      case UPDATE_MULTISIG_TRANSACTION_NOTE:
+      case UPDATE_TRANSACTION_NOTE_DATA:
         const { transactionId, transactionHash, note } = action;
 
         const index = state.transactions.findIndex(

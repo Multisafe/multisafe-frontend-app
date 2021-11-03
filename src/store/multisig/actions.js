@@ -15,7 +15,8 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
-  UPDATE_MULTISIG_TRANSACTION_NOTE,
+  CREATE_OR_UPDATE_TRANSACTION_NOTE,
+  UPDATE_TRANSACTION_NOTE_DATA,
   GET_LABELS,
   GET_LABELS_ERROR,
   GET_LABELS_SUCCESS,
@@ -151,13 +152,32 @@ export function submitMultisigTransactionError(error) {
   };
 }
 
-export function updateMultisigTransactionNote(
+export function createOrUpdateTransactionNote(
+  transactionId,
+  transactionHash,
+  note,
+  body,
+  onError,
+  onSuccess
+) {
+  return {
+    type: CREATE_OR_UPDATE_TRANSACTION_NOTE,
+    transactionId,
+    transactionHash,
+    note,
+    body,
+    onError,
+    onSuccess,
+  };
+}
+
+export function updateTransactionNoteData(
   transactionId,
   transactionHash,
   note
 ) {
   return {
-    type: UPDATE_MULTISIG_TRANSACTION_NOTE,
+    type: UPDATE_TRANSACTION_NOTE_DATA,
     transactionId,
     transactionHash,
     note,

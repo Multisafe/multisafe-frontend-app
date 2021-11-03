@@ -227,7 +227,7 @@ export const QuickViewTransaction = ({
           </DetailsContent>
         </DetailsItem>
 
-        <DetailsItem>useTransactionNote
+        <DetailsItem>
           <DetailsTitle>Labels</DetailsTitle>
           <LabelSelect txDetails={txDetails} />
         </DetailsItem>
@@ -236,7 +236,6 @@ export const QuickViewTransaction = ({
           <DetailsTitle>Note</DetailsTitle>
           <TransactionNote txDetails={txDetails} />
         </DetailsItem>
-
       </DetailsList>
     </SideDrawer>
   );
