@@ -23,6 +23,12 @@ export default styled.div`
     letter-spacing: normal;
     text-align: left;
     color: #373737;
+    margin-bottom: 1.4rem;
+  }
+  
+  .table-title {
+    font-size: 1.4rem;
+    font-weight: 900;
   }
 
   .select-all {

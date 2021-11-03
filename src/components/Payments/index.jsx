@@ -516,7 +516,7 @@ export default function Payments() {
     return (
       <div>
         <div className="outer-flex mt-5 mb-1">
-          <div className="title">Team Details</div>
+          <div className="table-title">Team Details</div>
 
           {!loadingTeammates && people.length > 0 && (
             <div className="select-all">
