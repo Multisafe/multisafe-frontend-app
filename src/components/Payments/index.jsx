@@ -446,7 +446,11 @@ export default function Payments() {
           address,
         } = getDecryptedDetails(data, encryptionKey, organisationType);
 
-        if (firstName.includes(searchQuery) || lastName.includes(searchQuery)) {
+        const lowerCaseFirstName = firstName.toLowerCase();
+        const lowerCaseLastName = lastName.toLowerCase();
+        const lowerCaseSearchQuery = searchQuery.toLowerCase();
+
+        if (lowerCaseFirstName.includes(lowerCaseSearchQuery) || lowerCaseLastName.includes(lowerCaseSearchQuery)) {
           const teammateDetails = {
             firstName,
             lastName,
