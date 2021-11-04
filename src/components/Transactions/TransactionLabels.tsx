@@ -21,9 +21,10 @@ const LabelBlock = styled.div`
 const AddLabel = styled.div`
   font-size: 1.4rem;
   color: #989898;
-  
+  text-decoration: underline;
+
   &:hover {
-    text-decoration: underline;
+    opacity: 0.7;
   }
 `;
 
