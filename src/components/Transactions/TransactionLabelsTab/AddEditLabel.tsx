@@ -102,6 +102,7 @@ export const AddEditLabel = ({ label, anchor }: Props) => {
   };
 
   const onSuccess = () => {
+    setLoading(false);
     toggleModal();
   };
 
