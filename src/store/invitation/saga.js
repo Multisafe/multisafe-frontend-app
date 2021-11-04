@@ -96,7 +96,6 @@ export function* acceptInvitation(action) {
       invitationId: decoded.invitationId,
     }),
     headers: {
-      "content-type": "application/json",
       Authorization: `Bearer ${action.invitationToken}`,
     },
   };

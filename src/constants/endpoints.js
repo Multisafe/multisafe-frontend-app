@@ -35,6 +35,13 @@ export const getTransactionsEndpoint = `${ROOT_BE_URL}/api/v1/transactions/get`;
 export const getTransactionByIdEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getById`;
 export const getMoneyInOutEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getMoneyInMoneyOut`;
 
+//LABELS
+export const getLabelsEndpoint = `${ROOT_BE_URL}/api/v1/labels/get`;
+export const createLabelEndpoint = `${ROOT_BE_URL}/api/v1/labels/create`;
+export const updateLabelEndpoint = `${ROOT_BE_URL}/api/v1/labels/update`;
+export const updateTransactionLabelEndpoint = `${ROOT_BE_URL}/api/v1/transactions/labels/update`;
+export const createTransactionLabelEndpoint = `${ROOT_BE_URL}/api/v1/transactions/labels/create`;
+
 // MULTISIG
 export const createMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/create`;
 export const getMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/get`;
@@ -42,9 +49,9 @@ export const getMultisigTransactionByIdEndpoint = `${ROOT_BE_URL}/api/v1/transac
 export const submitMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/submit`;
 export const confirmMultisigTransactionEndpoint = `${ROOT_BE_URL}/api/v1/transactions/multisig/confirm`;
 
-// COMMON TRANSACTIONS
-export const createTransactionNote = `${ROOT_BE_URL}/api/v1/transactions/notes/create`;
-export const updateTransactionNote = `${ROOT_BE_URL}/api/v1/transactions/notes/update`;
+// NOTES
+export const createTransactionNoteEndpoint = `${ROOT_BE_URL}/api/v1/transactions/notes/create`;
+export const updateTransactionNoteEndpoint = `${ROOT_BE_URL}/api/v1/transactions/notes/update`;
 
 // METATX
 export const getMetaTxLimitsEndpoint = `${ROOT_BE_URL}/api/v1/transactions/getMetaTxLimits`;
