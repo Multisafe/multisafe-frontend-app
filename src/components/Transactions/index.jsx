@@ -97,16 +97,20 @@ export default function Transactions() {
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
-        <TabPane tabId={TABS.TRANSACTIONS}>
-          <div className="mt-5">
-            <MultiSigTransactions />
-          </div>
-        </TabPane>
-        <TabPane tabId={TABS.LABELS}>
-          <div className="mt-5">
-            <TransactionLabelsTab />
-          </div>
-        </TabPane>
+        {activeTab === TABS.TRANSACTIONS ? (
+          <TabPane tabId={TABS.TRANSACTIONS}>
+            <div className="mt-5">
+              <MultiSigTransactions />
+            </div>
+          </TabPane>
+        ) : null}
+        {activeTab === TABS.LABELS ? (
+          <TabPane tabId={TABS.LABELS}>
+            <div className="mt-5">
+              <TransactionLabelsTab />
+            </div>
+          </TabPane>
+        ) : null}
       </TabContent>
     </div>
   );
