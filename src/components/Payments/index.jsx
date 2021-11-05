@@ -38,6 +38,7 @@ import {
   makeSelectThreshold,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
 } from "store/global/selectors";
 import {
   Table,
@@ -55,7 +56,8 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
-import {SearchNameInput} from "./styles/SearchNameInput";
+import { Alert, AlertMessage } from "components/common/Alert";
+import { SearchNameInput } from "./styles/SearchNameInput"; // eslint-disable-line
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -114,6 +116,7 @@ export default function Payments() {
   const organisationType = useSelector(makeSelectOrganisationType());
   const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -428,29 +431,29 @@ export default function Payments() {
     </TableInfo>
   );
 
+  // eslint-disable-next-line
   const onSearchQueryChange = (e) => {
     setSearchQuery(e?.target?.value || "");
-  }
+  };
 
   const renderPayTable = () => {
     if (!people || !selectedToken) return;
 
-    const peopleRows = !loadingTeammates &&
+    const peopleRows =
+      !loadingTeammates &&
       people.length > 0 &&
       people.map(({ peopleId, data, ...rest }, idx) => {
-        const {
-          firstName,
-          lastName,
-          salaryAmount,
-          salaryToken,
-          address,
-        } = getDecryptedDetails(data, encryptionKey, organisationType);
+        const { firstName, lastName, salaryAmount, salaryToken, address } =
+          getDecryptedDetails(data, encryptionKey, organisationType);
 
         const lowerCaseFirstName = firstName.toLowerCase();
         const lowerCaseLastName = lastName.toLowerCase();
         const lowerCaseSearchQuery = searchQuery.toLowerCase();
 
-        if (lowerCaseFirstName.includes(lowerCaseSearchQuery) || lowerCaseLastName.includes(lowerCaseSearchQuery)) {
+        if (
+          lowerCaseFirstName.includes(lowerCaseSearchQuery) ||
+          lowerCaseLastName.includes(lowerCaseSearchQuery)
+        ) {
           const teammateDetails = {
             firstName,
             lastName,
@@ -490,17 +493,17 @@ export default function Payments() {
               <td style={{ width: "25%" }}>
                 <TokenImg token={salaryToken} />
                 <span className="mr-2">
-                        <Input
-                          type="number"
-                          name={`amounts[${idx}]`}
-                          register={register}
-                          style={{ width: "7rem" }}
-                          placeholder="0"
-                          defaultValue={salaryAmount}
-                          onClick={(e) => e.stopPropagation()}
-                          step=".0001"
-                        />
-                      </span>
+                  <Input
+                    type="number"
+                    name={`amounts[${idx}]`}
+                    register={register}
+                    style={{ width: "12rem" }}
+                    placeholder="0"
+                    defaultValue={salaryAmount}
+                    onClick={(e) => e.stopPropagation()}
+                    step=".0001"
+                  />
+                </span>
                 <span>{salaryToken}</span>
               </td>
               <td style={{ width: "45%" }}>{address}</td>
@@ -511,22 +514,39 @@ export default function Payments() {
         }
       });
 
-    const shouldRenderRows = peopleRows && peopleRows.some(value => !!value);
+    const shouldRenderRows = peopleRows && peopleRows.some((value) => !!value);
 
     return (
       <div>
-        <div className="outer-flex mt-5 mb-1">
+        {isMultiOwner ? (
+          <Alert className="mt-5">
+            <AlertMessage>
+              Please execute this transaction using Coinshift as transactions
+              executed from the{" "}
+              <a
+                href={"https://gnosis-safe.io/app/#/"}
+                rel="noopenner noreferrer"
+                target="_blank"
+              >
+                {" "}
+                Gnosis App
+              </a>{" "}
+              might fail due to incorrect gas estimation.
+            </AlertMessage>
+          </Alert>
+        ) : null}
+        <div className="outer-flex mt-5 mb-3">
           <div className="table-title">Team Details</div>
 
           {!loadingTeammates && people.length > 0 && (
             <div className="select-all">
-              <SearchNameInput
+              {/* <SearchNameInput
                 type="text"
                 name="search"
                 placeholder="Search Teammates"
                 value={searchQuery}
                 onChange={onSearchQueryChange}
-              />
+              /> */}
               <CheckBox
                 type="checkbox"
                 id="allCheckbox"
@@ -547,7 +567,9 @@ export default function Payments() {
           </TableHead>
           <TableBody style={{ maxHeight: "25rem", overflow: "auto" }}>
             {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
-            {!shouldRenderRows || (!loadingTeammates && !people.length) ? renderNoPeopleFound() : null}
+            {!shouldRenderRows || (!loadingTeammates && !people.length)
+              ? renderNoPeopleFound()
+              : null}
             {peopleRows}
           </TableBody>
         </Table>

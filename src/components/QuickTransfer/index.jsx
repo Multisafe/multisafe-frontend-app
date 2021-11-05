@@ -22,6 +22,7 @@ import {
   makeSelectThreshold,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
 } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import {
@@ -35,6 +36,7 @@ import { constructLabel } from "utils/tokens";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import Img from "components/common/Img";
 import ErrorText from "components/common/ErrorText";
+import { Alert, AlertMessage } from "components/common/Alert";
 
 import { Error } from "components/common/Form/styles";
 import { QuickTransferContainer } from "./styles";
@@ -82,6 +84,7 @@ export default function QuickTransfer(props) {
   const prices = useSelector(makeSelectPrices());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
 
   useEffect(() => {
     if (safeAddress) {
@@ -205,7 +208,7 @@ export default function QuickTransfer(props) {
                 message: "Invalid Ethereum Address",
               }}
               placeholder="Wallet Address"
-              style={{ maxWidth: "32rem" }}
+              style={{ maxWidth: "40rem" }}
               defaultValue={
                 defaultValues && defaultValues.receivers[index]
                   ? defaultValues.receivers[index].address
@@ -309,6 +312,24 @@ export default function QuickTransfer(props) {
           defaultValue={defaultValues ? defaultValues.description : ""}
         />
       </div>
+
+      {isMultiOwner ? (
+        <Alert className="mt-5">
+          <AlertMessage>
+            Please execute this transaction using Coinshift as transactions
+            executed from{" "}
+            <a
+              href={"https://gnosis-safe.io/app/#/"}
+              rel="noopenner noreferrer"
+              target="_blank"
+            >
+              {" "}
+              Gnosis UI
+            </a>{" "}
+            might fail due to incorrect gas estimation.
+          </AlertMessage>
+        </Alert>
+      ) : null}
 
       <div className="buttons mt-5">
         <Button
