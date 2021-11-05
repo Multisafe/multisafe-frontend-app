@@ -33,8 +33,26 @@ export const GET_MULTISIG_TRANSACTION_BY_ID_SUCCESS =
 export const GET_MULTISIG_TRANSACTION_BY_ID_ERROR =
   "coinshift/multisig/GET_MULTISIG_TRANSACTION_BY_ID_ERROR";
 
-export const UPDATE_MULTISIG_TRANSACTION_NOTE =
-  "coinshift/multisig/UPDATE_MULTISIG_TRANSACTION_NOTE";
+export const CREATE_OR_UPDATE_TRANSACTION_NOTE =
+  "coinshift/multisig/CREATE_OR_UPDATE_TRANSACTION_NOTE";
+
+export const UPDATE_TRANSACTION_NOTE_DATA =
+  "coinshift/multisig/UPDATE_TRANSACTION_NOTE_DATA";
 
 export const CLEAR_MULTISIG_TRANSACTION =
   "coinshift/multisig/CLEAR_MULTISIG_TRANSACTION";
+
+export const GET_LABELS = "coinshift/transactions/GET_LABELS";
+export const GET_LABELS_SUCCESS = "coinshift/transactions/GET_LABELS_SUCCESS";
+export const GET_LABELS_ERROR = "coinshift/transactions/GET_LABELS_ERROR";
+
+export const CREATE_OR_UPDATE_LABEL =
+  "coinshift/transactions/CREATE_OR_UPDATE_LABEL";
+
+export const CREATE_TRANSACTION_LABELS =
+  "coinshift/transactions/CREATE_TRANSACTION_LABELS";
+export const UPDATE_TRANSACTION_LABELS =
+  "coinshift/transactions/UPDATE_TRANSACTION_LABELS";
+
+export const UPDATE_TRANSACTION_LABELS_DATA =
+  "coinshift/transactions/UPDATE_TRANSACTION_LABELS_DATA";

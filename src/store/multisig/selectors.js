@@ -57,6 +57,10 @@ const makeSelectIsPendingTransactions = () =>
     (multisigState) => multisigState.isPendingTransactions
   );
 
+const selectLabels = (state) => selectMultisig(state)?.labels;
+const selectLabelsLoading = (state) => selectMultisig(state)?.labelsLoading;
+const selectLabelsError = (state) => selectMultisig(state)?.labelsError;
+
 export {
   selectMultisig,
   makeSelectMultisigTransactions,
@@ -71,4 +75,7 @@ export {
   makeSelectTransactionId,
   makeSelectMultisigTransactionCount,
   makeSelectIsPendingTransactions,
+  selectLabels,
+  selectLabelsLoading,
+  selectLabelsError,
 };

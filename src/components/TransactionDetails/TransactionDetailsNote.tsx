@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Button from "components/common/Button";
 import { TxDetails } from "store/multisig/types";
@@ -6,9 +6,19 @@ import { useTransactionNote } from "hooks/useTransactionNote";
 import {
   QuickViewTransaction,
   useQuickViewTransactionState,
-} from "../QuickViewTransaction";
+} from "components/QuickViewTransaction";
 import Img from "components/common/Img";
 import EditNoteIcon from "assets/icons/dashboard/edit-note-icon.svg";
+import { useInjectReducer } from "utils/injectReducer";
+import { MULTISIG_KEY } from "store/multisig/constants";
+import multisigReducer from "store/multisig/reducer";
+import { useInjectSaga } from "utils/injectSaga";
+import multisigSaga from "store/multisig/saga";
+import { useActiveWeb3React } from "hooks";
+import { useDispatch, useSelector } from "react-redux";
+import { makeSelectOwnerSafeAddress } from "store/global/selectors";
+import { getLabels } from "store/multisig/actions";
+import { TransactionLabels } from "components/Transactions/TransactionLabels";
 
 type Props = {
   txDetails: TxDetails;
@@ -30,7 +40,7 @@ const ItemTitle = styled.div`
   color: #989898;
 `;
 
-const NoteContainer = styled.div`
+const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -57,22 +67,47 @@ const AddNoteMessage = styled.div`
 `;
 
 export const TransactionDetailsNote = ({ txDetails }: Props) => {
+  const dispatch = useDispatch();
   const { editedNote } = useTransactionNote(txDetails);
+  const { account: userAddress, chainId: networkId } = useActiveWeb3React();
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const { quickViewOpen, onQuickViewOpen, onQuickViewClose } =
     useQuickViewTransactionState();
 
+  //@ts-ignore
+  useInjectReducer({ key: MULTISIG_KEY, reducer: multisigReducer });
+  //@ts-ignore
+  useInjectSaga({ key: MULTISIG_KEY, saga: multisigSaga });
+
+  useEffect(() => {
+    dispatch(getLabels(networkId, safeAddress, userAddress));
+  }, [dispatch, networkId, safeAddress, userAddress]);
+
   return (
     <React.Fragment>
       <ItemContainer>
-        <NoteContainer>
+        <ContentContainer>
           <ItemTitle>Note</ItemTitle>
           {editedNote ? (
             <NoteContent>{editedNote}</NoteContent>
           ) : (
             <AddNoteMessage>Add Note</AddNoteMessage>
           )}
-        </NoteContainer>
+        </ContentContainer>
+        <EditButton iconOnly onClick={onQuickViewOpen}>
+          <Img src={EditNoteIcon} alt="edit-note" width="16" />
+        </EditButton>
+      </ItemContainer>
+      <ItemContainer>
+        <ContentContainer>
+          <ItemTitle>Label</ItemTitle>
+          {txDetails.labels.length ? (
+            <TransactionLabels labels={txDetails.labels} />
+          ) : (
+            <AddNoteMessage>Add Labels</AddNoteMessage>
+          )}
+        </ContentContainer>
         <EditButton iconOnly onClick={onQuickViewOpen}>
           <Img src={EditNoteIcon} alt="edit-note" width="16" />
         </EditButton>

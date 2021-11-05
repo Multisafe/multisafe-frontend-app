@@ -28,9 +28,6 @@ export function* registerUser(action) {
   const options = {
     method: "POST",
     body: JSON.stringify({ ...action.body, networkId }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
@@ -61,9 +58,6 @@ export function* createMetaTx(action) {
   const options = {
     method: "POST",
     body: JSON.stringify({ ...action.body, networkId }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {

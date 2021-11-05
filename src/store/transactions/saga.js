@@ -32,9 +32,6 @@ function* addTransaction({ body }) {
   const options = {
     method: "POST",
     body: JSON.stringify(body),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
