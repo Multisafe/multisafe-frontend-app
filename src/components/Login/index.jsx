@@ -227,7 +227,10 @@ const Login = () => {
   useEffect(() => {
     reset({
       ...formData,
-      owners: gnosisSafeOwners.map((owner) => ({ name: "", owner })),
+      owners:
+        formData.owners && formData.owners.length > 0
+          ? formData.owners
+          : gnosisSafeOwners.map((owner) => ({ name: "", owner })),
     });
   }, [reset, gnosisSafeOwners, formData]);
 
@@ -625,7 +628,7 @@ const Login = () => {
                   register={register}
                   required={`Owner Name is required`}
                   placeholder="John Doe"
-                  defaultValue={name}
+                  defaultValue={name || `Owner ${index + 1}`}
                 />
                 {errors["owners"] &&
                   errors["owners"][index] &&
