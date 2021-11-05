@@ -13,7 +13,7 @@ const styles = {
     top: "0",
   },
   bmMenu: {
-    background: "#fff"
+    background: "#fff",
   },
   bmMorphShape: {
     fill: "#fff",

@@ -61,9 +61,6 @@ export function* deletePeople({ peopleId, safeAddress, departmentId }) {
       peopleId,
       safeAddress,
     }),
-    headers: {
-      "content-type": "application/json",
-    },
   };
 
   try {
