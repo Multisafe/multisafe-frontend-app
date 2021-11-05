@@ -35,10 +35,16 @@ const CloseAlert = styled(Img)`
   }
 `;
 
-export const Alert = ({ onClose, children }: Props) => {
+const StyledMessage = styled.div`
+  margin: auto;
+  max-width: 100rem;
+  text-align: center;
+`;
+
+export const Alert = ({ onClose, children, ...rest }: Props) => {
   return (
-    <StyledAlert>
-      {children}
+    <StyledAlert {...rest}>
+      <AlertMessage>{children}</AlertMessage>
       {onClose ? (
         <CloseAlert
           src={CloseIcon}
@@ -48,4 +54,8 @@ export const Alert = ({ onClose, children }: Props) => {
       ) : null}
     </StyledAlert>
   );
+};
+
+export const AlertMessage = ({ children }: Props) => {
+  return <StyledMessage>{children}</StyledMessage>;
 };

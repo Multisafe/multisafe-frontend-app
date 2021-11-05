@@ -38,6 +38,7 @@ import {
   makeSelectThreshold,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
 } from "store/global/selectors";
 import {
   Table,
@@ -55,6 +56,7 @@ import { Input, Select, SelectToken } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
+import { Alert, AlertMessage } from "components/common/Alert";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -112,6 +114,7 @@ export default function Payments() {
   const organisationType = useSelector(makeSelectOrganisationType());
   const teamIdToDetailsMap = useSelector(makeSelectTeamIdToDetailsMap());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
 
   useEffect(() => {
     if (ownerSafeAddress) {
@@ -431,6 +434,23 @@ export default function Payments() {
 
     return (
       <div>
+        {isMultiOwner ? (
+          <Alert className="mt-5">
+            <AlertMessage>
+              Please execute this transaction using Coinshift as transactions
+              executed from{" "}
+              <a
+                href={"https://gnosis-safe.io/app/#/"}
+                rel="noopenner noreferrer"
+                target="_blank"
+              >
+                {" "}
+                Gnosis UI
+              </a>{" "}
+              might fail due to incorrect gas estimation.
+            </AlertMessage>
+          </Alert>
+        ) : null}
         <div className="outer-flex mt-5">
           <div className="title">Team Details</div>
 
@@ -510,7 +530,7 @@ export default function Payments() {
                           type="number"
                           name={`amounts[${idx}]`}
                           register={register}
-                          style={{ width: "7rem" }}
+                          style={{ width: "12rem" }}
                           placeholder="0"
                           defaultValue={salaryAmount}
                           onClick={(e) => e.stopPropagation()}
