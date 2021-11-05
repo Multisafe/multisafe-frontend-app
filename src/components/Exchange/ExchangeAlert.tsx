@@ -1,14 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import styled from "styled-components";
-import { Alert } from "components/common/Alert";
+import { Alert, AlertMessage } from "components/common/Alert";
 import { makeSelectIsMultiOwner } from "store/global/selectors";
-
-const AlertMessage = styled.div`
-  margin: auto;
-  max-width: 659px;
-  text-align: center;
-`;
 
 export const ExchangeAlert = React.memo(() => {
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
