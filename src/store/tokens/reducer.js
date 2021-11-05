@@ -97,7 +97,7 @@ const reducer = (state = initialState, action) =>
         }
 
         const total = allTokenDetails.reduce(
-          (sum, token) => (sum += parseFloat(token.usd)),
+          (sum, token) => (sum += token.usd ? parseFloat(token.usd) : 0),
           0
         );
 

@@ -44,14 +44,14 @@ function ExpensesCard() {
   const renderMoneyInOut = () => (
     <div className="money-in-out">
       <div className="money-in">
-        <div className="heading">Income</div>
+        <div className="heading">Incoming</div>
         <div className="value-container">
           <span className="plus">+</span> ${formatNumber(moneyIn)}
           {loadingOverview && renderLoading()}
         </div>
       </div>
       <div className="money-out">
-        <div className="heading">Expense</div>
+        <div className="heading">Outgoing</div>
         <div className="value-container grey">
           <span className="minus">-</span> ${formatNumber(moneyOut)}
           {loadingOverview && renderLoading()}
@@ -63,7 +63,7 @@ function ExpensesCard() {
   return (
     <Expense>
       <div className="title-container">
-        <div className="title">Income and Expense</div>
+        <div className="title">Incoming and Outgoing</div>
         <div className="last-30">Last 30 days</div>
       </div>
       {loadingOverview && (

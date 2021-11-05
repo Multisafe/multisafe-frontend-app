@@ -791,7 +791,7 @@ const Register = () => {
                     register={register}
                     required={`Owner Name is required`}
                     placeholder="John Doe"
-                    defaultValue={name}
+                    defaultValue={name || `Owner ${index + 1}`}
                   />
                   {errors["owners"] &&
                     errors["owners"][index] &&
