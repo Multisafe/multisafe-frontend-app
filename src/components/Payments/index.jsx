@@ -57,7 +57,7 @@ import { constructLabel } from "utils/tokens";
 import CheckBox from "components/common/CheckBox";
 import ErrorText from "components/common/ErrorText";
 import { Alert, AlertMessage } from "components/common/Alert";
-import { SearchNameInput } from "./styles/SearchNameInput";
+import { SearchNameInput } from "./styles/SearchNameInput"; // eslint-disable-line
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -431,6 +431,7 @@ export default function Payments() {
     </TableInfo>
   );
 
+  // eslint-disable-next-line
   const onSearchQueryChange = (e) => {
     setSearchQuery(e?.target?.value || "");
   };
@@ -534,18 +535,18 @@ export default function Payments() {
             </AlertMessage>
           </Alert>
         ) : null}
-        <div className="outer-flex mt-5 mb-1">
+        <div className="outer-flex mt-5 mb-3">
           <div className="table-title">Team Details</div>
 
           {!loadingTeammates && people.length > 0 && (
             <div className="select-all">
-              <SearchNameInput
+              {/* <SearchNameInput
                 type="text"
                 name="search"
                 placeholder="Search Teammates"
                 value={searchQuery}
                 onChange={onSearchQueryChange}
-              />
+              /> */}
               <CheckBox
                 type="checkbox"
                 id="allCheckbox"
