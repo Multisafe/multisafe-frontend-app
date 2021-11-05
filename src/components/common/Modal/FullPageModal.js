@@ -21,7 +21,7 @@ const modalStyles = `
   }
 
   .full-modal-header {
-    padding: 2rem 2rem 0;
+    padding: 4rem 4rem 0;
     border-bottom: 0;
   }
 

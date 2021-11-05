@@ -1,8 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { cryptoUtils } from "coinshift-sdk";
 import { useForm } from "react-hook-form";
-import styled from "styled-components";
 
 import Button from "components/common/Button";
 import viewTeamsReducer from "store/view-teams/reducer";
@@ -34,16 +32,17 @@ import {
   TableInfo,
   TableLoader,
 } from "components/common/Table";
-import { MassPayoutContainer } from "./styles";
 import TokenImg from "components/common/TokenImg";
 import { getDecryptedDetails } from "utils/encryption";
 import { Select } from "components/common/Form";
 import CheckBox from "components/common/CheckBox";
-
-// styles
-const ConfirmContainer = styled.div`
-  width: 100%;
-`;
+import {
+  SelectFromTeamContainer,
+  OuterFlex,
+  Title,
+  SelectAll,
+  ConfirmContainer,
+} from "./styles/SelectFromTeam";
 
 // reducer/saga keys
 const viewPeopleKey = "viewPeople";
@@ -230,11 +229,11 @@ export default function SelectFromTeam(props) {
 
     return (
       <div>
-        <div className="outer-flex">
-          <div className="title">Team Details</div>
+        <OuterFlex>
+          <Title>Team Details</Title>
 
           {!loadingTeammates && people.length > 0 && (
-            <div className="select-all">
+            <SelectAll>
               <CheckBox
                 type="checkbox"
                 id="allCheckbox"
@@ -242,9 +241,9 @@ export default function SelectFromTeam(props) {
                 onChange={handleCheckAll}
                 label={`Select All`}
               />
-            </div>
+            </SelectAll>
           )}
-        </div>
+        </OuterFlex>
         <Table>
           <TableHead>
             <tr>
@@ -318,11 +317,11 @@ export default function SelectFromTeam(props) {
   };
 
   return (
-    <MassPayoutContainer>
+    <SelectFromTeamContainer>
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-5">
-            <div className="title">Paying To</div>
+            <Title>Paying To</Title>
             <Select
               name="team"
               control={control}
@@ -349,6 +348,6 @@ export default function SelectFromTeam(props) {
           </ConfirmContainer>
         </form>
       </div>
-    </MassPayoutContainer>
+    </SelectFromTeamContainer>
   );
 }

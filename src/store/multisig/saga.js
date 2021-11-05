@@ -30,9 +30,8 @@ import {
   submitMultisigTransactionEndpoint,
   getMultisigTransactionByIdEndpoint,
 } from "constants/endpoints";
-import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
-import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
 import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimits/NewSpendingLimitModal";
+import { MODAL_NAME as NEW_TRANSFER_MODAL } from "components/NewTransfer/NewTransferModal";
 import { routeGenerators } from "constants/routes/generators";
 
 function* getMultisigTransactions({ safeAddress, offset, limit }) {
@@ -120,8 +119,7 @@ function* createMultisigTransaction(action) {
         })
       )
     );
-    yield put(hide(MASS_PAYOUT_MODAL));
-    yield put(hide(QUICK_TRANSFER_MODAL));
+    yield put(hide(NEW_TRANSFER_MODAL));
     yield put(hide(NEW_SPENDING_LIMIT_MODAL));
   } catch (err) {
     yield put(createMultisigTransactionError(err));

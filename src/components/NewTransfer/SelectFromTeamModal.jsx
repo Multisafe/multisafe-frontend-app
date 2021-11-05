@@ -1,4 +1,3 @@
-import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";

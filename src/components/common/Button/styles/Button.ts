@@ -59,12 +59,25 @@ export default styled.button<Props>`
   &.secondary-3 {
     //TODO rework button types (style guide)
     background: white;
-    border: 0.1px solid #dddcdc;
+    border: 0.1rem solid #dddcdc;
     color: #989898;
 
     &:hover {
       background-color: ${({ theme }) => theme.primary};
       color: white;
+    }
+  }
+
+  &.secondary-4 {
+    background: white;
+    border: 0.1rem solid ${({ theme }) => theme.primary};
+    color: ${({ theme }) => theme.primary};
+    font-weight: normal;
+    font-size: 1.4rem;
+    padding: 0;
+
+    &:hover {
+      opacity: 0.7;
     }
   }
 
