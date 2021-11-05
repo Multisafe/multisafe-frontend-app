@@ -496,7 +496,7 @@ export default function Payments() {
                     type="number"
                     name={`amounts[${idx}]`}
                     register={register}
-                    style={{ width: "7rem" }}
+                    style={{ width: "12rem" }}
                     placeholder="0"
                     defaultValue={salaryAmount}
                     onClick={(e) => e.stopPropagation()}
@@ -521,14 +521,14 @@ export default function Payments() {
           <Alert className="mt-5">
             <AlertMessage>
               Please execute this transaction using Coinshift as transactions
-              executed from{" "}
+              executed from the{" "}
               <a
                 href={"https://gnosis-safe.io/app/#/"}
                 rel="noopenner noreferrer"
                 target="_blank"
               >
                 {" "}
-                Gnosis UI
+                Gnosis App
               </a>{" "}
               might fail due to incorrect gas estimation.
             </AlertMessage>
