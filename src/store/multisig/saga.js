@@ -302,6 +302,7 @@ function* createTransactionLabels(action) {
         updateTransactionLabelsData({
           labels: action.labels,
           transactionHash: action.transactionHash,
+          transactionId: result.transactionId,
         })
       );
       action.onSuccess();
