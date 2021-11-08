@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
-import { getMultisigTransactions } from "store/multisig/actions";
+import {getLabels, getMultisigTransactions} from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
@@ -31,6 +31,7 @@ import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 import { MULTISIG_KEY } from "store/multisig/constants";
+import {useActiveWeb3React} from "hooks";
 
 const LIMIT = 10;
 
@@ -43,6 +44,8 @@ export default function MultiSigTransactions() {
 
   // Sagas
   useInjectSaga({ key: MULTISIG_KEY, saga: multisigSaga });
+
+  const { account: userAddress, chainId: networkId } = useActiveWeb3React();
 
   const dispatch = useDispatch();
 
@@ -73,6 +76,10 @@ export default function MultiSigTransactions() {
     },
     [loading]
   );
+
+  useEffect(() => {
+    dispatch(getLabels(networkId, ownerSafeAddress, userAddress));
+  }, [dispatch, networkId, ownerSafeAddress, userAddress]);
 
   useEffect(() => {
     setHasMore(txCount > 0);
