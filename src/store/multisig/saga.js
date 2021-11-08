@@ -302,6 +302,7 @@ function* createTransactionLabels(action) {
         updateTransactionLabelsData({
           labels: action.labels,
           transactionHash: action.transactionHash,
+          transactionId: result.transactionId,
         })
       );
       action.onSuccess();
@@ -326,7 +327,7 @@ function* createOrUpdateTransactionNote(action) {
     } else {
       yield put(
         updateTransactionNoteData(
-          action.transactionId,
+          action.transactionId || result.transactionId,
           action.transactionHash,
           action.note
         )
