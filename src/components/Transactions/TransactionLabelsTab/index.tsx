@@ -71,17 +71,16 @@ export const TransactionLabelsTab = () => {
         </div>
         <AddEditLabel />
       </InfoCard>
-      {labelsLoading ? (
-        <LoadingContainer>
-          <Loading color="primary" width="3rem" height="3rem" />
-        </LoadingContainer>
-      ) : null}
       {labels?.length ? (
         <ListContainer>
           {labels.map((label: FixMe) => {
             return <ManagedLabel key={label.labelId} label={label} />;
           })}
         </ListContainer>
+      ) : labelsLoading ? (
+        <LoadingContainer>
+          <Loading color="primary" width="3rem" height="3rem" />
+        </LoadingContainer>
       ) : (
         <NoLabelsContainer>
           <Img src={NoTransactionLabels} alt="no-labels" width={100} />
