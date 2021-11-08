@@ -12,7 +12,7 @@ function MassPayoutModal(props) {
   return (
     <Modal isOpen={show} toggle={handleHide}>
       <ModalHeader title={"Mass Payout"} toggle={handleHide} />
-      <ModalBody width="94rem" minHeight="auto">
+      <ModalBody width="120rem" minHeight="auto">
         <MassPayout handleHide={handleHide} />
       </ModalBody>
     </Modal>

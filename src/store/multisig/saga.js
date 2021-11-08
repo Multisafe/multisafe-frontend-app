@@ -95,9 +95,9 @@ function* fetchMultisigTransactionById(action) {
     if (result.flag === 400) {
       yield put(
         push(
-          `${routeGenerators.dashboard.root({
+          routeGenerators.dashboard.root({
             safeAddress: action.safeAddress,
-          })}/404`
+          })
         )
       ); // not found
     } else {

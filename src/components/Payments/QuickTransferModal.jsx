@@ -12,7 +12,7 @@ function QuickTransferModal(props) {
   return (
     <Modal isOpen={show} toggle={handleHide}>
       <ModalHeader title={"Quick Transfer"} toggle={handleHide} />
-      <ModalBody width="72rem" minHeight="auto">
+      <ModalBody width="100rem" minHeight="auto">
         <QuickTransfer handleHide={handleHide} {...rest} />
       </ModalBody>
     </Modal>

@@ -25,10 +25,17 @@ export default styled.div`
     color: #373737;
     margin-bottom: 1.4rem;
   }
+  
+  .table-title {
+    font-size: 1.4rem;
+    font-weight: 900;
+  }
 
   .select-all {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
+    gap: 3rem;
     font-size: 1.4rem;
     font-weight: 500;
     font-stretch: normal;
@@ -37,7 +44,6 @@ export default styled.div`
     letter-spacing: normal;
     text-align: left;
     color: #373737;
-    margin-bottom: 1rem;
   }
 
   @media (max-width: 978px) {
