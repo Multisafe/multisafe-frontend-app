@@ -327,7 +327,7 @@ function* createOrUpdateTransactionNote(action) {
     } else {
       yield put(
         updateTransactionNoteData(
-          action.transactionId,
+          action.transactionId || result.transactionId,
           action.transactionHash,
           action.note
         )
