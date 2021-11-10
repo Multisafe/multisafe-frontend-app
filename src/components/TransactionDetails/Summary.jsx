@@ -117,11 +117,11 @@ export default function Summary({ txDetails, executionDate, paidTeammates }) {
           <div className="detail-card">
             <div className="detail-title">Executed Date & Time</div>
             <div className="detail-subtitle">
-              {createdOn && format(new Date(executionDate), "MMM-dd-yyyy HH:mm:ss")}
+              {createdOn &&
+                format(new Date(executionDate), "MMM-dd-yyyy HH:mm:ss")}
             </div>
           </div>
         ) : null}
-
 
         <div className="detail-card">
           <div className="detail-title">Status</div>

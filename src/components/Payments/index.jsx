@@ -10,7 +10,7 @@ import viewTeamsReducer from "store/view-teams/reducer";
 import { getTeams } from "store/view-teams/actions";
 import viewTeamsSaga from "store/view-teams/saga";
 import viewPeopleSaga from "store/view-people/saga";
-import viewPeopleReducer from "store/view-people/reducer";
+import viewPeopleReducer, { viewPeopleKey } from "store/view-people/reducer";
 import { getPeopleByTeam } from "store/view-people/actions";
 import {
   makeSelectTeams,
@@ -60,7 +60,6 @@ import { Alert, AlertMessage } from "components/common/Alert";
 import { SearchNameInput } from "./styles/SearchNameInput"; // eslint-disable-line
 
 // reducer/saga keys
-const viewPeopleKey = "viewPeople";
 const viewTeamsKey = "viewTeams";
 
 export default function Payments() {

@@ -4,9 +4,9 @@
 
 import { createSelector } from "reselect";
 import { PEOPLE_FILTERS } from "./constants";
-import { initialState } from "./reducer";
+import { initialState, viewPeopleKey } from "./reducer";
 
-const selectViewPeople = (state) => state.viewPeople || initialState;
+const selectViewPeople = (state) => state[viewPeopleKey] || initialState;
 
 const makeSelectPeople = () =>
   createSelector(selectViewPeople, (viewPeopleState) => viewPeopleState.people);

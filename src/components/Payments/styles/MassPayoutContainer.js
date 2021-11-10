@@ -25,7 +25,7 @@ export default styled.div`
     color: #373737;
     margin-bottom: 1.4rem;
   }
-  
+
   .table-title {
     font-size: 1.4rem;
     font-weight: 900;

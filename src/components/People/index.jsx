@@ -5,7 +5,7 @@ import { show } from "redux-modal";
 import viewTeamsReducer from "store/view-teams/reducer";
 import { getTeams } from "store/view-teams/actions";
 import viewTeamsSaga from "store/view-teams/saga";
-import viewPeopleReducer from "store/view-people/reducer";
+import viewPeopleReducer, { viewPeopleKey } from "store/view-people/reducer";
 import {
   getAllPeople,
   addPeopleFilter,
@@ -68,7 +68,6 @@ import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
 
 const viewTeamsKey = "viewTeams";
-const viewPeopleKey = "viewPeople";
 
 export default function People() {
   const [encryptionKey] = useEncryptionKey();

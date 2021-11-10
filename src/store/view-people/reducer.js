@@ -22,6 +22,8 @@ export const initialState = {
   loadingPeopleByTeam: false,
 };
 
+export const viewPeopleKey = "viewPeople";
+
 /* eslint-disable default-case, no-param-reassign */
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
