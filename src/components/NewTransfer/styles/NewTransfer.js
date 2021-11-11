@@ -10,6 +10,17 @@ export const NewTransferContainer = styled.div`
   }
 `;
 
+export const SummaryContainer = styled.div`
+  padding: 4rem 0;
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  margin: auto;
+  position: relative;
+  @media (max-width: 978px) {
+    padding: 3rem 2rem;
+  }
+`;
+
 export const OuterFlex = styled.div`
   display: flex;
   align-items: center;
@@ -35,11 +46,12 @@ export const Title = styled.div`
 
 export const TransferFooter = styled.div`
   width: 100%;
+  min-height: 8rem;
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
+  bottom: 0;
+  background-color: #ffffff;
   box-shadow: -1rem -1rem 2rem rgba(178, 178, 178, 0.15);
 `;
 
@@ -96,5 +108,24 @@ export const TeamLabel = styled.div`
 export const BatchContainer = styled.div`
   &:last-child {
     margin-bottom: 10rem;
+  }
+`;
+
+export const TransferSummaryContainer = styled.div`
+  max-width: 90rem;
+  width: 100%;
+  margin: auto;
+`;
+
+export const TransferRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  padding: 2.6rem 3rem;
+  border-bottom: 0.1rem solid #dddcdc;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.4rem;
+  &:first-of-type {
+    border-top: 0.1rem solid #dddcdc;
   }
 `;

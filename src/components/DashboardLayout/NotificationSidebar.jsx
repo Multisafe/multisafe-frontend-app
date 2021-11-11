@@ -105,6 +105,7 @@ function NotificationSidebar() {
   };
 
   const renderName = (encryptedName) => {
+    console.log({ encryptedName });
     const name = getDecryptedOwnerName({
       encryptedName,
       encryptionKey,

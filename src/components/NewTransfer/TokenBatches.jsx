@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray, useWatch } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { isEqual } from "lodash";
 
@@ -9,10 +9,7 @@ import { makeSelectPrices } from "store/tokens/selectors";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import Img from "components/common/Img";
 import { setTransferSummary } from "store/new-transfer/actions";
-import {
-  makeSelectTransferSummary,
-  // makeSelectStep,
-} from "store/new-transfer/selectors";
+import { makeSelectTransferSummary } from "store/new-transfer/selectors";
 import NestedReceivers from "./NestedReceivers";
 import TokenSummary from "./TokenSummary";
 import { Card } from "components/common/Card";
@@ -32,43 +29,49 @@ function Batch({
   fields,
   remove,
   getValues,
-  // receivers,
-  // selectedToken,
 }) {
-  const [totalAmountInToken, setTotalAmountInToken] = useState(0);
-  const [totalAmountInUsd, setTotalAmountInUsd] = useState(0);
-  const [selectedCount, setSelectedCount] = useState(0);
   const [prevTokenTotal, setPrevTokenTotal] = useState(0);
   const [prevUsdTotal, setPrevUsdTotal] = useState(0);
   const [receivers, setReceivers] = useState([]);
 
-  const selectedToken = watch(`batch[${index}].token`);
-  // const receivers = watch(`batch[${index}].receivers`);
+  const selectedToken = useWatch({ control, name: `batch[${index}].token` });
+  const visibleReceivers = useWatch({
+    control,
+    name: `batch[${index}].receivers`,
+    defaultValue: [],
+  });
+  const selectedCount = visibleReceivers && visibleReceivers.length;
 
   const dispatch = useDispatch();
 
   // Selectors
   const prices = useSelector(makeSelectPrices());
   const transferSummary = useSelector(makeSelectTransferSummary());
-  useEffect(() => {
+
+  const totalAmountInToken = useMemo(() => {
     if (
-      prices &&
-      receivers &&
-      receivers.length > 0 &&
+      visibleReceivers &&
+      visibleReceivers.length > 0 &&
       selectedToken &&
       selectedToken.value
     ) {
-      console.log("sumz");
-      const amountInToken = receivers.reduce((sum, { amount }) => {
+      const amountInToken = visibleReceivers.reduce((sum, { amount }) => {
         if (amount) sum += Number(amount);
         return sum;
       }, 0);
-
-      setTotalAmountInToken(amountInToken);
-      setTotalAmountInUsd(amountInToken * prices[selectedToken.value]);
-      setSelectedCount(receivers.length);
+      return amountInToken;
     }
-  }, [receivers, prices, selectedToken]);
+
+    return 0;
+  }, [visibleReceivers, selectedToken]);
+
+  const totalAmountInUsd = useMemo(() => {
+    if (selectedToken && selectedToken.value) {
+      return totalAmountInToken * prices[selectedToken.value];
+    }
+
+    return 0;
+  }, [totalAmountInToken, prices, selectedToken]);
 
   const tokenDetails = useMemo(
     () =>
@@ -100,10 +103,10 @@ function Batch({
 
   useEffect(() => {
     if (selectedToken && tokenDetails) {
-      console.log("fired");
       const summary = {
+        id: index,
         tokenName: selectedToken.value,
-        // receivers,
+        receivers: visibleReceivers,
         count: selectedCount,
         tokenTotal: totalAmountInToken,
         usdTotal: totalAmountInUsd,
@@ -120,6 +123,8 @@ function Batch({
       const newTransferSummary = [...transferSummary];
       newTransferSummary[index] = summary;
       if (!isEqual(transferSummary[index], newTransferSummary[index])) {
+        console.log("fired");
+
         dispatch(setTransferSummary(newTransferSummary));
       }
     }
@@ -132,9 +137,9 @@ function Batch({
     prevTokenTotal,
     prevUsdTotal,
     selectedToken,
-    // receivers,
     selectedCount,
     tokenDetails,
+    visibleReceivers,
   ]);
 
   useEffect(() => {
@@ -217,8 +222,6 @@ function TokenBatches({
     <>
       <div>
         {fields.map((item, index) => {
-          // const selectedToken = watch(`batch[${index}].token`);
-          // const receivers = watch(`batch[${index}].receivers`);
           return (
             <BatchContainer key={item.id}>
               <Batch
@@ -236,8 +239,6 @@ function TokenBatches({
                   fields,
                   remove,
                   getValues,
-                  // receivers,
-                  // selectedToken,
                 }}
               />
             </BatchContainer>

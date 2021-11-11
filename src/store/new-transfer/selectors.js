@@ -9,10 +9,16 @@ const makeSelectTransferSummary = () =>
     (newTransferState) => newTransferState.summary
   );
 
+const makeSelectFormData = () =>
+  createSelector(
+    selectNewTransfer,
+    (newTransferState) => newTransferState.formData
+  );
+
 const makeSelectStep = () =>
   createSelector(
     selectNewTransfer,
     (newTransferState) => newTransferState.step
   );
 
-export { makeSelectTransferSummary, makeSelectStep };
+export { makeSelectTransferSummary, makeSelectFormData, makeSelectStep };

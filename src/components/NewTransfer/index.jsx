@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
+import { isEqual } from "lodash";
 
 import Button from "components/common/Button";
 import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
-import {
-  makeSelectError as makeSelectErrorInCreateTx,
-  makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
-} from "store/transactions/selectors";
+import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
 import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
 import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
 import {
@@ -29,12 +27,30 @@ import { constructLabel } from "utils/tokens";
 import ErrorText from "components/common/ErrorText";
 import TokenBatches from "./TokenBatches";
 import {
+  makeSelectTransferSummary,
+  makeSelectStep,
+  makeSelectFormData,
+} from "store/new-transfer/selectors";
+import { STEPS } from "store/register/resources";
+import { selectStep, updateForm } from "store/new-transfer/actions";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionBody,
+  AccordionHeader,
+} from "components/common/Accordion";
+import {
   NewTransferContainer,
+  SummaryContainer,
   TransferFooter,
   ButtonsContainer,
   HeadingContainer,
   Heading,
+  TransferSummaryContainer,
+  TransferRow,
 } from "./styles/NewTransfer";
+import TokenSummary from "./TokenSummary";
+import TokenImg from "components/common/TokenImg";
 
 const defaultValues = {
   batch: [
@@ -59,14 +75,14 @@ export default function NewTransfer() {
     register,
     errors,
     handleSubmit,
-    formState,
     control,
     watch,
     setValue,
     getValues,
+    reset,
   } = useForm({
-    mode: "onChange",
-    defaultValues,
+    mode: "onSubmit",
+    defaultValues: defaultValues,
   });
 
   const dispatch = useDispatch();
@@ -77,11 +93,13 @@ export default function NewTransfer() {
   const tokenList = useSelector(makeSelectTokenList());
   const errorFromMetaTx = useSelector(makeSelectErrorInCreateTx());
   const addingMultisigTx = useSelector(makeSelectAddTxLoading());
-  const addingSingleOwnerTx = useSelector(makeSelectSingleOwnerAddTxLoading());
   const threshold = useSelector(makeSelectThreshold());
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
+  const transferSummary = useSelector(makeSelectTransferSummary());
+  const step = useSelector(makeSelectStep());
+  const formData = useSelector(makeSelectFormData());
 
   useEffect(() => {
     if (safeAddress) {
@@ -109,53 +127,74 @@ export default function NewTransfer() {
     }
   }, [tokenList, tokensDropdown]);
 
+  useEffect(() => {
+    if (!isEqual(formData, {})) {
+      reset({ ...formData });
+    }
+  }, [reset, formData]);
+
+  const goBack = () => {
+    dispatch(selectStep(step - 1));
+  };
+
+  const goNext = () => {
+    dispatch(selectStep(step + 1));
+  };
+
   const onSubmit = async (values) => {
     console.log({ values });
 
-    // const receivers = values.receivers.map(({ address, amount, name }) => ({
-    //   address,
-    //   salaryAmount: amount,
-    //   salaryToken: selectedTokenDetails.name,
-    //   description: values.description || "",
-    //   usd: selectedTokenDetails.usdConversionRate * amount,
-    //  name,
-    // }));
+    dispatch(updateForm(values));
 
-    // const totalAmountToPay = receivers.reduce(
-    //   (total, { usd }) => (total += usd),
-    //   0
-    // );
+    if (step === STEPS.ZERO) {
+      goNext();
+    } else {
+      // const receivers = values.receivers.map(({ address, amount, name }) => ({
+      //   address,
+      //   salaryAmount: amount,
+      //   salaryToken: selectedTokenDetails.name,
+      //   description: values.description || "",
+      //   usd: selectedTokenDetails.usdConversionRate * amount,
+      //  name,
+      // }));
 
-    const addresses = [];
+      // const totalAmountToPay = receivers.reduce(
+      //   (total, { usd }) => (total += usd),
+      //   0
+      // );
 
-    for (let { receivers } of values.batch) {
-      for (let { address } of receivers) {
-        addresses.push(address);
+      const addresses = [];
+
+      for (let { receivers } of values.batch) {
+        for (let { address } of receivers) {
+          addresses.push(address);
+        }
       }
+
+      const to = cryptoUtils.encryptDataUsingEncryptionKey(
+        JSON.stringify([]),
+        encryptionKey,
+        organisationType
+      );
+      const baseRequestBody = {
+        to,
+        safeAddress: safeAddress,
+        createdBy: account,
+        tokenValue: 0,
+        tokenCurrency: "USDT", // TODO: Fix
+        fiatValue: "100",
+        fiatCurrency: "USD",
+        addresses,
+        transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
+        metaData: transferSummary,
+      };
+
+      await batchMassPayout({
+        batch: values.batch,
+        allTokenDetails: existingTokenDetails,
+        baseRequestBody,
+      });
     }
-
-    const to = cryptoUtils.encryptDataUsingEncryptionKey(
-      JSON.stringify([]),
-      encryptionKey,
-      organisationType
-    );
-    const baseRequestBody = {
-      to,
-      safeAddress: safeAddress,
-      createdBy: account,
-      tokenValue: 0,
-      tokenCurrency: "USDT", // TODO: Fix
-      fiatValue: "100",
-      fiatCurrency: "USD",
-      addresses,
-      transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
-    };
-
-    await batchMassPayout({
-      batch: values.batch,
-      allTokenDetails: existingTokenDetails,
-      baseRequestBody,
-    });
   };
 
   const renderFlexibleMassPayout = () => (
@@ -213,21 +252,29 @@ export default function NewTransfer() {
           >
             Add Batch
           </Button>
-          <Button
-            type="submit"
-            style={{ minWidth: "16rem" }}
-            disabled={
-              !formState.isValid ||
-              loadingTx ||
-              addingMultisigTx ||
-              addingSingleOwnerTx ||
-              loadingSafeDetails ||
-              isReadOnly
-            }
-            loading={loadingTx || addingMultisigTx || addingSingleOwnerTx}
-          >
-            {threshold > 1 ? `Create Transaction` : `Send`}
-          </Button>
+          {step === STEPS.ZERO ? (
+            <Button
+              type="submit"
+              style={{ minWidth: "16rem" }}
+              disabled={loadingSafeDetails}
+            >
+              Confirm
+            </Button>
+          ) : step === STEPS.ONE ? (
+            <Button
+              type="submit"
+              style={{ minWidth: "16rem" }}
+              disabled={
+                loadingTx ||
+                addingMultisigTx ||
+                loadingSafeDetails ||
+                isReadOnly
+              }
+              loading={loadingTx || addingMultisigTx}
+            >
+              {threshold > 1 ? `Create Transaction` : `Send`}
+            </Button>
+          ) : null}
         </ButtonsContainer>
       </TransferFooter>
 
@@ -235,12 +282,76 @@ export default function NewTransfer() {
     </div>
   );
 
-  return (
-    <NewTransferContainer>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {renderFlexibleMassPayout()}
-      </form>
-      <SelectFromTeamModal />
-    </NewTransferContainer>
-  );
+  const renderSummary = () => {
+    console.log({ transferSummary });
+    return (
+      <SummaryContainer>
+        <TransferSummaryContainer>
+          <HeadingContainer>
+            <Heading>Summary</Heading>
+          </HeadingContainer>
+
+          <Accordion>
+            {transferSummary.map((summary) => {
+              const { id, tokenName, receivers } = summary;
+
+              return (
+                <AccordionItem key={id}>
+                  <AccordionHeader>Batch {id + 1}</AccordionHeader>
+                  <AccordionBody>
+                    <React.Fragment>
+                      {receivers.map(
+                        ({ address, amount, departmentName, name }, idx) => (
+                          <TransferRow key={`${address}-${idx}`}>
+                            <div>{name}</div>
+                            <div>
+                              <TokenImg token={tokenName} />{" "}
+                              {formatNumber(amount, 5)} {tokenName}
+                            </div>
+                            <div>{address}</div>
+                          </TransferRow>
+                        )
+                      )}
+                      <TokenSummary
+                        summary={summary}
+                        style={{ padding: "2.6rem 3rem", marginTop: "0" }}
+                      />
+                    </React.Fragment>
+                  </AccordionBody>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+        </TransferSummaryContainer>
+
+        <div>
+          <div>Description</div>
+          <Button className="secondary" onClick={goBack}>
+            Back
+          </Button>
+        </div>
+      </SummaryContainer>
+    );
+  };
+  const renderNewTransfer = () => {
+    switch (step) {
+      case STEPS.ZERO:
+        return (
+          <NewTransferContainer>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {renderFlexibleMassPayout()}
+            </form>
+            <SelectFromTeamModal />
+          </NewTransferContainer>
+        );
+
+      case STEPS.ONE:
+        return renderSummary();
+
+      default:
+        return null;
+    }
+  };
+
+  return renderNewTransfer();
 }

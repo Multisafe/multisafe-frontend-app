@@ -9,7 +9,7 @@ import {
   PaymentSubtitle,
 } from "./styles/PaymentSummary";
 
-const TokenSummary = ({ summary }) => {
+const TokenSummary = ({ summary, ...rest }) => {
   if (!summary) return null;
 
   const {
@@ -25,7 +25,7 @@ const TokenSummary = ({ summary }) => {
   } = summary;
 
   return (
-    <PaymentSummary>
+    <PaymentSummary {...rest}>
       <PaymentInfo>
         <div>
           <PaymentTitle>Current Balance</PaymentTitle>

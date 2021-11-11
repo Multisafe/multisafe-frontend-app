@@ -1,5 +1,5 @@
 import { useEffect, memo, useState } from "react";
-import { useFieldArray, Controller } from "react-hook-form";
+import { useFieldArray, Controller, useWatch } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { show } from "redux-modal";
 import Big from "big.js";
@@ -26,7 +26,6 @@ function Receiver({
   k,
   register,
   control,
-  watch,
   selectedToken,
   prices,
   selectedTokenDetails,
@@ -34,21 +33,25 @@ function Receiver({
   remove,
   errors,
   setReceivers,
+  receivers,
   getValues,
 }) {
-  const amountChanged = watch(`batch[${nestIndex}].receivers[${k}].amount`);
-  // const amountChanged = useWatch({
-  //   control,
-  //   name: `batch[${nestIndex}].receivers[${k}].amount`,
-  // });
-  // const receivers = watch(`batch[${nestIndex}].receivers`);
+  const amountChanged = useWatch({
+    control,
+    name: `batch[${nestIndex}].receivers[${k}].amount`,
+  });
 
   useEffect(() => {
-    if (amountChanged) {
-      console.log("updating receivers");
-      setReceivers([...getValues().batch[nestIndex].receivers]);
+    const newReceivers = getValues().batch[nestIndex].receivers;
+    if (newReceivers && newReceivers[k]) {
+      // update the summary only when amount changes
+      if (!receivers || !receivers[k]) {
+        setReceivers([...newReceivers]);
+      } else if (newReceivers[k].amount !== receivers[k].amount) {
+        setReceivers([...newReceivers]);
+      }
     }
-  }, [amountChanged, getValues, setReceivers, nestIndex]);
+  }, [amountChanged, getValues, setReceivers, receivers, k, nestIndex]);
 
   return (
     <div style={{ marginBottom: "1.8rem" }}>
@@ -61,7 +64,7 @@ function Receiver({
             placeholder="Enter Name (optional)"
             style={{ maxWidth: "20rem" }}
             defaultValue={item.name || ""}
-            readOnly={item.isDisabled}
+            readOnly={Number(item.isDisabled) === 1 ? true : false}
           />
 
           <Input
@@ -76,7 +79,7 @@ function Receiver({
             placeholder="Wallet Address"
             style={{ maxWidth: "38rem" }}
             defaultValue={item.address || ""}
-            readOnly={item.isDisabled || false}
+            readOnly={Number(item.isDisabled) === 1 ? true : false}
           />
 
           <Input
@@ -100,7 +103,7 @@ function Receiver({
                 rules={{
                   required: "Amount is required",
                   validate: (value) => {
-                    if (value <= 0) return "Please check your input";
+                    if (value <= 0) return "Please check the amount";
 
                     return true;
                   },
@@ -167,7 +170,7 @@ function NestedReceivers({
   existingTokenDetails,
   errors,
   setReceivers,
-  // receivers,
+  receivers,
   getValues,
 }) {
   const { fields, remove, append } = useFieldArray({
@@ -176,7 +179,7 @@ function NestedReceivers({
   });
 
   const selectedToken = watch(`batch[${nestIndex}].token`);
-  const receivers = watch(`batch[${nestIndex}].receivers`);
+  const visibleReceivers = watch(`batch[${nestIndex}].receivers`);
 
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [peopleFromTeam, setPeopleFromTeam] = useState([]);
@@ -200,13 +203,13 @@ function NestedReceivers({
     // remove the first empty row, if people from team are added
     if (
       peopleFromTeam.length > 0 &&
-      receivers.length === 1 &&
-      !receivers[0].address &&
-      !receivers[0].amount
+      visibleReceivers.length === 1 &&
+      !visibleReceivers[0].address &&
+      !visibleReceivers[0].amount
     ) {
       remove(0);
     }
-  }, [receivers, peopleFromTeam, remove]);
+  }, [visibleReceivers, peopleFromTeam, remove]);
 
   useEffect(() => {
     if (peopleFromTeam.length > 0 && selectedTokenDetails) {
@@ -219,8 +222,6 @@ function NestedReceivers({
           salaryAmount,
           departmentName,
         } = people;
-
-        console.log({ people });
 
         const amount =
           salaryToken === "USD"
@@ -235,7 +236,7 @@ function NestedReceivers({
           address,
           amount,
           departmentName,
-          isDisabled: true,
+          isDisabled: 1,
         };
       });
 
@@ -273,121 +274,11 @@ function NestedReceivers({
               remove,
               errors,
               setReceivers,
+              receivers,
               getValues,
             }}
           />
         );
-        // return (
-        //   <div key={item.id} style={{ marginBottom: "1.8rem" }}>
-        //     <OuterFlex>
-        //       <DetailsRow>
-        //         <Input
-        //           type="text"
-        //           name={`batch[${nestIndex}].receivers[${k}].name`}
-        //           register={register}
-        //           placeholder="Enter Name (optional)"
-        //           style={{ maxWidth: "20rem" }}
-        //           defaultValue={item.name || ""}
-        //           disabled={item.isDisabled}
-        //         />
-
-        //         <Input
-        //           type="text"
-        //           name={`batch[${nestIndex}].receivers[${k}].address`}
-        //           register={register}
-        //           required={`Wallet Address is required`}
-        //           pattern={{
-        //             value: /^0x[a-fA-F0-9]{40}$/,
-        //             message: "Invalid Ethereum Address",
-        //           }}
-        //           placeholder="Wallet Address"
-        //           style={{ maxWidth: "38rem" }}
-        //           defaultValue={item.address || ""}
-        //           disabled={item.isDisabled}
-        //         />
-
-        //         <Input
-        //           type="hidden"
-        //           name={`batch[${nestIndex}].receivers[${k}].departmentName`}
-        //           register={register}
-        //           defaultValue={item.departmentName}
-        //         />
-        //         <Input
-        //           type="hidden"
-        //           name={`batch[${nestIndex}].receivers[${k}].isDisabled`}
-        //           register={register}
-        //           defaultValue={item.isDisabled}
-        //         />
-
-        //         {selectedToken && selectedToken.value && (
-        //           <div>
-        //             <Controller
-        //               control={control}
-        //               name={`batch[${nestIndex}].receivers[${k}].amount`}
-        //               rules={{
-        //                 required: "Amount is required",
-        //                 validate: (value) => {
-        //                   if (value <= 0) return "Please check your input";
-
-        //                   return true;
-        //                 },
-        //               }}
-        //               defaultValue={item.amount || ""}
-        //               render={({ onChange, value }) => (
-        //                 <CurrencyInput
-        //                   type="number"
-        //                   name={`batch[${nestIndex}].receivers[${k}].amount`}
-        //                   value={value}
-        //                   onChange={onChange}
-        //                   placeholder="0.00"
-        //                   conversionRate={
-        //                     prices &&
-        //                     selectedTokenDetails &&
-        //                     prices[selectedTokenDetails.name]
-        //                   }
-        //                   tokenName={
-        //                     selectedTokenDetails
-        //                       ? selectedTokenDetails.name
-        //                       : ""
-        //                   }
-        //                 />
-        //               )}
-        //             />
-        //           </div>
-        //         )}
-
-        //         <div style={{ minWidth: "2rem" }}>
-        //           {fields.length > 1 && (
-        //             <Button
-        //               type="button"
-        //               iconOnly
-        //               onClick={() => remove(k)}
-        //               className="p-0"
-        //             >
-        //               <Img src={DeleteSvg} alt="remove" width="16" />
-        //             </Button>
-        //           )}
-        //         </div>
-        //       </DetailsRow>
-        //       <div>
-        //         {item.departmentName && (
-        //           <TeamLabel>{item.departmentName}</TeamLabel>
-        //         )}
-        //       </div>
-        //     </OuterFlex>
-
-        //     <div>
-        //       <ErrorMessage
-        //         errors={errors}
-        //         name={`batch[${nestIndex}].receivers[${k}].address.message`}
-        //       />
-        //       <ErrorMessage
-        //         errors={errors}
-        //         name={`batch[${nestIndex}].receivers[${k}].amount.message`}
-        //       />
-        //     </div>
-        //   </div>
-        // );
       })}
 
       <div className="my-4 d-flex">

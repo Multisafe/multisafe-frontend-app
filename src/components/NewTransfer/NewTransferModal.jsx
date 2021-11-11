@@ -9,7 +9,7 @@ import {
 import NewTransfer from "components/NewTransfer";
 import { useInjectReducer } from "utils/injectReducer";
 import newTransferReducer from "store/new-transfer/reducer";
-import { setTransferSummary } from "store/new-transfer/actions";
+import { resetTransferStore } from "store/new-transfer/actions";
 
 export const MODAL_NAME = "new-transfer-modal";
 const newTransferKey = "newTransfer";
@@ -23,9 +23,11 @@ function NewTransferModal(props) {
 
   const hideModal = async () => {
     // cleanup store on closing
+    // dispatch(resetTransferStore());
     handleHide();
+    // TODO - fix race condition, and reset store before closing
     await new Promise((resolve) =>
-      setTimeout(() => resolve(dispatch(setTransferSummary([])), 10))
+      setTimeout(() => resolve(dispatch(resetTransferStore()), 10))
     );
   };
 
