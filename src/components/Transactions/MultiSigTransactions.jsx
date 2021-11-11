@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
-import { getMultisigTransactions } from "store/multisig/actions";
+import {getLabels, getMultisigTransactions} from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
@@ -16,7 +16,7 @@ import {
   makeSelectIsMultiOwner,
   makeSelectOwnerSafeAddress,
 } from "store/global/selectors";
-import { InfoCard } from "../People/styles";
+import { InfoCard } from "components/People/styles";
 import ExportButton from "./ExportButton";
 import {
   Table,
@@ -30,8 +30,9 @@ import GnosisTransaction from "./GnosisTransaction";
 import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
+import { MULTISIG_KEY } from "store/multisig/constants";
+import {useActiveWeb3React} from "hooks";
 
-const multisigKey = "multisig";
 const LIMIT = 10;
 
 export default function MultiSigTransactions() {
@@ -39,10 +40,12 @@ export default function MultiSigTransactions() {
   const [hasMore, setHasMore] = useState(false);
 
   // Reducers
-  useInjectReducer({ key: multisigKey, reducer: multisigReducer });
+  useInjectReducer({ key: MULTISIG_KEY, reducer: multisigReducer });
 
   // Sagas
-  useInjectSaga({ key: multisigKey, saga: multisigSaga });
+  useInjectSaga({ key: MULTISIG_KEY, saga: multisigSaga });
+
+  const { account: userAddress, chainId: networkId } = useActiveWeb3React();
 
   const dispatch = useDispatch();
 
@@ -73,6 +76,10 @@ export default function MultiSigTransactions() {
     },
     [loading]
   );
+
+  useEffect(() => {
+    dispatch(getLabels(networkId, ownerSafeAddress, userAddress));
+  }, [dispatch, networkId, ownerSafeAddress, userAddress]);
 
   useEffect(() => {
     setHasMore(txCount > 0);
@@ -166,9 +173,10 @@ export default function MultiSigTransactions() {
       <Table style={{ marginTop: "4rem" }}>
         <TableHead>
           <tr>
-            <th style={{ width: "35%" }}>Transaction</th>
-            <th style={{ width: "30%" }}>Total Amount</th>
-            <th style={{ width: "20%" }}>Status</th>
+            <th style={{ width: "30%" }}>Transaction</th>
+            <th style={{ width: "20%" }}>Total Amount</th>
+            <th style={{ width: "15%" }}>Status</th>
+            <th style={{ width: "20%" }}>Labels</th>
             <th style={{ width: "15%" }}></th>
           </tr>
         </TableHead>

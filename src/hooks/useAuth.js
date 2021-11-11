@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 import { useLocalStorage } from "./index";
 import { setReadOnly } from "store/global/actions";
@@ -30,6 +30,7 @@ export default function useAuth() {
 
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     async function checkWalletStatus() {
@@ -101,7 +102,11 @@ export default function useAuth() {
           dispatch(setReadOnly(true));
           if (!dataSharingAllowed) {
             // Please sign to verify and login to the dashboard
-            history.push(routeGenerators.verifyUser({ safeAddress }));
+            history.push(
+              `${routeGenerators.verifyUser({
+                safeAddress,
+              })}?redirectUrl=${location.pathname}`
+            );
           }
         }
       } else if (walletState === WALLET_STATES.NOT_CONNECTED) {
@@ -111,6 +116,7 @@ export default function useAuth() {
   }, [
     dispatch,
     history,
+    location,
     account,
     sign,
     walletState,

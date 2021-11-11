@@ -19,6 +19,7 @@ export function* loginUser({
   signature,
   password,
   owner,
+  redirectUrl,
 }) {
   const requestURL = `${loginEndpoint}`;
 
@@ -43,7 +44,11 @@ export function* loginUser({
       localStorage.setItem("token", result.access_token);
       yield put(loginUserSuccess(result.safeAddress, result.log));
       yield put(getSafeInfoSuccess(result.safeInfo));
-      yield put(push(routeGenerators.dashboard.root({ safeAddress })));
+      if (redirectUrl) {
+        yield put(push(redirectUrl));
+      } else {
+        yield put(push(routeGenerators.dashboard.root({ safeAddress })));
+      }
     }
   } catch (err) {
     yield put(loginUserError(err));

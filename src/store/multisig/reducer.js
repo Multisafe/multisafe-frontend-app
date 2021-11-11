@@ -16,7 +16,11 @@ import {
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
   CLEAR_MULTISIG_TRANSACTION,
-  UPDATE_MULTISIG_TRANSACTION_NOTE,
+  UPDATE_TRANSACTION_NOTE_DATA,
+  GET_LABELS,
+  GET_LABELS_ERROR,
+  GET_LABELS_SUCCESS,
+  UPDATE_TRANSACTION_LABELS_DATA,
 } from "./action-types";
 
 export const initialState = {
@@ -33,6 +37,9 @@ export const initialState = {
   executionAllowed: false,
   transactionCount: 1,
   isPendingTransactions: false,
+  labels: null,
+  labelsLoading: false,
+  labelsError: null,
 };
 
 /* eslint-disable default-case, no-param-reassign */
@@ -134,7 +141,7 @@ const reducer = (state = initialState, action) =>
         draft.transactionId = "";
         break;
 
-      case UPDATE_MULTISIG_TRANSACTION_NOTE:
+      case UPDATE_TRANSACTION_NOTE_DATA:
         const { transactionId, transactionHash, note } = action;
 
         const index = state.transactions.findIndex(
@@ -157,8 +164,64 @@ const reducer = (state = initialState, action) =>
 
         break;
 
+      case UPDATE_TRANSACTION_LABELS_DATA:
+        const transactionIndex = state.transactions.findIndex(
+          ({ txDetails }) =>
+            (!!action.transactionId &&
+              action.transactionId === txDetails.transactionId) ||
+            (!!action.transactionHash &&
+              action.transactionHash === txDetails.transactionHash)
+        );
+
+        if (transactionIndex >= 0) {
+          draft.transactions = state.transactions;
+          draft.transactions[transactionIndex].txDetails.transactionId =
+            action.transactionId;
+          draft.transactions[transactionIndex].txDetails.labels =
+            action.labels.flatMap((id) => {
+              const labelDetails = state.labels.find(
+                ({ labelId }) => labelId === id
+              );
+
+              return labelDetails ? [labelDetails] : [];
+            });
+        }
+
+        if (
+          state.transactionDetails?.txDetails?.transactionId ===
+          action.transactionId
+        ) {
+          draft.transactionDetails.txDetails.labels = action.labels.flatMap(
+            (id) => {
+              const labelDetails = state.labels.find(
+                ({ labelId }) => labelId === id
+              );
+
+              return labelDetails ? [labelDetails] : [];
+            }
+          );
+        }
+
+        break;
+
       case CLEAR_MULTISIG_TRANSACTION:
         draft.transactionHash = "";
+        break;
+
+      case GET_LABELS:
+        draft.labelsError = null;
+        draft.labelsLoading = true;
+        draft.labels = [];
+        break;
+
+      case GET_LABELS_ERROR:
+        draft.labelsLoading = false;
+        draft.labelsError = action.error;
+        break;
+
+      case GET_LABELS_SUCCESS:
+        draft.labelsLoading = false;
+        draft.labels = action.labels;
         break;
     }
   });

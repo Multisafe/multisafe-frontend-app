@@ -19,6 +19,7 @@ import {
   QuickViewTransaction,
   useQuickViewTransactionState,
 } from "components/QuickViewTransaction";
+import { TransactionLabels } from "./TransactionLabels";
 
 const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
@@ -39,6 +40,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
     createdOn,
     transactionMode,
     to,
+    labels,
   } = txDetails;
 
   const renderSwapTokenValue = () => {
@@ -89,10 +91,18 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
     );
   };
 
+  const transactionName = (
+    <TransactionName to={to} transactionMode={transactionMode} />
+  );
+
   return (
     <React.Fragment>
-      <TxRow onClick={navigateToTransaction} ref={ref}>
-        <td style={{ width: "35%" }}>
+      <TxRow
+        onClick={navigateToTransaction}
+        ref={ref}
+        quickViewOpen={quickViewOpen}
+      >
+        <td style={{ width: "30%" }}>
           <div className="d-flex align-items-center">
             <Img
               src={
@@ -104,18 +114,19 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
               className="direction"
             />
             <div>
-              <div className="name">
-                <TransactionName to={to} transactionMode={transactionMode} />
-              </div>
+              <div className="name">{transactionName}</div>
               <div className="date">
                 {format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
               </div>
             </div>
           </div>
         </td>
-        <td style={{ width: "30%" }}>{renderTokenValue()}</td>
-        <td style={{ width: "20%" }}>
+        <td style={{ width: "20%" }}>{renderTokenValue()}</td>
+        <td style={{ width: "15%" }}>
           <StatusText status={status} textOnly className="status" />
+        </td>
+        <td style={{ width: "20%" }} onClick={onQuickViewOpen}>
+          <TransactionLabels labels={labels} />
         </td>
         <td style={{ width: "15%" }} onClick={onQuickViewOpen}>
           <div className="view">Quick View</div>
@@ -128,6 +139,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
           txDetails,
           safeAddress,
           navigateToTransaction,
+          transactionName,
         }}
       />
     </React.Fragment>

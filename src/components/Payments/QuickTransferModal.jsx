@@ -2,8 +2,7 @@ import React from "react";
 import { connectModal as reduxModal } from "redux-modal";
 
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
-// import QuickTransfer from "components/QuickTransfer";
-import FlexibleMassPayout from "components/QuickTransfer/FlexibleMassPayout";
+import QuickTransfer from "components/QuickTransfer";
 
 export const MODAL_NAME = "quick-transfer-modal";
 
@@ -13,8 +12,8 @@ function QuickTransferModal(props) {
   return (
     <Modal isOpen={show} toggle={handleHide}>
       <ModalHeader title={"Quick Transfer"} toggle={handleHide} />
-      <ModalBody width="120rem" minHeight="auto">
-        <FlexibleMassPayout handleHide={handleHide} {...rest} />
+      <ModalBody width="100rem" minHeight="auto">
+        <QuickTransfer handleHide={handleHide} {...rest} />
       </ModalBody>
     </Modal>
   );

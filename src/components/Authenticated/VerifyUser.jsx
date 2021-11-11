@@ -2,7 +2,7 @@
 // show "Sign and Login". If that address is an owner, login else logout
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import { cryptoUtils } from "coinshift-sdk";
 
 import Button from "components/common/Button";
@@ -50,6 +50,7 @@ const VerifyUser = () => {
   const dispatch = useDispatch();
   const params = useParams();
   const history = useHistory();
+  const location = useLocation();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -127,12 +128,15 @@ const VerifyUser = () => {
             setEncryptionKey(encryptionKey);
 
             const password = getPassword(signature);
+            const searchParams = new URLSearchParams(location.search);
+            const redirectUrl = searchParams.get("redirectUrl");
             dispatch(
               loginUser({
                 safeAddress: params.safeAddress,
                 encryptionKeyData: safe.encryptionKeyData,
                 password,
                 owner: account,
+                redirectUrl,
               })
             );
           } catch (err) {

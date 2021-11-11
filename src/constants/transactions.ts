@@ -1,4 +1,4 @@
-export const TRANSACTION_MODES: Record<string, number> = {
+export const TRANSACTION_MODES = {
   MASS_PAYOUT: 0,
   QUICK_TRANSFER: 1,
   SPENDING_LIMITS: 2,
@@ -10,7 +10,7 @@ export const TRANSACTION_MODES: Record<string, number> = {
   FLEXIBLE_MASS_PAYOUT: 8,
 };
 
-export const TRANSACTION_STATUS: Record<string, number> = {
+export const TRANSACTION_STATUS = {
   COMPLETED: 0,
   PENDING: 1,
   FAILED: 2,
