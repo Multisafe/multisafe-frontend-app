@@ -12,7 +12,7 @@ import {
 } from "components/common/Form";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import { useEncryptionKey, useSpendingLimits } from "hooks";
+import {useActiveWeb3React, useEncryptionKey, useSpendingLimits} from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -63,6 +63,8 @@ const resetOptions = [
 
 export default function SpendingLimits() {
   const [encryptionKey] = useEncryptionKey();
+
+  const { account } = useActiveWeb3React();
 
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
@@ -160,7 +162,7 @@ export default function SpendingLimits() {
     const baseRequestBody = {
       to,
       safeAddress: ownerSafeAddress,
-      createdBy: ownerSafeAddress,
+      createdBy: account,
       tokenValue: spendingLimitDetails.reduce(
         (total, { allowanceAmount }) => (total += parseFloat(allowanceAmount)),
         0
