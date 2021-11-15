@@ -26,7 +26,7 @@ const modalStyles = `
   }
 
   .full-modal-body {
-    padding: 0 3rem 3rem;
+    padding: 0;
   }
 
   .full-modal-wrapper .modal-dialog {

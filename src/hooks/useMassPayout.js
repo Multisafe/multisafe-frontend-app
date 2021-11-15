@@ -105,9 +105,9 @@ export default function useMassPayout() {
           }
 
           const erc20TransferTxs = receivers.reduce(
-            (tx, { address, amount }) => {
+            (tx, { address, tokenValue }) => {
               const transferAmount = getAmountInWei(
-                amount,
+                tokenValue,
                 tokenDetails.decimals
               );
 
@@ -129,21 +129,24 @@ export default function useMassPayout() {
 
           transactions.push(...erc20TransferTxs);
         } else {
-          const ethTransferTxs = receivers.reduce((tx, { address, amount }) => {
-            const transferAmount = getAmountInWei(
-              amount,
-              tokenDetails.decimals
-            );
+          const ethTransferTxs = receivers.reduce(
+            (tx, { address, tokenValue }) => {
+              const transferAmount = getAmountInWei(
+                tokenValue,
+                tokenDetails.decimals
+              );
 
-            // ETH
-            tx.push({
-              operation: 0, // CALL
-              data: "0x",
-              to: address,
-              value: transferAmount,
-            });
-            return tx;
-          }, []);
+              // ETH
+              tx.push({
+                operation: 0, // CALL
+                data: "0x",
+                to: address,
+                value: transferAmount,
+              });
+              return tx;
+            },
+            []
+          );
 
           transactions.push(...ethTransferTxs);
         }

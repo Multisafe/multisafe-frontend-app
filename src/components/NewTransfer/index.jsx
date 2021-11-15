@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
 import { isEqual } from "lodash";
+import { show } from "redux-modal";
 
 import Button from "components/common/Button";
 import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
@@ -19,6 +20,7 @@ import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
+  makeSelectTotalBalance,
 } from "store/tokens/selectors";
 import SelectFromTeamModal from "./SelectFromTeamModal";
 import { TRANSACTION_MODES } from "constants/transactions";
@@ -39,6 +41,14 @@ import {
   AccordionBody,
   AccordionHeader,
 } from "components/common/Accordion";
+import { TextArea } from "components/common/Form";
+import TokenSummary from "./TokenSummary";
+import TokenImg from "components/common/TokenImg";
+import Img from "components/common/Img";
+import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
+import UploadCsvModal, {
+  MODAL_NAME as UPLOAD_CSV_MODAL,
+} from "./UploadCsvModal";
 import {
   NewTransferContainer,
   SummaryContainer,
@@ -48,9 +58,17 @@ import {
   Heading,
   TransferSummaryContainer,
   TransferRow,
+  InputTitle,
+  GrandTotalText,
+  FixedPortion,
+  SectionDivider,
 } from "./styles/NewTransfer";
-import TokenSummary from "./TokenSummary";
-import TokenImg from "components/common/TokenImg";
+import {
+  PaymentFlex,
+  PaymentTitle,
+  PaymentSubtitle,
+  PaymentButtonContainer,
+} from "./styles/PaymentSummary";
 
 const defaultValues = {
   batch: [
@@ -100,6 +118,7 @@ export default function NewTransfer() {
   const transferSummary = useSelector(makeSelectTransferSummary());
   const step = useSelector(makeSelectStep());
   const formData = useSelector(makeSelectFormData());
+  const totalBalance = useSelector(makeSelectTotalBalance());
 
   useEffect(() => {
     if (safeAddress) {
@@ -141,9 +160,11 @@ export default function NewTransfer() {
     dispatch(selectStep(step + 1));
   };
 
-  const onSubmit = async (values) => {
-    console.log({ values });
+  const showUploadCsvModal = () => {
+    dispatch(show(UPLOAD_CSV_MODAL));
+  };
 
+  const onSubmit = async (values) => {
     dispatch(updateForm(values));
 
     if (step === STEPS.ZERO) {
@@ -165,7 +186,7 @@ export default function NewTransfer() {
 
       const addresses = [];
 
-      for (let { receivers } of values.batch) {
+      for (let { receivers } of formData.batch) {
         for (let { address } of receivers) {
           addresses.push(address);
         }
@@ -183,6 +204,7 @@ export default function NewTransfer() {
         tokenValue: 0,
         tokenCurrency: "USDT", // TODO: Fix
         fiatValue: "100",
+        description: values.description || "",
         fiatCurrency: "USD",
         addresses,
         transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
@@ -190,7 +212,7 @@ export default function NewTransfer() {
       };
 
       await batchMassPayout({
-        batch: values.batch,
+        batch: formData.batch,
         allTokenDetails: existingTokenDetails,
         baseRequestBody,
       });
@@ -203,7 +225,12 @@ export default function NewTransfer() {
         <Heading>New Transfer</Heading>
 
         <div>
-          <Button type="button" className="secondary-4" width="12rem">
+          <Button
+            onClick={showUploadCsvModal}
+            type="button"
+            className="secondary-4"
+            width="12rem"
+          >
             Upload CSV
           </Button>
         </div>
@@ -219,71 +246,28 @@ export default function NewTransfer() {
           loadingTokens,
           existingTokenDetails,
           getValues,
+          setValue,
         }}
       />
-      {/* 
-      <div className="title mt-5">Description (Optional)</div>
-      <div>
-        <TextArea
-          name="description"
-          register={register}
-          placeholder="Paid 500 DAI to John Doe..."
-          rows="3"
-          cols="50"
-          defaultValue={defaultValues ? defaultValues.description : ""}
-        />
-      </div> */}
-
-      <TransferFooter>
-        <ButtonsContainer>
-          <Button
-            type="button"
-            className="secondary"
-            style={{ minWidth: "16rem" }}
-            onClick={() => {
-              setValue("batch", [
-                ...getValues().batch,
-                {
-                  token: undefined,
-                  receivers: [{ address: "", amount: "" }],
-                },
-              ]);
-            }}
-          >
-            Add Batch
-          </Button>
-          {step === STEPS.ZERO ? (
-            <Button
-              type="submit"
-              style={{ minWidth: "16rem" }}
-              disabled={loadingSafeDetails}
-            >
-              Confirm
-            </Button>
-          ) : step === STEPS.ONE ? (
-            <Button
-              type="submit"
-              style={{ minWidth: "16rem" }}
-              disabled={
-                loadingTx ||
-                addingMultisigTx ||
-                loadingSafeDetails ||
-                isReadOnly
-              }
-              loading={loadingTx || addingMultisigTx}
-            >
-              {threshold > 1 ? `Create Transaction` : `Send`}
-            </Button>
-          ) : null}
-        </ButtonsContainer>
-      </TransferFooter>
 
       {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
     </div>
   );
 
   const renderSummary = () => {
-    console.log({ transferSummary });
+    const grandTotalSummary = transferSummary.reduce(
+      (totalSummary, { count, usdTotal, tokenName }) => {
+        totalSummary.usdTotal += usdTotal;
+        totalSummary.count += count;
+
+        if (!totalSummary.tokens[tokenName])
+          totalSummary.tokens[tokenName] = tokenName;
+
+        return totalSummary;
+      },
+      { count: 0, usdTotal: 0, tokens: {} }
+    );
+
     return (
       <SummaryContainer>
         <TransferSummaryContainer>
@@ -292,21 +276,24 @@ export default function NewTransfer() {
           </HeadingContainer>
 
           <Accordion>
-            {transferSummary.map((summary) => {
+            {transferSummary.map((summary, index) => {
               const { id, tokenName, receivers } = summary;
 
               return (
-                <AccordionItem key={id}>
+                <AccordionItem key={id} isOpen={index === 0}>
                   <AccordionHeader>Batch {id + 1}</AccordionHeader>
                   <AccordionBody>
                     <React.Fragment>
                       {receivers.map(
-                        ({ address, amount, departmentName, name }, idx) => (
+                        (
+                          { address, tokenValue, departmentName, name },
+                          idx
+                        ) => (
                           <TransferRow key={`${address}-${idx}`}>
                             <div>{name}</div>
                             <div>
                               <TokenImg token={tokenName} />{" "}
-                              {formatNumber(amount, 5)} {tokenName}
+                              {formatNumber(tokenValue, 5)} {tokenName}
                             </div>
                             <div>{address}</div>
                           </TransferRow>
@@ -324,11 +311,100 @@ export default function NewTransfer() {
           </Accordion>
         </TransferSummaryContainer>
 
-        <div>
-          <div>Description</div>
-          <Button className="secondary" onClick={goBack}>
-            Back
-          </Button>
+        <div className="position-relative">
+          <SectionDivider />
+          <FixedPortion>
+            <InputTitle>Description</InputTitle>
+            <div>
+              <TextArea
+                name="description"
+                register={register}
+                placeholder="Enter Description (Optional)"
+                rows="1"
+                cols="50"
+                defaultValue={defaultValues ? defaultValues.description : ""}
+              />
+            </div>
+
+            <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
+            <div>
+              <TextArea
+                name="description"
+                register={register}
+                placeholder="Paid 500 DAI to John Doe..."
+                rows="1"
+                cols="50"
+                defaultValue={defaultValues ? defaultValues.description : ""}
+              />
+            </div>
+
+            <GrandTotalText>Grand Total</GrandTotalText>
+
+            <PaymentTitle>Total Balance</PaymentTitle>
+            <PaymentSubtitle className="text-bold">
+              US$ {formatNumber(totalBalance, 2)}
+            </PaymentSubtitle>
+
+            <PaymentTitle style={{ marginTop: "2rem" }}>
+              Balance after payment
+            </PaymentTitle>
+            <PaymentSubtitle className="text-bold">
+              US$ {formatNumber(totalBalance - grandTotalSummary.usdTotal, 2)}
+            </PaymentSubtitle>
+
+            <PaymentTitle style={{ marginTop: "2rem" }}>
+              Total amount
+            </PaymentTitle>
+            <PaymentSubtitle className="text-bold">
+              US$ {formatNumber(grandTotalSummary.usdTotal, 2)}
+            </PaymentSubtitle>
+
+            <PaymentFlex>
+              <div>
+                <PaymentTitle style={{ marginTop: "2rem" }}>
+                  Total People
+                </PaymentTitle>
+                <PaymentSubtitle className="text-bold">
+                  {grandTotalSummary.count}
+                </PaymentSubtitle>
+              </div>
+
+              <div>
+                <PaymentTitle style={{ marginTop: "2rem" }}>
+                  Tokens used
+                </PaymentTitle>
+                <PaymentSubtitle className="text-bold">
+                  {Object.keys(grandTotalSummary.tokens).map((tokenName) => (
+                    <TokenImg
+                      token={tokenName}
+                      className="mr-2"
+                      key={tokenName}
+                    />
+                  ))}
+                </PaymentSubtitle>
+              </div>
+            </PaymentFlex>
+
+            <PaymentButtonContainer>
+              <Button
+                type="submit"
+                style={{ minWidth: "16rem" }}
+                disabled={
+                  loadingTx ||
+                  addingMultisigTx ||
+                  loadingSafeDetails ||
+                  isReadOnly
+                }
+                loading={loadingTx || addingMultisigTx}
+              >
+                {threshold > 1 ? `Create Transaction` : `Send`}
+              </Button>
+              <Button className="secondary-5" onClick={goBack}>
+                <Img src={LeftArrowIcon} alt="left arrow" />
+                <span className="ml-3">Go Back</span>
+              </Button>
+            </PaymentButtonContainer>
+          </FixedPortion>
         </div>
       </SummaryContainer>
     );
@@ -338,10 +414,7 @@ export default function NewTransfer() {
       case STEPS.ZERO:
         return (
           <NewTransferContainer>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {renderFlexibleMassPayout()}
-            </form>
-            <SelectFromTeamModal />
+            {renderFlexibleMassPayout()}
           </NewTransferContainer>
         );
 
@@ -353,5 +426,42 @@ export default function NewTransfer() {
     }
   };
 
-  return renderNewTransfer();
+  return (
+    <React.Fragment>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {renderNewTransfer()}
+        {step === STEPS.ZERO && (
+          <TransferFooter>
+            <ButtonsContainer>
+              <Button
+                type="button"
+                className="secondary"
+                style={{ minWidth: "16rem" }}
+                onClick={() => {
+                  setValue("batch", [
+                    ...getValues().batch,
+                    {
+                      token: undefined,
+                      receivers: [{ address: "", tokenValue: "" }],
+                    },
+                  ]);
+                }}
+              >
+                Add Batch
+              </Button>
+              <Button
+                type="submit"
+                style={{ minWidth: "16rem" }}
+                disabled={loadingSafeDetails}
+              >
+                Confirm
+              </Button>
+            </ButtonsContainer>
+          </TransferFooter>
+        )}
+      </form>
+      <SelectFromTeamModal />
+      <UploadCsvModal />
+    </React.Fragment>
+  );
 }

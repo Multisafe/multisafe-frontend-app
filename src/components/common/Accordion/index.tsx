@@ -20,8 +20,12 @@ export function Accordion({ children, ...rest }: Props) {
   return <Container {...rest}>{children}</Container>;
 }
 
-export function AccordionItem({ children, ...rest }: Props) {
-  const [toggle, setToggle] = useState<boolean>(false);
+export function AccordionItem({
+  children,
+  isOpen,
+  ...rest
+}: Props & { isOpen: boolean }) {
+  const [toggle, setToggle] = useState<boolean>(isOpen || false);
 
   return (
     <ToggleContext.Provider value={{ toggle, setToggle }}>

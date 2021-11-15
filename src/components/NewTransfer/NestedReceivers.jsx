@@ -1,12 +1,14 @@
 import { useEffect, memo, useState } from "react";
-import { useFieldArray, Controller, useWatch } from "react-hook-form";
-import { useSelector, useDispatch } from "react-redux";
+import { useFieldArray, useWatch } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import { show } from "redux-modal";
-import Big from "big.js";
 
 import Button from "components/common/Button";
-import { Input, CurrencyInput, ErrorMessage } from "components/common/Form";
-import { makeSelectPrices } from "store/tokens/selectors";
+import {
+  Input,
+  CurrencyConversionInput,
+  ErrorMessage,
+} from "components/common/Form";
 import { MODAL_NAME as SELECT_FROM_TEAM_MODAL } from "./SelectFromTeamModal";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import Img from "components/common/Img";
@@ -27,7 +29,6 @@ function Receiver({
   register,
   control,
   selectedToken,
-  prices,
   selectedTokenDetails,
   fields,
   remove,
@@ -35,10 +36,11 @@ function Receiver({
   setReceivers,
   receivers,
   getValues,
+  setValue,
 }) {
   const amountChanged = useWatch({
     control,
-    name: `batch[${nestIndex}].receivers[${k}].amount`,
+    name: `batch[${nestIndex}].receivers[${k}].tokenValue`,
   });
 
   useEffect(() => {
@@ -47,7 +49,7 @@ function Receiver({
       // update the summary only when amount changes
       if (!receivers || !receivers[k]) {
         setReceivers([...newReceivers]);
-      } else if (newReceivers[k].amount !== receivers[k].amount) {
+      } else if (newReceivers[k].tokenValue !== receivers[k].tokenValue) {
         setReceivers([...newReceivers]);
       }
     }
@@ -77,7 +79,7 @@ function Receiver({
               message: "Invalid Ethereum Address",
             }}
             placeholder="Wallet Address"
-            style={{ maxWidth: "38rem" }}
+            style={{ maxWidth: "36rem" }}
             defaultValue={item.address || ""}
             readOnly={Number(item.isDisabled) === 1 ? true : false}
           />
@@ -97,35 +99,19 @@ function Receiver({
 
           {selectedToken && selectedToken.value && (
             <div>
-              <Controller
+              <CurrencyConversionInput
                 control={control}
-                name={`batch[${nestIndex}].receivers[${k}].amount`}
-                rules={{
-                  required: "Amount is required",
-                  validate: (value) => {
-                    if (value <= 0) return "Please check the amount";
-
-                    return true;
-                  },
-                }}
-                defaultValue={item.amount || ""}
-                render={({ onChange, value }) => (
-                  <CurrencyInput
-                    type="number"
-                    name={`batch[${nestIndex}].receivers[${k}].amount`}
-                    value={value}
-                    onChange={onChange}
-                    placeholder="0.00"
-                    conversionRate={
-                      prices &&
-                      selectedTokenDetails &&
-                      prices[selectedTokenDetails.name]
-                    }
-                    tokenName={
-                      selectedTokenDetails ? selectedTokenDetails.name : ""
-                    }
-                  />
-                )}
+                baseName={`batch[${nestIndex}].receivers[${k}]`}
+                item={item}
+                setValue={setValue}
+                tokenName={
+                  selectedTokenDetails ? selectedTokenDetails.name : ""
+                }
+                conversionRate={
+                  selectedTokenDetails
+                    ? selectedTokenDetails.usdConversionRate
+                    : 0
+                }
               />
             </div>
           )}
@@ -155,7 +141,7 @@ function Receiver({
         />
         <ErrorMessage
           errors={errors}
-          name={`batch[${nestIndex}].receivers[${k}].amount.message`}
+          name={`batch[${nestIndex}].receivers[${k}].tokenValue.message`}
         />
       </div>
     </div>
@@ -172,6 +158,7 @@ function NestedReceivers({
   setReceivers,
   receivers,
   getValues,
+  setValue,
 }) {
   const { fields, remove, append } = useFieldArray({
     control,
@@ -187,7 +174,7 @@ function NestedReceivers({
   const dispatch = useDispatch();
 
   // Selectors
-  const prices = useSelector(makeSelectPrices());
+  // const prices = useSelector(makeSelectPrices());
 
   useEffect(() => {
     if (selectedToken && selectedToken.value && existingTokenDetails) {
@@ -205,7 +192,7 @@ function NestedReceivers({
       peopleFromTeam.length > 0 &&
       visibleReceivers.length === 1 &&
       !visibleReceivers[0].address &&
-      !visibleReceivers[0].amount
+      !visibleReceivers[0].tokenValue
     ) {
       remove(0);
     }
@@ -223,20 +210,14 @@ function NestedReceivers({
           departmentName,
         } = people;
 
-        const amount =
-          salaryToken === "USD"
-            ? Big(salaryAmount || "0")
-                .div(Big(selectedTokenDetails.usdConversionRate))
-                .round(selectedTokenDetails.decimals)
-                .toString()
-            : salaryAmount;
-
         return {
           name: formatText(`${firstName} ${lastName}`),
           address,
-          amount,
+          tokenValue: salaryToken !== "USD" ? salaryAmount : "",
           departmentName,
           isDisabled: 1,
+          tokenName: salaryToken,
+          fiatValue: salaryToken === "USD" ? salaryAmount : "",
         };
       });
 
@@ -268,7 +249,6 @@ function NestedReceivers({
               control,
               watch,
               selectedToken,
-              prices,
               selectedTokenDetails,
               fields,
               remove,
@@ -276,6 +256,7 @@ function NestedReceivers({
               setReceivers,
               receivers,
               getValues,
+              setValue,
             }}
           />
         );

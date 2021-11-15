@@ -81,6 +81,21 @@ export default styled.button<Props>`
     }
   }
 
+  &.secondary-5 {
+    border: none;
+    color: ${({ theme }) => theme.primary};
+    font-weight: bold;
+    font-size: 1.4rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    background: none;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
   &.danger {
     box-shadow: 1rem 1rem 2rem 0 rgba(35, 30, 79, 0.1);
     background-color: #ff4660;

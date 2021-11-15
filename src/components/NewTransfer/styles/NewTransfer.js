@@ -1,9 +1,10 @@
 import styled from "styled-components/macro";
 
 export const NewTransferContainer = styled.div`
-  padding: 4rem 0;
+  padding: 4rem;
   max-width: 128rem;
   margin: auto;
+  min-height: calc(92vh - 8rem);
   position: relative;
   @media (max-width: 978px) {
     padding: 3rem 2rem;
@@ -13,11 +14,16 @@ export const NewTransferContainer = styled.div`
 export const SummaryContainer = styled.div`
   padding: 4rem 0;
   display: grid;
-  grid-template-columns: 4fr 1fr;
+  grid-template-columns: 7.5fr 2.5fr;
+  grid-gap: 0 4rem;
   margin: auto;
   position: relative;
   @media (max-width: 978px) {
     padding: 3rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem 0;
   }
 `;
 
@@ -47,7 +53,7 @@ export const Title = styled.div`
 export const TransferFooter = styled.div`
   width: 100%;
   min-height: 8rem;
-  position: fixed;
+  position: sticky;
   left: 0;
   right: 0;
   bottom: 0;
@@ -70,7 +76,7 @@ export const DetailsRow = styled.div`
   display: flex;
   align-items: center;
   gap: 2rem;
-  min-width: 80%;
+  min-width: 82%;
   @media (max-width: 978px) {
     flex-wrap: wrap;
   }
@@ -107,14 +113,15 @@ export const TeamLabel = styled.div`
 
 export const BatchContainer = styled.div`
   &:last-child {
-    margin-bottom: 10rem;
+    margin-bottom: 2rem;
   }
 `;
 
 export const TransferSummaryContainer = styled.div`
-  max-width: 90rem;
+  max-width: 100rem;
   width: 100%;
   margin: auto;
+  padding: 0 2rem 0 4rem;
 `;
 
 export const TransferRow = styled.div`
@@ -125,7 +132,52 @@ export const TransferRow = styled.div`
   font-style: normal;
   font-weight: normal;
   font-size: 1.4rem;
+  grid-gap: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
   &:first-of-type {
     border-top: 0.1rem solid #dddcdc;
+  }
+
+  @media (max-width: 978px) {
+    font-size: 1.2rem;
+  }
+`;
+
+export const InputTitle = styled.div`
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+`;
+
+export const GrandTotalText = styled.div`
+  font-weight: bold;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: ${({ theme }) => theme.primary};
+  margin: 3rem 0 2rem 0;
+`;
+
+export const FixedPortion = styled.div`
+  position: fixed;
+  margin-right: 4rem;
+
+  @media (max-width: 978px) {
+    position: relative;
+  }
+`;
+
+export const SectionDivider = styled.div`
+  width: 0.1rem;
+  background-color: #dddcdc;
+  height: 100vh;
+  position: fixed;
+  right: 28%;
+  top: 0;
+
+  @media (max-width: 978px) {
+    display: none;
   }
 `;

@@ -91,7 +91,6 @@ export default function SelectFromTeam(props) {
   useEffect(() => {
     let dropdownList = [];
     if (allTeams && allTeams.length > 0 && !teamsDropdown) {
-      console.log({ selectedToken, allTeams });
       dropdownList = allTeams
         .filter(
           ({ tokenInfo }) =>
@@ -139,10 +138,9 @@ export default function SelectFromTeam(props) {
     }
   }, [selectedTeamId, teammates]);
 
-  const onSubmit = async (values) => {
+  const onSubmit = async () => {
     if (!selectedRows) return;
 
-    console.log({ selectedRows });
     setPeopleFromTeam(selectedRows);
     handleHide();
   };

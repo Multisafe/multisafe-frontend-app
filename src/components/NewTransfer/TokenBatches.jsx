@@ -29,6 +29,7 @@ function Batch({
   fields,
   remove,
   getValues,
+  setValue,
 }) {
   const [prevTokenTotal, setPrevTokenTotal] = useState(0);
   const [prevUsdTotal, setPrevUsdTotal] = useState(0);
@@ -55,8 +56,8 @@ function Batch({
       selectedToken &&
       selectedToken.value
     ) {
-      const amountInToken = visibleReceivers.reduce((sum, { amount }) => {
-        if (amount) sum += Number(amount);
+      const amountInToken = visibleReceivers.reduce((sum, { tokenValue }) => {
+        if (tokenValue) sum += Number(tokenValue);
         return sum;
       }, 0);
       return amountInToken;
@@ -113,18 +114,16 @@ function Batch({
         isInsufficientBalance:
           tokenDetails.balance - prevUsdTotal - totalAmountInToken < 0,
         currentTokenBalance: tokenDetails.balance - prevTokenTotal,
-        currentUsdBalance: tokenDetails.balance - prevUsdTotal,
+        currentUsdBalance: tokenDetails.usd - prevUsdTotal,
         tokenBalanceAfterPayment:
           tokenDetails.balance - prevUsdTotal - totalAmountInToken,
         usdBalanceAfterPayment:
-          tokenDetails.balance - prevUsdTotal - totalAmountInUsd,
+          tokenDetails.usd - prevUsdTotal - totalAmountInUsd,
       };
 
       const newTransferSummary = [...transferSummary];
       newTransferSummary[index] = summary;
       if (!isEqual(transferSummary[index], newTransferSummary[index])) {
-        console.log("fired");
-
         dispatch(setTransferSummary(newTransferSummary));
       }
     }
@@ -193,6 +192,7 @@ function Batch({
             getValues,
             setReceivers,
             receivers,
+            setValue,
           }}
         />
         <div className="mb-5">
@@ -212,6 +212,7 @@ function TokenBatches({
   existingTokenDetails,
   errors,
   getValues,
+  setValue,
 }) {
   const { fields, remove } = useFieldArray({
     control,
@@ -239,6 +240,7 @@ function TokenBatches({
                   fields,
                   remove,
                   getValues,
+                  setValue,
                 }}
               />
             </BatchContainer>

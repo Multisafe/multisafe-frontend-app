@@ -49,3 +49,20 @@ export const PaymentSubtitle = styled.div`
   color: #373737;
   margin-bottom: 0.4rem;
 `;
+
+export const PaymentFlex = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem 3rem;
+`;
+
+export const PaymentButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem 0;
+  margin-top: 10rem;
+`;
