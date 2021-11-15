@@ -8,7 +8,7 @@ import { getTeams } from "store/view-teams/actions";
 import viewTeamsSaga from "store/view-teams/saga";
 import viewPeopleSaga from "store/view-people/saga";
 import viewPeopleReducer from "store/view-people/reducer";
-import { getPeopleByTeam } from "store/view-people/actions";
+import { getPeopleByTeam, getAllPeople } from "store/view-people/actions";
 import {
   makeSelectTeams,
   makeSelectLoading as makeSelectTeamsLoading,
@@ -16,6 +16,8 @@ import {
 import {
   makeSelectPeopleByTeam,
   makeSelectLoadingPeopleByTeam,
+  makeSelectPeople,
+  makeSelectLoading,
 } from "store/view-people/selectors";
 import { getInvitations } from "store/invitation/actions";
 import { useInjectReducer } from "utils/injectReducer";
@@ -79,19 +81,21 @@ export default function SelectFromTeam(props) {
   const loadingTeams = useSelector(makeSelectTeamsLoading());
   const loadingTeammates = useSelector(makeSelectLoadingPeopleByTeam());
   const teammates = useSelector(makeSelectPeopleByTeam());
-  const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const organisationType = useSelector(makeSelectOrganisationType());
+  const allPeople = useSelector(makeSelectPeople());
+  const loadingAllPeople = useSelector(makeSelectLoading());
 
   useEffect(() => {
-    if (ownerSafeAddress) {
-      dispatch(getInvitations(ownerSafeAddress));
+    if (safeAddress) {
+      dispatch(getInvitations(safeAddress));
+      dispatch(getAllPeople(safeAddress));
     }
-  }, [ownerSafeAddress, dispatch]);
+  }, [safeAddress, dispatch]);
 
   useEffect(() => {
-    let dropdownList = [];
     if (allTeams && allTeams.length > 0 && !teamsDropdown) {
-      dropdownList = allTeams
+      const dropdownList = allTeams
         .filter(
           ({ tokenInfo }) =>
             tokenInfo.symbol === selectedToken || tokenInfo.symbol === "USD"
@@ -100,22 +104,24 @@ export default function SelectFromTeam(props) {
           value: departmentId,
           label: name,
         }));
+
+      dropdownList.unshift({ value: "all", label: "All Teams" });
       setTeamsDropdown(dropdownList);
       setValue("team", dropdownList[0]);
     }
   }, [allTeams, teamsDropdown, selectedToken, setValue]);
 
   useEffect(() => {
-    if (selectedTeamId) {
-      dispatch(getPeopleByTeam(ownerSafeAddress, selectedTeamId));
+    if (selectedTeamId && selectedTeamId !== "all") {
+      dispatch(getPeopleByTeam(safeAddress, selectedTeamId));
     }
-  }, [selectedTeamId, dispatch, ownerSafeAddress]);
+  }, [selectedTeamId, dispatch, safeAddress]);
 
   useEffect(() => {
     if (!allTeams) {
-      dispatch(getTeams(ownerSafeAddress));
+      dispatch(getTeams(safeAddress));
     }
-  }, [dispatch, ownerSafeAddress, allTeams]);
+  }, [dispatch, safeAddress, allTeams]);
 
   useEffect(() => {
     // reset to initial state
@@ -131,12 +137,14 @@ export default function SelectFromTeam(props) {
   }, [people]);
 
   useEffect(() => {
-    if (selectedTeamId && teammates) {
+    if (selectedTeamId === "all" && allPeople) {
+      setPeople(allPeople);
+    } else if (selectedTeamId && teammates) {
       setPeople(teammates);
     } else {
       setPeople();
     }
-  }, [selectedTeamId, teammates]);
+  }, [selectedTeamId, teammates, allPeople]);
 
   const onSubmit = async () => {
     if (!selectedRows) return;
@@ -202,9 +210,10 @@ export default function SelectFromTeam(props) {
     <Table>
       <TableHead>
         <tr>
-          <th style={{ width: "30%" }}>Name</th>
-          <th style={{ width: "25%" }}>Disbursement</th>
-          <th style={{ width: "45%" }}>Address</th>
+          <th style={{ width: "25%" }}>Name</th>
+          <th style={{ width: "20%" }}>Team</th>
+          <th style={{ width: "15%" }}>Disbursement</th>
+          <th style={{ width: "40%" }}>Address</th>
         </tr>
       </TableHead>
       <TableBody style={{ maxHeight: "25rem", overflow: "auto" }}>
@@ -245,16 +254,19 @@ export default function SelectFromTeam(props) {
         <Table>
           <TableHead>
             <tr>
-              <th style={{ width: "30%" }}>Name</th>
-              <th style={{ width: "25%" }}>Disbursement</th>
-              <th style={{ width: "45%" }}>Address</th>
+              <th style={{ width: "25%" }}>Name</th>
+              <th style={{ width: "20%" }}>Team</th>
+              <th style={{ width: "15%" }}>Disbursement</th>
+              <th style={{ width: "40%" }}>Address</th>
             </tr>
           </TableHead>
           <TableBody style={{ maxHeight: "25rem", overflow: "auto" }}>
-            {loadingTeammates && <TableLoader colSpan={3} height="20rem" />}
+            {(loadingTeammates || loadingAllPeople) && (
+              <TableLoader colSpan={3} height="20rem" />
+            )}
             {!loadingTeammates &&
               people.length > 0 &&
-              people.map(({ peopleId, data, ...rest }, idx) => {
+              people.map(({ peopleId, data, departmentName, ...rest }, idx) => {
                 const {
                   firstName,
                   lastName,
@@ -270,6 +282,7 @@ export default function SelectFromTeam(props) {
                   salaryAmount,
                   address,
                   peopleId,
+                  departmentName,
                   index: idx,
                   ...rest,
                 };
@@ -284,7 +297,7 @@ export default function SelectFromTeam(props) {
                       backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
                     }}
                   >
-                    <td style={{ width: "30%" }}>
+                    <td style={{ width: "25%" }}>
                       <div className="d-flex align-items-center">
                         <CheckBox
                           type="checkbox"
@@ -298,13 +311,14 @@ export default function SelectFromTeam(props) {
                         </div>
                       </div>
                     </td>
-                    <td style={{ width: "25%" }}>
+                    <td style={{ width: "20%" }}>{departmentName}</td>
+                    <td style={{ width: "15%" }}>
                       <TokenImg token={salaryToken} />
                       <span className="mr-2">
                         {salaryAmount || `0`} {salaryToken}
                       </span>
                     </td>
-                    <td style={{ width: "45%" }}>{address}</td>
+                    <td style={{ width: "40%" }}>{address}</td>
                   </tr>
                 );
               })}
@@ -319,7 +333,7 @@ export default function SelectFromTeam(props) {
       <div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-5">
-            <Title>Paying To</Title>
+            <Title>Choose Team</Title>
             <Select
               name="team"
               control={control}
