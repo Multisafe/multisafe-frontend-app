@@ -33,6 +33,7 @@ function UploadCsvModal(props) {
 
   const [csvData, setCSVData] = useState();
   const [invalidCsvData, setInvalidCsvData] = useState(false);
+  const [invalidCsvDataMessage, setInvalidCsvDataMessage] = useState();
   const [fileName, setFileName] = useState();
   const [tokenToPaymentDetailsMap, setTokenToPaymentDetailsMap] = useState();
 
@@ -45,6 +46,7 @@ function UploadCsvModal(props) {
 
   useEffect(() => {
     setInvalidCsvData(false);
+    setInvalidCsvDataMessage();
   }, [csvData]);
 
   useEffect(() => {
@@ -93,6 +95,11 @@ function UploadCsvModal(props) {
     }, []);
 
     setCSVData(formattedData);
+  };
+
+  const handleDropRejected = (errorMessage) => {
+    setInvalidCsvData(true);
+    setInvalidCsvDataMessage(errorMessage);
   };
 
   const handleRemove = () => {
@@ -215,7 +222,11 @@ function UploadCsvModal(props) {
       <UploadScreen>
         <div className="text">Pay to multiple people quickly.</div>
         <div className="my-4">
-          <Dropzone onDrop={handleDrop} style={{ minHeight: "16rem" }} />
+          <Dropzone
+            onDrop={handleDrop}
+            onDropRejected={handleDropRejected}
+            style={{ minHeight: "16rem" }}
+          />
         </div>
         <div>
           <a
@@ -230,7 +241,8 @@ function UploadCsvModal(props) {
         {invalidCsvData && (
           <div className="mt-4">
             <div className="text-red" style={{ fontSize: "1.4rem" }}>
-              Oops, something is not right. Please check your csv file.
+              {invalidCsvDataMessage ||
+                `Oops, something is not right. Please check your csv file.`}
             </div>
           </div>
         )}
