@@ -80,6 +80,8 @@ const defaultValues = {
   ],
 };
 
+const MAX_BATCH_LENGTH = 10;
+
 export default function NewTransfer() {
   const [encryptionKey] = useEncryptionKey();
 
@@ -89,6 +91,7 @@ export default function NewTransfer() {
   const [grandTotalSummary, setGrandTotalSummary] = useState(null);
   const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
     useState(false);
+  const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -105,6 +108,8 @@ export default function NewTransfer() {
     mode: "onSubmit",
     defaultValues: defaultValues,
   });
+
+  const batchWatcher = watch("batch");
 
   const dispatch = useDispatch();
 
@@ -185,6 +190,14 @@ export default function NewTransfer() {
       setGrandTotalSummary(grandTotalSummary);
     }
   }, [transferSummary, step]);
+
+  useEffect(() => {
+    if (batchWatcher && batchWatcher.length >= MAX_BATCH_LENGTH) {
+      setIsBatchCountTooHigh(true);
+    } else {
+      setIsBatchCountTooHigh(false);
+    }
+  }, [batchWatcher]);
 
   const goBack = () => {
     dispatch(selectStep(step - 1));
@@ -495,6 +508,7 @@ export default function NewTransfer() {
                 type="button"
                 className="secondary"
                 style={{ minWidth: "16rem" }}
+                disabled={isBatchCountTooHigh}
                 onClick={() => {
                   setValue("batch", [
                     ...getValues().batch,
