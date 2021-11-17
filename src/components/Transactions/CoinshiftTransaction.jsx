@@ -20,6 +20,7 @@ import {
   useQuickViewTransactionState,
 } from "components/QuickViewTransaction";
 import { TransactionLabels } from "./TransactionLabels";
+import TokenImg from "components/common/TokenImg";
 
 const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   const { direction, txDetails } = transaction;
@@ -38,6 +39,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
     fiatValue,
     status,
     createdOn,
+    tokenCurrencies,
     transactionMode,
     to,
     labels,
@@ -55,6 +57,22 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
   };
 
   const renderDefaultTokenValue = () => {
+    if (transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT) {
+      return (
+        <React.Fragment>
+          {tokenCurrencies && tokenCurrencies.length > 0 && (
+            <div className="amount">
+              {tokenCurrencies.map((token) => (
+                <TokenImg token={token} key={token} />
+              ))}
+            </div>
+          )}
+          {fiatValue > 0 && (
+            <div className="usd">- ${formatNumber(fiatValue, 5)}</div>
+          )}
+        </React.Fragment>
+      );
+    }
     return (
       <React.Fragment>
         {tokenValue > 0 ? (

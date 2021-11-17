@@ -32,7 +32,10 @@ export default function TransactionName({ to, transactionMode }: Props) {
     return "Change Threshold";
   } else if (transactionMode === TRANSACTION_MODES.APPROVE_AND_SWAP) {
     return "Swap Tokens";
-  } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
+  } else if (transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT) {
+    return "Mass Payout";
+  } 
+  else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
     const payeeDetails = getDecryptedDetails(
       to,
       encryptionKey,
@@ -52,6 +55,5 @@ export default function TransactionName({ to, transactionMode }: Props) {
       </span>
     );
   }
-
   return DEFAULT_NAME;
 }

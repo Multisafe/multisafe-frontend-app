@@ -22,6 +22,10 @@ export default styled.input`
     background-color: #ffffff;
   }
 
+  &:read-only {
+    color: #989898;
+  }
+
   &[type="radio"] {
     width: auto;
   }

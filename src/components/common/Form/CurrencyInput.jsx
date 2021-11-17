@@ -100,7 +100,7 @@ const MultiCurrencyInputField = ({
             value={value}
             onChange={(e) => handleTokenValueChange(e.target.value)}
             step=".0001"
-            style={{ paddingLeft: "4.4rem" }}
+            style={{ paddingLeft: "4.4rem", maxWidth: "15rem" }}
             {...rest}
           />
           <label htmlFor={id || name} className="static-text">
@@ -126,7 +126,7 @@ const MultiCurrencyInputField = ({
             placeholder="0.00"
             value={conversionValue}
             onChange={(e) => handleUsdValueChange(e.target.value)}
-            style={{ paddingLeft: "3.3rem" }}
+            style={{ paddingLeft: "3.3rem", maxWidth: "15rem" }}
           />
           <label htmlFor={id || name} className="static-text">
             US$

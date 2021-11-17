@@ -392,6 +392,7 @@ export default function MultiSigTransactions() {
       transactionMode,
       createdBy,
       metaData,
+      description,
       safeOwners: currentSafeOwners,
     } = txDetails;
 
@@ -399,6 +400,13 @@ export default function MultiSigTransactions() {
       to,
       encryptionKey,
       organisationType
+    );
+
+    const decryptedDescription = getDecryptedDetails(
+      description,
+      encryptionKey,
+      organisationType,
+      false
     );
 
     const isTxSubmitted = txDetailsHash ? true : false;
@@ -450,6 +458,7 @@ export default function MultiSigTransactions() {
             decryptedDetails={decryptedDetails}
             transactionMode={transactionMode}
             metaData={metaData}
+            decryptedDescription={decryptedDescription}
           />
           <TransactionDetailsNote txDetails={txDetails} />
         </DescriptionRow>

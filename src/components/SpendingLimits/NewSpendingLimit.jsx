@@ -12,7 +12,7 @@ import {
 } from "components/common/Form";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import { useEncryptionKey, useSpendingLimits } from "hooks";
+import { useActiveWeb3React, useEncryptionKey, useSpendingLimits } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -69,6 +69,7 @@ export default function SpendingLimits() {
   const [tokensDropdown, setTokensDropdown] = useState([]);
 
   const { loadingTx, createSpendingLimit } = useSpendingLimits();
+  const { account } = useActiveWeb3React();
 
   const { register, errors, handleSubmit, formState, control, watch } = useForm(
     {
@@ -160,13 +161,14 @@ export default function SpendingLimits() {
     const baseRequestBody = {
       to,
       safeAddress: ownerSafeAddress,
-      createdBy: ownerSafeAddress,
+      createdBy: account,
       tokenValue: spendingLimitDetails.reduce(
         (total, { allowanceAmount }) => (total += parseFloat(allowanceAmount)),
         0
       ),
       tokenCurrency: selectedTokenDetails.name,
       fiatValue: totalAllowanceAmount,
+      fiatCurrency: "USD",
       addresses: spendingLimitDetails.map(({ address }) => address),
       transactionMode: TRANSACTION_MODES.SPENDING_LIMITS, // spending limits
     };
