@@ -24,6 +24,7 @@ import { UploadScreen, UploadStatus } from "components/People/styles";
 import { constructLabel } from "utils/tokens";
 import { formatText } from "utils/string-utils";
 import { updateForm } from "store/new-transfer/actions";
+import TokenImg from "components/common/TokenImg";
 
 export const MODAL_NAME = "upload-csv-transfer-modal";
 
@@ -191,26 +192,32 @@ function UploadCsvModal(props) {
           {firstName} {lastName}
         </td>
         <td
+          className={`${invalidAddress && "text-red"}`}
+          style={{ width: "40%" }}
+        >
+          {address}
+        </td>
+        <td
           className={`${invalidPayDetails && "text-red"}`}
           style={{ width: "13%" }}
         >
-          {tokenValue && (
+          <span>
+            <TokenImg token={tokenName} className="mr-2" />
             <span>
               {formatNumber(tokenValue, 5)} {tokenName}
             </span>
-          )}
+          </span>
         </td>
         <td
           className={`${invalidPayInUsd && "text-red"}`}
           style={{ width: "12%" }}
         >
-          {payUsdInToken}
-        </td>
-        <td
-          className={`${invalidAddress && "text-red"}`}
-          style={{ width: "40%" }}
-        >
-          {address}
+          {payUsdInToken && (
+            <span>
+              <TokenImg token={payUsdInToken} className="mr-2" />
+              <span>{payUsdInToken}</span>
+            </span>
+          )}
         </td>
         <td style={{ width: "15%" }}>{departmentName}</td>
       </tr>
@@ -230,7 +237,7 @@ function UploadCsvModal(props) {
         </div>
         <div>
           <a
-            href="https://drive.google.com/file/d/1uf1Ms8VkJkAC8kX9AM6XGC7gGIVZOBRB/view?usp=sharing"
+            href="https://drive.google.com/file/d/1kKS_oOLhMrRFpI9UrUdWEvXrh91cj70o/view?usp=sharing"
             rel="noreferrer noopener"
             target="_blank"
             className="format-csv"
@@ -252,11 +259,15 @@ function UploadCsvModal(props) {
           <ul className="points">
             <li>Please make sure the file extension is .csv</li>
             <li>
-              Last name and team are optional fields. Rest of the fields are
-              required
+              Address and currency are required fields. Rest of the fields are
+              optional
             </li>
-            <li>You can add multiple tokens in the csv</li>
-            <li>The amount can be edited later as well</li>
+            <li>You can add multiple currencies in the csv</li>
+            <li>
+              If the currency is USD, please specify the "Pay USD in Token"
+              field
+            </li>
+            <li>All entries can be edited later as well</li>
           </ul>
         </div>
       </UploadScreen>
@@ -292,9 +303,9 @@ function UploadCsvModal(props) {
           <TableHead>
             <tr>
               <th style={{ width: "20%" }}>Name</th>
+              <th style={{ width: "40%" }}>Address</th>
               <th style={{ width: "13%" }}>Pay Amount</th>
               <th style={{ width: "12%" }}>Pay USD In</th>
-              <th style={{ width: "40%" }}>Address</th>
               <th style={{ width: "15%" }}>Team</th>
             </tr>
           </TableHead>

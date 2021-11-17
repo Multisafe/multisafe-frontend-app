@@ -86,6 +86,9 @@ export default function NewTransfer() {
   const { account } = useActiveWeb3React();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
+  const [grandTotalSummary, setGrandTotalSummary] = useState(null);
+  const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
+    useState(false);
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -152,6 +155,37 @@ export default function NewTransfer() {
     }
   }, [reset, formData]);
 
+  useEffect(() => {
+    if (transferSummary && step === STEPS.ZERO) {
+      if (
+        transferSummary.some(
+          (summary) => summary && summary.isInsufficientBalance
+        )
+      ) {
+        setIsInsufficientBalanceError(true);
+      } else {
+        setIsInsufficientBalanceError(false);
+      }
+    } else if (transferSummary && step === STEPS.ONE) {
+      const grandTotalSummary = transferSummary.reduce(
+        (totalSummary, { count, usdTotal, tokenName }) => {
+          totalSummary.usdTotal += usdTotal;
+          totalSummary.count += count;
+
+          if (!totalSummary.tokensMap[tokenName]) {
+            totalSummary.tokensMap[tokenName] = tokenName;
+            totalSummary.tokens.push(tokenName);
+          }
+
+          return totalSummary;
+        },
+        { count: 0, usdTotal: 0, tokensMap: {}, tokens: [] }
+      );
+
+      setGrandTotalSummary(grandTotalSummary);
+    }
+  }, [transferSummary, step]);
+
   const goBack = () => {
     dispatch(selectStep(step - 1));
   };
@@ -170,45 +204,82 @@ export default function NewTransfer() {
     if (step === STEPS.ZERO) {
       goNext();
     } else {
-      // const receivers = values.receivers.map(({ address, amount, name }) => ({
-      //   address,
-      //   salaryAmount: amount,
-      //   salaryToken: selectedTokenDetails.name,
-      //   description: values.description || "",
-      //   usd: selectedTokenDetails.usdConversionRate * amount,
-      //  name,
-      // }));
-
-      // const totalAmountToPay = receivers.reduce(
-      //   (total, { usd }) => (total += usd),
-      //   0
-      // );
-
+      const batch = formData.batch;
+      const tokenValues = [];
+      const tokenCurrencies = [];
       const addresses = [];
 
-      for (let { receivers } of formData.batch) {
+      batch.forEach(({ receivers, token }) => {
+        const totalTokenValue = receivers.reduce(
+          (sum, { tokenValue }) => (sum += Number(tokenValue)),
+          0
+        );
+
         for (let { address } of receivers) {
           addresses.push(address);
         }
-      }
+
+        tokenValues.push(totalTokenValue);
+        tokenCurrencies.push(token.value);
+      });
+
+      const encryptedTransferSummary = transferSummary.map(
+        ({
+          id,
+          batchName,
+          receivers,
+          count,
+          tokenName,
+          tokenTotal,
+          usdTotal,
+        }) => {
+          return {
+            id,
+            batchName: id, // TODO: change to batch name
+            count,
+            tokenName,
+            tokenTotal,
+            usdTotal,
+            receivers: cryptoUtils.encryptDataUsingEncryptionKey(
+              JSON.stringify(receivers),
+              encryptionKey,
+              organisationType
+            ),
+          };
+        }
+      );
 
       const to = cryptoUtils.encryptDataUsingEncryptionKey(
-        JSON.stringify([]),
+        JSON.stringify(transferSummary),
         encryptionKey,
         organisationType
       );
+
+      const encryptedDescription = values.description
+        ? cryptoUtils.encryptDataUsingEncryptionKey(
+            values.description,
+            encryptionKey,
+            organisationType
+          )
+        : "";
+
       const baseRequestBody = {
         to,
         safeAddress: safeAddress,
         createdBy: account,
         tokenValue: 0,
-        tokenCurrency: "USDT", // TODO: Fix
-        fiatValue: "100",
-        description: values.description || "",
+        tokenCurrency: "",
+        tokenValues,
+        tokenCurrencies,
+        fiatValue: grandTotalSummary.usdTotal,
+        description: encryptedDescription,
         fiatCurrency: "USD",
         addresses,
         transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
-        metaData: transferSummary,
+        metaData: {
+          transferSummary: encryptedTransferSummary,
+          grandTotalSummary,
+        },
       };
 
       await batchMassPayout({
@@ -255,18 +326,7 @@ export default function NewTransfer() {
   );
 
   const renderSummary = () => {
-    const grandTotalSummary = transferSummary.reduce(
-      (totalSummary, { count, usdTotal, tokenName }) => {
-        totalSummary.usdTotal += usdTotal;
-        totalSummary.count += count;
-
-        if (!totalSummary.tokens[tokenName])
-          totalSummary.tokens[tokenName] = tokenName;
-
-        return totalSummary;
-      },
-      { count: 0, usdTotal: 0, tokens: {} }
-    );
+    if (!grandTotalSummary) return null;
 
     return (
       <SummaryContainer>
@@ -322,19 +382,17 @@ export default function NewTransfer() {
                 placeholder="Enter Description (Optional)"
                 rows="1"
                 cols="50"
-                defaultValue={defaultValues ? defaultValues.description : ""}
               />
             </div>
 
             <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
             <div>
               <TextArea
-                name="description"
+                name="label"
                 register={register}
-                placeholder="Paid 500 DAI to John Doe..."
+                placeholder="Enter label"
                 rows="1"
                 cols="50"
-                defaultValue={defaultValues ? defaultValues.description : ""}
               />
             </div>
 
@@ -374,7 +432,7 @@ export default function NewTransfer() {
                   Tokens used
                 </PaymentTitle>
                 <PaymentSubtitle className="text-bold">
-                  {Object.keys(grandTotalSummary.tokens).map((tokenName) => (
+                  {grandTotalSummary.tokens.map((tokenName) => (
                     <TokenImg
                       token={tokenName}
                       className="mr-2"
@@ -452,7 +510,7 @@ export default function NewTransfer() {
               <Button
                 type="submit"
                 style={{ minWidth: "16rem" }}
-                disabled={loadingSafeDetails}
+                disabled={loadingSafeDetails || isInsufficientBalanceError}
               >
                 Confirm
               </Button>

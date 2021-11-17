@@ -3,12 +3,17 @@ import { DescriptionCard } from "./styles";
 
 type Props = {
   decryptedDetails: FixMe;
+  decryptedDescription: String;
 };
 
 const DEFAULT_DESCRIPTION = "No description given...";
 
-export const TransactionDescription = ({ decryptedDetails }: Props) => {
+export const TransactionDescription = ({
+  decryptedDetails,
+  decryptedDescription,
+}: Props) => {
   const description =
+    decryptedDescription ||
     decryptedDetails?.description ||
     decryptedDetails?.[0]?.description ||
     DEFAULT_DESCRIPTION;
