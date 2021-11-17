@@ -107,7 +107,10 @@ export default function ExportButton() {
             fiatCurrency,
             addresses,
             tokenCurrency,
-            tokenValue,
+            // tokenValue,
+            tokenCurrencies,
+            tokenValues,
+            description,
             notes,
             labels,
           } = transaction;
@@ -116,6 +119,13 @@ export default function ExportButton() {
             to,
             encryptionKey,
             organisationType
+          );
+
+          const decryptedDescription = getDecryptedDetails(
+            description,
+            encryptionKey,
+            organisationType,
+            false
           );
 
           let createdByName = "";
@@ -139,25 +149,41 @@ export default function ExportButton() {
           let txDescription = "";
 
           for (let i = 0; i < paidTeammates.length; i++) {
-            const {
-              firstName,
-              lastName,
-              salaryAmount,
-              salaryToken,
-              usd,
-              description,
-            } = paidTeammates[i];
+            if (transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT) {
+              const { tokenName, receivers } = paidTeammates[i];
 
-            names.push(`${firstName || ""} ${lastName || ""}`);
-            spentAmounts.push(salaryAmount);
-            spentCurrencies.push(
-              salaryToken === "USD" ? tokenCurrency : salaryToken
-            );
-            spentFiatAmounts.push(usd);
-            spentFiatCurrencies.push("USD");
+              receivers.forEach(({ name, tokenValue, fiatValue }) => {
+                names.push(name);
+                spentAmounts.push(tokenValue);
+                spentCurrencies.push(tokenName);
+                spentFiatAmounts.push(fiatValue);
+                spentFiatCurrencies.push("USD");
+              });
 
-            if (!txDescription) {
-              txDescription = description;
+              if (!txDescription) {
+                txDescription = decryptedDescription;
+              }
+            } else {
+              const {
+                firstName,
+                lastName,
+                salaryAmount,
+                salaryToken,
+                usd,
+                description,
+              } = paidTeammates[i];
+
+              names.push(`${firstName || ""} ${lastName || ""}`);
+              spentAmounts.push(salaryAmount);
+              spentCurrencies.push(
+                salaryToken === "USD" ? tokenCurrency : salaryToken
+              );
+              spentFiatAmounts.push(usd);
+              spentFiatCurrencies.push("USD");
+
+              if (!txDescription) {
+                txDescription = description;
+              }
             }
           }
 
@@ -175,8 +201,8 @@ export default function ExportButton() {
             "Spent Fiat Amount": joinArray(spentFiatAmounts),
             "Spent Fiat Currency": joinArray(spentFiatCurrencies),
             Address: joinArray(addresses),
-            "Total Spent Amount": tokenValue,
-            "Total Spent Currency": tokenCurrency,
+            "Total Spent Amount": joinArray(tokenValues),
+            "Total Spent Currency": joinArray(tokenCurrencies),
             "Total Fiat Amount": fiatValue,
             "Total Fiat Currency": fiatCurrency,
             "Created By Address": createdBy,
