@@ -12,7 +12,7 @@ import {
 } from "components/common/Form";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import {useActiveWeb3React, useEncryptionKey, useSpendingLimits} from "hooks";
+import { useActiveWeb3React, useEncryptionKey, useSpendingLimits } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,

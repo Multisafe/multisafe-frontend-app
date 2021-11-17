@@ -27,6 +27,7 @@ const persistConfig = {
   // NOTE: ONLY KEEP MOST IMP DATA HERE
   whitelist: ["global"], // global state will pe persisted
 };
+//@ts-ignore
 window.persistor = persistStore(store, persistConfig);
 
 ReactDOM.render(

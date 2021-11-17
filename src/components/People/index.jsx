@@ -57,6 +57,7 @@ import {
   makeSelectTeams,
 } from "store/view-teams/selectors";
 import AddBulkPeoplModal from "./AddBulkPeopleModal";
+import AddPeopleFromGnosisModal from "./AddPeopleFromGnosisModal";
 import AddSinglePeopleModal, {
   MODAL_NAME as ADD_SINGLE_MODAL,
 } from "./AddSinglePeopleModal";
@@ -458,6 +459,7 @@ export default function People() {
       </Table>
       <AddSinglePeopleModal />
       <AddBulkPeoplModal />
+      <AddPeopleFromGnosisModal />
       <DeletePeopleModal />
       <DeleteTeamModal />
       <AddTeamModal />

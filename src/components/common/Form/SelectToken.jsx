@@ -46,7 +46,7 @@ const inputStyles = {
   singleValue: (styles) => ({ ...styles }),
 };
 
-function MenuList(props) {
+export function MenuList(props) {
   const height = 40;
   const { children, maxHeight } = props;
   return (
