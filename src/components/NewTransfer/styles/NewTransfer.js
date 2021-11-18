@@ -122,6 +122,9 @@ export const TransferSummaryContainer = styled.div`
   width: 100%;
   margin: auto;
   padding: 0 2rem 0 4rem;
+  @media (max-width: 978px) {
+    padding: 0 2rem;
+  }
 `;
 
 export const TransferRow = styled.div`
@@ -133,9 +136,7 @@ export const TransferRow = styled.div`
   font-weight: normal;
   font-size: 1.4rem;
   grid-gap: 1rem;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 
   &:first-of-type {
     border-top: 0.1rem solid #dddcdc;
@@ -143,6 +144,14 @@ export const TransferRow = styled.div`
 
   @media (max-width: 978px) {
     font-size: 1.2rem;
+    display: flex;
+    flex-wrap: wrap;
+
+    div:nth-child(3) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 `;
 
@@ -166,6 +175,7 @@ export const FixedPortion = styled.div`
 
   @media (max-width: 978px) {
     position: relative;
+    padding: 0 2rem;
   }
 `;
 

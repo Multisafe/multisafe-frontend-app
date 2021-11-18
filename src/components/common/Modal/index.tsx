@@ -1,9 +1,9 @@
-import React from "react";
 import { ModalHeader, ModalBody } from "reactstrap";
 
 import { Card } from "components/common/Card";
 import Img from "../Img";
 import CloseIcon from "assets/icons/dashboard/close-icon.svg";
+import { ModalProps, ModalBodyProps } from "./types";
 
 import { Modal } from "./styles";
 
@@ -56,7 +56,7 @@ const modalStyles = `
   }
 `;
 
-function CustomModal({ children, isOpen, toggle, ...rest }) {
+function CustomModal({ children, isOpen, toggle, ...rest }: ModalProps) {
   return (
     <Modal
       isOpen={isOpen}
@@ -73,7 +73,12 @@ function CustomModal({ children, isOpen, toggle, ...rest }) {
   );
 }
 
-function CustomModalHeader({ children = null, title, toggle, ...rest }) {
+function CustomModalHeader({
+  children = null,
+  title,
+  toggle,
+  ...rest
+}: ModalProps & { title: string }) {
   return (
     <ModalHeader className="common-modal-header" {...rest}>
       <div className="header-flex">
@@ -87,7 +92,12 @@ function CustomModalHeader({ children = null, title, toggle, ...rest }) {
   );
 }
 
-function CustomModalBody({ children, width, minHeight, ...rest }) {
+function CustomModalBody({
+  children,
+  width,
+  minHeight,
+  ...rest
+}: ModalBodyProps) {
   return (
     <ModalBody className="common-modal-body" {...rest}>
       <Card

@@ -1,5 +1,6 @@
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch } from "react-redux";
+import { show as showModal, InjectedProps } from "redux-modal";
 
 import {
   Modal,
@@ -9,26 +10,19 @@ import {
 import NewTransfer from "components/NewTransfer";
 import { useInjectReducer } from "utils/injectReducer";
 import newTransferReducer from "store/new-transfer/reducer";
-import { resetTransferStore } from "store/new-transfer/actions";
-
+import ExitModal, { MODAL_NAME as EXIT_MODAL } from "./ExitModal";
 export const MODAL_NAME = "new-transfer-modal";
 const newTransferKey = "newTransfer";
 
-function NewTransferModal(props) {
-  const { show, handleHide } = props;
+function NewTransferModal(props: InjectedProps) {
+  const { show } = props;
 
   useInjectReducer({ key: newTransferKey, reducer: newTransferReducer });
 
   const dispatch = useDispatch();
 
   const hideModal = async () => {
-    // cleanup store on closing
-    // dispatch(resetTransferStore());
-    handleHide();
-    // TODO - fix race condition, and reset store before closing
-    await new Promise((resolve) =>
-      setTimeout(() => resolve(dispatch(resetTransferStore()), 10))
-    );
+    dispatch(showModal(EXIT_MODAL));
   };
 
   return (
@@ -36,6 +30,7 @@ function NewTransferModal(props) {
       <ModalHeader toggle={hideModal} />
       <ModalBody width="120rem">
         <NewTransfer />
+        <ExitModal />
       </ModalBody>
     </Modal>
   );

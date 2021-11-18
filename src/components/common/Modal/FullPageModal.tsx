@@ -3,6 +3,7 @@ import { ModalHeader, ModalBody } from "reactstrap";
 
 import Img from "../Img";
 import CloseIcon from "assets/icons/dashboard/close-icon.svg";
+import { ModalProps, ModalBodyProps } from "./types";
 
 import { SimpleModal as Modal } from "./styles";
 
@@ -35,7 +36,7 @@ const modalStyles = `
   }
 `;
 
-function CustomModal({ children, isOpen, toggle, ...rest }) {
+function CustomModal({ children, isOpen, toggle, ...rest }: ModalProps) {
   return (
     <Modal
       isOpen={isOpen}
@@ -53,7 +54,7 @@ function CustomModal({ children, isOpen, toggle, ...rest }) {
   );
 }
 
-function CustomModalHeader({ children, toggle, ...rest }) {
+function CustomModalHeader({ children, toggle, ...rest }: ModalProps) {
   return (
     <ModalHeader className="full-modal-header" {...rest}>
       <div onClick={toggle} className="close-btn">
@@ -64,7 +65,7 @@ function CustomModalHeader({ children, toggle, ...rest }) {
   );
 }
 
-function CustomModalBody({ children, width, ...rest }) {
+function CustomModalBody({ children, width, ...rest }: ModalBodyProps) {
   return (
     <ModalBody className="full-modal-body" {...rest}>
       {children}
