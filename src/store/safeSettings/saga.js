@@ -34,11 +34,11 @@ function* getSafeSettings({ safeAddress, networkId }) {
       yield put(getSafeSettingsError({ error: result.log }));
     }
   } catch (e) {
-    console.log(e);
+    yield put(getSafeSettingsError({ error: "Error fetching safe settings" }));
   }
 }
 
-function* setSafeSettings({ safeAddress, networkId, userAddress, gasSetting }) {
+function* setSafeSettings({ safeAddress, networkId, userAddress, gasSetting, onSuccess, onError }) {
   const endpoint = `${ROOT_BE_URL}/api/v1/safes/settings`;
   const options = {
     method: "PUT",
@@ -55,9 +55,10 @@ function* setSafeSettings({ safeAddress, networkId, userAddress, gasSetting }) {
 
     if (result.flag === 200) {
       yield getSafeSettings({ safeAddress, networkId });
+      onSuccess && onSuccess();
     }
   } catch (e) {
-    console.log(e);
+    onError && onError();
   }
 }
 
