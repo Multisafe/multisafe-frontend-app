@@ -15,6 +15,7 @@ import {
   makeSelectThreshold,
   makeSelectOrganisationType,
   makeSelectIsReadOnly,
+  makeSelectIsMultiOwner,
 } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import {
@@ -49,6 +50,7 @@ import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
 import UploadCsvModal, {
   MODAL_NAME as UPLOAD_CSV_MODAL,
 } from "./UploadCsvModal";
+import { Alert, AlertMessage } from "components/common/Alert";
 import {
   NewTransferContainer,
   SummaryContainer,
@@ -127,6 +129,7 @@ export default function NewTransfer() {
   const step = useSelector(makeSelectStep());
   const formData = useSelector(makeSelectFormData());
   const totalBalance = useSelector(makeSelectTotalBalance());
+  const isMultiOwner = useSelector(makeSelectIsMultiOwner());
 
   useEffect(() => {
     if (safeAddress) {
@@ -455,6 +458,24 @@ export default function NewTransfer() {
                 </PaymentSubtitle>
               </div>
             </PaymentFlex>
+
+            {isMultiOwner ? (
+              <Alert className="mt-5">
+                <AlertMessage>
+                  Please execute this transaction using Coinshift as
+                  transactions executed from the
+                  <a
+                    href={"https://gnosis-safe.io/app/#/"}
+                    rel="noopenner noreferrer"
+                    target="_blank"
+                    className="mx-2"
+                  >
+                    Gnosis App
+                  </a>
+                  might fail due to incorrect gas estimation
+                </AlertMessage>
+              </Alert>
+            ) : null}
 
             <PaymentButtonContainer>
               <Button

@@ -64,8 +64,5 @@ export const PaymentButtonContainer = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   gap: 3rem 0;
-  margin-top: 10rem;
-  @media (max-width: 978px) {
-    margin-top: 5rem;
-  }
+  margin-top: 4rem;
 `;
