@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { isAddress } from "@ethersproject/address";
 
 // check if the field is correct
@@ -11,12 +12,14 @@ export const FIELD_NAMES = {
   DEPARTMENT_NAME: "DEPARTMENT_NAME",
 };
 
-export const isValidField = (fieldName, value, tokens, ...rest) => {
+export const isValidField = (
+  fieldName: string,
+  value: number,
+  tokens: Array<{ value: string; label: ReactNode }>,
+  rest: any
+) => {
   switch (fieldName) {
-    case FIELD_NAMES.FIRST_NAME: {
-      if (!value || typeof value !== "string") return false;
-      return true;
-    }
+    case FIELD_NAMES.FIRST_NAME:
     case FIELD_NAMES.LAST_NAME: {
       if (value && typeof value !== "string") return false;
       return true;

@@ -9,7 +9,7 @@ import {
 } from "store/global/selectors";
 import { useEncryptionKey } from "hooks";
 import Dropzone from "components/common/Dropzone";
-import { FIELD_NAMES, isValidField } from "store/add-people/utils";
+import { FIELD_NAMES, isValidField } from "store/new-transfer/utils";
 import { Table, TableHead, TableBody } from "components/common/Table";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import Img from "components/common/Img";
@@ -21,6 +21,7 @@ import {
 } from "store/tokens/selectors";
 import { formatNumber } from "utils/number-helpers";
 import { UploadScreen, UploadStatus } from "components/People/styles";
+import { Bullet } from "./styles/UploadCsv";
 import { constructLabel } from "utils/tokens";
 import { formatText } from "utils/string-utils";
 import { updateForm } from "store/new-transfer/actions";
@@ -28,6 +29,9 @@ import TokenImg from "components/common/TokenImg";
 
 export const MODAL_NAME = "upload-csv-transfer-modal";
 
+function InvalidBullet({ isInvalid }) {
+  return isInvalid ? <Bullet /> : null;
+}
 function UploadCsvModal(props) {
   const { show, handleHide } = props;
   const [encryptionKey] = useEncryptionKey();
@@ -76,7 +80,7 @@ function UploadCsvModal(props) {
   const handleDrop = (data, fileName) => {
     setFileName(fileName);
     // checking for at least 6 columns in the csv
-    if (!data || data.length === 0 || data.some((arr) => arr.length < 7)) {
+    if (!data || data.length === 0 || data.some((arr) => arr.length < 6)) {
       setInvalidCsvData(true);
       return;
     }
@@ -174,7 +178,7 @@ function UploadCsvModal(props) {
       !isValidField(FIELD_NAMES.TOKEN, tokenName, tokenDetails);
     const invalidPayInUsd = !isValidField(
       FIELD_NAMES.PAY_USD_IN_TOKEN,
-      tokenName,
+      payUsdInToken,
       tokenDetails,
       { tokenName }
     );
@@ -189,18 +193,19 @@ function UploadCsvModal(props) {
     return (
       <tr key={`${address}-${idx}`}>
         <td className={`${invalidName && "text-red"}`} style={{ width: "20%" }}>
-          {firstName} {lastName}
+          <InvalidBullet isInvalid={invalidName} /> {firstName} {lastName}
         </td>
         <td
           className={`${invalidAddress && "text-red"}`}
           style={{ width: "40%" }}
         >
-          {address}
+          <InvalidBullet isInvalid={invalidAddress} /> {address}
         </td>
         <td
           className={`${invalidPayDetails && "text-red"}`}
           style={{ width: "13%" }}
         >
+          <InvalidBullet isInvalid={invalidPayDetails} />
           <span>
             <TokenImg token={tokenName} className="mr-2" />
             <span>
@@ -212,6 +217,8 @@ function UploadCsvModal(props) {
           className={`${invalidPayInUsd && "text-red"}`}
           style={{ width: "12%" }}
         >
+          <InvalidBullet isInvalid={invalidPayInUsd} />
+
           {payUsdInToken && (
             <span>
               <TokenImg token={payUsdInToken} className="mr-2" />
@@ -306,7 +313,7 @@ function UploadCsvModal(props) {
               <th style={{ width: "40%" }}>Address</th>
               <th style={{ width: "13%" }}>Pay Amount</th>
               <th style={{ width: "12%" }}>Pay USD In</th>
-              <th style={{ width: "15%" }}>Team</th>
+              <th style={{ width: "17%" }}>Team</th>
             </tr>
           </TableHead>
 
