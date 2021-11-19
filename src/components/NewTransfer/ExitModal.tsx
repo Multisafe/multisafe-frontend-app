@@ -18,7 +18,7 @@ type Props = {
   show: boolean;
   handleHide: () => void;
 };
-function DeleteTeamModal(props: Props) {
+function ExitNewTransferModal(props: Props) {
   const { show, handleHide } = props;
 
   const dispatch = useDispatch();
@@ -60,4 +60,4 @@ function DeleteTeamModal(props: Props) {
   );
 }
 
-export default reduxModal({ name: MODAL_NAME })(DeleteTeamModal);
+export default reduxModal({ name: MODAL_NAME })(ExitNewTransferModal);

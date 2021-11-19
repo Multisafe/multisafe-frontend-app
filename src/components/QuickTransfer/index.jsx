@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
 
@@ -7,7 +7,7 @@ import Button from "components/common/Button";
 import {
   Input,
   TextArea,
-  CurrencyInput,
+  CurrencyConversionInput,
   SelectToken,
 } from "components/common/Form";
 import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
@@ -28,7 +28,6 @@ import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
-  makeSelectPrices,
 } from "store/tokens/selectors";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
@@ -54,14 +53,12 @@ export default function QuickTransfer(props) {
 
   const { loadingTx, massPayout } = useMassPayout();
 
-  const { register, errors, handleSubmit, formState, control, watch } = useForm(
-    {
-      mode: "onChange",
-      defaultValues: {
-        receivers: [{ address: "", amount: "" }],
-      },
-    }
-  );
+  const { register, errors, handleSubmit, control, watch, setValue } = useForm({
+    mode: "onSubmit",
+    defaultValues: {
+      receivers: [{ address: "", amount: "" }],
+    },
+  });
   const { fields, append, remove } = useFieldArray({
     control,
     name: "receivers",
@@ -81,7 +78,6 @@ export default function QuickTransfer(props) {
   const addingSingleOwnerTx = useSelector(makeSelectSingleOwnerAddTxLoading());
   const threshold = useSelector(makeSelectThreshold());
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
-  const prices = useSelector(makeSelectPrices());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
@@ -218,39 +214,18 @@ export default function QuickTransfer(props) {
 
             {selectedToken && (
               <div>
-                <Controller
+                <CurrencyConversionInput
                   control={control}
-                  name={`receivers[${index}].amount`}
-                  rules={{
-                    required: "Amount is required",
-                    validate: (value) => {
-                      if (value <= 0) return "Please check your input";
-
-                      return true;
-                    },
-                  }}
-                  defaultValue={
-                    defaultValues && defaultValues.receivers[index]
-                      ? defaultValues.receivers[index].amount
-                      : ""
+                  baseName={`receivers[${index}]`}
+                  setValue={setValue}
+                  tokenName={
+                    selectedTokenDetails ? selectedTokenDetails.name : ""
                   }
-                  render={({ onChange, value }) => (
-                    <CurrencyInput
-                      type="number"
-                      name={`receivers[${index}].amount`}
-                      value={value}
-                      onChange={onChange}
-                      placeholder="0.00"
-                      conversionRate={
-                        prices &&
-                        selectedTokenDetails &&
-                        prices[selectedTokenDetails.name]
-                      }
-                      tokenName={
-                        selectedTokenDetails ? selectedTokenDetails.name : ""
-                      }
-                    />
-                  )}
+                  conversionRate={
+                    selectedTokenDetails
+                      ? selectedTokenDetails.usdConversionRate
+                      : 0
+                  }
                 />
               </div>
             )}
@@ -344,7 +319,6 @@ export default function QuickTransfer(props) {
           type="submit"
           style={{ minWidth: "16rem" }}
           disabled={
-            !formState.isValid ||
             loadingTx ||
             addingMultisigTx ||
             addingSingleOwnerTx ||
