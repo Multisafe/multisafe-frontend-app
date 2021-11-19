@@ -95,7 +95,7 @@ export default function NewTransfer() {
   const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState();
+  const [selectedLabels, setSelectedLabels] = useState([]);
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
