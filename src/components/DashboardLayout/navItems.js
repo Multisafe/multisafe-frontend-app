@@ -51,7 +51,7 @@ export const mainNavItems = [
     activeIcon: ActiveSupportIcon,
   },
   {
-    href: "https://docs.multisafe.finance/",
+    href: "https://docs.coinshift.xyz/",
     name: "Docs",
     icon: DocsIcon,
     activeIcon: DocsIcon,
