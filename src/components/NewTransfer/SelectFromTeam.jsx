@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 
@@ -44,6 +44,8 @@ import {
   Title,
   SelectAll,
   ConfirmContainer,
+  TableTitle,
+  SearchNameInput
 } from "./styles/SelectFromTeam";
 
 // reducer/saga keys
@@ -65,6 +67,7 @@ export default function SelectFromTeam(props) {
   const [people, setPeople] = useState();
   const [selectedRows, setSelectedRows] = useState([]);
   const [teamsDropdown, setTeamsDropdown] = useState();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Reducers
   useInjectReducer({ key: viewPeopleKey, reducer: viewPeopleReducer });
@@ -202,6 +205,10 @@ export default function SelectFromTeam(props) {
     }
   };
 
+  const onSearchQueryChange = (e) => {
+    setSearchQuery(e?.target?.value || "");
+  };
+
   const selectedCount = useMemo(() => {
     return checked.filter(Boolean).length;
   }, [checked]);
@@ -237,10 +244,17 @@ export default function SelectFromTeam(props) {
     return (
       <div>
         <OuterFlex>
-          <Title>Team Details</Title>
+          <TableTitle>Team Details</TableTitle>
 
           {!loadingTeammates && people.length > 0 && (
             <SelectAll>
+              <SearchNameInput
+                type="text"
+                name="search"
+                placeholder="Search Teammates"
+                value={searchQuery}
+                onChange={onSearchQueryChange}
+              />
               <CheckBox
                 type="checkbox"
                 id="allCheckbox"
@@ -268,59 +282,70 @@ export default function SelectFromTeam(props) {
               people.length > 0 &&
               people.map(({ peopleId, data, departmentName, ...rest }, idx) => {
                 const {
-                  firstName,
-                  lastName,
+                  firstName = "",
+                  lastName = "",
                   salaryAmount,
                   salaryToken,
                   address,
                 } = getDecryptedDetails(data, encryptionKey, organisationType);
 
-                const teammateDetails = {
-                  firstName,
-                  lastName,
-                  salaryToken,
-                  salaryAmount,
-                  address,
-                  peopleId,
-                  departmentName,
-                  index: idx,
-                  ...rest,
-                };
-                return (
-                  <tr
-                    key={`${address}-${idx}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleChecked(teammateDetails, idx);
-                    }}
-                    style={{
-                      backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
-                    }}
-                  >
-                    <td style={{ width: "25%" }}>
-                      <div className="d-flex align-items-center">
-                        <CheckBox
-                          type="checkbox"
-                          id={`checkbox${idx}`}
-                          name={`checkbox${idx}`}
-                          checked={checked[idx] || false}
-                          onChange={() => handleChecked(teammateDetails, idx)}
-                        />
-                        <div>
-                          {firstName} {lastName}
+                const lowerCaseFirstName = firstName.toLowerCase();
+                const lowerCaseLastName = lastName.toLowerCase();
+                const lowerCaseSearchQuery = searchQuery.toLowerCase();
+
+                if (
+                  lowerCaseFirstName.includes(lowerCaseSearchQuery) ||
+                  lowerCaseLastName.includes(lowerCaseSearchQuery)
+                ) {
+                  const teammateDetails = {
+                    firstName,
+                    lastName,
+                    salaryToken,
+                    salaryAmount,
+                    address,
+                    peopleId,
+                    departmentName,
+                    index: idx,
+                    ...rest,
+                  };
+                  return (
+                    <tr
+                      key={`${address}-${idx}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleChecked(teammateDetails, idx);
+                      }}
+                      style={{
+                        backgroundColor: checked[idx] ? "#e7eefe" : "#fff",
+                      }}
+                    >
+                      <td style={{ width: "25%" }}>
+                        <div className="d-flex align-items-center">
+                          <CheckBox
+                            type="checkbox"
+                            id={`checkbox${idx}`}
+                            name={`checkbox${idx}`}
+                            checked={checked[idx] || false}
+                            onChange={() => handleChecked(teammateDetails, idx)}
+                          />
+                          <div>
+                            {firstName} {lastName}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td style={{ width: "20%" }}>{departmentName}</td>
-                    <td style={{ width: "15%" }}>
-                      <TokenImg token={salaryToken} />
-                      <span className="mr-2">
+                      </td>
+                      <td style={{ width: "20%" }}>{departmentName}</td>
+                      <td style={{ width: "15%" }}>
+                        <TokenImg token={salaryToken} />
+                        <span className="mr-2">
                         {salaryAmount || `0`} {salaryToken}
                       </span>
-                    </td>
-                    <td style={{ width: "40%" }}>{address}</td>
-                  </tr>
-                );
+                      </td>
+                      <td style={{ width: "40%" }}>{address}</td>
+                    </tr>
+                  );
+                } else {
+                  return null;
+                }
               })}
           </TableBody>
         </Table>
