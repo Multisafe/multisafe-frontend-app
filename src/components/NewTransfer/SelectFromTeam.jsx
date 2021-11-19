@@ -45,7 +45,7 @@ import {
   SelectAll,
   ConfirmContainer,
   TableTitle,
-  SearchNameInput
+  SearchNameInput,
 } from "./styles/SelectFromTeam";
 
 // reducer/saga keys
@@ -337,8 +337,8 @@ export default function SelectFromTeam(props) {
                       <td style={{ width: "15%" }}>
                         <TokenImg token={salaryToken} />
                         <span className="mr-2">
-                        {salaryAmount || `0`} {salaryToken}
-                      </span>
+                          {salaryAmount || `0`} {salaryToken}
+                        </span>
                       </td>
                       <td style={{ width: "40%" }}>{address}</td>
                     </tr>

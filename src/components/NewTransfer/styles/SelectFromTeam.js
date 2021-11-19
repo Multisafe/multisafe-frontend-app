@@ -1,5 +1,5 @@
 import styled from "styled-components/macro";
-import ControlledInput from 'components/common/Input';
+import ControlledInput from "components/common/Input";
 
 export const SelectFromTeamContainer = styled.div`
   padding: 4rem;

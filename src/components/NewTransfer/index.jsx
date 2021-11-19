@@ -71,6 +71,7 @@ import {
   PaymentSubtitle,
   PaymentButtonContainer,
 } from "./styles/PaymentSummary";
+import { LabelsSelect } from "components/LabelsSelect";
 
 const defaultValues = {
   batch: [
@@ -94,6 +95,7 @@ export default function NewTransfer() {
   const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState();
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -214,6 +216,10 @@ export default function NewTransfer() {
     dispatch(show(UPLOAD_CSV_MODAL));
   };
 
+  const onLabelsChange = (value) => {
+    setSelectedLabels(value || []);
+  };
+
   const onSubmit = async (values) => {
     dispatch(updateForm(values));
 
@@ -291,6 +297,7 @@ export default function NewTransfer() {
         description: encryptedDescription,
         fiatCurrency: "USD",
         addresses,
+        labels: selectedLabels.map(({ value }) => value),
         transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
         metaData: {
           transferSummary: encryptedTransferSummary,
@@ -403,12 +410,12 @@ export default function NewTransfer() {
 
             <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
             <div>
-              <TextArea
-                name="label"
-                register={register}
-                placeholder="Enter label"
-                rows="1"
-                cols="50"
+              <LabelsSelect
+                {...{
+                  name: "labels",
+                  value: selectedLabels,
+                  onChange: onLabelsChange,
+                }}
               />
             </div>
 
