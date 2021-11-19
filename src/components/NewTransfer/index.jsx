@@ -47,10 +47,14 @@ import TokenSummary from "./TokenSummary";
 import TokenImg from "components/common/TokenImg";
 import Img from "components/common/Img";
 import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
+import InfoIcon from "assets/icons/new-transfer/info-warn.svg";
 import UploadCsvModal, {
   MODAL_NAME as UPLOAD_CSV_MODAL,
 } from "./UploadCsvModal";
 import { Alert, AlertMessage } from "components/common/Alert";
+import { showWarningToast, toaster } from "components/common/Toast";
+import { LabelsSelect } from "components/LabelsSelect";
+
 import {
   NewTransferContainer,
   SummaryContainer,
@@ -71,7 +75,6 @@ import {
   PaymentSubtitle,
   PaymentButtonContainer,
 } from "./styles/PaymentSummary";
-import { LabelsSelect } from "components/LabelsSelect";
 
 const defaultValues = {
   batch: [
@@ -203,6 +206,35 @@ export default function NewTransfer() {
       setIsBatchCountTooHigh(false);
     }
   }, [batchWatcher]);
+
+  const showWarning = () => {
+    const WARNING_TOAST_ID = "warning-msg";
+    toaster.dismiss();
+    showWarningToast(
+      <div className="d-flex align-items-center">
+        <Img src={InfoIcon} alt="info warn" className="mr-3" />
+        <div>
+          Some required information is incorrect. Please check your input.
+        </div>
+      </div>,
+      {
+        toastId: WARNING_TOAST_ID,
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (
+      errors &&
+      errors.batch &&
+      errors.batch.length > 0 &&
+      step === STEPS.ZERO
+    ) {
+      showWarning();
+    } else {
+      toaster.dismiss();
+    }
+  }, [errors, step]);
 
   const goBack = () => {
     dispatch(selectStep(step - 1));

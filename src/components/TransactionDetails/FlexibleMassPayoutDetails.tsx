@@ -56,14 +56,16 @@ function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
             return (
               <tr key={`${idx}-${address}`}>
                 <td style={{ width: "25%" }}>
-                  <div className="d-flex align-items-center">
-                    <Avatar
-                      className="mr-3"
-                      firstName={firstName}
-                      lastName={lastName}
-                    />
-                    <div>{name}</div>
-                  </div>
+                  {name && (
+                    <div className="d-flex align-items-center">
+                      <Avatar
+                        className="mr-3"
+                        firstName={firstName}
+                        lastName={lastName}
+                      />
+                      <div>{name}</div>
+                    </div>
+                  )}
                 </td>
                 <td style={{ width: "15%" }}>{departmentName}</td>
                 <td style={{ width: "20%" }}>

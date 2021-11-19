@@ -9,6 +9,7 @@ import {
 } from "components/common/Modal/SimpleModal";
 import Button from "components/common/Button";
 import { resetTransferStore } from "store/new-transfer/actions";
+import { toaster } from "components/common/Toast";
 
 import { MODAL_NAME as NEW_TRANSFER_MODAL } from "./NewTransferModal";
 
@@ -29,7 +30,10 @@ function ExitNewTransferModal(props: Props) {
 
     // TODO: fix this hack, without timeout the summary is not reset
     await new Promise((resolve) =>
-      setTimeout(() => resolve(dispatch(resetTransferStore())))
+      setTimeout(() => {
+        toaster.dismiss();
+        resolve(dispatch(resetTransferStore()));
+      })
     );
   };
 
