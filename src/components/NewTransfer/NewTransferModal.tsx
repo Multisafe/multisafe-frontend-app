@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch } from "react-redux";
 import { show as showModal, InjectedProps } from "redux-modal";
@@ -11,6 +12,8 @@ import NewTransfer from "components/NewTransfer";
 import { useInjectReducer } from "utils/injectReducer";
 import newTransferReducer from "store/new-transfer/reducer";
 import ExitModal, { MODAL_NAME as EXIT_MODAL } from "./ExitModal";
+import { resetTransferStore } from "store/new-transfer/actions";
+import { toaster } from "components/common/Toast";
 export const MODAL_NAME = "new-transfer-modal";
 const newTransferKey = "newTransfer";
 
@@ -24,6 +27,13 @@ function NewTransferModal(props: InjectedProps) {
   const hideModal = async () => {
     dispatch(showModal(EXIT_MODAL));
   };
+
+  useEffect(() => {
+    return () => {
+      toaster.dismiss();
+      dispatch(resetTransferStore());
+    };
+  }, [dispatch]);
 
   return (
     <Modal isOpen={show} toggle={hideModal}>

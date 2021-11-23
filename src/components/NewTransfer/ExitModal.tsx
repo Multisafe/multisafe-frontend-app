@@ -1,4 +1,3 @@
-import React from "react";
 import { connectModal as reduxModal, hide } from "redux-modal";
 import { useDispatch } from "react-redux";
 
@@ -8,8 +7,6 @@ import {
   ModalBody,
 } from "components/common/Modal/SimpleModal";
 import Button from "components/common/Button";
-import { resetTransferStore } from "store/new-transfer/actions";
-import { toaster } from "components/common/Toast";
 
 import { MODAL_NAME as NEW_TRANSFER_MODAL } from "./NewTransferModal";
 
@@ -27,14 +24,6 @@ function ExitNewTransferModal(props: Props) {
   const confirmExit = async () => {
     handleHide();
     dispatch(hide(NEW_TRANSFER_MODAL));
-
-    // TODO: fix this hack, without timeout the summary is not reset
-    await new Promise((resolve) =>
-      setTimeout(() => {
-        toaster.dismiss();
-        resolve(dispatch(resetTransferStore()));
-      })
-    );
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
@@ -99,6 +99,8 @@ export default function NewTransfer() {
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
+
+  const bottomRef = useRef(null);
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -250,6 +252,24 @@ export default function NewTransfer() {
 
   const onLabelsChange = (value) => {
     setSelectedLabels(value || []);
+  };
+
+  const goToBottom = () => {
+    if (bottomRef && bottomRef.current) {
+      // scroll to bottom
+    }
+  };
+
+  const handleAddBatch = () => {
+    setValue("batch", [
+      ...getValues().batch,
+      {
+        token: undefined,
+        receivers: [{ address: "", tokenValue: "" }],
+      },
+    ]);
+
+    goToBottom();
   };
 
   const onSubmit = async (values) => {
@@ -546,6 +566,14 @@ export default function NewTransfer() {
         return (
           <NewTransferContainer>
             {renderFlexibleMassPayout()}
+            <div
+              style={{
+                height: "1rem",
+                width: "100%",
+                backgroundColor: "lightblue",
+              }}
+              ref={bottomRef}
+            />
           </NewTransferContainer>
         );
 
@@ -569,15 +597,7 @@ export default function NewTransfer() {
                 className="secondary"
                 style={{ minWidth: "16rem" }}
                 disabled={isBatchCountTooHigh}
-                onClick={() => {
-                  setValue("batch", [
-                    ...getValues().batch,
-                    {
-                      token: undefined,
-                      receivers: [{ address: "", tokenValue: "" }],
-                    },
-                  ]);
-                }}
+                onClick={handleAddBatch}
               >
                 Add Batch
               </Button>
