@@ -141,8 +141,7 @@ export const QuickViewTransaction = ({
               <AmountContainer>
                 {tokenCurrencies && tokenCurrencies.length > 0 && (
                   <div className="amount">
-                    {tokenCurrencies.map((token) => (
-                      //@ts-ignore
+                    {[...new Set(tokenCurrencies)].map((token) => (
                       <TokenImg token={token} key={token} />
                     ))}
                   </div>
