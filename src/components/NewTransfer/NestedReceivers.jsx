@@ -281,7 +281,7 @@ function NestedReceivers({
             className="secondary-4 ml-3"
             width="16rem"
           >
-            Select from team
+            Select from teams
           </Button>
         )}
       </div>

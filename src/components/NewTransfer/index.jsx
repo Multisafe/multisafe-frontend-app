@@ -35,7 +35,11 @@ import {
   makeSelectFormData,
 } from "store/new-transfer/selectors";
 import { STEPS } from "store/register/resources";
-import { selectStep, updateForm } from "store/new-transfer/actions";
+import {
+  selectStep,
+  setTransferSummary,
+  updateForm,
+} from "store/new-transfer/actions";
 import {
   Accordion,
   AccordionItem,
@@ -256,7 +260,7 @@ export default function NewTransfer() {
 
   const goToBottom = () => {
     if (bottomRef && bottomRef.current) {
-      // scroll to bottom
+      // TODO: scroll to bottom
     }
   };
 
@@ -270,6 +274,11 @@ export default function NewTransfer() {
     ]);
 
     goToBottom();
+  };
+
+  const resetForm = () => {
+    reset(defaultValues);
+    dispatch(setTransferSummary([]));
   };
 
   const onSubmit = async (values) => {
@@ -370,14 +379,24 @@ export default function NewTransfer() {
       <HeadingContainer>
         <Heading>New Transfer</Heading>
 
-        <div>
+        <div className="d-flex align-items-center">
           <Button
             onClick={showUploadCsvModal}
             type="button"
             className="secondary-4"
+            style={{ marginRight: "2rem" }}
             width="12rem"
           >
             Upload CSV
+          </Button>
+          <Button
+            onClick={resetForm}
+            type="button"
+            className="primary"
+            width="12rem"
+            disabled={!transferSummary.length}
+          >
+            Reset
           </Button>
         </div>
       </HeadingContainer>
@@ -566,14 +585,6 @@ export default function NewTransfer() {
         return (
           <NewTransferContainer>
             {renderFlexibleMassPayout()}
-            <div
-              style={{
-                height: "1rem",
-                width: "100%",
-                backgroundColor: "lightblue",
-              }}
-              ref={bottomRef}
-            />
           </NewTransferContainer>
         );
 

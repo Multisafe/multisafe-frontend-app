@@ -10,7 +10,7 @@ function SelectFromTeamModal(props) {
 
   return (
     <Modal isOpen={show} toggle={handleHide}>
-      <ModalHeader title={"Select From Team"} toggle={handleHide} />
+      <ModalHeader title={"Select From Teams"} toggle={handleHide} />
       <ModalBody width="110rem" minHeight="auto">
         <SelectFromTeam handleHide={handleHide} {...rest} />
       </ModalBody>
