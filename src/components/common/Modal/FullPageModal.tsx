@@ -22,6 +22,10 @@ const modalStyles = `
     background-image: url(${GradientImg});
   }
 
+  .full-modal-wrapper .modal.show {
+    scroll-behavior: smooth;
+  }
+
   .modal-title {
     width: 100%;
   }

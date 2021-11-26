@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
@@ -103,8 +103,6 @@ export default function NewTransfer() {
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
-
-  const bottomRef = useRef(null);
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -259,9 +257,14 @@ export default function NewTransfer() {
   };
 
   const goToBottom = () => {
-    if (bottomRef && bottomRef.current) {
-      // TODO: scroll to bottom
-    }
+    // TODO: Use ref instead of DOM
+    const container = document.querySelector(".modal.show");
+    const scrollHeight = container.scrollHeight;
+
+    container.scrollTo({
+      top: scrollHeight,
+      left: 0,
+    });
   };
 
   const handleAddBatch = () => {
@@ -479,7 +482,7 @@ export default function NewTransfer() {
               />
             </div>
 
-            <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
+            <InputTitle style={{ marginTop: "2rem" }}>Label</InputTitle>
             <div>
               <LabelsSelect
                 {...{

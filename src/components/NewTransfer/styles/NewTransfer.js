@@ -1,11 +1,12 @@
 import styled from "styled-components/macro";
 
 export const NewTransferContainer = styled.div`
-  padding: 4rem;
+  padding: 4rem 4rem 0;
   max-width: 128rem;
   margin: auto;
   min-height: calc(92vh - 8rem);
   position: relative;
+  margin-bottom: 40rem; // hack to scroll to bottom
   @media (max-width: 978px) {
     padding: 3rem 2rem;
   }
@@ -172,6 +173,8 @@ export const GrandTotalText = styled.div`
 export const FixedPortion = styled.div`
   position: fixed;
   margin-right: 4rem;
+  overflow-y: auto;
+  max-height: 90vh;
 
   @media (max-width: 978px) {
     position: relative;

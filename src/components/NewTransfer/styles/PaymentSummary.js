@@ -63,6 +63,6 @@ export const PaymentButtonContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 3rem 0;
-  margin-top: 4rem;
+  gap: 2rem 0;
+  margin: 3rem 0 2rem;
 `;
