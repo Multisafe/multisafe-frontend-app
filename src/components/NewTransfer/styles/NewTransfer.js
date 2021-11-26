@@ -194,3 +194,15 @@ export const SectionDivider = styled.div`
     display: none;
   }
 `;
+
+export const RightRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0 2rem;
+`;
+export const BatchName = styled.div`
+  font-weight: normal;
+  color: #989898;
+  font-size: 1.6rem;
+  margin-top: 0.4rem;
+`;

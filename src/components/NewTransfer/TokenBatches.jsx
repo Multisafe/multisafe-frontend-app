@@ -13,7 +13,12 @@ import { makeSelectTransferSummary } from "store/new-transfer/selectors";
 import NestedReceivers from "./NestedReceivers";
 import TokenSummary from "./TokenSummary";
 import { Card } from "components/common/Card";
-import { Title, BatchContainer } from "./styles/NewTransfer";
+import {
+  Title,
+  BatchContainer,
+  RightRow,
+  BatchName,
+} from "./styles/NewTransfer";
 
 function Batch({
   control,
@@ -175,14 +180,17 @@ function Batch({
             </div>
           </div>
           {fields.length > 1 && (
-            <Button
-              type="button"
-              iconOnly
-              className="p-0"
-              onClick={() => remove(index)}
-            >
-              <Img src={DeleteSvg} alt="remove batch" width="20" />
-            </Button>
+            <RightRow alignItems={"center"}>
+              <BatchName>Batch {index + 1}</BatchName>
+              <Button
+                type="button"
+                iconOnly
+                className="p-0"
+                onClick={() => remove(index)}
+              >
+                <Img src={DeleteSvg} alt="remove batch" width="20" />
+              </Button>
+            </RightRow>
           )}
         </div>
 
