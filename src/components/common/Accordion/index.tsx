@@ -7,12 +7,12 @@ type Props = {
   children: ReactNode;
 };
 
-type IToggleContext = {
+type ToggleContextType = {
   toggle: boolean;
   setToggle: (toggle: boolean) => void;
 };
 
-const ToggleContext = createContext<IToggleContext | undefined>(undefined);
+const ToggleContext = createContext<ToggleContextType | undefined>(undefined);
 
 export function Accordion({ children, ...rest }: Props) {
   return <Container {...rest}>{children}</Container>;
@@ -33,7 +33,7 @@ export function AccordionItem({
 }
 
 export function AccordionHeader({ children, ...rest }: Props) {
-  const { toggle, setToggle } = useContext(ToggleContext) as IToggleContext;
+  const { toggle, setToggle } = useContext(ToggleContext) as ToggleContextType;
 
   return (
     <Header onClick={() => setToggle(!toggle)} {...rest}>
@@ -44,7 +44,7 @@ export function AccordionHeader({ children, ...rest }: Props) {
 }
 
 export function AccordionBody({ children, ...rest }: Props) {
-  const { toggle } = useContext(ToggleContext) as IToggleContext;
+  const { toggle } = useContext(ToggleContext) as ToggleContextType;
   return (
     <Body toggle={toggle} {...rest}>
       {children}

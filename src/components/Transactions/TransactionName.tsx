@@ -34,8 +34,7 @@ export default function TransactionName({ to, transactionMode }: Props) {
     return "Swap Tokens";
   } else if (transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT) {
     return "Mass Payout";
-  } 
-  else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
+  } else if (transactionMode === TRANSACTION_MODES.MASS_PAYOUT) {
     const payeeDetails = getDecryptedDetails(
       to,
       encryptionKey,

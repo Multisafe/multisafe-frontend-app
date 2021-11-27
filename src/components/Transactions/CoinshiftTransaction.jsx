@@ -62,7 +62,7 @@ const CoinshiftTransaction = forwardRef(({ transaction }, ref) => {
         <React.Fragment>
           {tokenCurrencies && tokenCurrencies.length > 0 && (
             <div className="amount">
-              {tokenCurrencies.map((token) => (
+              {[...new Set(tokenCurrencies)].map((token) => (
                 <TokenImg token={token} key={token} />
               ))}
             </div>

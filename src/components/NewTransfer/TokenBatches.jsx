@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { isEqual } from "lodash";
 
 import Button from "components/common/Button";
-import { SelectToken } from "components/common/Form";
+import { SelectToken, ErrorMessage } from "components/common/Form";
 import { makeSelectPrices } from "store/tokens/selectors";
 import DeleteSvg from "assets/icons/delete-bin.svg";
 import Img from "components/common/Img";
@@ -13,7 +13,12 @@ import { makeSelectTransferSummary } from "store/new-transfer/selectors";
 import NestedReceivers from "./NestedReceivers";
 import TokenSummary from "./TokenSummary";
 import { Card } from "components/common/Card";
-import { Title, BatchContainer } from "./styles/NewTransfer";
+import {
+  Title,
+  BatchContainer,
+  RightRow,
+  BatchName,
+} from "./styles/NewTransfer";
 
 function Batch({
   control,
@@ -158,7 +163,7 @@ function Batch({
               <SelectToken
                 name={`batch[${index}].token`}
                 control={control}
-                required={`Token is required`}
+                required={`Currency is required`}
                 width="20rem"
                 options={tokensDropdown}
                 isSearchable
@@ -167,16 +172,25 @@ function Batch({
                 isLoading={loadingTokens}
               />
             </div>
+            <div>
+              <ErrorMessage
+                errors={errors}
+                name={`batch[${index}].token.message`}
+              />
+            </div>
           </div>
           {fields.length > 1 && (
-            <Button
-              type="button"
-              iconOnly
-              className="p-0"
-              onClick={() => remove(index)}
-            >
-              <Img src={DeleteSvg} alt="remove batch" width="20" />
-            </Button>
+            <RightRow alignItems={"center"}>
+              <BatchName>Batch {index + 1}</BatchName>
+              <Button
+                type="button"
+                iconOnly
+                className="p-0"
+                onClick={() => remove(index)}
+              >
+                <Img src={DeleteSvg} alt="remove batch" width="20" />
+              </Button>
+            </RightRow>
           )}
         </div>
 

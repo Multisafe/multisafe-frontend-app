@@ -9,7 +9,7 @@ const ErrorMessage = ({ errors, name, ...rest }) => {
     <>
       {errors[name] ? (
         <Error {...rest}>
-          errors[name].message || "Please check your input"
+          {errors[name].message || "Please check your input"}
         </Error>
       ) : get(errors, name) ? (
         <Error {...rest}>{get(errors, name)}</Error>

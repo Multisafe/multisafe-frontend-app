@@ -4,6 +4,7 @@ import { ModalHeader, ModalBody } from "reactstrap";
 import Img from "../Img";
 import CloseIcon from "assets/icons/dashboard/close-icon.svg";
 import { ModalProps, ModalBodyProps } from "./types";
+import GradientImg from "assets/icons/new-transfer/gradient.svg";
 
 import { SimpleModal as Modal } from "./styles";
 
@@ -15,6 +16,14 @@ const modalStyles = `
     margin: auto;
     width: 100%;
     min-height: 100vh;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url(${GradientImg});
+  }
+
+  .full-modal-wrapper .modal.show {
+    scroll-behavior: smooth;
   }
 
   .modal-title {
@@ -46,6 +55,9 @@ function CustomModal({ children, isOpen, toggle, ...rest }: ModalProps) {
       fade={false}
       wrapClassName="full-modal-wrapper"
       contentClassName="full-modal-content"
+      style={{
+        backgroundImage: `url(${GradientImg})`,
+      }}
       {...rest}
     >
       <style>{modalStyles}</style>

@@ -73,7 +73,7 @@ export default function Summary({ txDetails, paidTeammates }) {
             <div className="detail-card">
               <div className="detail-title">Tokens Used</div>
               <div className="detail-subtitle">
-                {tokenCurrencies.map((tokenName) => (
+                {[...new Set(tokenCurrencies)].map((tokenName) => (
                   <TokenImg
                     token={tokenName}
                     className="mr-2"

@@ -1,11 +1,12 @@
 import styled from "styled-components/macro";
 
 export const NewTransferContainer = styled.div`
-  padding: 4rem;
+  padding: 4rem 4rem 0;
   max-width: 128rem;
   margin: auto;
-  min-height: calc(92vh - 8rem);
+  min-height: 60vh;
   position: relative;
+  margin-bottom: 38vh;
   @media (max-width: 978px) {
     padding: 3rem 2rem;
   }
@@ -172,6 +173,8 @@ export const GrandTotalText = styled.div`
 export const FixedPortion = styled.div`
   position: fixed;
   margin-right: 4rem;
+  overflow-y: auto;
+  max-height: 90vh;
 
   @media (max-width: 978px) {
     position: relative;
@@ -190,4 +193,16 @@ export const SectionDivider = styled.div`
   @media (max-width: 978px) {
     display: none;
   }
+`;
+
+export const RightRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0 2rem;
+`;
+export const BatchName = styled.div`
+  font-weight: normal;
+  color: #989898;
+  font-size: 1.6rem;
+  margin-top: 0.4rem;
 `;

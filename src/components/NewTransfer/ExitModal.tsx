@@ -1,4 +1,3 @@
-import React from "react";
 import { connectModal as reduxModal, hide } from "redux-modal";
 import { useDispatch } from "react-redux";
 
@@ -8,7 +7,6 @@ import {
   ModalBody,
 } from "components/common/Modal/SimpleModal";
 import Button from "components/common/Button";
-import { resetTransferStore } from "store/new-transfer/actions";
 
 import { MODAL_NAME as NEW_TRANSFER_MODAL } from "./NewTransferModal";
 
@@ -18,7 +16,7 @@ type Props = {
   show: boolean;
   handleHide: () => void;
 };
-function DeleteTeamModal(props: Props) {
+function ExitNewTransferModal(props: Props) {
   const { show, handleHide } = props;
 
   const dispatch = useDispatch();
@@ -26,11 +24,6 @@ function DeleteTeamModal(props: Props) {
   const confirmExit = async () => {
     handleHide();
     dispatch(hide(NEW_TRANSFER_MODAL));
-
-    // TODO: fix this hack, without timeout the summary is not reset
-    await new Promise((resolve) =>
-      setTimeout(() => resolve(dispatch(resetTransferStore())))
-    );
   };
 
   return (
@@ -60,4 +53,4 @@ function DeleteTeamModal(props: Props) {
   );
 }
 
-export default reduxModal({ name: MODAL_NAME })(DeleteTeamModal);
+export default reduxModal({ name: MODAL_NAME })(ExitNewTransferModal);

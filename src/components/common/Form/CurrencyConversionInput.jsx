@@ -70,14 +70,14 @@ const CurrencyConversionInputField = ({
           control={control}
           name={`${baseName}.tokenValue`}
           rules={{
-            required: "Amount is required",
+            required: "Token amount is required",
             validate: (value) => {
-              if (value <= 0) return "Please check the amount";
+              if (value <= 0) return "Please check the token amount";
 
               return true;
             },
           }}
-          defaultValue={item.tokenValue || ""}
+          defaultValue={item?.tokenValue || ""}
           render={({ onChange, value }) => (
             <InputRow>
               <InputLabel htmlFor={`${baseName}.tokenValue`}>
@@ -123,14 +123,14 @@ const CurrencyConversionInputField = ({
           control={control}
           name={`${baseName}.fiatValue`}
           rules={{
-            required: "Amount is required",
+            required: "Fiat amount is required",
             validate: (value) => {
-              if (value <= 0) return "Please check the amount";
+              if (value <= 0) return "Please check the fiat amount";
 
               return true;
             },
           }}
-          defaultValue={item.fiatValue || ""}
+          defaultValue={item?.fiatValue || ""}
           render={({ onChange, value }) => (
             <InputRow>
               <InputLabel htmlFor={`${baseName}.fiatValue`}>US$</InputLabel>

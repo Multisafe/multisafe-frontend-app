@@ -5,9 +5,16 @@ import { useSelector } from "react-redux";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import Button from "components/common/Button";
 import { TransactionUrl } from "components/common/Web3Utils";
-import { TxSubmittedContainer } from "./styles";
+import {
+  TxSubmittedContainer,
+  ProcessedText,
+  ViewTx,
+  ButtonsContainer,
+} from "./styles/TxSubmitted";
 import { routeGenerators } from "constants/routes/generators";
 import Img from "components/common/Img";
+import TransactionSubmittedImg from "assets/images/transaction-submitted.png";
+
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 export const MODAL_NAME = "tx-submitted-modal";
@@ -30,27 +37,23 @@ function TransactionSubmittedModal(props) {
       <ModalBody width="55rem" minHeight="auto">
         <TxSubmittedContainer>
           <div className="text-center">
-            <Img
-              src={
-                "https://images.multisafe.finance/landing-page/transaction-submitted.png"
-              }
-              alt="submitted"
-              width="150"
-            />
+            <Img src={TransactionSubmittedImg} alt="submitted" width="150" />
           </div>
 
-          <div className="process-text">
+          <ProcessedText>
             {selectedCount
               ? `We are processing the payment of ${selectedCount} people. You can
             track the status of your payment in the transactions section.`
               : "You can track the status of your transction in the transactions section."}
-          </div>
+          </ProcessedText>
 
           <div className="text-center mt-4">
-            <TransactionUrl hash={txHash} className="view-tx" />
+            <ViewTx>
+              <TransactionUrl hash={txHash} />
+            </ViewTx>
           </div>
 
-          <div className="buttons">
+          <ButtonsContainer>
             <div>
               <Button
                 width="18rem"
@@ -78,7 +81,7 @@ function TransactionSubmittedModal(props) {
                 Track Status
               </Button>
             </div>
-          </div>
+          </ButtonsContainer>
         </TxSubmittedContainer>
       </ModalBody>
     </Modal>

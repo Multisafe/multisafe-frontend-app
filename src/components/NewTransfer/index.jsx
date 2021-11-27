@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
 import { isEqual } from "lodash";
 import { show } from "redux-modal";
+import xss from "xss";
 
 import Button from "components/common/Button";
 import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
@@ -35,7 +36,11 @@ import {
   makeSelectFormData,
 } from "store/new-transfer/selectors";
 import { STEPS } from "store/register/resources";
-import { selectStep, updateForm } from "store/new-transfer/actions";
+import {
+  selectStep,
+  setTransferSummary,
+  updateForm,
+} from "store/new-transfer/actions";
 import {
   Accordion,
   AccordionItem,
@@ -47,10 +52,14 @@ import TokenSummary from "./TokenSummary";
 import TokenImg from "components/common/TokenImg";
 import Img from "components/common/Img";
 import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
+import InfoIcon from "assets/icons/new-transfer/info-warn.svg";
 import UploadCsvModal, {
   MODAL_NAME as UPLOAD_CSV_MODAL,
 } from "./UploadCsvModal";
 import { Alert, AlertMessage } from "components/common/Alert";
+import { showWarningToast, toaster } from "components/common/Toast";
+import { LabelsSelect } from "components/LabelsSelect";
+
 import {
   NewTransferContainer,
   SummaryContainer,
@@ -70,6 +79,7 @@ import {
   PaymentTitle,
   PaymentSubtitle,
   PaymentButtonContainer,
+  PaymentDescription,
 } from "./styles/PaymentSummary";
 
 const defaultValues = {
@@ -84,7 +94,13 @@ const defaultValues = {
 
 const MAX_BATCH_LENGTH = 10;
 
-export default function NewTransfer() {
+const getDescription = (receivers, fiatValue) => {
+  return `Transfer $${formatNumber(fiatValue)} to ${receivers} receiver${
+    receivers > 1 ? "s" : ""
+  }`;
+};
+
+export default function NewTransfer({ prefilledValues }) {
   const [encryptionKey] = useEncryptionKey();
 
   const { account } = useActiveWeb3React();
@@ -94,6 +110,7 @@ export default function NewTransfer() {
   const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -108,7 +125,7 @@ export default function NewTransfer() {
     reset,
   } = useForm({
     mode: "onSubmit",
-    defaultValues: defaultValues,
+    defaultValues: prefilledValues ? prefilledValues : defaultValues,
   });
 
   const batchWatcher = watch("batch");
@@ -202,6 +219,35 @@ export default function NewTransfer() {
     }
   }, [batchWatcher]);
 
+  const showWarning = () => {
+    const WARNING_TOAST_ID = "warning-msg";
+    toaster.dismiss();
+    showWarningToast(
+      <div className="d-flex align-items-center">
+        <Img src={InfoIcon} alt="info warn" className="mr-3" />
+        <div>
+          Some required information is incorrect. Please check your input.
+        </div>
+      </div>,
+      {
+        toastId: WARNING_TOAST_ID,
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (
+      errors &&
+      errors.batch &&
+      errors.batch.length > 0 &&
+      step === STEPS.ZERO
+    ) {
+      showWarning();
+    } else {
+      toaster.dismiss();
+    }
+  }, [errors, step]);
+
   const goBack = () => {
     dispatch(selectStep(step - 1));
   };
@@ -212,6 +258,38 @@ export default function NewTransfer() {
 
   const showUploadCsvModal = () => {
     dispatch(show(UPLOAD_CSV_MODAL));
+  };
+
+  const onLabelsChange = (value) => {
+    setSelectedLabels(value || []);
+  };
+
+  const goToBottom = () => {
+    // TODO: Use ref instead of DOM
+    const container = document.querySelector(".modal.show");
+    const scrollHeight = container.scrollHeight;
+
+    container.scrollTo({
+      top: scrollHeight,
+      left: 0,
+    });
+  };
+
+  const handleAddBatch = () => {
+    setValue("batch", [
+      ...getValues().batch,
+      {
+        token: undefined,
+        receivers: [{ address: "", tokenValue: "" }],
+      },
+    ]);
+
+    goToBottom();
+  };
+
+  const resetForm = () => {
+    reset(defaultValues);
+    dispatch(setTransferSummary([]));
   };
 
   const onSubmit = async (values) => {
@@ -265,19 +343,35 @@ export default function NewTransfer() {
         }
       );
 
+      const sanitizedNote = values.note
+        ? xss(values.note, {
+            stripIgnoreTag: true,
+            whiteList: {},
+          }).trim()
+        : "";
+      const encryptedNote = sanitizedNote
+        ? cryptoUtils.encryptDataUsingEncryptionKey(
+            sanitizedNote,
+            encryptionKey,
+            organisationType
+          )
+        : "";
+
       const to = cryptoUtils.encryptDataUsingEncryptionKey(
         JSON.stringify(transferSummary),
         encryptionKey,
         organisationType
       );
 
-      const encryptedDescription = values.description
-        ? cryptoUtils.encryptDataUsingEncryptionKey(
-            values.description,
-            encryptionKey,
-            organisationType
-          )
-        : "";
+      const description = getDescription(
+        addresses.length,
+        grandTotalSummary.usdTotal
+      );
+      const encryptedDescription = cryptoUtils.encryptDataUsingEncryptionKey(
+        description,
+        encryptionKey,
+        organisationType
+      );
 
       const baseRequestBody = {
         to,
@@ -289,8 +383,10 @@ export default function NewTransfer() {
         tokenCurrencies,
         fiatValue: grandTotalSummary.usdTotal,
         description: encryptedDescription,
+        notes: encryptedNote,
         fiatCurrency: "USD",
         addresses,
+        labels: selectedLabels.map(({ value }) => value),
         transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
         metaData: {
           transferSummary: encryptedTransferSummary,
@@ -311,14 +407,24 @@ export default function NewTransfer() {
       <HeadingContainer>
         <Heading>New Transfer</Heading>
 
-        <div>
+        <div className="d-flex align-items-center">
           <Button
             onClick={showUploadCsvModal}
             type="button"
             className="secondary-4"
+            style={{ marginRight: "2rem" }}
             width="12rem"
           >
             Upload CSV
+          </Button>
+          <Button
+            onClick={resetForm}
+            type="button"
+            className="primary"
+            width="12rem"
+            disabled={!transferSummary.length}
+          >
+            Reset
           </Button>
         </div>
       </HeadingContainer>
@@ -343,6 +449,15 @@ export default function NewTransfer() {
 
   const renderSummary = () => {
     if (!grandTotalSummary) return null;
+
+    const allReceivers = formData.batch.reduce(
+      (acc, { receivers }) => acc + receivers.length,
+      0
+    );
+    const description = getDescription(
+      allReceivers,
+      grandTotalSummary.usdTotal
+    );
 
     return (
       <SummaryContainer>
@@ -391,26 +506,26 @@ export default function NewTransfer() {
           <SectionDivider />
           <FixedPortion>
             <InputTitle>Description</InputTitle>
-            <div>
-              <TextArea
-                name="description"
-                register={register}
-                placeholder="Enter Description (Optional)"
-                rows="1"
-                cols="50"
-              />
-            </div>
+            <PaymentDescription>{description}</PaymentDescription>
 
             <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
             <div>
-              <TextArea
-                name="label"
-                register={register}
-                placeholder="Enter label"
-                rows="1"
-                cols="50"
+              <LabelsSelect
+                {...{
+                  name: "labels",
+                  value: selectedLabels,
+                  onChange: onLabelsChange,
+                }}
               />
             </div>
+
+            <InputTitle style={{ marginTop: "3rem" }}>Note</InputTitle>
+            <TextArea
+              name="note"
+              register={register}
+              placeholder="Enter Note"
+              rows={1}
+            />
 
             <GrandTotalText>Grand Total</GrandTotalText>
 
@@ -530,15 +645,7 @@ export default function NewTransfer() {
                 className="secondary"
                 style={{ minWidth: "16rem" }}
                 disabled={isBatchCountTooHigh}
-                onClick={() => {
-                  setValue("batch", [
-                    ...getValues().batch,
-                    {
-                      token: undefined,
-                      receivers: [{ address: "", tokenValue: "" }],
-                    },
-                  ]);
-                }}
+                onClick={handleAddBatch}
               >
                 Add Batch
               </Button>

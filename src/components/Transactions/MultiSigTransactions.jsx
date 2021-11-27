@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
-import {getLabels, getMultisigTransactions} from "store/multisig/actions";
+import { getLabels, getMultisigTransactions } from "store/multisig/actions";
 import {
   makeSelectMultisigTransactions,
   makeSelectFetching,
@@ -31,7 +31,7 @@ import CoinshiftTransaction from "./CoinshiftTransaction";
 import Img from "components/common/Img";
 import NoTransactionsImg from "assets/icons/dashboard/empty/transaction.svg";
 import { MULTISIG_KEY } from "store/multisig/constants";
-import {useActiveWeb3React} from "hooks";
+import { useActiveWeb3React } from "hooks";
 
 const LIMIT = 10;
 
