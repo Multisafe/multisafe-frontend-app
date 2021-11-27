@@ -22,7 +22,7 @@ import {
   TeamLabel,
 } from "./styles/NewTransfer";
 
-function Receiver({
+function NestedReceiver({
   item,
   nestIndex,
   k,
@@ -239,7 +239,7 @@ function NestedReceivers({
     <div>
       {fields.map((item, k) => {
         return (
-          <Receiver
+          <NestedReceiver
             key={item.id}
             {...{
               item,

@@ -1,20 +1,20 @@
-export interface Receiver {
+export type Receiver = {
   name?: string;
   address: string;
   tokenValue: string | number;
   fiatValue?: string | number;
   departmentName?: string;
-}
+};
 
-export interface Receivers extends Array<Receiver> {}
+export type Receivers = Array<Receiver>;
 
-export interface PaidTeammate {
+export type PaidTeammate = {
   id: number;
   batchName?: string;
   tokenName: string;
   receivers: Receivers;
   tokenTotal: string | number;
   count: number;
-}
+};
 
-export interface PaidTeammates extends Array<PaidTeammate> {}
+export type PaidTeammates = Array<PaidTeammate>;

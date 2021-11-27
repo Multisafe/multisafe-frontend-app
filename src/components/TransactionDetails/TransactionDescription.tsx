@@ -3,7 +3,7 @@ import { DescriptionCard } from "./styles";
 
 type Props = {
   decryptedDetails: FixMe;
-  decryptedDescription: String;
+  decryptedDescription: string;
 };
 
 const DEFAULT_DESCRIPTION = "No description given...";

@@ -11,27 +11,7 @@ import TokenImg from "components/common/TokenImg";
 import { formatNumber } from "utils/number-helpers";
 import Avatar from "components/common/Avatar";
 import { DisbursementCard } from "./styles";
-
-interface Receiver {
-  name: string;
-  address: string;
-  tokenValue: string | number;
-  fiatValue: string | number;
-  departmentName: string;
-}
-
-interface Receivers extends Array<Receiver> {}
-
-interface PaidTeammate {
-  id: number;
-  batchName?: string;
-  tokenName: string;
-  receivers: Receivers;
-  tokenTotal: string | number;
-  count: number;
-}
-
-interface PaidTeammates extends Array<PaidTeammate> {}
+import { Receivers, PaidTeammate, PaidTeammates } from "./types";
 
 type Props = {
   paidTeammates: PaidTeammates;
@@ -51,8 +31,8 @@ function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
       <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
         {receivers.map(
           ({ name, address, tokenValue, fiatValue, departmentName }, idx) => {
-            const firstName = name.split(" ")[0];
-            const lastName = name.split(" ")[1];
+            const firstName = name?.split(" ")[0];
+            const lastName = name?.split(" ")[1];
             return (
               <tr key={`${idx}-${address}`}>
                 <td style={{ width: "25%" }}>

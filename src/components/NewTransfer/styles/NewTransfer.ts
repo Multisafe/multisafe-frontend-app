@@ -4,9 +4,9 @@ export const NewTransferContainer = styled.div`
   padding: 4rem 4rem 0;
   max-width: 128rem;
   margin: auto;
-  min-height: calc(92vh - 8rem);
+  min-height: 60vh;
   position: relative;
-  margin-bottom: 40rem; // hack to scroll to bottom
+  margin-bottom: 38vh;
   @media (max-width: 978px) {
     padding: 3rem 2rem;
   }

@@ -13,6 +13,8 @@ import {
 } from "./styles/TxSubmitted";
 import { routeGenerators } from "constants/routes/generators";
 import Img from "components/common/Img";
+import TransactionSubmittedImg from "assets/images/transaction-submitted.png";
+
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 export const MODAL_NAME = "tx-submitted-modal";
@@ -35,13 +37,7 @@ function TransactionSubmittedModal(props) {
       <ModalBody width="55rem" minHeight="auto">
         <TxSubmittedContainer>
           <div className="text-center">
-            <Img
-              src={
-                "https://images.multisafe.finance/landing-page/transaction-submitted.png"
-              }
-              alt="submitted"
-              width="150"
-            />
+            <Img src={TransactionSubmittedImg} alt="submitted" width="150" />
           </div>
 
           <ProcessedText>
