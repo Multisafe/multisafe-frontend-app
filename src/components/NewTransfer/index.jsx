@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
 import { isEqual } from "lodash";
 import { show } from "redux-modal";
+import xss from "xss";
 
 import Button from "components/common/Button";
 import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
@@ -78,6 +79,7 @@ import {
   PaymentTitle,
   PaymentSubtitle,
   PaymentButtonContainer,
+  PaymentDescription,
 } from "./styles/PaymentSummary";
 
 const defaultValues = {
@@ -92,6 +94,10 @@ const defaultValues = {
 
 const MAX_BATCH_LENGTH = 10;
 
+const getDescription = (receivers) => {
+  return `Transfer to ${receivers} receiver${receivers > 1 ? "s" : ""}`;
+};
+
 export default function NewTransfer() {
   const [encryptionKey] = useEncryptionKey();
 
@@ -103,6 +109,7 @@ export default function NewTransfer() {
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
+  const [note, setNote] = useState("");
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -335,19 +342,32 @@ export default function NewTransfer() {
         }
       );
 
+      const sanitizedNote = values.note
+        ? xss(values.note, {
+            stripIgnoreTag: true,
+            whiteList: {},
+          }).trim()
+        : "";
+      const encryptedNote = sanitizedNote
+        ? cryptoUtils.encryptDataUsingEncryptionKey(
+            sanitizedNote,
+            encryptionKey,
+            organisationType
+          )
+        : "";
+
       const to = cryptoUtils.encryptDataUsingEncryptionKey(
         JSON.stringify(transferSummary),
         encryptionKey,
         organisationType
       );
 
-      const encryptedDescription = values.description
-        ? cryptoUtils.encryptDataUsingEncryptionKey(
-            values.description,
-            encryptionKey,
-            organisationType
-          )
-        : "";
+      const description = getDescription(addresses.length);
+      const encryptedDescription = cryptoUtils.encryptDataUsingEncryptionKey(
+        description,
+        encryptionKey,
+        organisationType
+      );
 
       const baseRequestBody = {
         to,
@@ -359,6 +379,7 @@ export default function NewTransfer() {
         tokenCurrencies,
         fiatValue: grandTotalSummary.usdTotal,
         description: encryptedDescription,
+        note: encryptedNote,
         fiatCurrency: "USD",
         addresses,
         labels: selectedLabels.map(({ value }) => value),
@@ -425,6 +446,12 @@ export default function NewTransfer() {
   const renderSummary = () => {
     if (!grandTotalSummary) return null;
 
+    const allReceivers = formData.batch.reduce(
+      (acc, { receivers }) => acc + receivers.length,
+      0
+    );
+    const description = getDescription(allReceivers);
+
     return (
       <SummaryContainer>
         <TransferSummaryContainer>
@@ -472,15 +499,7 @@ export default function NewTransfer() {
           <SectionDivider />
           <FixedPortion>
             <InputTitle>Description</InputTitle>
-            <div>
-              <TextArea
-                name="description"
-                register={register}
-                placeholder="Enter Description (Optional)"
-                rows="1"
-                cols="50"
-              />
-            </div>
+            <PaymentDescription>{description}</PaymentDescription>
 
             <InputTitle style={{ marginTop: "2rem" }}>Label</InputTitle>
             <div>
@@ -492,6 +511,14 @@ export default function NewTransfer() {
                 }}
               />
             </div>
+
+            <InputTitle style={{ marginTop: "3rem" }}>Note</InputTitle>
+            <TextArea
+              name="note"
+              register={register}
+              placeholder="Enter Note"
+              rows={2}
+            />
 
             <GrandTotalText>Grand Total</GrandTotalText>
 
