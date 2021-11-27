@@ -95,7 +95,9 @@ const defaultValues = {
 const MAX_BATCH_LENGTH = 10;
 
 const getDescription = (receivers, fiatValue) => {
-  return `Transfer $${formatNumber(fiatValue)} to ${receivers} receiver${receivers > 1 ? "s" : ""}`;
+  return `Transfer $${formatNumber(fiatValue)} to ${receivers} receiver${
+    receivers > 1 ? "s" : ""
+  }`;
 };
 
 export default function NewTransfer({ prefilledValues }) {
@@ -361,7 +363,10 @@ export default function NewTransfer({ prefilledValues }) {
         organisationType
       );
 
-      const description = getDescription(addresses.length, grandTotalSummary.usdTotal);
+      const description = getDescription(
+        addresses.length,
+        grandTotalSummary.usdTotal
+      );
       const encryptedDescription = cryptoUtils.encryptDataUsingEncryptionKey(
         description,
         encryptionKey,
@@ -449,7 +454,10 @@ export default function NewTransfer({ prefilledValues }) {
       (acc, { receivers }) => acc + receivers.length,
       0
     );
-    const description = getDescription(allReceivers, grandTotalSummary.usdTotal);
+    const description = getDescription(
+      allReceivers,
+      grandTotalSummary.usdTotal
+    );
 
     return (
       <SummaryContainer>
@@ -500,7 +508,7 @@ export default function NewTransfer({ prefilledValues }) {
             <InputTitle>Description</InputTitle>
             <PaymentDescription>{description}</PaymentDescription>
 
-            <InputTitle style={{ marginTop: "2rem" }}>Label</InputTitle>
+            <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
             <div>
               <LabelsSelect
                 {...{
@@ -516,7 +524,7 @@ export default function NewTransfer({ prefilledValues }) {
               name="note"
               register={register}
               placeholder="Enter Note"
-              rows={2}
+              rows={1}
             />
 
             <GrandTotalText>Grand Total</GrandTotalText>
