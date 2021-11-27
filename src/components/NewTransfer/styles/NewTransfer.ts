@@ -172,7 +172,7 @@ export const GrandTotalText = styled.div`
 
 export const FixedPortion = styled.div`
   position: fixed;
-  margin-right: 4rem;
+  padding-right: 4rem;
   overflow-y: auto;
   max-height: 90vh;
 

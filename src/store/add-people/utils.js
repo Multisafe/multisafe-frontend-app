@@ -11,7 +11,7 @@ export const FIELD_NAMES = {
   DEPARTMENT_NAME: "DEPARTMENT_NAME",
 };
 
-export const isValidField = (fieldName, value, tokens, ...rest) => {
+export const isValidField = (fieldName, value, tokens) => {
   switch (fieldName) {
     case FIELD_NAMES.FIRST_NAME: {
       if (!value || typeof value !== "string") return false;
@@ -31,21 +31,13 @@ export const isValidField = (fieldName, value, tokens, ...rest) => {
       if (value < 0 || isNaN(Number(value))) return false;
       return true;
     }
+
     case FIELD_NAMES.TOKEN: {
       if (!value || typeof value !== "string" || tokens[value] === undefined)
         return false;
       return true;
     }
 
-    case FIELD_NAMES.PAY_USD_IN_TOKEN: {
-      const { tokenName } = rest;
-      if (
-        tokenName === "USD" &&
-        (!value || typeof value !== "string" || tokens[value] === undefined)
-      )
-        return false;
-      return true;
-    }
     case FIELD_NAMES.DEPARTMENT_NAME: {
       if (!value || typeof value !== "string") return false;
       return true;
