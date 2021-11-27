@@ -94,8 +94,8 @@ const defaultValues = {
 
 const MAX_BATCH_LENGTH = 10;
 
-const getDescription = (receivers) => {
-  return `Transfer to ${receivers} receiver${receivers > 1 ? "s" : ""}`;
+const getDescription = (receivers, fiatValue) => {
+  return `Transfer $${formatNumber(fiatValue)} to ${receivers} receiver${receivers > 1 ? "s" : ""}`;
 };
 
 export default function NewTransfer({ prefilledValues }) {
@@ -109,7 +109,6 @@ export default function NewTransfer({ prefilledValues }) {
     useState(false);
   const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
   const [selectedLabels, setSelectedLabels] = useState([]);
-  const [note, setNote] = useState("");
 
   const { loadingTx, batchMassPayout } = useMassPayout();
 
@@ -362,7 +361,7 @@ export default function NewTransfer({ prefilledValues }) {
         organisationType
       );
 
-      const description = getDescription(addresses.length);
+      const description = getDescription(addresses.length, grandTotalSummary.usdTotal);
       const encryptedDescription = cryptoUtils.encryptDataUsingEncryptionKey(
         description,
         encryptionKey,
@@ -379,7 +378,7 @@ export default function NewTransfer({ prefilledValues }) {
         tokenCurrencies,
         fiatValue: grandTotalSummary.usdTotal,
         description: encryptedDescription,
-        note: encryptedNote,
+        notes: encryptedNote,
         fiatCurrency: "USD",
         addresses,
         labels: selectedLabels.map(({ value }) => value),
@@ -450,7 +449,7 @@ export default function NewTransfer({ prefilledValues }) {
       (acc, { receivers }) => acc + receivers.length,
       0
     );
-    const description = getDescription(allReceivers);
+    const description = getDescription(allReceivers, grandTotalSummary.usdTotal);
 
     return (
       <SummaryContainer>
