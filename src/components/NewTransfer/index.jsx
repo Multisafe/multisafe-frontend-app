@@ -92,7 +92,7 @@ const defaultValues = {
 
 const MAX_BATCH_LENGTH = 10;
 
-export default function NewTransfer() {
+export default function NewTransfer({ prefilledValues }) {
   const [encryptionKey] = useEncryptionKey();
 
   const { account } = useActiveWeb3React();
@@ -117,7 +117,7 @@ export default function NewTransfer() {
     reset,
   } = useForm({
     mode: "onSubmit",
-    defaultValues: defaultValues,
+    defaultValues: prefilledValues ? prefilledValues : defaultValues,
   });
 
   const batchWatcher = watch("batch");

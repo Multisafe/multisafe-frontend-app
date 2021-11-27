@@ -8,7 +8,7 @@ import NewTransferModal, {
 // import AddFundsModal, {
 //   MODAL_NAME as ADD_FUNDS_MODAL,
 // } from "components/AddFunds";
-import TransactionSubmittedModal from "components/Payments/TransactionSubmittedModal";
+import TransactionSubmittedModal from "components/NewTransfer/TransactionSubmittedModal";
 
 const NewTransferButton = styled.div`
   min-height: 4rem;

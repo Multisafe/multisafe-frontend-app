@@ -23,7 +23,8 @@ import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "./AddSinglePeopleModal";
 import { constructLabel } from "utils/tokens";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import { formatNumber } from "utils/number-helpers";
-import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
+import { MODAL_NAME as NEW_TRANSFER_MODAL } from "components/NewTransfer/NewTransferModal";
+import { formatText } from "utils/string-utils";
 
 const sidebarStyles = {
   bmCrossButton: {
@@ -115,19 +116,25 @@ function PeopleDetailsSidebar() {
             }),
           };
 
-    const description =
-      `Paying ${salaryAmount} ${salaryToken} to ${firstName} ${lastName} (${departmentName}).`
-        .replace(/\s+/g, " ")
-        .trim();
-
     closeSidebar();
     dispatch(
-      show(QUICK_TRANSFER_MODAL, {
-        defaultValues: {
-          receivers: [{ address, amount: salaryAmount }],
-          tokenName: salaryToken,
-          token,
-          description,
+      show(NEW_TRANSFER_MODAL, {
+        prefilledValues: {
+          batch: [
+            {
+              token,
+              receivers: [
+                {
+                  name: formatText(`${firstName} ${lastName}`),
+                  address,
+                  departmentName,
+                  isDisabled: 1,
+                  tokenValue: salaryToken !== "USD" ? salaryAmount : "",
+                  fiatValue: salaryToken === "USD" ? salaryAmount : "",
+                },
+              ],
+            },
+          ],
         },
       })
     );

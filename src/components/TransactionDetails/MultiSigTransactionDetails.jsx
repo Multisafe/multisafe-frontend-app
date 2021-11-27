@@ -44,7 +44,7 @@ import {
   StepperCard,
 } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/TransactionSubmittedModal";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
 import ErrorText from "components/common/ErrorText";

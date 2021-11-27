@@ -22,7 +22,7 @@ import {
   makeSelectMetaTransactionHash,
   makeSelectTransactionId as makeSelectSingleOwnerTransactionId,
 } from "store/transactions/selectors";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/TransactionSubmittedModal";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
