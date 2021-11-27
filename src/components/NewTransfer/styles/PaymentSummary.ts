@@ -66,3 +66,7 @@ export const PaymentButtonContainer = styled.div`
   gap: 2rem 0;
   margin: 3rem 0 2rem;
 `;
+
+export const PaymentDescription = styled.div`
+  font-size: 1.4rem;
+`;
