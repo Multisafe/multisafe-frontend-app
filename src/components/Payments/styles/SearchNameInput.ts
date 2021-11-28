@@ -1,5 +1,5 @@
 import ControlledInput from "components/common/Input";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 
 export const SearchNameInput = styled(ControlledInput)`
   padding: 0.5rem 0;

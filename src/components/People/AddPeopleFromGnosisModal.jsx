@@ -14,7 +14,7 @@ import {
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 
-import { useEncryptionKey } from "hooks";
+import {useActiveWeb3React, useEncryptionKey} from "hooks";
 import addPeopleReducer from "store/add-people/reducer";
 import { addBulkPeople } from "store/add-people/actions";
 import addPeopleSaga from "store/add-people/saga";
@@ -53,6 +53,7 @@ const ADD_TEAM_VALUE = "ADD_TEAM_VALUE";
 function AddPeopleFromGnosisModal(props) {
   const { show, handleHide } = props;
   const [encryptionKey] = useEncryptionKey();
+  const { account } = useActiveWeb3React();
 
   const [success, setSuccess] = useState(false);
   const [csvData, setCSVData] = useState();
@@ -142,7 +143,7 @@ function AddPeopleFromGnosisModal(props) {
     dispatch(
       addBulkPeople({
         safeAddress: ownerSafeAddress,
-        createdBy: ownerSafeAddress,
+        createdBy: account,
         data: requestData,
       })
     );
