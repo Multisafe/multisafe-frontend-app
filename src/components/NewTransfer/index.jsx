@@ -71,7 +71,7 @@ import {
   TransferRow,
   InputTitle,
   GrandTotalText,
-  FixedPortion,
+  FinalSummarySection,
   SectionDivider,
 } from "./styles/NewTransfer";
 import {
@@ -502,7 +502,7 @@ export default function NewTransfer({ prefilledValues }) {
 
         <div className="position-relative">
           <SectionDivider />
-          <FixedPortion>
+          <FinalSummarySection>
             <InputTitle>Description</InputTitle>
             <PaymentDescription>{description}</PaymentDescription>
 
@@ -609,7 +609,7 @@ export default function NewTransfer({ prefilledValues }) {
                 <span className="ml-3">Go Back</span>
               </Button>
             </PaymentButtonContainer>
-          </FixedPortion>
+          </FinalSummarySection>
         </div>
       </SummaryContainer>
     );
