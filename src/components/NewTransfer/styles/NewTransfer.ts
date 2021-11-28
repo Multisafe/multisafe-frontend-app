@@ -170,15 +170,16 @@ export const GrandTotalText = styled.div`
   margin: 3rem 0 2rem 0;
 `;
 
-export const FixedPortion = styled.div`
-  position: fixed;
+export const FinalSummarySection = styled.div`
   padding-right: 4rem;
+  margin-right: 4rem;
   overflow-y: auto;
   max-height: 90vh;
 
   @media (max-width: 978px) {
     position: relative;
     padding: 0 2rem;
+    max-height: 100%;
   }
 `;
 
