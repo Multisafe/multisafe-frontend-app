@@ -8,7 +8,6 @@ export const Item = styled.div`
   border: 0.1rem solid rgba(221, 220, 220, 0.5);
   box-shadow: 1rem 1rem 2rem rgba(178, 178, 178, 0.1);
   border-radius: 0.4rem;
-  transition: ease 0.5s;
 `;
 
 export const Header = styled.div`
@@ -23,11 +22,11 @@ export const Header = styled.div`
 
 export const Body = styled.div<{ toggle: boolean }>`
   overflow-y: hidden;
-  max-height: ${({ toggle }) => (toggle ? "200rem" : "0")};
-  transition: max-height 0.3s ease-in-out;
+  max-height: ${({ toggle }) => (toggle ? "500rem" : "0")};
+  transition: max-height 0.1s ease-in-out;
 `;
 
 export const ArrowImg = styled.img<{ toggle: boolean }>`
   transform: rotate(${({ toggle }) => (toggle ? "180deg" : "0deg")});
-  transition: transform 0.3s;
+  transition: transform 0.1s;
 `;

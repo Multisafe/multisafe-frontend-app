@@ -171,6 +171,7 @@ export const GrandTotalText = styled.div`
 `;
 
 export const FinalSummarySection = styled.div`
+  position: fixed;
   padding-right: 4rem;
   margin-right: 4rem;
   overflow-y: auto;
