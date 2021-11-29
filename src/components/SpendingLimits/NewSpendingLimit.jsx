@@ -63,8 +63,6 @@ const resetOptions = [
 export default function SpendingLimits() {
   const [encryptionKey] = useEncryptionKey();
 
-  const { account } = useActiveWeb3React();
-
   const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
