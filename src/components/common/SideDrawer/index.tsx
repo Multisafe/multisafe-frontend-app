@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { slide as Menu, Props as MenuProps, State } from "react-burger-menu";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import CloseIcon from "assets/icons/navbar/close.svg";
 import Img from "components/common/Img";
 import { PORTAL_CONTAINER_ID } from "components/common/PortalContainer";

@@ -14,7 +14,7 @@ import { useInjectSaga } from "utils/injectSaga";
 import { cryptoUtils } from "coinshift-sdk";
 
 import addPeopleReducer from "store/add-people/reducer";
-import { useEncryptionKey } from "hooks";
+import {useActiveWeb3React, useEncryptionKey} from "hooks";
 import { addBulkPeople } from "store/add-people/actions";
 import addPeopleSaga from "store/add-people/saga";
 import {
@@ -37,6 +37,7 @@ const addPeopleKey = "addPeople";
 function AddBulkPeopleModal(props) {
   const { show, handleHide } = props;
   const [encryptionKey] = useEncryptionKey();
+  const { account } = useActiveWeb3React();
 
   const [success, setSuccess] = useState(false);
   const [csvData, setCSVData] = useState();
@@ -176,7 +177,7 @@ function AddBulkPeopleModal(props) {
     dispatch(
       addBulkPeople({
         safeAddress: ownerSafeAddress,
-        createdBy: ownerSafeAddress,
+        createdBy: account,
         data: finalData,
       })
     );

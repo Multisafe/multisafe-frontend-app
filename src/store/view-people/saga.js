@@ -59,11 +59,11 @@ function* watchGetAllPeople() {
   yield takeLatest(GET_ALL_PEOPLE, fetchAllTeammates);
 }
 
-function* watchgetPeopleByTeamId() {
+function* watchGetPeopleByTeamId() {
   yield takeLatest(GET_PEOPLE_BY_TEAM, fetchTeammatesByDepartmentId);
 }
 
 export default function* viewPeople() {
   yield fork(watchGetAllPeople);
-  yield fork(watchgetPeopleByTeamId);
+  yield fork(watchGetPeopleByTeamId);
 }

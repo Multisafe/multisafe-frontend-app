@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import CloseIcon from "assets/icons/dashboard/close-icon.svg";
 import Img from "components/common/Img";
 

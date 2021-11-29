@@ -383,6 +383,7 @@ export default function MultiSigTransactions() {
       txDetails,
       executor,
       confirmationsRequired,
+      executionDate,
     } = transactionDetails;
 
     const {
@@ -470,7 +471,11 @@ export default function MultiSigTransactions() {
           metaData={metaData}
         />
 
-        <Summary txDetails={txDetails} paidTeammates={decryptedDetails} />
+        <Summary
+          txDetails={txDetails}
+          executionDate={executionDate}
+          paidTeammates={decryptedDetails}
+        />
         {renderConfirmSection()}
         <ApproveTxModal />
         <RejectTxModal />

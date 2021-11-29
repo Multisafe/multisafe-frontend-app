@@ -1,5 +1,5 @@
 import React, { ReactNode, SyntheticEvent, useState } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { format } from "date-fns";
 import CopyButton from "components/common/Copy";
 import EtherscanLink from "components/common/EtherscanLink";

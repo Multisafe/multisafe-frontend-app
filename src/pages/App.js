@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeProvider } from "styled-components";
+import { ThemeProvider } from "styled-components/macro";
 import { useSelector } from "react-redux";
 import { Switch, Route } from "react-router-dom";
 

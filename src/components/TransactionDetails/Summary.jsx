@@ -11,7 +11,7 @@ import EtherscanLink from "components/common/EtherscanLink";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
 import TokenImg from "components/common/TokenImg";
 
-export default function Summary({ txDetails, paidTeammates }) {
+export default function Summary({ txDetails, executionDate, paidTeammates }) {
   if (!txDetails) return null;
   const {
     transactionHash: txDetailsHash,
@@ -150,6 +150,16 @@ export default function Summary({ txDetails, paidTeammates }) {
             {createdOn && format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
           </div>
         </div>
+
+        {executionDate ? (
+          <div className="detail-card">
+            <div className="detail-title">Executed Date & Time</div>
+            <div className="detail-subtitle">
+              {createdOn &&
+                format(new Date(executionDate), "MMM-dd-yyyy HH:mm:ss")}
+            </div>
+          </div>
+        ) : null}
 
         <div className="detail-card">
           <div className="detail-title">Status</div>

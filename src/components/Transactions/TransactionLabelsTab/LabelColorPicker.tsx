@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dropdown, DropdownToggle, DropdownMenu } from "reactstrap";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { COLORS, DEFAULT_COLOR } from "./constants";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
