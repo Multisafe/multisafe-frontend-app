@@ -20,12 +20,11 @@ import {
   getTransactionsEndpoint,
   getTransactionByIdEndpoint,
 } from "constants/endpoints";
-import { MODAL_NAME as MASS_PAYOUT_MODAL } from "components/Payments/MassPayoutModal";
-import { MODAL_NAME as QUICK_TRANSFER_MODAL } from "components/Payments/QuickTransferModal";
 import { MODAL_NAME as NEW_SPENDING_LIMIT_MODAL } from "components/SpendingLimits/NewSpendingLimitModal";
 import { MODAL_NAME as ADD_OWNER_MODAL } from "components/ManageOwners/AddOwnerModal";
 import { MODAL_NAME as REPLACE_OWNER_MODAL } from "components/ManageOwners/ReplaceOwnerModal";
 import { MODAL_NAME as DELETE_OWNER_MODAL } from "components/ManageOwners/DeleteOwnerModal";
+import { MODAL_NAME as NEW_TRANSFER_MODAL } from "components/NewTransfer/NewTransferModal";
 
 function* addTransaction({ body }) {
   const requestURL = `${createTransactionEndpoint}`;
@@ -47,8 +46,8 @@ function* addTransaction({ body }) {
           result.log
         )
       );
-      yield put(hide(MASS_PAYOUT_MODAL));
-      yield put(hide(QUICK_TRANSFER_MODAL));
+
+      yield put(hide(NEW_TRANSFER_MODAL));
       yield put(hide(NEW_SPENDING_LIMIT_MODAL));
       yield put(hide(ADD_OWNER_MODAL));
       yield put(hide(REPLACE_OWNER_MODAL));

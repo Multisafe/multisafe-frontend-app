@@ -44,7 +44,7 @@ import {
   StepperCard,
 } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/TransactionSubmittedModal";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
 import ErrorText from "components/common/ErrorText";
@@ -393,6 +393,7 @@ export default function MultiSigTransactions() {
       transactionMode,
       createdBy,
       metaData,
+      description,
       safeOwners: currentSafeOwners,
     } = txDetails;
 
@@ -400,6 +401,13 @@ export default function MultiSigTransactions() {
       to,
       encryptionKey,
       organisationType
+    );
+
+    const decryptedDescription = getDecryptedDetails(
+      description,
+      encryptionKey,
+      organisationType,
+      false
     );
 
     const isTxSubmitted = txDetailsHash ? true : false;
@@ -451,6 +459,7 @@ export default function MultiSigTransactions() {
             decryptedDetails={decryptedDetails}
             transactionMode={transactionMode}
             metaData={metaData}
+            decryptedDescription={decryptedDescription}
           />
           <TransactionDetailsNote txDetails={txDetails} />
         </DescriptionRow>

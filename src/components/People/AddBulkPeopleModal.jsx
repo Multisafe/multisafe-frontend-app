@@ -198,7 +198,7 @@ function AddBulkPeopleModal(props) {
       !isValidField(FIELD_NAMES.LAST_NAME, lastName);
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
     const invalidPayDetails =
-      !isValidField(FIELD_NAMES.AMOUNT, salaryAmount) ||
+      !isValidField(FIELD_NAMES.TOKEN_VALUE, salaryAmount) ||
       !isValidField(FIELD_NAMES.TOKEN, salaryToken, tokenDetails) ||
       (teamNameToTokenMap &&
         teamNameToTokenMap[departmentName] !== salaryToken);

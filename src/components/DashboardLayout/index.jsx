@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Navbar from "./Navbar";
@@ -19,7 +19,7 @@ import { LayoutContainer, Main } from "./styles";
 const layoutKey = "layout";
 const tokensKey = "tokens";
 
-export default function DashboardLayout({ children }) {
+function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useInjectReducer({ key: layoutKey, reducer: layoutReducer });
@@ -59,3 +59,5 @@ export default function DashboardLayout({ children }) {
     </React.Fragment>
   );
 }
+
+export default memo(DashboardLayout);
