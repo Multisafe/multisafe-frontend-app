@@ -8,6 +8,7 @@ import Button from "components/common/Button";
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
 import {
+  clearMultisigTransactionDetails,
   clearMultisigTransactionHash,
   getMultisigTransactionById,
 } from "store/multisig/actions";
@@ -111,6 +112,10 @@ export default function MultiSigTransactions() {
     const transactionId = params.transactionId;
     if (ownerSafeAddress && transactionId) {
       dispatch(getMultisigTransactionById(ownerSafeAddress, transactionId));
+    }
+
+    return () => {
+      dispatch(clearMultisigTransactionDetails());
     }
   }, [dispatch, params.transactionId, ownerSafeAddress, account]);
 

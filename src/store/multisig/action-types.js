@@ -39,8 +39,11 @@ export const CREATE_OR_UPDATE_TRANSACTION_NOTE =
 export const UPDATE_TRANSACTION_NOTE_DATA =
   "coinshift/multisig/UPDATE_TRANSACTION_NOTE_DATA";
 
-export const CLEAR_MULTISIG_TRANSACTION =
-  "coinshift/multisig/CLEAR_MULTISIG_TRANSACTION";
+export const CLEAR_MULTISIG_TRANSACTION_HASH =
+  "coinshift/multisig/CLEAR_MULTISIG_TRANSACTION_HASH";
+
+export const CLEAR_MULTISIG_TRANSACTION_DETAILS =
+  "coinshift/multisig/CLEAR_MULTISIG_TRANSACTION_DETAILS";
 
 export const GET_LABELS = "coinshift/transactions/GET_LABELS";
 export const GET_LABELS_SUCCESS = "coinshift/transactions/GET_LABELS_SUCCESS";

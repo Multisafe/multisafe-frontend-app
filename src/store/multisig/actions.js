@@ -14,7 +14,7 @@ import {
   CONFIRM_MULTISIG_TRANSACTION,
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
-  CLEAR_MULTISIG_TRANSACTION,
+  CLEAR_MULTISIG_TRANSACTION_HASH,
   CREATE_OR_UPDATE_TRANSACTION_NOTE,
   UPDATE_TRANSACTION_NOTE_DATA,
   GET_LABELS,
@@ -24,6 +24,7 @@ import {
   CREATE_TRANSACTION_LABELS,
   UPDATE_TRANSACTION_LABELS,
   UPDATE_TRANSACTION_LABELS_DATA,
+  CLEAR_MULTISIG_TRANSACTION_DETAILS,
 } from "./action-types";
 
 export function getMultisigTransactions(safeAddress, offset, limit) {
@@ -186,7 +187,13 @@ export function updateTransactionNoteData(
 
 export function clearMultisigTransactionHash() {
   return {
-    type: CLEAR_MULTISIG_TRANSACTION,
+    type: CLEAR_MULTISIG_TRANSACTION_HASH,
+  };
+}
+
+export function clearMultisigTransactionDetails() {
+  return {
+    type: CLEAR_MULTISIG_TRANSACTION_DETAILS,
   };
 }
 
