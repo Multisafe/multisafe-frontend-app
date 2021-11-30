@@ -15,12 +15,13 @@ import {
   CONFIRM_MULTISIG_TRANSACTION,
   CONFIRM_MULTISIG_TRANSACTION_SUCCESS,
   CONFIRM_MULTISIG_TRANSACTION_ERROR,
-  CLEAR_MULTISIG_TRANSACTION,
+  CLEAR_MULTISIG_TRANSACTION_HASH,
   UPDATE_TRANSACTION_NOTE_DATA,
   GET_LABELS,
   GET_LABELS_ERROR,
   GET_LABELS_SUCCESS,
   UPDATE_TRANSACTION_LABELS_DATA,
+  CLEAR_MULTISIG_TRANSACTION_DETAILS,
 } from "./action-types";
 
 export const initialState = {
@@ -81,6 +82,10 @@ const reducer = (state = initialState, action) =>
       case GET_MULTISIG_TRANSACTION_BY_ID_ERROR:
         draft.fetching = false;
         draft.error = action.error;
+        break;
+
+      case CLEAR_MULTISIG_TRANSACTION_DETAILS:
+        draft.transactionDetails = null;
         break;
 
       case CREATE_MULTISIG_TRANSACTION:
@@ -204,7 +209,7 @@ const reducer = (state = initialState, action) =>
 
         break;
 
-      case CLEAR_MULTISIG_TRANSACTION:
+      case CLEAR_MULTISIG_TRANSACTION_HASH:
         draft.transactionHash = "";
         break;
 
