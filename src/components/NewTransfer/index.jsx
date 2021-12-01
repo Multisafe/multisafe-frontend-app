@@ -95,7 +95,9 @@ const defaultValues = {
 const MAX_BATCH_LENGTH = 5;
 
 const getDescription = (receivers, fiatValue) => {
-  return `Transfer $${formatNumber(fiatValue)} to ${receivers} address${receivers > 1 ? "es" : ""}`;
+  return `Transfer $${formatNumber(fiatValue)} to ${receivers} address${
+    receivers > 1 ? "es" : ""
+  }`;
 };
 
 export default function NewTransfer({ prefilledValues }) {

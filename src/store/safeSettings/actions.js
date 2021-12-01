@@ -33,7 +33,7 @@ export function setSafeSettings({
   userAddress,
   gasSetting,
   onSuccess,
-  onError
+  onError,
 }) {
   return {
     type: SET_SAFE_SETTINGS,
@@ -42,6 +42,6 @@ export function setSafeSettings({
     userAddress,
     gasSetting,
     onSuccess,
-    onError
+    onError,
   };
 }

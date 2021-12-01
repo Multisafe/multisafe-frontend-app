@@ -38,7 +38,14 @@ function* getSafeSettings({ safeAddress, networkId }) {
   }
 }
 
-function* setSafeSettings({ safeAddress, networkId, userAddress, gasSetting, onSuccess, onError }) {
+function* setSafeSettings({
+  safeAddress,
+  networkId,
+  userAddress,
+  gasSetting,
+  onSuccess,
+  onError,
+}) {
   const endpoint = `${ROOT_BE_URL}/api/v1/safes/settings`;
   const options = {
     method: "PUT",
