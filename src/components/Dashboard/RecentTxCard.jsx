@@ -32,7 +32,7 @@ import AddPeopleIcon from "assets/icons/dashboard/empty/people.svg";
 
 import { RecentTx } from "./styles";
 import Img from "components/common/Img";
-import { TRANSACTION_STATUS } from "constants/transactions";
+import { TRANSACTION_MODES, TRANSACTION_STATUS } from "constants/transactions";
 import { TX_DIRECTION, TX_ORIGIN } from "store/transactions/constants";
 import Loading from "components/common/Loading";
 import Avatar from "components/common/Avatar";
@@ -168,13 +168,24 @@ function RecentTxCard() {
   const renderCoinshiftAmounts = ({
     tokenValue,
     tokenCurrency,
+    tokenCurrencies,
     fiatValue,
     direction,
+    transactionMode,
   }) => {
     return (
       <div className="tx-amounts">
         <div className="top">
-          {formatNumber(tokenValue, 5)} {tokenCurrency}
+          {transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT
+            ? tokenCurrencies &&
+              tokenCurrencies.length > 0 && (
+                <div className="amount">
+                  {[...new Set(tokenCurrencies)].map((token) => (
+                    <TokenImg token={token} key={token} />
+                  ))}
+                </div>
+              )
+            : `${formatNumber(tokenValue, 5)} ${tokenCurrency}`}
         </div>
         <div className="bottom">
           {direction === TX_DIRECTION.INCOMING ? "+" : "-"} $
@@ -239,8 +250,10 @@ function RecentTxCard() {
           : renderCoinshiftAmounts({
               tokenValue,
               tokenCurrency,
+              tokenCurrencies,
               fiatValue,
               direction,
+              transactionMode,
             })}
         <div className="tx-status">{renderStatusText(status)}</div>
       </Link>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 
 import { Table, TableHead, TableBody } from "components/common/Table";
@@ -23,15 +23,7 @@ export default function DisbursementDetails({
 }) {
   const [encryptionKey] = useEncryptionKey();
   const organisationType = useSelector(makeSelectOrganisationType());
-  const [hideCard, setHideCard] = useState(false);
   const { personByAddress } = usePeople();
-
-  useEffect(() => {
-    if (transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT) {
-      setHideCard(true);
-    }
-  }, [transactionMode]);
-
 
   const renderMassPayoutDetails = () => (
     <Table>
@@ -428,15 +420,17 @@ export default function DisbursementDetails({
   const title = renderTitle();
   const transactionDetails = renderTransactionDetails();
 
-  return !hideCard ? (
-    <DisbursementCard>
-      {title}
-      {transactionDetails}
-    </DisbursementCard>
-  ) : (
+  const hideCard = transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT;
+
+  return hideCard ? (
     <React.Fragment>
       {title}
       {transactionDetails}
     </React.Fragment>
+  ) : (
+    <DisbursementCard>
+      {title}
+      {transactionDetails}
+    </DisbursementCard>
   );
 }

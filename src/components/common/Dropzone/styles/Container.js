@@ -62,5 +62,14 @@ export default styled.div`
       padding-bottom: 0.25rem;
       border-bottom: 0.1rem solid ${({ theme }) => theme.primary};
     }
+
+    .max-size {
+      font-weight: normal;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      color: #989898;
+      margin-top: 2rem;
+    }
   }
 `;
