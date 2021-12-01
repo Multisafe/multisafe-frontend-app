@@ -14,7 +14,7 @@ import {
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 
-import {useActiveWeb3React, useEncryptionKey} from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import addPeopleReducer from "store/add-people/reducer";
 import { addBulkPeople } from "store/add-people/actions";
 import addPeopleSaga from "store/add-people/saga";
@@ -125,6 +125,7 @@ function AddPeopleFromGnosisModal(props) {
             firstName,
             lastName: "",
             address,
+            salaryToken: teamToken.value,
           }),
           encryptionKey,
           organisationType
@@ -224,7 +225,8 @@ function AddPeopleFromGnosisModal(props) {
           <ul className="points">
             <li>Please make sure the file extension is .csv</li>
             <li>
-              Only files exported from Gnosis App, or matching format are supported
+              Only files exported from Gnosis App, or matching format are
+              supported
             </li>
           </ul>
         </div>
