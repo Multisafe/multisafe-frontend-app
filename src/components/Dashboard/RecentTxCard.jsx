@@ -11,7 +11,7 @@ import {
   makeSelectTransactions,
   makeSelectFetching as makeSelectLoadingTransactions,
 } from "store/transactions/selectors";
-import viewPeopleReducer from "store/view-people/reducer";
+import viewPeopleReducer, { viewPeopleKey } from "store/view-people/reducer";
 import viewPeopleSaga from "store/view-people/saga";
 import { getAllPeople } from "store/view-people/actions";
 import {
@@ -43,7 +43,6 @@ import { routeGenerators } from "constants/routes/generators";
 import TransactionName from "components/Transactions/TransactionName";
 
 const transactionsKey = "transactions";
-const viewPeopleKey = "viewPeople";
 
 const STATES = {
   EMPTY_STATE: "EMPTY_STATE",

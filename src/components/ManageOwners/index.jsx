@@ -294,32 +294,36 @@ export default function ManageOwners() {
                   data-tip={"Edit"}
                 />
               </Button>
-              <Button
-                iconOnly
-                className="action-icon p-0 ml-3"
-                onClick={() => handleReplaceOwner(name, owner)}
-              >
-                <Img
-                  src={ReplaceIcon}
-                  alt="replace"
-                  width="20"
-                  data-for={"replace-owner"}
-                  data-tip={"Replace"}
-                />
-              </Button>
-              <Button
-                iconOnly
-                className="action-icon p-0 ml-3"
-                onClick={() => handleDeleteOwner(name, owner)}
-              >
-                <Img
-                  src={DeleteIcon}
-                  alt="delete"
-                  width="12"
-                  data-for={"delete-owner"}
-                  data-tip={"Delete"}
-                />
-              </Button>
+              {safeOwners.length > 1 ? (
+                <React.Fragment>
+                  <Button
+                    iconOnly
+                    className="action-icon p-0 ml-3"
+                    onClick={() => handleReplaceOwner(name, owner)}
+                  >
+                    <Img
+                      src={ReplaceIcon}
+                      alt="replace"
+                      width="20"
+                      data-for={"replace-owner"}
+                      data-tip={"Replace"}
+                    />
+                  </Button>
+                  <Button
+                    iconOnly
+                    className="action-icon p-0 ml-3"
+                    onClick={() => handleDeleteOwner(name, owner)}
+                  >
+                    <Img
+                      src={DeleteIcon}
+                      alt="delete"
+                      width="12"
+                      data-for={"delete-owner"}
+                      data-tip={"Delete"}
+                    />
+                  </Button>
+                </React.Fragment>
+              ) : null}
             </div>
             <ReactTooltip
               id={"edit-owner"}

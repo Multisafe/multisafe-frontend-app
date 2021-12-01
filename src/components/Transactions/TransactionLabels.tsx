@@ -1,6 +1,6 @@
 import React from "react";
 import { Label } from "store/multisig/types";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 
 type Props = {
   labels: Label[];

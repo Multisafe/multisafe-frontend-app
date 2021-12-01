@@ -81,10 +81,86 @@ export default function useMassPayout() {
     await executeBatchTransactions({ transactions });
   };
 
+  const batchMassPayout = async ({
+    batch,
+    allTokenDetails,
+    baseRequestBody,
+  }) => {
+    setBaseRequestBody(baseRequestBody);
+
+    if (!allTokenDetails || !batch) return;
+
+    let transactions = [];
+
+    for (let { receivers, token } of batch) {
+      const tokenDetails = allTokenDetails.find(
+        ({ name }) => name === token.value
+      );
+
+      if (tokenDetails) {
+        if (tokenDetails.name !== tokens.ETH) {
+          const erc20 = getERC20Contract(tokenDetails.address);
+          if (!erc20) {
+            throw new Error("ERC20 token undefined");
+          }
+
+          const erc20TransferTxs = receivers.reduce(
+            (tx, { address, tokenValue }) => {
+              const transferAmount = getAmountInWei(
+                tokenValue,
+                tokenDetails.decimals
+              );
+
+              // ERC20
+              tx.push({
+                operation: 0, // CALL
+                to: erc20.address,
+                value: 0,
+                data: erc20.interface.encodeFunctionData("transfer", [
+                  address,
+                  transferAmount,
+                ]),
+              });
+
+              return tx;
+            },
+            []
+          );
+
+          transactions.push(...erc20TransferTxs);
+        } else {
+          const ethTransferTxs = receivers.reduce(
+            (tx, { address, tokenValue }) => {
+              const transferAmount = getAmountInWei(
+                tokenValue,
+                tokenDetails.decimals
+              );
+
+              // ETH
+              tx.push({
+                operation: 0, // CALL
+                data: "0x",
+                to: address,
+                value: transferAmount,
+              });
+              return tx;
+            },
+            []
+          );
+
+          transactions.push(...ethTransferTxs);
+        }
+      }
+    }
+
+    await executeBatchTransactions({ transactions });
+  };
+
   return {
     loadingTx,
     txHash,
     massPayout,
+    batchMassPayout,
     txData,
   };
 }

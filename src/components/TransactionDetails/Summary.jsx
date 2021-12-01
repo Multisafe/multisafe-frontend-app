@@ -9,19 +9,23 @@ import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
 import EtherscanLink from "components/common/EtherscanLink";
 import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import TokenImg from "components/common/TokenImg";
 
-export default function Summary({ txDetails, paidTeammates }) {
+export default function Summary({ txDetails, executionDate, paidTeammates }) {
   if (!txDetails) return null;
   const {
     transactionHash: txDetailsHash,
     tokenValue,
     tokenCurrency,
+    // tokenValues,
+    tokenCurrencies,
     fiatValue,
     // fiatCurrency,
     transactionFees,
     status,
     createdOn,
     transactionMode,
+    metaData,
   } = txDetails;
 
   const renderOptionalCards = () => {
@@ -42,6 +46,40 @@ export default function Summary({ txDetails, paidTeammates }) {
               <div className="detail-subtitle">
                 US ${formatNumber(fiatValue)} ({formatNumber(tokenValue, 5)}{" "}
                 {tokenCurrency})
+              </div>
+            </div>
+          </React.Fragment>
+        );
+
+      case TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT:
+        return (
+          <React.Fragment>
+            <div className="detail-card">
+              <div className="detail-title">Paid To</div>
+              <div className="detail-subtitle">
+                {metaData &&
+                  metaData.grandTotalSummary &&
+                  metaData.grandTotalSummary.count}{" "}
+                people
+              </div>
+            </div>
+
+            <div className="detail-card">
+              <div className="detail-title">Total Amount</div>
+              <div className="detail-subtitle">
+                US ${formatNumber(fiatValue)}
+              </div>
+            </div>
+            <div className="detail-card">
+              <div className="detail-title">Tokens Used</div>
+              <div className="detail-subtitle">
+                {[...new Set(tokenCurrencies)].map((tokenName) => (
+                  <TokenImg
+                    token={tokenName}
+                    className="mr-2"
+                    key={tokenName}
+                  />
+                ))}
               </div>
             </div>
           </React.Fragment>
@@ -112,6 +150,16 @@ export default function Summary({ txDetails, paidTeammates }) {
             {createdOn && format(new Date(createdOn), "MMM-dd-yyyy HH:mm:ss")}
           </div>
         </div>
+
+        {executionDate ? (
+          <div className="detail-card">
+            <div className="detail-title">Executed Date & Time</div>
+            <div className="detail-subtitle">
+              {createdOn &&
+                format(new Date(executionDate), "MMM-dd-yyyy HH:mm:ss")}
+            </div>
+          </div>
+        ) : null}
 
         <div className="detail-card">
           <div className="detail-title">Status</div>

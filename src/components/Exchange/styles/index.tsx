@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { Card } from "components/common/Card";
 import { Input } from "components/common/Form";
 import Img from "components/common/Img";

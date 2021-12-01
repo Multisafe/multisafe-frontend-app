@@ -26,17 +26,27 @@ import {
 } from "store/global/actions";
 import { useInjectSaga } from "utils/injectSaga";
 import globalSaga from "store/global/saga";
+import { useInjectReducer } from "utils/injectReducer";
+import safeSettingsSaga from "store/safeSettings/saga";
+import safeSettingsReducer, {
+  safeSettingsKey,
+} from "store/safeSettings/reducer";
+import { getSafeSettings } from "store/safeSettings/actions";
 
 const globalKey = "global";
 
 const DashboardPage = () => {
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const params = useParams();
+
   useSocket({ safeAddress: params.safeAddress, isReadOnly });
 
   useInjectSaga({ key: globalKey, saga: globalSaga });
+
+  useInjectSaga({ key: safeSettingsKey, saga: safeSettingsSaga });
+  useInjectReducer({ key: safeSettingsKey, reducer: safeSettingsReducer });
 
   const dispatch = useDispatch();
 
@@ -46,9 +56,14 @@ const DashboardPage = () => {
       dispatch(setSafeAddress(params.safeAddress));
     }
 
-    if (safeAddress && safeAddress === params.safeAddress)
+    if (safeAddress && safeAddress === params.safeAddress) {
       dispatch(getSafeInfo(safeAddress, account));
-  }, [dispatch, params.safeAddress, account, safeAddress]);
+    }
+
+    if (safeAddress && chainId) {
+      dispatch(getSafeSettings({ safeAddress, networkId: chainId }));
+    }
+  }, [dispatch, params.safeAddress, account, safeAddress, chainId]);
 
   return (
     <Authenticated>

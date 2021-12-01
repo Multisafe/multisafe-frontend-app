@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import Button from "components/common/Button";
 import { TxDetails } from "store/multisig/types";
 import { useTransactionNote } from "hooks/useTransactionNote";

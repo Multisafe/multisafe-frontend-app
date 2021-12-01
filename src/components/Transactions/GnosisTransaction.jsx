@@ -66,7 +66,7 @@ const GnosisTransaction = forwardRef(({ transaction }, ref) => {
         <td style={{ width: "20%" }}>
           {tokenCurrencies && tokenCurrencies.length > 0 && (
             <div className="amount">
-              {tokenCurrencies.map((token) => (
+              {[...new Set(tokenCurrencies)].map((token) => (
                 <TokenImg token={token} key={token} />
               ))}
             </div>

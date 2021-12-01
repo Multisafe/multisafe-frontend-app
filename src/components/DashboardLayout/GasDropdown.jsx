@@ -3,7 +3,7 @@ import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
 
-import { useDropdown } from "hooks";
+import { useDropdown, useActiveWeb3React } from "hooks";
 import Img from "components/common/Img";
 import GasIcon from "assets/icons/navbar/gas-icon.svg";
 import { getGasPrice, setSelectedGasPrice } from "store/gas/actions";
@@ -15,13 +15,17 @@ import {
   makeSelectAllGasPrices,
   makeSelectSelectedGasPrice,
 } from "store/gas/selectors";
-import { makeSelectGasMode } from "store/global/selectors";
+import {
+  makeSelectGasMode,
+  makeSelectOwnerSafeAddress,
+} from "store/global/selectors";
 import { setGasMode } from "store/global/actions";
 import { GAS_MODES } from "store/gas/constants";
 import { getAmountFromWei } from "utils/tx-helpers";
 import { formatNumber } from "utils/number-helpers";
 
 import { Gas } from "./styles";
+import { setSafeSettings } from "store/safeSettings/actions";
 
 const gasKey = "gas";
 
@@ -39,6 +43,11 @@ const gasOptions = [
     gasMode: GAS_MODES.INSTANT,
   },
 ];
+const GAS_MODE_TO_API_SETTING = {
+  [GAS_MODES.STANDARD]: "standard",
+  [GAS_MODES.FAST]: "fast",
+  [GAS_MODES.INSTANT]: "instant",
+};
 
 export default function GasDropdown() {
   const { open, toggleDropdown } = useDropdown();
@@ -47,10 +56,12 @@ export default function GasDropdown() {
   useInjectSaga({ key: gasKey, saga: gasPriceSaga });
 
   const dispatch = useDispatch();
+  const { chainId, account } = useActiveWeb3React();
 
   const selectedGasMode = useSelector(makeSelectGasMode());
   const selectedGasPrice = useSelector(makeSelectSelectedGasPrice());
   const gasPrices = useSelector(makeSelectAllGasPrices());
+  const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   useEffect(() => {
     // get gas prices
@@ -59,6 +70,14 @@ export default function GasDropdown() {
 
   const chooseGasMode = (mode) => {
     dispatch(setGasMode(mode));
+    dispatch(
+      setSafeSettings({
+        networkId: chainId,
+        safeAddress,
+        userAddress: account,
+        gasSetting: GAS_MODE_TO_API_SETTING[mode],
+      })
+    );
   };
 
   useEffect(() => {

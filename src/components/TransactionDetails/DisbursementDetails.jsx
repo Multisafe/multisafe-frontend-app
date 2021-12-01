@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { Table, TableHead, TableBody } from "components/common/Table";
@@ -11,6 +11,9 @@ import { getDecryptedDetails } from "utils/encryption";
 import Avatar from "components/common/Avatar";
 import { DisbursementCard } from "./styles";
 import { getAmountFromWei } from "utils/tx-helpers";
+import FlexibleMassPayoutDetails from "./FlexibleMassPayoutDetails";
+import { usePeople } from "hooks/usePeople";
+import {getName} from "utils/getName";
 
 export default function DisbursementDetails({
   paidTeammates,
@@ -20,6 +23,15 @@ export default function DisbursementDetails({
 }) {
   const [encryptionKey] = useEncryptionKey();
   const organisationType = useSelector(makeSelectOrganisationType());
+  const [hideCard, setHideCard] = useState(false);
+  const { personByAddress } = usePeople();
+
+  useEffect(() => {
+    if (transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT) {
+      setHideCard(true);
+    }
+  }, [transactionMode]);
+
 
   const renderMassPayoutDetails = () => (
     <Table>
@@ -63,24 +75,32 @@ export default function DisbursementDetails({
     <Table>
       <TableHead>
         <tr>
-          <th>Paid To</th>
-          <th>Disbursement</th>
+          <th style={{ width: "30%" }}>Name</th>
+          <th style={{ width: "30%" }}>Disbursement</th>
+          <th style={{ width: "40%" }}>Address</th>
         </tr>
       </TableHead>
       <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
         {paidTeammates &&
           paidTeammates.map(
-            ({ address, salaryAmount, salaryToken, usd }, idx) => (
-              <tr key={`${idx}-${address}`}>
-                <td>{address}</td>
-                <td>
-                  <TokenImg token={salaryToken} />
-                  {salaryToken === "USD"
-                    ? `${usd} USD`
-                    : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
-                </td>
-              </tr>
-            )
+            ({ address, salaryAmount, salaryToken, usd }, idx) => {
+              const person = personByAddress[address];
+
+              return (
+                <tr key={`${idx}-${address}`}>
+                  <td style={{ width: "30%" }}>
+                    {person ? `${person.firstName} ${person.lastName}` : null}
+                  </td>
+                  <td style={{ width: "30%" }}>
+                    <TokenImg token={salaryToken} />
+                    {salaryToken === "USD"
+                      ? `${usd} USD`
+                      : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
+                  </td>
+                  <td style={{ width: "40%" }}>{address}</td>
+                </tr>
+              );
+            }
           )}
       </TableBody>
     </Table>
@@ -90,21 +110,29 @@ export default function DisbursementDetails({
     <Table>
       <TableHead>
         <tr>
-          <th>Beneficiary</th>
-          <th>Allowance</th>
+          <th style={{ width: "30%" }}>Name</th>
+          <th style={{ width: "30%" }}>Allowance</th>
+          <th style={{ width: "40%" }}>Address</th>
         </tr>
       </TableHead>
       <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
         {paidTeammates.map(
-          ({ address, allowanceAmount, allowanceToken }, idx) => (
-            <tr key={`${idx}-${address}`}>
-              <td>{address}</td>
-              <td>
-                <TokenImg token={allowanceToken} />
-                {formatNumber(allowanceAmount, 5)} {allowanceToken}
-              </td>
-            </tr>
-          )
+          ({ address, allowanceAmount, allowanceToken }, idx) => {
+            const person = personByAddress[address];
+
+            return (
+              <tr key={`${idx}-${address}`}>
+                <td style={{ width: "30%" }}>
+                  {person ? getName(person) : null}
+                </td>
+                <td style={{ width: "30%" }}>
+                  <TokenImg token={allowanceToken} />
+                  {formatNumber(allowanceAmount, 5)} {allowanceToken}
+                </td>
+                <td style={{ width: "40%" }}>{address}</td>
+              </tr>
+            );
+          }
         )}
       </TableBody>
     </Table>
@@ -348,6 +376,10 @@ export default function DisbursementDetails({
     );
   };
 
+  const renderFlexibleMassPayoutDetails = () => (
+    <FlexibleMassPayoutDetails paidTeammates={paidTeammates} />
+  );
+
   const renderTransactionDetails = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
@@ -364,6 +396,8 @@ export default function DisbursementDetails({
         return renderAddOwnerDetails();
       case TRANSACTION_MODES.APPROVE_AND_SWAP:
         return renderSwapDetails();
+      case TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT:
+        return renderFlexibleMassPayoutDetails();
 
       default:
         return null;
@@ -394,10 +428,15 @@ export default function DisbursementDetails({
   const title = renderTitle();
   const transactionDetails = renderTransactionDetails();
 
-  return title || transactionDetails ? (
+  return !hideCard ? (
     <DisbursementCard>
       {title}
       {transactionDetails}
     </DisbursementCard>
-  ) : null;
+  ) : (
+    <React.Fragment>
+      {title}
+      {transactionDetails}
+    </React.Fragment>
+  );
 }

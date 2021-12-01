@@ -27,6 +27,14 @@ export default function Basic(props) {
     },
     [props]
   );
+  const onDropRejected = (fileRejection) => {
+    if (
+      fileRejection[0] &&
+      fileRejection[0].errors[0].code === "file-too-large"
+    ) {
+      props.onDropRejected("File is larger than 100KB.");
+    }
+  };
 
   const {
     acceptedFiles,
@@ -35,7 +43,13 @@ export default function Basic(props) {
     isDragActive,
     isDragAccept,
     isDragReject,
-  } = useDropzone({ maxFiles: 1, accept: ".csv", onDrop });
+  } = useDropzone({
+    maxFiles: 1,
+    accept: ".csv",
+    onDrop,
+    maxSize: 100000,
+    onDropRejected,
+  });
 
   const files = acceptedFiles.map((file) => (
     <span key={file.path}>

@@ -14,6 +14,7 @@ import {
   createBulkPeopleEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as ADD_BULK_MODAL } from "components/People/AddBulkPeopleModal";
+import { MODAL_NAME as ADD_FROM_GNOSIS_MODAL } from "components/People/AddPeopleFromGnosisModal";
 import { MODAL_NAME as ADD_SINGLE_MODAL } from "components/People/AddSinglePeopleModal";
 import { getAllPeople } from "store/view-people/actions";
 import { getTeams } from "store/view-teams/actions";
@@ -75,6 +76,7 @@ export function* createBulkTeammates({ safeAddress, createdBy, data }) {
     } else {
       yield put(addBulkPeopleSuccess());
       yield put(hide(ADD_BULK_MODAL));
+      yield put(hide(ADD_FROM_GNOSIS_MODAL));
       yield put(getAllPeople(safeAddress));
       yield put(getTeams(safeAddress));
     }
