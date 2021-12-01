@@ -13,6 +13,7 @@ import { DisbursementCard } from "./styles";
 import { getAmountFromWei } from "utils/tx-helpers";
 import FlexibleMassPayoutDetails from "./FlexibleMassPayoutDetails";
 import { usePeople } from "hooks/usePeople";
+import {getName} from "utils/getName";
 
 export default function DisbursementDetails({
   paidTeammates,
@@ -122,7 +123,7 @@ export default function DisbursementDetails({
             return (
               <tr key={`${idx}-${address}`}>
                 <td style={{ width: "30%" }}>
-                  {person ? `${person.firstName} ${person.lastName}` : null}
+                  {person ? getName(person) : null}
                 </td>
                 <td style={{ width: "30%" }}>
                   <TokenImg token={allowanceToken} />
