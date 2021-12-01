@@ -123,6 +123,7 @@ function AddPeopleFromGnosisModal(props) {
         encryptedEmployeeDetails: cryptoUtils.encryptDataUsingEncryptionKey(
           JSON.stringify({
             firstName,
+            lastName: "",
             address,
           }),
           encryptionKey,
@@ -223,8 +224,7 @@ function AddPeopleFromGnosisModal(props) {
           <ul className="points">
             <li>Please make sure the file extension is .csv</li>
             <li>
-              Only files in exported from Gnosis, or matching format are
-              supported
+              Only files exported from Gnosis App, or matching format are supported
             </li>
           </ul>
         </div>
@@ -259,7 +259,63 @@ function AddPeopleFromGnosisModal(props) {
               </div>
             </div>
           )}
-          <div className="csv-title">Adding {csvData.length} people</div>
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="csv-title">Adding {csvData.length} people</div>
+            <TeamSelection>
+              <Select
+                name="team"
+                required={`Team is required`}
+                width="20rem"
+                options={[
+                  ...allTeams.map(({ departmentId, name }) => ({
+                    value: departmentId,
+                    label: name,
+                  })),
+                  {
+                    value: ADD_TEAM_VALUE,
+                    label: (
+                      <div className="text-primary text-bold">Add Team</div>
+                    ),
+                  },
+                ]}
+                placeholder={`Select Team...`}
+                defaultValue={null}
+                value={selectedTeam}
+                onChange={onTeamChange}
+                styles={inputStyles}
+              />
+              {selectedTeam?.value === ADD_TEAM_VALUE ? (
+                <Input
+                  type="text"
+                  name="teamName"
+                  required={`Team Name is required`}
+                  placeholder="Enter Team Name"
+                  style={{ width: "18rem" }}
+                  value={teamName}
+                  onChange={({ target: { value } }) => setTeamName(value)}
+                />
+              ) : null}
+              {selectedTeam ? (
+                <Select
+                  name="token"
+                  className="basic-single"
+                  classNamePrefix="select"
+                  width="18rem"
+                  options={tokensDropdown}
+                  isSearchable
+                  isLoading={loadingTokenList}
+                  placeholder={`Select Currency...`}
+                  isDisabled={selectedTeam.value !== ADD_TEAM_VALUE}
+                  defaultValue={null}
+                  value={teamToken}
+                  onChange={setTeamToken}
+                  styles={inputStyles}
+                  filterOption={createFilter({ ignoreAccents: false })}
+                  components={{ MenuList }}
+                />
+              ) : null}
+            </TeamSelection>
+          </div>
         </UploadStatus>
         <Table>
           <TableHead>
@@ -281,63 +337,6 @@ function AddPeopleFromGnosisModal(props) {
 
         {!invalidCsvData ? (
           <React.Fragment>
-            <div>
-              <TeamSelectionTitle>Choose Team</TeamSelectionTitle>
-              <TeamSelection>
-                <Select
-                  name="team"
-                  required={`Team is required`}
-                  width="20rem"
-                  options={[
-                    ...allTeams.map(({ departmentId, name }) => ({
-                      value: departmentId,
-                      label: name,
-                    })),
-                    {
-                      value: ADD_TEAM_VALUE,
-                      label: (
-                        <div className="text-primary text-bold">Add Team</div>
-                      ),
-                    },
-                  ]}
-                  placeholder={`Select Team...`}
-                  defaultValue={null}
-                  value={selectedTeam}
-                  onChange={onTeamChange}
-                  styles={inputStyles}
-                />
-                {selectedTeam?.value === ADD_TEAM_VALUE ? (
-                  <Input
-                    type="text"
-                    name="teamName"
-                    required={`Team Name is required`}
-                    placeholder="Enter Team Name"
-                    style={{ width: "18rem" }}
-                    value={teamName}
-                    onChange={({ target: { value } }) => setTeamName(value)}
-                  />
-                ) : null}
-                {selectedTeam ? (
-                  <Select
-                    name="token"
-                    className="basic-single"
-                    classNamePrefix="select"
-                    width="18rem"
-                    options={tokensDropdown}
-                    isSearchable
-                    isLoading={loadingTokenList}
-                    placeholder={`Select Currency...`}
-                    isDisabled={selectedTeam.value !== ADD_TEAM_VALUE}
-                    defaultValue={null}
-                    value={teamToken}
-                    onChange={setTeamToken}
-                    styles={inputStyles}
-                    filterOption={createFilter({ ignoreAccents: false })}
-                    components={{ MenuList }}
-                  />
-                ) : null}
-              </TeamSelection>
-            </div>
             <div
               className="d-flex justify-content-end"
               style={{ margin: "2rem" }}
