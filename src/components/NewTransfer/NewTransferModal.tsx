@@ -41,7 +41,7 @@ function NewTransferModal(props: Props) {
   return (
     <Modal isOpen={show} toggle={hideModal}>
       <ModalHeader toggle={hideModal} />
-      <ModalBody width="120rem">
+      <ModalBody>
         <NewTransfer {...rest} />
         <ExitModal />
       </ModalBody>

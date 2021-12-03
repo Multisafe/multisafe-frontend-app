@@ -39,10 +39,7 @@ import {
 } from "store/view-teams/selectors";
 import { Input, inputStyles } from "components/common/Form";
 import { constructLabel } from "utils/tokens";
-import {
-  TeamSelection,
-  TeamSelectionTitle,
-} from "components/People/styles/ImportFromGnosis";
+import { TeamSelection } from "components/People/styles/ImportFromGnosis";
 import { MenuList } from "components/common/Form/SelectToken";
 
 export const MODAL_NAME = "add-people-from-gnosis-modal";
