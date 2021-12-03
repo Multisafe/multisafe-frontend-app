@@ -8,6 +8,7 @@ import Button from "components/common/Button";
 import multisigReducer from "store/multisig/reducer";
 import multisigSaga from "store/multisig/saga";
 import {
+  clearMultisigTransactionDetails,
   clearMultisigTransactionHash,
   getMultisigTransactionById,
 } from "store/multisig/actions";
@@ -44,7 +45,7 @@ import {
   StepperCard,
 } from "./styles";
 import { getDecryptedDetails } from "utils/encryption";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/Payments/TransactionSubmittedModal";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/TransactionSubmittedModal";
 import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
 import ErrorText from "components/common/ErrorText";
@@ -112,6 +113,10 @@ export default function MultiSigTransactions() {
     if (ownerSafeAddress && transactionId) {
       dispatch(getMultisigTransactionById(ownerSafeAddress, transactionId));
     }
+
+    return () => {
+      dispatch(clearMultisigTransactionDetails());
+    };
   }, [dispatch, params.transactionId, ownerSafeAddress, account]);
 
   const noOfPeoplePaid = useMemo(() => {
@@ -383,6 +388,7 @@ export default function MultiSigTransactions() {
       txDetails,
       executor,
       confirmationsRequired,
+      executionDate,
     } = transactionDetails;
 
     const {
@@ -392,6 +398,7 @@ export default function MultiSigTransactions() {
       transactionMode,
       createdBy,
       metaData,
+      description,
       safeOwners: currentSafeOwners,
     } = txDetails;
 
@@ -399,6 +406,13 @@ export default function MultiSigTransactions() {
       to,
       encryptionKey,
       organisationType
+    );
+
+    const decryptedDescription = getDecryptedDetails(
+      description,
+      encryptionKey,
+      organisationType,
+      false
     );
 
     const isTxSubmitted = txDetailsHash ? true : false;
@@ -450,6 +464,7 @@ export default function MultiSigTransactions() {
             decryptedDetails={decryptedDetails}
             transactionMode={transactionMode}
             metaData={metaData}
+            decryptedDescription={decryptedDescription}
           />
           <TransactionDetailsNote txDetails={txDetails} />
         </DescriptionRow>
@@ -461,7 +476,11 @@ export default function MultiSigTransactions() {
           metaData={metaData}
         />
 
-        <Summary txDetails={txDetails} paidTeammates={decryptedDetails} />
+        <Summary
+          txDetails={txDetails}
+          executionDate={executionDate}
+          paidTeammates={decryptedDetails}
+        />
         {renderConfirmSection()}
         <ApproveTxModal />
         <RejectTxModal />

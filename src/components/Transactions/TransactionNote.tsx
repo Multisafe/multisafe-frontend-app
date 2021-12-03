@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { TxDetails } from "store/multisig/types";
 import StyledTextArea from "../common/Form/styles/TextArea";
 import Button from "components/common/Button";

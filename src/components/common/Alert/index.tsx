@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import CloseIcon from "assets/icons/dashboard/close-icon.svg";
 import Img from "components/common/Img";
 
@@ -10,14 +10,11 @@ type Props = {
 
 const StyledAlert = styled.div`
   position: relative;
-  padding: 2.2rem 2rem;
-  border-radius: 0.4rem;
-  background-color: rgba(245, 133, 32, 0.1);
+  padding: 1.5rem;
+  background: rgba(249, 168, 47, 0.1);
+  border: 0.1rem solid rgba(249, 168, 47, 0.4);
+  border-radius: 0.2rem;
   font-size: 1.4rem;
-
-  @media (min-width: 978px) {
-    padding: 2.2rem 3rem;
-  }
 `;
 
 const CloseAlert = styled(Img)`
@@ -38,7 +35,6 @@ const CloseAlert = styled(Img)`
 const StyledMessage = styled.div`
   margin: auto;
   max-width: 100rem;
-  text-align: center;
 `;
 
 export const Alert = ({ onClose, children, ...rest }: Props) => {
@@ -56,6 +52,6 @@ export const Alert = ({ onClose, children, ...rest }: Props) => {
   );
 };
 
-export const AlertMessage = ({ children }: Props) => {
-  return <StyledMessage>{children}</StyledMessage>;
+export const AlertMessage = ({ children, ...rest }: Props) => {
+  return <StyledMessage {...rest}>{children}</StyledMessage>;
 };

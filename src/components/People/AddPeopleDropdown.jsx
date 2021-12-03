@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { useDropdown } from "hooks";
 import { MODAL_NAME as ADD_BULK_MODAL } from "./AddBulkPeopleModal";
 import { MODAL_NAME as ADD_SINGLE_MODAL } from "./AddSinglePeopleModal";
+import { MODAL_NAME as ADD_GNOSIS_MODAL } from "./AddPeopleFromGnosisModal";
 import { AddPeople } from "./styles";
 
 export default function AddPeopleDropdown() {
@@ -22,6 +23,10 @@ export default function AddPeopleDropdown() {
     dispatch(show(ADD_BULK_MODAL));
   };
 
+  const showGnosisModal = () => {
+    dispatch(show(ADD_GNOSIS_MODAL));
+  };
+
   return (
     <AddPeople onClick={toggleDropdown}>
       <div className="text">Add People</div>
@@ -32,6 +37,9 @@ export default function AddPeopleDropdown() {
         </div>
         <div className="add-people-option" onClick={showBulkAddModal}>
           <div className="name">Import Multiple</div>
+        </div>
+        <div className="add-people-option" onClick={showGnosisModal}>
+          <div className="name">Import from Gnosis</div>
         </div>
       </div>
     </AddPeople>

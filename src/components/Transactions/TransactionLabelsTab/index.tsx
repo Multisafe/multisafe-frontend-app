@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { InfoCard } from "components/People/styles";
 import { AddEditLabel } from "./AddEditLabel";
 import { useDispatch, useSelector } from "react-redux";

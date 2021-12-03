@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { cryptoUtils } from "coinshift-sdk";
 
@@ -7,12 +7,12 @@ import Button from "components/common/Button";
 import {
   Input,
   ErrorMessage,
-  CurrencyInput,
+  CurrencyConversionInput,
   SelectToken,
 } from "components/common/Form";
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
-import { useEncryptionKey, useSpendingLimits } from "hooks";
+import { useActiveWeb3React, useEncryptionKey, useSpendingLimits } from "hooks";
 import {
   makeSelectError as makeSelectErrorInCreateTx,
   makeSelectLoading as makeSelectSingleOwnerAddTxLoading,
@@ -32,7 +32,6 @@ import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
-  makeSelectPrices,
 } from "store/tokens/selectors";
 import { SpendingLimitContainer } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
@@ -69,12 +68,11 @@ export default function SpendingLimits() {
   const [tokensDropdown, setTokensDropdown] = useState([]);
 
   const { loadingTx, createSpendingLimit } = useSpendingLimits();
+  const { account } = useActiveWeb3React();
 
-  const { register, errors, handleSubmit, formState, control, watch } = useForm(
-    {
-      mode: "onChange",
-    }
-  );
+  const { register, errors, handleSubmit, control, watch, setValue } = useForm({
+    mode: "onSubmit",
+  });
   const selectedToken = watch("token") && watch("token").value;
 
   const dispatch = useDispatch();
@@ -88,7 +86,6 @@ export default function SpendingLimits() {
   const addingSingleOwnerTx = useSelector(makeSelectSingleOwnerAddTxLoading());
   const threshold = useSelector(makeSelectThreshold());
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
-  const prices = useSelector(makeSelectPrices());
   const organisationType = useSelector(makeSelectOrganisationType());
   const icons = useSelector(makeSelectTokenIcons());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
@@ -135,14 +132,17 @@ export default function SpendingLimits() {
   }, [tokenList, tokensDropdown]);
 
   const onSubmit = async (values) => {
+    console.log({ values });
     const spendingLimitDetails = [
       {
         address: values.address,
-        allowanceAmount: values.amount,
+        allowanceAmount: values.spendingLimit.tokenValue,
         resetTimeMin: values.resetTimeMin,
         allowanceToken: selectedTokenDetails.name,
-        description: `Created a new spending limit of ${values.amount} ${selectedTokenDetails.name}`,
-        usd: selectedTokenDetails.usdConversionRate * values.amount,
+        description: `Created a new spending limit of ${values.spendingLimit.tokenValue} ${selectedTokenDetails.name}`,
+        usd:
+          selectedTokenDetails.usdConversionRate *
+          values.spendingLimit.fiatValue,
       },
     ];
 
@@ -152,28 +152,21 @@ export default function SpendingLimits() {
       organisationType
     );
 
-    const totalAllowanceAmount = spendingLimitDetails.reduce(
-      (total, { usd }) => (total += usd),
-      0
-    );
-
     const baseRequestBody = {
       to,
       safeAddress: ownerSafeAddress,
-      createdBy: ownerSafeAddress,
-      tokenValue: spendingLimitDetails.reduce(
-        (total, { allowanceAmount }) => (total += parseFloat(allowanceAmount)),
-        0
-      ),
+      createdBy: account,
+      tokenValue: values.spendingLimit.tokenValue,
       tokenCurrency: selectedTokenDetails.name,
-      fiatValue: totalAllowanceAmount,
+      fiatValue: values.spendingLimit.fiatValue,
+      fiatCurrency: "USD",
       addresses: spendingLimitDetails.map(({ address }) => address),
       transactionMode: TRANSACTION_MODES.SPENDING_LIMITS, // spending limits
     };
 
     await createSpendingLimit({
       delegate: values.address,
-      tokenAmount: values.amount,
+      tokenAmount: values.spendingLimit.tokenValue,
       resetTimeMin: values.resetTimeMin,
       tokenDetails: selectedTokenDetails,
       baseRequestBody,
@@ -214,40 +207,28 @@ export default function SpendingLimits() {
       </div>
 
       {selectedToken && (
-        <div className="mt-4">
-          <Controller
+        <div>
+          <CurrencyConversionInput
             control={control}
-            name="amount"
-            rules={{
-              required: "Amount is required",
-              validate: (value) => {
-                if (value <= 0) return "Please check your input";
-
-                return true;
-              },
-            }}
-            defaultValue=""
-            render={({ onChange, value }) => (
-              <CurrencyInput
-                type="number"
-                name="amount"
-                value={value}
-                onChange={onChange}
-                placeholder="0.00"
-                conversionRate={
-                  prices &&
-                  selectedTokenDetails &&
-                  prices[selectedTokenDetails.name]
-                }
-                tokenName={
-                  selectedTokenDetails ? selectedTokenDetails.name : ""
-                }
-              />
-            )}
+            baseName={"spendingLimit"}
+            setValue={setValue}
+            tokenName={selectedTokenDetails ? selectedTokenDetails.name : ""}
+            conversionRate={
+              selectedTokenDetails ? selectedTokenDetails.usdConversionRate : 0
+            }
           />
-          <ErrorMessage name="amount" errors={errors} />
         </div>
       )}
+      <div>
+        <ErrorMessage
+          errors={errors}
+          name={`spendingLimit.tokenValue.message`}
+        />
+        {/* <ErrorMessage
+          errors={errors}
+          name={`spendingLimit.fiatValue.message`}
+        /> */}
+      </div>
 
       <div className="title mt-5">Reset Time</div>
       <p className="subtitle">
@@ -279,7 +260,6 @@ export default function SpendingLimits() {
           type="submit"
           style={{ marginTop: "8rem", minWidth: "16rem" }}
           disabled={
-            !formState.isValid ||
             loadingTx ||
             addingMultisigTx ||
             addingSingleOwnerTx ||

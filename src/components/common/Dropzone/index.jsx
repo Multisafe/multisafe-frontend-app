@@ -27,6 +27,14 @@ export default function Basic(props) {
     },
     [props]
   );
+  const onDropRejected = (fileRejection) => {
+    if (
+      fileRejection[0] &&
+      fileRejection[0].errors[0].code === "file-too-large"
+    ) {
+      props.onDropRejected("File is larger than 1MB.");
+    }
+  };
 
   const {
     acceptedFiles,
@@ -35,7 +43,13 @@ export default function Basic(props) {
     isDragActive,
     isDragAccept,
     isDragReject,
-  } = useDropzone({ maxFiles: 1, accept: ".csv", onDrop });
+  } = useDropzone({
+    maxFiles: 1,
+    accept: ".csv",
+    onDrop,
+    maxSize: 1000000,
+    onDropRejected,
+  });
 
   const files = acceptedFiles.map((file) => (
     <span key={file.path}>
@@ -59,6 +73,7 @@ export default function Basic(props) {
             <Img src={UploadIcon} alt="upload" className="upload-icon" />
             <p className="drag-text">Drag and drop your .csv file here</p>
             <p className="click-text">Click to upload</p>
+            <p className="max-size">Max File Size: 1MB</p>
           </div>
         )}
       </Container>

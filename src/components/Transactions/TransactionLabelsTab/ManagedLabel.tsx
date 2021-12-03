@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import { format } from "date-fns";
 import Img from "components/common/Img";
 import EditNoteIcon from "assets/icons/dashboard/edit-note-icon.svg";
