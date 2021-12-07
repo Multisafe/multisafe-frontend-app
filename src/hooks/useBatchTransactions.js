@@ -271,7 +271,10 @@ export default function useBatchTransaction() {
         // In this case, show a simple eth_sign signature
         if (
           connector.name === "MetaMask" &&
-          err.message.includes("Not supported on this device")
+          (err.code === -32603 ||
+            err.message.includes(
+              "Only version 4 of typed data signing is supported"
+            ))
         ) {
           const signature = await ethSigner(account, contractTransactionHash);
           return signatureBytes + signature;
