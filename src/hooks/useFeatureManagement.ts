@@ -1,0 +1,22 @@
+import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
+import useActiveWeb3React from "./useActiveWeb3React";
+
+const FEATURE_NAMES = {
+  TOKEN_SWAP: "TOKEN_SWAP",
+};
+
+const ENABLED_FEATURES = {
+  [CHAIN_IDS[NETWORK_NAMES.MAINNET]]: {
+    [FEATURE_NAMES.TOKEN_SWAP]: true,
+  },
+  [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]: {
+    [FEATURE_NAMES.TOKEN_SWAP]: false,
+  },
+  [CHAIN_IDS[NETWORK_NAMES.POLYGON]]: {
+    [FEATURE_NAMES.TOKEN_SWAP]: false,
+  },
+};
+
+const useFeatureManagement = () => {
+  const { chainId } = useActiveWeb3React();
+};

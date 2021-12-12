@@ -68,7 +68,7 @@ export default function SpendingLimits() {
   const [tokensDropdown, setTokensDropdown] = useState([]);
 
   const { loadingTx, createSpendingLimit } = useSpendingLimits();
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const { register, errors, handleSubmit, control, watch, setValue } = useForm({
     mode: "onSubmit",
@@ -92,10 +92,10 @@ export default function SpendingLimits() {
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getNonce(ownerSafeAddress));
+      dispatch(getNonce({ safeAddress: ownerSafeAddress, networkId: chainId }));
       dispatch(getMetaTxEnabled(ownerSafeAddress));
     }
-  }, [ownerSafeAddress, dispatch]);
+  }, [ownerSafeAddress, dispatch, chainId]);
 
   useEffect(() => {
     if (ownerSafeAddress && !icons) {

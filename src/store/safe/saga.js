@@ -10,14 +10,16 @@ import {
 } from "./actions";
 import request from "utils/request";
 import {
-  gnosisSafeTransactionEndpoint,
+  GNOSIS_SAFE_TRANSACTION_ENDPOINTS,
   updateOwnerNameEndpoint,
 } from "constants/endpoints";
 import { MODAL_NAME as EDIT_OWNER_MODAL } from "components/ManageOwners/EditOwnerModal";
 import { getInvitations } from "store/invitation/actions";
 
 function* getTransactionNonce(action) {
-  const requestURL = `${gnosisSafeTransactionEndpoint}${action.safeAddress}/transactions/?has_confirmations=True`;
+  const requestURL = `${GNOSIS_SAFE_TRANSACTION_ENDPOINTS[action.networkId]}${
+    action.safeAddress
+  }/transactions/?has_confirmations=True`;
 
   const options = {
     method: "GET",

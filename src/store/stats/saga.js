@@ -3,10 +3,9 @@ import { GET_ADMIN_STATS } from "./action-types";
 import { getAdminStatsSuccess, getAdminStatsError } from "./actions";
 import request from "utils/request";
 import { getAdminStatsEndpoint } from "constants/endpoints";
-import { networkId } from "constants/networks";
 
-function* fetchAdminStats() {
-  const requestURL = `${getAdminStatsEndpoint}?networkId=${networkId}`;
+function* fetchAdminStats(action) {
+  const requestURL = `${getAdminStatsEndpoint}?networkId=${action.networkId}`;
 
   const options = {
     method: "GET",

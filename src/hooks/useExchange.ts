@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ParaSwap } from "paraswap";
 import { BigNumber } from "bignumber.js";
 import { getAddress } from "@ethersproject/address";
-import { networkId } from "constants/networks";
-import addresses from "constants/addresses";
 import { useSelector } from "react-redux";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import {
@@ -14,17 +12,20 @@ import {
 import ERC20ABI from "constants/abis/ERC20.json";
 import useActiveWeb3React from "./useActiveWeb3React";
 import { TRANSACTION_MODES } from "../constants/transactions";
-
-const paraSwap = new ParaSwap(networkId);
+import { useAddresses } from "./useAddresses";
 
 export const useExchange = () => {
+  const addresses = useAddresses();
+
   const [proxyAddress, setProxyAddress] = useState<string>("");
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const [baseRequestBody, setBaseRequestBody] = useState<Object>();
   const [loadingSwap, setLoadingSwap] = useState(false);
   const [error, setError] = useState<string>("");
+
+  const paraSwap = useRef(new ParaSwap(chainId));
 
   const { executeBatchTransactions, txHash, txData, loadingTx } =
     useBatchTransactions();
@@ -34,7 +35,8 @@ export const useExchange = () => {
 
   const getProxyAddress = async () => {
     try {
-      const proxyAddressResponse = await paraSwap.getTokenTransferProxy();
+      const proxyAddressResponse =
+        await paraSwap.current.getTokenTransferProxy();
       if (typeof proxyAddressResponse === "string") {
         //check Address | APIError
         setProxyAddress(proxyAddressResponse);
@@ -59,7 +61,7 @@ export const useExchange = () => {
   ) => {
     setError("");
 
-    const rate = await paraSwap.getRate(
+    const rate = await paraSwap.current.getRate(
       payTokenAddress,
       receiveTokenAddress,
       String(amount),
@@ -131,7 +133,7 @@ export const useExchange = () => {
       .times(1 - slippage / 100)
       .toFixed(0);
 
-    const txParams = await paraSwap.buildTx(
+    const txParams = await paraSwap.current.buildTx(
       srcToken,
       destToken,
       srcAmount,

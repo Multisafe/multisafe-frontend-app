@@ -10,10 +10,11 @@ import {
   GET_VERIFICATION_STATUS_ERROR,
 } from "./action-types";
 
-export function registerUser(body) {
+export function registerUser(body, networkId) {
   return {
     type: REGISTER_USER,
     body,
+    networkId,
   };
 }
 
@@ -54,11 +55,12 @@ export function createMetaTxError(error) {
   };
 }
 
-export function getVerificationStatus({ password, owner }) {
+export function getVerificationStatus({ password, owner, networkId }) {
   return {
     type: GET_VERIFICATION_STATUS,
     password,
     owner,
+    networkId,
   };
 }
 

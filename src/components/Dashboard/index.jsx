@@ -13,7 +13,7 @@ import AssetsCard from "./AssetsCard";
 import RecentTxCard from "./RecentTxCard";
 
 import { Greeting, CardsGrid } from "./styles";
-import useActiveWeb3React from "hooks/useActiveWeb3React";
+import { useActiveWeb3React } from "hooks";
 import { getDecryptedOwnerName } from "store/invitation/utils";
 import { useEncryptionKey } from "hooks";
 

@@ -19,7 +19,6 @@ import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { TransactionUrl } from "components/common/Web3Utils";
 import { DEFAULT_GAS_PRICE } from "constants/index";
@@ -33,6 +32,7 @@ import {
   StepDetails,
   StepInfo,
 } from "components/Login/styles";
+import { useAddresses } from "hooks/useAddresses";
 
 const STEPS = {
   ZERO: 0,
@@ -43,7 +43,6 @@ const STEPS = {
   FIVE: 5,
   SIX: 6,
 };
-const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = addresses;
 const gasPriceKey = "gas";
 
 const getStepsCount = () => {
@@ -56,6 +55,8 @@ const DELEGATE_TRANSFER_STEPS = {
 };
 
 const DelegateTransfer = () => {
+  const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = useAddresses();
+
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [loadingTx, setLoadingTx] = useState();
   const [txHash, setTxHash] = useState();

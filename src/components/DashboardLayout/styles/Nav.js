@@ -53,3 +53,7 @@ export default styled.nav`
     }
   }
 `;
+
+export const NetworkSelectContainer = styled.div`
+  margin-right: 2rem;
+`;

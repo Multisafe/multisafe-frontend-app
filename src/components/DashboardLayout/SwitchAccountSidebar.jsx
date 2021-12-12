@@ -61,7 +61,7 @@ function SwitchAccountSidebar() {
   const [safesToShow, setSafesToShow] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -79,8 +79,8 @@ function SwitchAccountSidebar() {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   useEffect(() => {
-    if (account) dispatch(getParcelSafes(account));
-  }, [dispatch, account]);
+    if (account) dispatch(getParcelSafes(account, chainId));
+  }, [dispatch, account, chainId]);
 
   useEffect(() => {
     if (safes && safes.length) setSafesToShow(safes);
@@ -121,6 +121,7 @@ function SwitchAccountSidebar() {
           encryptionKeyData,
           password,
           owner: account,
+          networkId: chainId,
         })
       );
     }

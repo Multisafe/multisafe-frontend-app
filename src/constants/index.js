@@ -4,10 +4,8 @@ import USDCIcon from "assets/icons/tokens/USDC-icon.png";
 import USDTIcon from "assets/icons/tokens/USDT-icon.png";
 import sAUDIcon from "assets/icons/tokens/sAUD-icon.png";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
-import addresses from "./addresses";
-
-export const isMainnet = process.env.REACT_APP_NETWORK_NAME === "MAINNET";
-export const isTestnet = process.env.REACT_APP_NETWORK_NAME !== "MAINNET";
+import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
+import { ADDRESSES } from "constants/addresses";
 
 export const DEFAULT_GAS_PRICE = "10000000000"; // 100 gwei
 export const ONE_GWEI = "1000000000";
@@ -48,7 +46,7 @@ export const defaultTokenDetails = [
     icon: ETHIcon,
     balance: 0,
     usd: 0,
-    address: addresses.ZERO_ADDRESS,
+    address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].ZERO_ADDRESS,
     decimals: 18,
     usdConversionRate: 1,
   },
@@ -58,7 +56,7 @@ export const defaultTokenDetails = [
     icon: DAIIcon,
     balance: 0,
     usd: 0,
-    address: addresses.DAI_ADDRESS,
+    address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].DAI_ADDRESS,
     decimals: 18,
     usdConversionRate: 1,
   },
@@ -68,7 +66,7 @@ export const defaultTokenDetails = [
     icon: USDCIcon,
     balance: 0,
     usd: 0,
-    address: addresses.USDC_ADDRESS,
+    address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].USDC_ADDRESS,
     decimals: 6,
     usdConversionRate: 1,
   },
@@ -78,7 +76,7 @@ export const defaultTokenDetails = [
     icon: USDTIcon,
     balance: 0,
     usd: 0,
-    address: addresses.USDT_ADDRESS,
+    address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].USDT_ADDRESS,
     decimals: 6,
     usdConversionRate: 1,
   },
@@ -89,5 +87,3 @@ export const WALLET_STATES = {
   CONNECTED: "CONNECTED",
   NOT_CONNECTED: "NOT_CONNECTED",
 };
-
-// dummy commit

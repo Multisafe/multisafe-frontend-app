@@ -21,7 +21,6 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
 import NoSpendingLimitsIcon from "assets/icons/dashboard/empty/spending-limits.svg";
-import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import ERC20ABI from "constants/abis/ERC20.json";
 import { InfoCard } from "components/People/styles";
@@ -31,12 +30,13 @@ import Img from "components/common/Img";
 import NewSpendingLimitModal, {
   MODAL_NAME as NEW_SPENDING_LIMIT_MODAL,
 } from "./NewSpendingLimitModal";
+import { useAddresses } from "hooks/useAddresses";
 
 const tokensKey = "tokens";
 
-const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = addresses;
-
 export default function SpendingLimits() {
+  const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = useAddresses();
+
   const allowanceModule = useContract(
     ALLOWANCE_MODULE_ADDRESS,
     AllowanceModuleABI
@@ -138,7 +138,7 @@ export default function SpendingLimits() {
         return [];
       }
     }
-  }, [allowanceModule, ownerSafeAddress, getERC20Contract]);
+  }, [allowanceModule, ownerSafeAddress, getERC20Contract, ZERO_ADDRESS]);
 
   useEffect(() => {
     let isMounted = true;

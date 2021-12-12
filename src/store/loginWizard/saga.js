@@ -22,10 +22,9 @@ import {
   getParcelSafesEndpoint,
   getSafeOwnersEndpoint,
 } from "constants/endpoints";
-import { networkId } from "constants/networks";
 
 export function* getSafes(action) {
-  const requestURL = `${getSafesEndpoint}?owner=${action.owner}&status=${action.status}&networkId=${networkId}`;
+  const requestURL = `${getSafesEndpoint}?owner=${action.owner}&status=${action.status}&networkId=${action.networkId}`;
   const options = {
     method: "GET",
   };
@@ -44,7 +43,7 @@ export function* getSafes(action) {
 }
 
 export function* getParcelSafes(action) {
-  const requestURL = `${getParcelSafesEndpoint}?owner=${action.owner}&status=${action.status}&networkId=${networkId}`;
+  const requestURL = `${getParcelSafesEndpoint}?owner=${action.owner}&status=${action.status}&networkId=${action.networkId}`;
   const options = {
     method: "GET",
   };
@@ -63,7 +62,7 @@ export function* getParcelSafes(action) {
 }
 
 export function* fetchSafes(action) {
-  const requestURL = `${fetchSafesEndpoint}?owner=${action.owner}&networkId=${networkId}`;
+  const requestURL = `${fetchSafesEndpoint}?owner=${action.owner}&networkId=${action.networkId}`;
   const options = {
     method: "GET",
   };
@@ -85,7 +84,7 @@ export function* fetchSafes(action) {
 }
 
 export function* getSafeOwners(action) {
-  const requestURL = `${getSafeOwnersEndpoint}?safeAddress=${action.owner}&networkId=${networkId}`;
+  const requestURL = `${getSafeOwnersEndpoint}?safeAddress=${action.owner}&networkId=${action.networkId}`;
   const options = {
     method: "GET",
   };

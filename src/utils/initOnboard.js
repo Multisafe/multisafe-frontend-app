@@ -1,15 +1,23 @@
 import Onboard from "bnc-onboard";
-import { networkId } from "constants/networks";
+import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 
 const RPC_URLS = {
-  1: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN}`,
-  4: `https://rinkeby.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN}`,
+  [CHAIN_IDS[
+    NETWORK_NAMES.MAINNET
+  ]]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN}`,
+  [CHAIN_IDS[
+    NETWORK_NAMES.RINKEBY
+  ]]: `https://rinkeby.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN}`,
+  [CHAIN_IDS[
+    NETWORK_NAMES.POLYGON
+  ]]: `https://polygon-mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN}`,
 };
 
-const rpcUrl = RPC_URLS[networkId];
 const dappId = process.env.REACT_APP_BLOCKNATIVE_API_KEY;
 
-export function initOnboard(subscriptions) {
+export function initOnboard(networkId, subscriptions) {
+  const rpcUrl = RPC_URLS[networkId];
+
   return Onboard({
     dappId,
     hideBranding: false,

@@ -45,7 +45,7 @@ const VerifyUser = () => {
   const [, setEncryptionKey] = useEncryptionKey();
   const [signing, setSigning] = useState(false);
 
-  const { account, library } = useActiveWeb3React();
+  const { account, library, chainId } = useActiveWeb3React();
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -68,8 +68,8 @@ const VerifyUser = () => {
   const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
 
   useEffect(() => {
-    if (account) dispatch(getParcelSafes(account));
-  }, [dispatch, account]);
+    if (account) dispatch(getParcelSafes(account, chainId));
+  }, [dispatch, account, chainId]);
 
   const getEncryptionKey = async (data, sign, organisationType) => {
     try {
@@ -137,6 +137,7 @@ const VerifyUser = () => {
                 password,
                 owner: account,
                 redirectUrl,
+                networkId: chainId,
               })
             );
           } catch (err) {

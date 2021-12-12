@@ -6,13 +6,13 @@ import {
   useBatchTransactions,
 } from "hooks";
 import { getAmountInWei } from "utils/tx-helpers";
-import addresses from "constants/addresses";
 import { tokens } from "constants/index";
 import ERC20ABI from "constants/abis/ERC20.json";
-
-const { ZERO_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
 
 export default function useMassPayout() {
+  const { ZERO_ADDRESS } = useAddresses();
+
   const [baseRequestBody, setBaseRequestBody] = useState();
   const { executeBatchTransactions, loadingTx, txHash, txData } =
     useBatchTransactions();

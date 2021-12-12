@@ -4,9 +4,10 @@ import {
   GET_ADMIN_STATS_ERROR,
 } from "./action-types";
 
-export function getAdminStats() {
+export function getAdminStats(networkId) {
   return {
     type: GET_ADMIN_STATS,
+    networkId,
   };
 }
 

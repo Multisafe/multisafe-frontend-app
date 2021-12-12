@@ -11,12 +11,11 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectSafeOwners,
 } from "store/global/selectors";
-import { useEncryptionKey } from "hooks";
+import { useEncryptionKey, useActiveWeb3React } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
 import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getEtherscanLink } from "components/common/Web3Utils";
-import { networkId } from "constants/networks";
 import { getDecryptedOwnerName } from "store/invitation/utils";
 
 const joinArray = (arr) => {
@@ -81,6 +80,8 @@ export default function ExportButton() {
   const organisationType = useSelector(makeSelectOrganisationType());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
+
+  const { chainId } = useActiveWeb3React();
 
   useEffect(() => {
     let csvData = [];
@@ -210,7 +211,7 @@ export default function ExportButton() {
             "Transaction ID": transactionId,
             "Transaction Hash": transactionHash || "",
             Link: getEtherscanLink({
-              chainId: networkId,
+              chainId,
               hash: transactionHash || "",
             }),
             "Transaction fees (ETH)": transactionFees ? transactionFees : "",
@@ -228,7 +229,13 @@ export default function ExportButton() {
         setCsvData(csvData);
       }
     }
-  }, [encryptionKey, organisationType, multisigTransactions, safeOwners]);
+  }, [
+    encryptionKey,
+    organisationType,
+    multisigTransactions,
+    safeOwners,
+    chainId,
+  ]);
 
   return (
     <CSVLink

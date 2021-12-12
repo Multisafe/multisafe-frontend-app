@@ -143,7 +143,7 @@ const Login = () => {
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
-  const { active, account, library, connector } = useActiveWeb3React();
+  const { active, account, library, connector, chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -236,22 +236,22 @@ const Login = () => {
 
   useEffect(() => {
     if (step === STEPS.ONE && account) {
-      dispatch(fetchSafes(account));
+      dispatch(fetchSafes(account, chainId));
     }
     if (step === STEPS.TWO && account) {
       if (flow === FLOWS.IMPORT) {
-        dispatch(getSafes(account));
+        dispatch(getSafes(account, chainId));
       } else {
-        dispatch(getParcelSafes(account));
+        dispatch(getParcelSafes(account, chainId));
       }
     }
-  }, [step, dispatch, account, flow]);
+  }, [step, dispatch, account, flow, chainId]);
 
   useEffect(() => {
     if (step === STEPS.THREE && flow === FLOWS.IMPORT) {
-      dispatch(getSafeOwners(chosenSafeAddress));
+      dispatch(getSafeOwners(chosenSafeAddress, chainId));
     }
-  }, [step, dispatch, chosenSafeAddress, flow]);
+  }, [step, dispatch, chosenSafeAddress, flow, chainId]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -264,9 +264,11 @@ const Login = () => {
   useEffect(() => {
     if (account && sign) {
       const password = getPassword(sign);
-      dispatch(getVerificationStatus({ password, owner: account }));
+      dispatch(
+        getVerificationStatus({ password, owner: account, networkId: chainId })
+      );
     }
-  }, [dispatch, sign, account]);
+  }, [dispatch, sign, account, chainId]);
 
   useEffect(() => {
     setIsVerified(isAccountVerified);
@@ -398,7 +400,7 @@ const Login = () => {
       dispatch(setOwnerDetails(formData.name, chosenSafeAddress, account));
       dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
       dispatch(setOrganisationType(organisationType));
-      dispatch(registerUser(body));
+      dispatch(registerUser(body, chainId));
     }
   };
 
@@ -792,6 +794,7 @@ const Login = () => {
         password,
         signature: authSign,
         owner: account,
+        networkId: chainId,
       })
     );
   };
@@ -803,11 +806,11 @@ const Login = () => {
 
   const handleRefetch = useCallback(() => {
     if (flow === FLOWS.IMPORT) {
-      dispatch(getSafes(account, 1)); // 1 => get safes from gnosis api
+      dispatch(getSafes(account, chainId, 1)); // 1 => get safes from gnosis api
     } else {
-      dispatch(getParcelSafes(account));
+      dispatch(getParcelSafes(account, chainId));
     }
-  }, [dispatch, account, flow]);
+  }, [dispatch, account, flow, chainId]);
 
   const renderAuthenticate = () => {
     return (

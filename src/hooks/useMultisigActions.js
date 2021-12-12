@@ -4,17 +4,16 @@ import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
 
 import { useActiveWeb3React, useContract, useBatchTransactions } from "hooks";
-import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE } from "constants/index";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
-import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
-
-const { ZERO_ADDRESS } = addresses;
+import { GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS } from "constants/endpoints";
+import { useAddresses } from "hooks/useAddresses";
 
 export default function useMultisigActions() {
-  const { account, library } = useActiveWeb3React();
+  const { account, library, chainId } = useActiveWeb3React();
+  const { ZERO_ADDRESS } = useAddresses();
 
   const [confirmTxData, setConfirmTxData] = useState("");
   const {
@@ -169,7 +168,7 @@ export default function useMultisigActions() {
           let approvedSign;
           // estimate using api
           const estimateResponse = await fetch(
-            `${gnosisSafeTransactionV2Endpoint}${safe}/transactions/estimate/`,
+            `${GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS[chainId]}${safe}/transactions/estimate/`,
             {
               method: "POST",
               body: JSON.stringify({

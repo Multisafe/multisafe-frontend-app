@@ -1,7 +1,7 @@
 import styled from "styled-components/macro";
 
 export default styled.div`
-  min-height: 4rem;
+  height: 4rem;
   margin-right: 3rem;
   padding: 1rem;
   border-radius: 0.4rem;

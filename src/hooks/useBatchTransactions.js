@@ -11,7 +11,6 @@ import {
   getHexDataLength,
   standardizeTransaction,
 } from "utils/tx-helpers";
-import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE } from "constants/index";
 import GnosisSafeABIBeforeV130 from "constants/abis/GnosisSafeBeforeV130.json";
 import GnosisSafeABIAfterV130 from "constants/abis/GnosisSafe.json";
@@ -22,15 +21,15 @@ import {
   makeSelectSafeVersion,
 } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
-import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
+import {GNOSIS_SAFE_TRANSACTION_ENDPOINTS, GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS} from "constants/endpoints";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { makeSelectNonce } from "store/safe/selectors";
-import { networkId } from "constants/networks";
-
-const { MULTISEND_ADDRESS, ZERO_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
+import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 
 export default function useBatchTransaction() {
-  const { account, library, connector } = useActiveWeb3React();
+  const { account, library, connector, chainId } = useActiveWeb3React();
+  const { MULTISEND_ADDRESS, ZERO_ADDRESS } = useAddresses();
 
   const [loadingTx, setLoadingTx] = useState(false);
   const [txHash, setTxHash] = useState("");
@@ -233,7 +232,7 @@ export default function useBatchTransaction() {
 
     const domain = {
       verifyingContract: safeAddress,
-      chainId: eip712WithChainId ? networkId : undefined,
+      chainId: eip712WithChainId ? chainId : undefined,
     };
 
     const types = getEip712MessageTypes(safeVersion);
@@ -323,6 +322,64 @@ export default function useBatchTransaction() {
     return approvedSign;
   };
 
+  const estimateGasSafeRelay = async (
+    to,
+    valueWei,
+    data,
+    operation,
+    gasToken
+  ) => {
+    const estimateResponse = await fetch(
+      `${GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS[chainId]}${safeAddress}/transactions/estimate/`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          safe: safeAddress,
+          to,
+          value: valueWei,
+          data,
+          operation,
+          gasToken,
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
+    const estimateResult = await estimateResponse.json();
+
+    if (estimateResult.exception) {
+      throw new Error("Gas estimation error. The transaction might fail.");
+    }
+
+    return estimateResult;
+  };
+
+  const estimateGasTransactionService = async (to, valueWei, data, operation) => {
+    const baseGas = 100000;
+    const lastUsedNonce = null;
+
+    const estimateResponse = await fetch(
+      `${GNOSIS_SAFE_TRANSACTION_ENDPOINTS[chainId]}${safeAddress}/multisig-transactions/estimations/`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          safe: safeAddress,
+          to,
+          value: valueWei,
+          data,
+          operation
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
+    const {safeTxGas} = await estimateResponse.json();
+
+    return { safeTxGas, baseGas, lastUsedNonce };
+  };
+
   const executeBatchTransactions = async ({ transactions }) => {
     if (account && library) {
       const ethLibAdapter = new EthersAdapter({
@@ -356,29 +413,14 @@ export default function useBatchTransaction() {
       setTxData("");
 
       try {
-        // estimate using api
-        const estimateResponse = await fetch(
-          `${gnosisSafeTransactionV2Endpoint}${safeAddress}/transactions/estimate/`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              safe: safeAddress,
-              to,
-              value: valueWei,
-              data,
-              operation,
-              gasToken,
-            }),
-            headers: {
-              "content-type": "application/json",
-            },
-          }
-        );
-        const estimateResult = await estimateResponse.json();
-        const { safeTxGas, baseGas, lastUsedNonce, exception } = estimateResult;
-        if (exception) {
-          throw new Error("Gas estimation error. The transaction might fail.");
-        }
+        const useSafeRelayForEstimation =
+          chainId === CHAIN_IDS[NETWORK_NAMES.MAINNET] ||
+          chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY];
+
+        const { safeTxGas, baseGas, lastUsedNonce } = useSafeRelayForEstimation
+          ? await estimateGasSafeRelay(to, valueWei, data, operation, gasToken)
+          : await estimateGasTransactionService(to, valueWei, data, operation);
+
         const gasLimit = Number(safeTxGas) + Number(baseGas) + 21000; // giving a little higher gas limit just in case
         const nonce = lastUsedNonce === null ? 0 : lastUsedNonce + 1;
         if (!isMultiOwner) {

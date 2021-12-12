@@ -6,13 +6,13 @@ import {
   useTransactionEffects,
   useBatchTransactions,
 } from "hooks";
-import addresses from "constants/addresses";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-
-const { SENTINEL_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
 
 export default function useManageOwners() {
+  const { SENTINEL_ADDRESS } = useAddresses();
+
   const [baseRequestBody, setBaseRequestBody] = useState();
   const { executeBatchTransactions, loadingTx, txHash, txData } =
     useBatchTransactions();

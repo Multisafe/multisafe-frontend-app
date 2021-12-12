@@ -20,19 +20,22 @@ import { makeSelectLoading, makeSelectAdminStats } from "store/stats/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 import LoadingIndicator from "components/common/Loading/PageLoader";
+import { useActiveWeb3React } from "hooks";
 
 const statsKey = "stats";
 
 export default function AdminStats() {
   const dispatch = useDispatch();
 
+  const { chainId } = useActiveWeb3React();
+
   useInjectReducer({ key: statsKey, reducer: statsReducer });
 
   useInjectSaga({ key: statsKey, saga: statsSaga });
 
   useEffect(() => {
-    dispatch(getAdminStats());
-  }, [dispatch]);
+    dispatch(getAdminStats(chainId));
+  }, [dispatch, chainId]);
 
   // Selectors
   const loading = useSelector(makeSelectLoading());

@@ -12,6 +12,7 @@ export function loginUser({
   signature,
   owner,
   redirectUrl,
+  networkId,
 }) {
   return {
     type: LOGIN_USER,
@@ -21,6 +22,7 @@ export function loginUser({
     signature,
     owner,
     redirectUrl,
+    networkId,
   };
 }
 

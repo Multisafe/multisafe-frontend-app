@@ -20,14 +20,13 @@ import {
   createMetaTxEndpoint,
   getVerificationStatusEndpoint,
 } from "constants/endpoints";
-import { networkId } from "constants/networks";
 import { routeGenerators } from "constants/routes/generators";
 
 export function* registerUser(action) {
   const requestURL = registerEndpoint;
   const options = {
     method: "POST",
-    body: JSON.stringify({ ...action.body, networkId }),
+    body: JSON.stringify({ ...action.body, networkId: action.networkId }),
   };
 
   try {
@@ -57,7 +56,7 @@ export function* createMetaTx(action) {
   const requestURL = createMetaTxEndpoint;
   const options = {
     method: "POST",
-    body: JSON.stringify({ ...action.body, networkId }),
+    body: JSON.stringify({ ...action.body, networkId: action.networkId }),
   };
 
   try {
@@ -73,7 +72,7 @@ export function* createMetaTx(action) {
   }
 }
 
-export function* fetchVerificationStatus({ password, owner }) {
+export function* fetchVerificationStatus({ password, owner, networkId }) {
   const requestURL = new URL(getVerificationStatusEndpoint);
   const params = [
     ["password", password],

@@ -8,7 +8,7 @@ type Props = {
 export default styled.button<Props>`
   ${({ width }) => width && `width: ${width};`}
   min-height: 4rem;
-  padding: 1.2rem 2rem;
+  padding: 1rem 2rem;
   background-color: ${({ theme }) => theme.primary};
 
   font-size: 1.4rem;
