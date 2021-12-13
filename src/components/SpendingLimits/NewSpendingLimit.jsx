@@ -99,9 +99,9 @@ export default function SpendingLimits() {
 
   useEffect(() => {
     if (ownerSafeAddress && !icons) {
-      dispatch(getTokens(ownerSafeAddress));
+      dispatch(getTokens(ownerSafeAddress, chainId));
     }
-  }, [ownerSafeAddress, dispatch, icons]);
+  }, [ownerSafeAddress, dispatch, icons, chainId]);
 
   useEffect(() => {
     if (selectedToken && existingTokenDetails) {

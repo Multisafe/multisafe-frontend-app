@@ -11,7 +11,7 @@ import {
   TableLoader,
 } from "components/common/Table";
 import Button from "components/common/Button";
-import { useContract } from "hooks";
+import {useActiveWeb3React, useContract} from "hooks";
 import { makeSelectTokenIcons } from "store/tokens/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -36,6 +36,7 @@ const tokensKey = "tokens";
 
 export default function SpendingLimits() {
   const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = useAddresses();
+  const {chainId} = useActiveWeb3React();
 
   const allowanceModule = useContract(
     ALLOWANCE_MODULE_ADDRESS,
@@ -60,9 +61,9 @@ export default function SpendingLimits() {
 
   useEffect(() => {
     if (ownerSafeAddress && !icons) {
-      dispatch(getTokens(ownerSafeAddress));
+      dispatch(getTokens(ownerSafeAddress, chainId));
     }
-  }, [ownerSafeAddress, dispatch, icons]);
+  }, [ownerSafeAddress, dispatch, icons, chainId]);
 
   const getERC20Contract = useCallback(
     (contractAddress) => {

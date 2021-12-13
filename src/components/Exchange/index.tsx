@@ -64,6 +64,7 @@ import {
   RouteCard,
 } from "./styles";
 import { ExchangeAlert } from "./ExchangeAlert";
+import {useActiveWeb3React} from '../../hooks';
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
@@ -102,6 +103,7 @@ export default function Exchange() {
   const dispatch = useDispatch();
   const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } =
     useExchange();
+  const {chainId} = useActiveWeb3React();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
@@ -126,9 +128,9 @@ export default function Exchange() {
 
   useEffect(() => {
     if (safeAddress) {
-      dispatch(getTokens(safeAddress));
+      dispatch(getTokens(safeAddress, chainId));
     }
-  }, [safeAddress, dispatch]);
+  }, [safeAddress, dispatch, chainId]);
 
   useEffect(() => {
     if (tokenDetails) {

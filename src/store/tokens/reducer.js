@@ -13,7 +13,7 @@ import {
   GET_TOKEN_LIST_SUCCESS,
   GET_TOKEN_LIST_ERROR,
 } from "./action-types";
-import { defaultTokenDetails, getDefaultIconIfPossible } from "constants/index";
+import { DEFAULT_TOKEN_DETAILS, getDefaultIconIfPossible } from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
 import { constructLabel } from "utils/tokens";
 
@@ -84,6 +84,8 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
+        const defaultTokenDetails = DEFAULT_TOKEN_DETAILS[action.chainId];
+
         if (allTokenDetails.length < 4) {
           for (let i = 0; i < defaultTokenDetails.length; i++) {
             if (
@@ -111,7 +113,7 @@ const reducer = (state = initialState, action) =>
 
       case GET_TOKENS_ERROR:
         draft.loading = false;
-        draft.tokenList = defaultTokenDetails;
+        draft.tokenList = DEFAULT_TOKEN_DETAILS[action.chainId];
         draft.error = action.error;
         break;
 

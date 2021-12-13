@@ -107,7 +107,7 @@ const getDescription = (receivers, fiatValue) => {
 export default function NewTransfer({ prefilledValues }) {
   const [encryptionKey] = useEncryptionKey();
 
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
   const [grandTotalSummary, setGrandTotalSummary] = useState(null);
@@ -154,9 +154,9 @@ export default function NewTransfer({ prefilledValues }) {
 
   useEffect(() => {
     if (safeAddress) {
-      dispatch(getTokens(safeAddress));
+      dispatch(getTokens(safeAddress, chainId));
     }
-  }, [safeAddress, dispatch]);
+  }, [safeAddress, dispatch, chainId]);
 
   useEffect(() => {
     if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {

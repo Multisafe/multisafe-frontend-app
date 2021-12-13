@@ -49,10 +49,10 @@ function* fetchTokens(action) {
     const result = yield call(request, requestURL, options);
     if (result.flag !== 200) {
       // Error in payload
-      yield put(getTokensError(result.log));
+      yield put(getTokensError(result.log, action.chainId));
     } else {
       yield put(
-        getTokensSuccess(result.tokens, result.prices, result.icons, result.log)
+        getTokensSuccess(result.tokens, result.prices, result.icons, result.log, action.chainId)
       );
     }
   } catch (err) {

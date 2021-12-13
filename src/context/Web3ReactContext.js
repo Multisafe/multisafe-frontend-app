@@ -48,7 +48,7 @@ export default function Web3ReactProvider({ children }) {
       setOnboard(onboard);
     }
 
-  }, [appChainId]);
+  }, [onboard, appChainId]);
 
   // useEffect(() => {
   //   const previouslySelectedWallet =

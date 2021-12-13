@@ -36,6 +36,7 @@ import InfoIcon from "assets/icons/dashboard/info-icon.svg";
 import { toggleSwitchAccount } from "store/layout/actions";
 
 import { DashboardSidebar } from "./styles";
+import {useFeatureManagement} from "hooks/useFeatureManagement";
 
 const logoutKey = "logout";
 const invitationKey = "invitation";
@@ -44,6 +45,7 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
   const location = useLocation();
   const { onboard } = useActiveWeb3React();
   const { open, toggleDropdown } = useDropdown();
+  const {isFeatureEnabled} = useFeatureManagement();
 
   const dispatch = useDispatch();
 
@@ -76,7 +78,11 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
     dispatch(toggleSwitchAccount(true));
   };
 
-  const renderNavItem = ({ link, href, name, icon, activeIcon }) => {
+  const renderNavItem = ({ link, href, name, icon, activeIcon, feature }) => {
+    if (feature && !isFeatureEnabled(feature)) {
+      return null;
+    }
+
     if (link) {
       const active = location.pathname === link({ safeAddress });
       return (

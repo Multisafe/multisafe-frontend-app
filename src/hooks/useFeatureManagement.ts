@@ -1,7 +1,7 @@
 import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 import useActiveWeb3React from "./useActiveWeb3React";
 
-const FEATURE_NAMES = {
+export const FEATURE_NAMES = {
   TOKEN_SWAP: "TOKEN_SWAP",
 };
 
@@ -17,6 +17,12 @@ const ENABLED_FEATURES = {
   },
 };
 
-const useFeatureManagement = () => {
+export const useFeatureManagement = () => {
   const { chainId } = useActiveWeb3React();
+
+  const isFeatureEnabled = (featureName: string) => ENABLED_FEATURES[chainId][featureName];
+
+  return {
+    isFeatureEnabled
+  }
 };

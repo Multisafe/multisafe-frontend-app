@@ -92,7 +92,8 @@ export default function useSocket(props) {
                 data.tokenBalances.tokens,
                 data.tokenBalances.prices,
                 data.tokenBalances.icons,
-                data.tokenBalances.log
+                data.tokenBalances.log,
+                chainId
               )
             );
           }

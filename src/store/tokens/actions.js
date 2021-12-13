@@ -11,27 +11,30 @@ import {
   SET_SUCCESS,
 } from "./action-types";
 
-export function getTokens(safeAddress) {
+export function getTokens(safeAddress, chainId) {
   return {
     type: GET_TOKENS,
     safeAddress,
+    chainId
   };
 }
 
-export function getTokensSuccess(tokens, prices, icons, log) {
+export function getTokensSuccess(tokens, prices, icons, log, chainId) {
   return {
     type: GET_TOKENS_SUCCESS,
     tokens,
     prices,
     icons,
     log,
+    chainId
   };
 }
 
-export function getTokensError(error) {
+export function getTokensError(error, chainId) {
   return {
     type: GET_TOKENS_ERROR,
     error,
+    chainId
   };
 }
 
