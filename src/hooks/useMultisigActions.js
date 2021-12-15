@@ -167,28 +167,28 @@ export default function useMultisigActions() {
         try {
           let approvedSign;
           // estimate using api
-          const estimateResponse = await fetch(
-            `${GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS[chainId]}${safe}/transactions/estimate/`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                safe,
-                to,
-                value,
-                data,
-                operation,
-                gasToken,
-              }),
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          const estimateResult = await estimateResponse.json();
-          const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } =
-            estimateResult;
+          // const estimateResponse = await fetch(
+          //   `${GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS[chainId]}${safe}/transactions/estimate/`,
+          //   {
+          //     method: "POST",
+          //     body: JSON.stringify({
+          //       safe,
+          //       to,
+          //       value,
+          //       data,
+          //       operation,
+          //       gasToken,
+          //     }),
+          //     headers: {
+          //       "content-type": "application/json",
+          //     },
+          //   }
+          // );
+          // const estimateResult = await estimateResponse.json();
+          // const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } =
+          //   estimateResult;
           const gasLimit =
-            Number(finalSafeTxGas) + Number(finalBaseGas) + 21000; // giving a little higher gas limit just in case
+            Number(100000) + Number(100000) + 21000; // giving a little higher gas limit just in case
 
           const contractTransactionHash =
             await proxyContract.getTransactionHash(
