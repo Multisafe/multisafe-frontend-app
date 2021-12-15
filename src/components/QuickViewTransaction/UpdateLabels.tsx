@@ -16,6 +16,12 @@ type Props = {
   txDetails: TxDetails;
 };
 
+type SelectedLabel = {
+  value: string;
+  label: string;
+  color: string;
+};
+
 export const UpdateLabels = ({ txDetails }: Props) => {
   const { transactionId, transactionHash, labels, origin } = txDetails;
 
@@ -28,7 +34,7 @@ export const UpdateLabels = ({ txDetails }: Props) => {
   const [error, setError] = useState("");
   const [selectedLabels, setSelectedLabels] = useState(transformLabels(labels));
 
-  const onChange = (value: FixMe) => {
+  const onChange = (value: SelectedLabel[]) => {
     setSelectedLabels(value || []);
   };
 
@@ -41,8 +47,10 @@ export const UpdateLabels = ({ txDetails }: Props) => {
     setLoading(false);
   };
 
-  const onBlur = () => {
-    const selectedLabelIds = selectedLabels.map(({ value }) => value);
+  const onBlur = (newSelectedLabels: SelectedLabel[]) => {
+    const selectedLabelIds = (newSelectedLabels || selectedLabels).map(
+      ({ value }) => value
+    );
     const initialLabelIds = labels.map(({ labelId }) => labelId);
 
     if (!isEqual(selectedLabelIds, initialLabelIds)) {

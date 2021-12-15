@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import Select from "react-select";
+import React, { useEffect, useState } from "react";
+import CreatableSelect from "react-select/creatable";
 import { inputStyles } from "components/common/Form";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLabels } from "store/multisig/selectors";
@@ -11,7 +11,8 @@ import { useInjectSaga } from "utils/injectSaga";
 import multisigSaga from "store/multisig/saga";
 import { useActiveWeb3React } from "hooks";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import { getLabels } from "store/multisig/actions";
+import { createOrUpdateLabel, getLabels } from "store/multisig/actions";
+import { DEFAULT_LABEL_COLOR } from "../Transactions/TransactionLabelsTab/constants";
 
 const labelSelectStyles = {
   multiValueLabel: (styles: FixMe, { data }: FixMe) => ({
@@ -54,6 +55,8 @@ export const LabelsSelect = ({
   name,
   value,
 }: Props) => {
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
 
   const allLabels = useSelector(selectLabels);
@@ -73,8 +76,56 @@ export const LabelsSelect = ({
 
   const options = transformLabels(allLabels || []);
 
+  const onLabelCreateSuccess = ([{ labelId, colorCode, name }]: Label[]) => {
+    const newValue = [
+      ...value,
+      {
+        value: labelId,
+        label: name,
+        color: colorCode,
+      },
+    ];
+    onChange(newValue);
+    onBlur(newValue);
+    setLoading(false);
+  };
+
+  const onLabelCreateError = () => {
+    setLoading(false);
+  };
+
+  const onCreateOption = (name: string) => {
+    console.log(value);
+    setLoading(true);
+    const newLabel = {
+      name,
+      colorCode: DEFAULT_LABEL_COLOR,
+      description: "",
+    };
+    dispatch(
+      createOrUpdateLabel(
+        networkId,
+        ownerSafeAddress,
+        userAddress,
+        newLabel,
+        true,
+        onLabelCreateError,
+        onLabelCreateSuccess
+      )
+    );
+  };
+
+  const onSelectChange = (values: FixMe) => {
+    console.log(values);
+    onChange(values);
+  };
+
+  const onSelectBlur = () => {
+    onBlur && onBlur();
+  };
+
   return (
-    <Select
+    <CreatableSelect
       {...{
         styles: { ...inputStyles, ...labelSelectStyles },
         name,
@@ -82,13 +133,16 @@ export const LabelsSelect = ({
         isClearable: false,
         required: true,
         width: "100%",
-        placeholder: "Add Labels",
+        placeholder: "Add or Create Labels",
         options,
         value,
-        onChange,
-        onBlur,
-        disabled,
+        onChange: onSelectChange,
+        onBlur: onSelectBlur,
+        isDisabled: disabled || loading,
         closeMenuOnSelect: false,
+        onCreateOption,
+        isLoading: loading,
+        noOptionsMessage: (value: FixMe) => "Start typing to create new label",
       }}
     />
   );

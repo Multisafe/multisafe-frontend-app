@@ -236,7 +236,7 @@ function* createOrUpdateLabel(action) {
           action.userAddress
         )
       );
-      action.onSuccess();
+      action.onSuccess(result.data);
     }
   } catch (err) {
     action.onError();

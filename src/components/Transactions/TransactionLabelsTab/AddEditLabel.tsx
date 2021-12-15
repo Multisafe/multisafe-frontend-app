@@ -10,7 +10,7 @@ import { useActiveWeb3React } from "hooks";
 import { createOrUpdateLabel } from "store/multisig/actions";
 import ErrorText from "components/common/ErrorText";
 import { LabelColorPicker } from "./LabelColorPicker";
-import { DEFAULT_COLOR } from "./constants";
+import { DEFAULT_LABEL_COLOR } from "./constants";
 import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
 import Img from "components/common/Img";
 
@@ -68,7 +68,9 @@ export const AddEditLabel = ({ label, anchor }: Props) => {
   const [shown, setShown] = useState(false);
 
   const [name, setName] = useState(label?.name || "");
-  const [colorCode, setColorCode] = useState(label?.colorCode || DEFAULT_COLOR);
+  const [colorCode, setColorCode] = useState(
+    label?.colorCode || DEFAULT_LABEL_COLOR
+  );
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -87,7 +89,7 @@ export const AddEditLabel = ({ label, anchor }: Props) => {
 
   const reset = () => {
     setName(label?.name || "");
-    setColorCode(label?.colorCode || DEFAULT_COLOR);
+    setColorCode(label?.colorCode || DEFAULT_LABEL_COLOR);
   };
 
   useEffect(() => {
