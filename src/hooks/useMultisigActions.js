@@ -8,12 +8,13 @@ import { DEFAULT_GAS_PRICE } from "constants/index";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
-import { GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS } from "constants/endpoints";
 import { useAddresses } from "hooks/useAddresses";
+import {useEstimateTransaction} from "hooks/useEstimateTransaction";
 
 export default function useMultisigActions() {
-  const { account, library, chainId } = useActiveWeb3React();
+  const { account, library } = useActiveWeb3React();
   const { ZERO_ADDRESS } = useAddresses();
+  const {estimateTransaction} = useEstimateTransaction();
 
   const [confirmTxData, setConfirmTxData] = useState("");
   const {
@@ -166,27 +167,15 @@ export default function useMultisigActions() {
 
         try {
           let approvedSign;
-          // estimate using api
-          // const estimateResponse = await fetch(
-          //   `${GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS[chainId]}${safe}/transactions/estimate/`,
-          //   {
-          //     method: "POST",
-          //     body: JSON.stringify({
-          //       safe,
-          //       to,
-          //       value,
-          //       data,
-          //       operation,
-          //       gasToken,
-          //     }),
-          //     headers: {
-          //       "content-type": "application/json",
-          //     },
-          //   }
-          // );
-          // const estimateResult = await estimateResponse.json();
-          // const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } =
-          //   estimateResult;
+
+          const { safeTxGas, baseGas } = await estimateTransaction({
+            to,
+            value,
+            data,
+            operation,
+            gasToken
+          });
+
           const gasLimit =
             Number(100000) + Number(100000) + 21000; // giving a little higher gas limit just in case
 
