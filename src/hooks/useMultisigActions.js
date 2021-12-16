@@ -168,7 +168,7 @@ export default function useMultisigActions() {
         try {
           let approvedSign;
 
-          const { safeTxGas, baseGas } = await estimateTransaction({
+          const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } = await estimateTransaction({
             to,
             value,
             data,
@@ -177,7 +177,7 @@ export default function useMultisigActions() {
           });
 
           const gasLimit =
-            Number(100000) + Number(100000) + 21000; // giving a little higher gas limit just in case
+            Number(finalSafeTxGas) + Number(finalBaseGas) + 21000; // giving a little higher gas limit just in case
 
           const contractTransactionHash =
             await proxyContract.getTransactionHash(
