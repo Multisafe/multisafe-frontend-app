@@ -119,15 +119,15 @@ export const AddEditLabel = ({ label, anchor }: Props) => {
       description: "",
     };
     dispatch(
-      createOrUpdateLabel(
+      createOrUpdateLabel({
         networkId,
         safeAddress,
         userAddress,
-        newLabel,
-        !label,
+        label: newLabel,
+        create: !label,
         onError,
-        onSuccess
-      )
+        onSuccess,
+      })
     );
   };
 

@@ -13,7 +13,9 @@ import { defaultTokenDetails } from "constants/index";
 import { formatNumber } from "utils/number-helpers";
 import { routeGenerators } from "constants/routes/generators";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
-import AddFundsModal, { MODAL_NAME as ADD_FUNDS_MODAL } from "components/AddFunds";
+import AddFundsModal, {
+  MODAL_NAME as ADD_FUNDS_MODAL,
+} from "components/AddFunds";
 import AddFundsIcon from "assets/icons/navbar/add-funds.svg";
 
 import { Assets } from "./styles";
@@ -94,7 +96,7 @@ function AssetsCard() {
           </div>
         </React.Fragment>
       )}
-      <AddFundsModal/>
+      <AddFundsModal />
     </Assets>
   );
 }

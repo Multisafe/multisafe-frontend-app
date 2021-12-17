@@ -12,7 +12,7 @@ import multisigSaga from "store/multisig/saga";
 import { useActiveWeb3React } from "hooks";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { createOrUpdateLabel, getLabels } from "store/multisig/actions";
-import { DEFAULT_LABEL_COLOR } from "../Transactions/TransactionLabelsTab/constants";
+import { DEFAULT_LABEL_COLOR } from "components/Transactions/TransactionLabelsTab/constants";
 
 const labelSelectStyles = {
   multiValueLabel: (styles: FixMe, { data }: FixMe) => ({
@@ -95,7 +95,6 @@ export const LabelsSelect = ({
   };
 
   const onCreateOption = (name: string) => {
-    console.log(value);
     setLoading(true);
     const newLabel = {
       name,
@@ -103,20 +102,19 @@ export const LabelsSelect = ({
       description: "",
     };
     dispatch(
-      createOrUpdateLabel(
+      createOrUpdateLabel({
         networkId,
-        ownerSafeAddress,
+        safeAddress: ownerSafeAddress,
         userAddress,
-        newLabel,
-        true,
-        onLabelCreateError,
-        onLabelCreateSuccess
-      )
+        label: newLabel,
+        create: true,
+        onError: onLabelCreateError,
+        onSuccess: onLabelCreateSuccess,
+      })
     );
   };
 
   const onSelectChange = (values: FixMe) => {
-    console.log(values);
     onChange(values);
   };
 

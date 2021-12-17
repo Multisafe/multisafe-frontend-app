@@ -85,7 +85,7 @@ const GnosisTransaction = forwardRef(({ transaction }, ref) => {
           onClick={transactionHash ? onQuickViewOpen : null}
           style={{ width: "20%" }}
         >
-          <TransactionLabels labels={labels} />
+          {transactionHash ? <TransactionLabels labels={labels} /> : null}
         </td>
         <td
           onClick={transactionHash ? onQuickViewOpen : null}
