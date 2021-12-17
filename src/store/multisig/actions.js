@@ -220,15 +220,15 @@ export function getLabelsError(error) {
   };
 }
 
-export function createOrUpdateLabel(
+export function createOrUpdateLabel({
   networkId,
   safeAddress,
   userAddress,
   label,
   create,
   onError,
-  onSuccess
-) {
+  onSuccess,
+}) {
   return {
     type: CREATE_OR_UPDATE_LABEL,
     networkId,
