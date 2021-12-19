@@ -85,6 +85,7 @@ export const portfolioHistoryEndpoint = `${ROOT_BE_URL}/api/v1/users/portfolio/h
 
 // STATS
 export const getAdminStatsEndpoint = `${ROOT_BE_URL}/api/v1/admin/stats/get`;
+export const getSafeActivityEndpoint = `${ROOT_BE_URL}/api/v1/admin/stats/get/safes/activity`;
 
 // GNOSIS
 export const gnosisSafeTransactionEndpoint =

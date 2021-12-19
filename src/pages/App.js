@@ -13,6 +13,7 @@ import DashboardPage from "./Dashboard/loadable";
 import AcceptInvitePage from "./AcceptInvite/loadable";
 import DelegateTransfer from "./DelegateTransfer/loadable";
 import AdminStatsPage from "./AdminStats";
+import SafeActivityPage from "./AdminStats/SafeActivity";
 import VerifyUserPage from "./VerifyUser";
 import NotFoundPage from "./NotFound/loadable";
 import { routeTemplates } from "constants/routes/templates";
@@ -46,8 +47,12 @@ export default function App() {
               component={DelegateTransfer}
             />
             <Route
-              path={routeTemplates.adminStats}
+              path={routeTemplates.admin.stats}
               component={AdminStatsPage}
+            />
+            <Route
+              path={routeTemplates.admin.activity}
+              component={SafeActivityPage}
             />
             <Route
               path={routeTemplates.verifyUser}

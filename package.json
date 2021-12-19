@@ -46,6 +46,7 @@
     "react-bootstrap": "^1.4.0",
     "react-burger-menu": "^3.0.6",
     "react-csv": "^2.0.3",
+    "react-date-range": "^1.4.0",
     "react-device-detect": "^1.14.0",
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.2.4",

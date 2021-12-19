@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+
 import {
   Table,
   TableHead,
@@ -10,6 +11,7 @@ import { formatNumber } from "utils/number-helpers";
 import {
   AmountCard,
   StatsContainer,
+  ViewActivityContainer,
   AmountCardContainer,
   StatsCard,
 } from "./styles";
@@ -20,6 +22,8 @@ import { makeSelectLoading, makeSelectAdminStats } from "store/stats/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
 import LoadingIndicator from "components/common/Loading/PageLoader";
+import { routeTemplates } from "constants/routes/templates";
+import Button from "components/common/Button";
 
 const statsKey = "stats";
 
@@ -81,6 +85,11 @@ export default function AdminStats() {
 
     return (
       <StatsContainer>
+        <ViewActivityContainer>
+          <Button className="secondary" to={routeTemplates.admin.activity}>
+            View Activity
+          </Button>
+        </ViewActivityContainer>
         <AmountCardContainer>
           <AmountCard>
             <div>
