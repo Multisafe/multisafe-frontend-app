@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dropdown, DropdownToggle, DropdownMenu } from "reactstrap";
 import styled from "styled-components/macro";
-import { COLORS, DEFAULT_COLOR } from "./constants";
+import { COLORS, DEFAULT_LABEL_COLOR } from "./constants";
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -43,7 +43,7 @@ type Props = {
 };
 
 export const LabelColorPicker = ({
-  colorCode = DEFAULT_COLOR,
+  colorCode = DEFAULT_LABEL_COLOR,
   onColorChange,
 }: Props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
