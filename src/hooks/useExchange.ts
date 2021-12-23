@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ParaSwap } from "paraswap";
 import { BigNumber } from "bignumber.js";
-import { getAddress } from "@ethersproject/address";
+import { ethers } from "ethers";
 import { useSelector } from "react-redux";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import {
@@ -101,9 +101,9 @@ export const useExchange = () => {
     const contract = erc20Contract.attach(payTokenAddress);
 
     const rate = await getExchangeRate(
-      getAddress(payTokenAddress),
+      ethers.utils.getAddress(payTokenAddress),
       payTokenDeciamls,
-      getAddress(receiveTokenAddress),
+      ethers.utils.getAddress(receiveTokenAddress),
       receiveTokenDecimals,
       amount
     );

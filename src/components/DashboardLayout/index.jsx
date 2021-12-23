@@ -15,14 +15,14 @@ import tokensSaga from "store/tokens/saga";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 import { LayoutContainer, Main } from "./styles";
-import {useActiveWeb3React} from "hooks";
+import { useActiveWeb3React } from "hooks";
 
 const layoutKey = "layout";
 const tokensKey = "tokens";
 
 function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   useInjectReducer({ key: layoutKey, reducer: layoutReducer });
   useInjectReducer({ key: tokensKey, reducer: tokensReducer });

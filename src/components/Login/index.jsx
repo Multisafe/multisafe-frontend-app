@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { hashMessage } from "@ethersproject/hash";
-import { recoverAddress } from "@ethersproject/transactions";
+import { ethers } from "ethers";
 import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "coinshift-sdk";
 import { show } from "redux-modal";
@@ -210,8 +209,8 @@ const Login = () => {
 
   useEffect(() => {
     if (sign) {
-      const msgHash = hashMessage(MESSAGE_TO_SIGN);
-      const recoveredAddress = recoverAddress(msgHash, sign);
+      const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
 
       if (recoveredAddress !== account) {
         setHasAlreadySigned(false);

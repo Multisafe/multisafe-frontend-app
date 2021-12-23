@@ -11,7 +11,7 @@ import {
   TableLoader,
 } from "components/common/Table";
 import Button from "components/common/Button";
-import {useActiveWeb3React, useContract} from "hooks";
+import { useActiveWeb3React, useContract } from "hooks";
 import { makeSelectTokenIcons } from "store/tokens/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -36,7 +36,7 @@ const tokensKey = "tokens";
 
 export default function SpendingLimits() {
   const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = useAddresses();
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   const allowanceModule = useContract(
     ALLOWANCE_MODULE_ADDRESS,

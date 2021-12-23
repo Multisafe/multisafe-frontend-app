@@ -15,7 +15,7 @@ export function getTokens(safeAddress, chainId) {
   return {
     type: GET_TOKENS,
     safeAddress,
-    chainId
+    chainId,
   };
 }
 
@@ -26,7 +26,7 @@ export function getTokensSuccess(tokens, prices, icons, log, chainId) {
     prices,
     icons,
     log,
-    chainId
+    chainId,
   };
 }
 
@@ -34,7 +34,7 @@ export function getTokensError(error, chainId) {
   return {
     type: GET_TOKENS_ERROR,
     error,
-    chainId
+    chainId,
   };
 }
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Col, Row } from "reactstrap";
-import { arrayify } from "@ethersproject/bytes";
+import { ethers } from "ethers";
 
 import { useActiveWeb3React, useContract } from "hooks";
 import ConnectButton from "components/Connect";
@@ -203,7 +203,7 @@ const DelegateTransfer = () => {
 
       const signer = library.getSigner(account);
 
-      const sig = await signer.signMessage(arrayify(transferHash));
+      const sig = await signer.signMessage(ethers.utils.arrayify(transferHash));
 
       let sigV = parseInt(sig.slice(-2), 16);
       // Metamask with ledger returns v = 01, this is not valid for ethereum

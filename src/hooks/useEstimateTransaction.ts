@@ -1,32 +1,34 @@
-import {GNOSIS_SAFE_TRANSACTION_ENDPOINTS, GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS} from '../constants/endpoints';
-import {useActiveWeb3React} from './index';
-import {useSelector} from 'react-redux';
-import {makeSelectOwnerSafeAddress} from '../store/global/selectors';
-import {CHAIN_IDS, NETWORK_NAMES} from '../constants/networks';
+import {
+  GNOSIS_SAFE_TRANSACTION_ENDPOINTS,
+  GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS,
+} from "../constants/endpoints";
+import { useActiveWeb3React } from "./index";
+import { useSelector } from "react-redux";
+import { makeSelectOwnerSafeAddress } from "../store/global/selectors";
+import { CHAIN_IDS, NETWORK_NAMES } from "../constants/networks";
 
 type EstimateParams = {
   to: string;
   value: string;
   data: string;
   operation: number;
-}
+};
 
 type EstimateParamsSafeRelay = EstimateParams & {
   gasToken: string;
-}
+};
 
 export const useEstimateTransaction = () => {
   const { chainId } = useActiveWeb3React();
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const estimateGasSafeRelay = async ({
-  to,
-  value,
-  data,
-  operation,
-  gasToken
-
-}: EstimateParamsSafeRelay) => {
+    to,
+    value,
+    data,
+    operation,
+    gasToken,
+  }: EstimateParamsSafeRelay) => {
     const estimateResponse = await fetch(
       `${GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS[chainId]}${safeAddress}/transactions/estimate/`,
       {
@@ -53,7 +55,12 @@ export const useEstimateTransaction = () => {
     return estimateResult;
   };
 
-  const estimateGasTransactionService = async ({to, value, data, operation}: EstimateParams) => {
+  const estimateGasTransactionService = async ({
+    to,
+    value,
+    data,
+    operation,
+  }: EstimateParams) => {
     const baseGas = 100000;
     const lastUsedNonce = null;
 
@@ -66,14 +73,14 @@ export const useEstimateTransaction = () => {
           to,
           value,
           data,
-          operation
+          operation,
         }),
         headers: {
           "content-type": "application/json",
         },
       }
     );
-    const {safeTxGas} = await estimateResponse.json();
+    const { safeTxGas } = await estimateResponse.json();
 
     return { safeTxGas, baseGas, lastUsedNonce };
   };
@@ -86,9 +93,9 @@ export const useEstimateTransaction = () => {
     return useSafeRelayForEstimation
       ? await estimateGasSafeRelay(params)
       : await estimateGasTransactionService(params);
-  }
+  };
 
   return {
-    estimateTransaction
-  }
-}
+    estimateTransaction,
+  };
+};

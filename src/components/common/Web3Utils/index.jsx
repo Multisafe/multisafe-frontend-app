@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { formatEther } from "@ethersproject/units";
+import { ethers } from "ethers";
 import { useActiveWeb3React } from "hooks";
 import { NETWORK_NAMES } from "constants/networks";
 
@@ -97,7 +97,9 @@ export const Balance = () => {
     }
   }, [account, library, chainId]); // ensures refresh if referential identity of library doesn't change across chainIds
 
-  return !!balance ? parseFloat(formatEther(balance)).toPrecision(4) : null;
+  return !!balance
+    ? parseFloat(ethers.utils.formatEther(balance)).toPrecision(4)
+    : null;
 };
 
 const scanLinkByChainId = {

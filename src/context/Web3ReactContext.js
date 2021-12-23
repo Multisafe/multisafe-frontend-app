@@ -1,6 +1,5 @@
 import { useEffect, useState, createContext } from "react";
-import { Web3Provider } from "@ethersproject/providers";
-import { getAddress } from "@ethersproject/address";
+import { ethers } from "ethers";
 
 import { initOnboard } from "utils/initOnboard";
 import { useLocalStorage } from "hooks";
@@ -33,7 +32,10 @@ export default function Web3ReactProvider({ children }) {
             setWallet(wallet);
             console.log(`${wallet.name} is connected`);
 
-            const ethersProvider = new Web3Provider(wallet.provider, "any");
+            const ethersProvider = new ethers.providers.Web3Provider(
+              wallet.provider,
+              "any"
+            );
 
             setProvider(ethersProvider);
 
@@ -46,8 +48,9 @@ export default function Web3ReactProvider({ children }) {
       });
 
       setOnboard(onboard);
+    } else {
+      onboard.config({ networkId: appChainId });
     }
-
   }, [onboard, appChainId]);
 
   // useEffect(() => {
@@ -67,7 +70,7 @@ export default function Web3ReactProvider({ children }) {
     <Web3ReactContext.Provider
       value={{
         onboard,
-        account: address ? getAddress(address) : undefined,
+        account: address ? ethers.utils.getAddress(address) : undefined,
         walletChainId: network,
         library: provider,
         connector: wallet,

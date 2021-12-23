@@ -13,7 +13,10 @@ import {
   GET_TOKEN_LIST_SUCCESS,
   GET_TOKEN_LIST_ERROR,
 } from "./action-types";
-import { DEFAULT_TOKEN_DETAILS, getDefaultIconIfPossible } from "constants/index";
+import {
+  DEFAULT_TOKEN_DETAILS,
+  getDefaultIconIfPossible,
+} from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
 import { constructLabel } from "utils/tokens";
 

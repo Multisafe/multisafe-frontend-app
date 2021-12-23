@@ -20,9 +20,10 @@ const ENABLED_FEATURES = {
 export const useFeatureManagement = () => {
   const { chainId } = useActiveWeb3React();
 
-  const isFeatureEnabled = (featureName: string) => ENABLED_FEATURES[chainId][featureName];
+  const isFeatureEnabled = (featureName: string) =>
+    ENABLED_FEATURES[chainId][featureName];
 
   return {
-    isFeatureEnabled
-  }
+    isFeatureEnabled,
+  };
 };

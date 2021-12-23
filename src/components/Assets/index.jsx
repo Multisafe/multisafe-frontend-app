@@ -15,12 +15,12 @@ import { InfoCard } from "components/People/styles";
 import TokenImg from "components/common/TokenImg";
 import Img from "components/common/Img";
 import NoAssetsImg from "assets/icons/dashboard/empty/assets.svg";
-import {useActiveWeb3React} from "hooks";
+import { useActiveWeb3React } from "hooks";
 
 export default function Assets() {
   const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   // Selectors
   const loading = useSelector(makeSelectLoading());

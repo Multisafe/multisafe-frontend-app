@@ -20,7 +20,7 @@ export const TOKEN_SYMBOLS = {
   USDT: "USDT",
   ETH: "ETH",
   sAUD: "sAUD",
-  MATIC: "MATIC"
+  MATIC: "MATIC",
 };
 
 export const getDefaultIconIfPossible = (tokenSymbol, icons) => {
@@ -42,8 +42,6 @@ export const getDefaultIconIfPossible = (tokenSymbol, icons) => {
       return DefaultIcon;
   }
 };
-
-
 
 export const DEFAULT_TOKEN_DETAILS = {
   [CHAIN_IDS[NETWORK_NAMES.MAINNET]]: [
@@ -86,7 +84,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].USDT_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
-    }
+    },
   ],
   [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]: [
     {
@@ -128,7 +126,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.RINKEBY]].USDT_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
-    }
+    },
   ],
   [CHAIN_IDS[NETWORK_NAMES.POLYGON]]: [
     {
@@ -182,7 +180,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       usdConversionRate: 1,
     },
   ],
-}
+};
 
 export const WALLET_STATES = {
   UNDETECTED: "UNDETECTED",

@@ -100,7 +100,7 @@ export const GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS = {
   [CHAIN_IDS[NETWORK_NAMES.MAINNET]]:
     "https://safe-relay.gnosis.io/api/v2/safes/",
   [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]:
-    "https://safe-relay.rinkeby.gnosis.io/api/v2/safes/"
+    "https://safe-relay.rinkeby.gnosis.io/api/v2/safes/",
 };
 
 // GAS PRICE

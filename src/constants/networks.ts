@@ -1,10 +1,10 @@
 export const NETWORK_NAMES = {
-  LOCAL: "LOCAL",
-  RINKEBY: "RINKEBY",
-  ROPSTEN: "ROPSTEN",
-  KOVAN: "KOVAN",
-  MAINNET: "MAINNET",
-  POLYGON: "POLYGON",
+  LOCAL: "Local",
+  RINKEBY: "Rinkeby",
+  ROPSTEN: "Ropsten",
+  KOVAN: "Kovan",
+  MAINNET: "Mainnet",
+  POLYGON: "Polygon",
 };
 
 export const CHAIN_IDS = {

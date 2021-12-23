@@ -9,12 +9,12 @@ import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { useAddresses } from "hooks/useAddresses";
-import {useEstimateTransaction} from "hooks/useEstimateTransaction";
+import { useEstimateTransaction } from "hooks/useEstimateTransaction";
 
 export default function useMultisigActions() {
   const { account, library } = useActiveWeb3React();
   const { ZERO_ADDRESS } = useAddresses();
-  const {estimateTransaction} = useEstimateTransaction();
+  const { estimateTransaction } = useEstimateTransaction();
 
   const [confirmTxData, setConfirmTxData] = useState("");
   const {
@@ -168,13 +168,14 @@ export default function useMultisigActions() {
         try {
           let approvedSign;
 
-          const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } = await estimateTransaction({
-            to,
-            value,
-            data,
-            operation,
-            gasToken
-          });
+          const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } =
+            await estimateTransaction({
+              to,
+              value,
+              data,
+              operation,
+              gasToken,
+            });
 
           const gasLimit =
             Number(finalSafeTxGas) + Number(finalBaseGas) + 21000; // giving a little higher gas limit just in case

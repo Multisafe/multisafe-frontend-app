@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { arrayify } from "@ethersproject/bytes";
 import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
 import semverSatisfies from "semver/functions/satisfies";
@@ -24,12 +23,12 @@ import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { makeSelectNonce } from "store/safe/selectors";
 import { useAddresses } from "hooks/useAddresses";
-import {useEstimateTransaction} from "hooks/useEstimateTransaction";
+import { useEstimateTransaction } from "hooks/useEstimateTransaction";
 
 export default function useBatchTransaction() {
   const { account, library, connector, chainId } = useActiveWeb3React();
   const { MULTISEND_ADDRESS, ZERO_ADDRESS } = useAddresses();
-  const {estimateTransaction} = useEstimateTransaction()
+  const { estimateTransaction } = useEstimateTransaction();
 
   const [loadingTx, setLoadingTx] = useState(false);
   const [txHash, setTxHash] = useState("");
@@ -134,7 +133,7 @@ export default function useBatchTransaction() {
         const signer = library.getSigner(account);
 
         signer
-          .signMessage(arrayify(safeTxHash))
+          .signMessage(ethers.utils.arrayify(safeTxHash))
           .then((signature) => {
             let sigV = parseInt(signature.slice(-2), 16);
             // Metamask with ledger returns v = 01, this is not valid for ethereum
@@ -322,8 +321,6 @@ export default function useBatchTransaction() {
     return approvedSign;
   };
 
-
-
   const executeBatchTransactions = async ({ transactions }) => {
     if (account && library) {
       const ethLibAdapter = new EthersAdapter({
@@ -357,13 +354,15 @@ export default function useBatchTransaction() {
       setTxData("");
 
       try {
-        const { safeTxGas, baseGas, lastUsedNonce } = await estimateTransaction({
-          to,
-          value: valueWei,
-          data,
-          operation,
-          gasToken
-        });
+        const { safeTxGas, baseGas, lastUsedNonce } = await estimateTransaction(
+          {
+            to,
+            value: valueWei,
+            data,
+            operation,
+            gasToken,
+          }
+        );
 
         const gasLimit = Number(safeTxGas) + Number(baseGas) + 21000; // giving a little higher gas limit just in case
         const nonce = lastUsedNonce === null ? 0 : lastUsedNonce + 1;

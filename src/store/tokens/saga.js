@@ -52,7 +52,13 @@ function* fetchTokens(action) {
       yield put(getTokensError(result.log, action.chainId));
     } else {
       yield put(
-        getTokensSuccess(result.tokens, result.prices, result.icons, result.log, action.chainId)
+        getTokensSuccess(
+          result.tokens,
+          result.prices,
+          result.icons,
+          result.log,
+          action.chainId
+        )
       );
     }
   } catch (err) {

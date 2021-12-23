@@ -32,7 +32,10 @@ import safeSettingsReducer, {
   safeSettingsKey,
 } from "store/safeSettings/reducer";
 import { getSafeSettings } from "store/safeSettings/actions";
-import {FEATURE_NAMES, useFeatureManagement} from "hooks/useFeatureManagement";
+import {
+  FEATURE_NAMES,
+  useFeatureManagement,
+} from "hooks/useFeatureManagement";
 
 const globalKey = "global";
 
@@ -41,7 +44,7 @@ const DashboardPage = () => {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const { account, chainId } = useActiveWeb3React();
   const params = useParams();
-  const {isFeatureEnabled} = useFeatureManagement();
+  const { isFeatureEnabled } = useFeatureManagement();
 
   useSocket({ safeAddress: params.safeAddress, isReadOnly });
 

@@ -16,13 +16,13 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import PortfolioGraph from "./PortfolioGraph";
 import { Overview } from "./styles";
 import { getTokens } from "store/tokens/actions";
-import {useActiveWeb3React} from "hooks";
+import { useActiveWeb3React } from "hooks";
 
 const overviewKey = "overview";
 
 export default function OverviewCard() {
   const dispatch = useDispatch();
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: overviewKey, reducer: overviewReducer });

@@ -12,7 +12,7 @@ import ActiveSupportIcon from "assets/icons/sidebar/support-icon-active.svg";
 import ExchangeIcon from "assets/icons/sidebar/exchange-icon.svg";
 import ExchangeIconActive from "assets/icons/sidebar/exchange-icon-active.svg";
 import { routeGenerators } from "constants/routes/generators";
-import {FEATURE_NAMES} from "hooks/useFeatureManagement";
+import { FEATURE_NAMES } from "hooks/useFeatureManagement";
 
 export const mainNavItems = [
   {
@@ -32,7 +32,7 @@ export const mainNavItems = [
     name: "Exchange",
     icon: ExchangeIcon,
     activeIcon: ExchangeIconActive,
-    feature: FEATURE_NAMES.TOKEN_SWAP
+    feature: FEATURE_NAMES.TOKEN_SWAP,
   },
   {
     link: routeGenerators.dashboard.assets,
