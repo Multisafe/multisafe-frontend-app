@@ -26,7 +26,6 @@ import { NotificationBell } from "./styles";
 import NewTransferDropdown from "./NewTransferDropdown";
 import GasDropdown from "./GasDropdown";
 import { NetworkSelect } from "components/NetworkSelect";
-import { NetworkSelectContainer } from "components/DashboardLayout/styles/Nav";
 // import CurrencyDropdown from "./CurrencyDropdown";
 
 const notificationsKey = "notifications";
@@ -64,9 +63,7 @@ export default function Navbar({ openSidebar }) {
         <FontAwesomeIcon icon={faBars} />
       </div>
       <div className="nav-container">
-        <NetworkSelectContainer>
-          <NetworkSelect />
-        </NetworkSelectContainer>
+        <NetworkSelect />
         {account && (
           <ConnectedAccount>
             <Img src={ConnectedIcon} alt="connected" className="mr-2" />

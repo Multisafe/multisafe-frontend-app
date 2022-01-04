@@ -68,7 +68,7 @@ export default styled.div`
   }
 
   .logo {
-    height: 10vh;
+    height: 9rem;
     display: flex;
     justify-content: center;
     align-items: center;

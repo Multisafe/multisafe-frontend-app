@@ -80,16 +80,16 @@ const navStyles = `
 
 export default function Settings() {
   const [activeTab, setActiveTab] = useState(TABS.OWNERS);
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const dispatch = useDispatch();
   const params = useParams();
 
   useEffect(() => {
     if (account) {
-      dispatch(getSafeInfo(params.safeAddress, account, 0));
+      dispatch(getSafeInfo(params.safeAddress, account, chainId, 0));
     }
-  }, [dispatch, account, params.safeAddress]);
+  }, [dispatch, account, params.safeAddress, chainId]);
 
   const toggleTab = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);

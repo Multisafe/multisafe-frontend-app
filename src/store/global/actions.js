@@ -78,11 +78,12 @@ export function clearGlobalState() {
   };
 }
 
-export function getSafeInfo(safeAddress, ownerAddress, isCached = 1) {
+export function getSafeInfo(safeAddress, ownerAddress, networkId, isCached = 1) {
   return {
     type: GET_SAFE_INFO,
     safeAddress,
     ownerAddress,
+    networkId,
     isCached,
   };
 }

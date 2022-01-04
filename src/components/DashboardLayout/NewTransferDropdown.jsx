@@ -14,7 +14,6 @@ import NewIcon from "assets/icons/new-transfer/new-icon.svg";
 
 const NewTransferButton = styled.div`
   min-height: 4rem;
-  margin-right: 3rem;
   padding: 1rem;
   border-radius: 0.4rem;
   box-shadow: 1rem 1rem 2rem 0 rgba(77, 69, 164, 0.1);

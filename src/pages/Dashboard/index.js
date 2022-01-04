@@ -62,7 +62,7 @@ const DashboardPage = () => {
     }
 
     if (safeAddress && safeAddress === params.safeAddress) {
-      dispatch(getSafeInfo(safeAddress, account));
+      dispatch(getSafeInfo(safeAddress, account, chainId));
     }
 
     if (safeAddress && chainId) {
