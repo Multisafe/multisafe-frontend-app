@@ -15,9 +15,9 @@ const GAS_SETTINGS_TO_MODE = {
   instant: GAS_MODES.INSTANT,
 };
 
-function* getSafeSettings({ safeAddress, networkId }) {
+function* getSafeSettings({ safeAddress }) {
   const endpoint = `${ROOT_BE_URL}/api/v1/safes/settings`;
-  const urlParams = new URLSearchParams({ safeAddress, networkId }).toString();
+  const urlParams = new URLSearchParams({ safeAddress }).toString();
   const options = {
     method: "GET",
   };
@@ -61,7 +61,7 @@ function* setSafeSettings({
     const result = yield call(request, endpoint, options);
 
     if (result.flag === 200) {
-      yield getSafeSettings({ safeAddress, networkId });
+      yield getSafeSettings({ safeAddress });
       onSuccess && onSuccess();
     }
   } catch (e) {

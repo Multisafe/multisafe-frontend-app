@@ -42,7 +42,7 @@ const globalKey = "global";
 const DashboardPage = () => {
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const { account, chainId } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const params = useParams();
   const { isFeatureEnabled } = useFeatureManagement();
 
@@ -62,13 +62,13 @@ const DashboardPage = () => {
     }
 
     if (safeAddress && safeAddress === params.safeAddress) {
-      dispatch(getSafeInfo(safeAddress, account, chainId));
+      dispatch(getSafeInfo(safeAddress, account));
     }
 
-    if (safeAddress && chainId) {
-      dispatch(getSafeSettings({ safeAddress, networkId: chainId }));
+    if (safeAddress) {
+      dispatch(getSafeSettings({ safeAddress }));
     }
-  }, [dispatch, params.safeAddress, account, safeAddress, chainId]);
+  }, [dispatch, params.safeAddress, account, safeAddress]);
 
   return (
     <Authenticated>

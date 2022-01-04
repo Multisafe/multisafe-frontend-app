@@ -72,12 +72,11 @@ export function* createMetaTx(action) {
   }
 }
 
-export function* fetchVerificationStatus({ password, owner, networkId }) {
+export function* fetchVerificationStatus({ password, owner }) {
   const requestURL = new URL(getVerificationStatusEndpoint);
   const params = [
     ["password", password],
     ["owner", owner],
-    ["networkId", networkId],
   ];
 
   requestURL.search = new URLSearchParams(params).toString();

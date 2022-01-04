@@ -239,18 +239,18 @@ const Login = () => {
     }
     if (step === STEPS.TWO && account) {
       if (flow === FLOWS.IMPORT) {
-        dispatch(getSafes(account, chainId));
+        dispatch(getSafes(account));
       } else {
-        dispatch(getParcelSafes(account, chainId));
+        dispatch(getParcelSafes(account));
       }
     }
   }, [step, dispatch, account, flow, chainId]);
 
   useEffect(() => {
     if (step === STEPS.THREE && flow === FLOWS.IMPORT) {
-      dispatch(getSafeOwners(chosenSafeAddress, chainId));
+      dispatch(getSafeOwners(chosenSafeAddress));
     }
-  }, [step, dispatch, chosenSafeAddress, flow, chainId]);
+  }, [step, dispatch, chosenSafeAddress, flow]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -264,10 +264,10 @@ const Login = () => {
     if (account && sign) {
       const password = getPassword(sign);
       dispatch(
-        getVerificationStatus({ password, owner: account, networkId: chainId })
+        getVerificationStatus({ password, owner: account })
       );
     }
-  }, [dispatch, sign, account, chainId]);
+  }, [dispatch, sign, account]);
 
   useEffect(() => {
     setIsVerified(isAccountVerified);
@@ -805,11 +805,11 @@ const Login = () => {
 
   const handleRefetch = useCallback(() => {
     if (flow === FLOWS.IMPORT) {
-      dispatch(getSafes(account, chainId, 1)); // 1 => get safes from gnosis api
+      dispatch(getSafes(account, 1)); // 1 => get safes from gnosis api
     } else {
-      dispatch(getParcelSafes(account, chainId));
+      dispatch(getParcelSafes(account));
     }
-  }, [dispatch, account, flow, chainId]);
+  }, [dispatch, account, flow]);
 
   const renderAuthenticate = () => {
     return (

@@ -51,7 +51,7 @@ export const TransactionLabelsTab = () => {
   const labels = useSelector(selectLabels);
   const labelsLoading = useSelector(selectLabelsLoading);
 
-  const { account: userAddress, chainId: networkId } = useActiveWeb3React();
+  const { account: userAddress } = useActiveWeb3React();
 
   //@ts-ignore
   useInjectReducer({ key: MULTISIG_KEY, reducer: multisigReducer });
@@ -59,8 +59,8 @@ export const TransactionLabelsTab = () => {
   useInjectSaga({ key: MULTISIG_KEY, saga: multisigSaga });
 
   useEffect(() => {
-    dispatch(getLabels(networkId, safeAddress, userAddress));
-  }, [dispatch, networkId, safeAddress, userAddress]);
+    dispatch(getLabels(safeAddress, userAddress));
+  }, [dispatch, safeAddress, userAddress]);
 
   return (
     <PageContainer>

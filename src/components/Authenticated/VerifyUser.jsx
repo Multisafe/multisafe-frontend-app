@@ -68,8 +68,8 @@ const VerifyUser = () => {
   const dataSharingAllowed = useSelector(makeSelectIsDataSharingAllowed());
 
   useEffect(() => {
-    if (account) dispatch(getParcelSafes(account, chainId));
-  }, [dispatch, account, chainId]);
+    if (account) dispatch(getParcelSafes(account));
+  }, [dispatch, account]);
 
   const getEncryptionKey = async (data, sign, organisationType) => {
     try {

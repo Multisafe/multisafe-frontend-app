@@ -37,6 +37,8 @@ export const initialState = {
 /* eslint-disable default-case, no-param-reassign */
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
+    const networkId = localStorage.getItem("NETWORK_ID");
+
     switch (action.type) {
       case GET_TOKENS:
         draft.loading = true;
@@ -44,6 +46,7 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_TOKENS_SUCCESS:
+
         const allTokenDetails =
           action.tokens &&
           action.tokens
@@ -87,7 +90,7 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
-        const defaultTokenDetails = DEFAULT_TOKEN_DETAILS[action.chainId];
+        const defaultTokenDetails = DEFAULT_TOKEN_DETAILS[networkId];
 
         if (allTokenDetails.length < 4) {
           for (let i = 0; i < defaultTokenDetails.length; i++) {
@@ -116,7 +119,7 @@ const reducer = (state = initialState, action) =>
 
       case GET_TOKENS_ERROR:
         draft.loading = false;
-        draft.tokenList = DEFAULT_TOKEN_DETAILS[action.chainId];
+        draft.tokenList = DEFAULT_TOKEN_DETAILS[networkId];
         draft.error = action.error;
         break;
 

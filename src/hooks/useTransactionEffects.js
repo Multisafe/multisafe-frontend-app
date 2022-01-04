@@ -65,7 +65,7 @@ export default function useTransactionEffects({
 
   useEffect(() => {
     if (safeAddress) {
-      dispatch(getNonce({ safeAddress, networkId: chainId }));
+      dispatch(getNonce({ safeAddress }));
       dispatch(getMetaTxEnabled(safeAddress));
     }
   }, [safeAddress, dispatch, chainId]);

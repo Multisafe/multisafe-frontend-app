@@ -49,7 +49,7 @@ function* fetchTokens(action) {
     const result = yield call(request, requestURL, options);
     if (result.flag !== 200) {
       // Error in payload
-      yield put(getTokensError(result.log, action.chainId));
+      yield put(getTokensError(result.log));
     } else {
       yield put(
         getTokensSuccess(
@@ -57,7 +57,6 @@ function* fetchTokens(action) {
           result.prices,
           result.icons,
           result.log,
-          action.chainId
         )
       );
     }
@@ -69,9 +68,6 @@ function* fetchTokens(action) {
 function* fetchTokenList(action) {
   const requestURL = new URL(getTokenListEndpoint);
   const params = [["safeAddress", action.safeAddress]];
-  if (action.chainId) {
-    params.push(["chainId", action.chainId]);
-  }
 
   requestURL.search = new URLSearchParams(params).toString();
   const options = {

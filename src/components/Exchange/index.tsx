@@ -128,7 +128,7 @@ export default function Exchange() {
 
   useEffect(() => {
     if (safeAddress) {
-      dispatch(getTokens(safeAddress, chainId));
+      dispatch(getTokens(safeAddress));
     }
   }, [safeAddress, dispatch, chainId]);
 

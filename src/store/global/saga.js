@@ -7,7 +7,7 @@ import request from "utils/request";
 import { getSafeInfoEndpoint } from "constants/endpoints";
 import { logoutUser } from "store/logout/actions";
 
-function* fetchSafeInfo({ safeAddress, ownerAddress, networkId, isCached }) {
+function* fetchSafeInfo({ safeAddress, ownerAddress, isCached }) {
   if (!ethers.utils.isAddress(safeAddress)) yield put(logoutUser());
 
   const requestURL = new URL(`${getSafeInfoEndpoint}`);
@@ -15,7 +15,6 @@ function* fetchSafeInfo({ safeAddress, ownerAddress, networkId, isCached }) {
     ["safeAddress", safeAddress],
     ["ownerAddress", ownerAddress],
     ["isCached", isCached],
-    ["networkId", networkId]
   ];
   requestURL.search = new URLSearchParams(params).toString();
   const options = {

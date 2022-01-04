@@ -41,31 +41,28 @@ export function chooseSafe(safeAddress) {
   };
 }
 
-export function fetchSafes(owner, networkId) {
+export function fetchSafes(owner) {
   return {
     type: FETCH_SAFES,
     owner,
-    networkId,
   };
 }
 
-export function getParcelSafes(owner, networkId, status = 1) {
+export function getParcelSafes(owner, status = 1) {
   return {
     type: GET_PARCEL_SAFES,
     owner,
     status,
-    networkId,
   };
 }
 
 // status = 0 => get safes from cache
 // status = 1 => get safes from gnosis api
-export function getSafes(owner, networkId, status = 0) {
+export function getSafes(owner, status = 0) {
   return {
     type: GET_SAFES,
     owner,
     status,
-    networkId,
   };
 }
 
@@ -85,11 +82,10 @@ export function getSafesError(error) {
   };
 }
 
-export function getSafeOwners(owner, networkId) {
+export function getSafeOwners(owner) {
   return {
     type: GET_SAFE_OWNERS,
     owner,
-    networkId,
   };
 }
 

@@ -92,10 +92,10 @@ export default function SpendingLimits() {
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getNonce({ safeAddress: ownerSafeAddress, networkId: chainId }));
+      dispatch(getNonce({ safeAddress: ownerSafeAddress }));
       dispatch(getMetaTxEnabled(ownerSafeAddress));
     }
-  }, [ownerSafeAddress, dispatch, chainId]);
+  }, [ownerSafeAddress, dispatch]);
 
   useEffect(() => {
     if (ownerSafeAddress && !icons) {

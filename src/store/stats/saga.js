@@ -5,7 +5,7 @@ import request from "utils/request";
 import { getAdminStatsEndpoint } from "constants/endpoints";
 
 function* fetchAdminStats(action) {
-  const requestURL = `${getAdminStatsEndpoint}?networkId=${action.networkId}`;
+  const requestURL = `${getAdminStatsEndpoint}`;
 
   const options = {
     method: "GET",

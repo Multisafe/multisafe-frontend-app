@@ -55,12 +55,11 @@ export function createMetaTxError(error) {
   };
 }
 
-export function getVerificationStatus({ password, owner, networkId }) {
+export function getVerificationStatus({ password, owner }) {
   return {
     type: GET_VERIFICATION_STATUS,
     password,
     owner,
-    networkId,
   };
 }
 

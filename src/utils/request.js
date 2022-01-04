@@ -17,9 +17,14 @@ function checkStatus(response) {
 
 export default function request(url, options) {
   const token = localStorage.getItem("token");
+  const networkId = localStorage.getItem("NETWORK_ID");
+
   const authHeader = token
     ? { Authorization: `Bearer ${token}` }
     : { "x-api-key": process.env.REACT_APP_COINSHIFT_API_KEY };
+
+  const requestUrl = new URL(url);
+  requestUrl.searchParams.set("networkId", networkId);
 
   const finalOptions = {
     ...options,
@@ -29,5 +34,5 @@ export default function request(url, options) {
       ...options.headers,
     },
   };
-  return fetch(url, finalOptions).then(checkStatus).then(parseJSON);
+  return fetch(requestUrl.toString(), finalOptions).then(checkStatus).then(parseJSON);
 }

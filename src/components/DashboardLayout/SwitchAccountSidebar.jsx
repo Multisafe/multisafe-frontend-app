@@ -79,7 +79,7 @@ function SwitchAccountSidebar() {
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   useEffect(() => {
-    if (account) dispatch(getParcelSafes(account, chainId));
+    if (account) dispatch(getParcelSafes(account));
   }, [dispatch, account, chainId]);
 
   useEffect(() => {
