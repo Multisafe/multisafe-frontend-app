@@ -8,7 +8,7 @@ import { push } from "connected-react-router";
 import { LOGIN_USER } from "./action-types";
 import { loginUserSuccess, loginUserError } from "./actions";
 import { getSafeInfoSuccess } from "../global/actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { loginEndpoint } from "constants/endpoints";
 import { routeGenerators } from "constants/routes/generators";
 

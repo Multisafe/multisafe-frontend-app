@@ -32,7 +32,7 @@ import {
   updateTransactionLabelsData,
   updateTransactionNoteData,
 } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import {
   createMultisigTransactionEndpoint,
   getMultisigTransactionEndpoint,

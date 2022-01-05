@@ -3,7 +3,7 @@ import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 
 const RPC_URLS = {
   [CHAIN_IDS[
-    NETWORK_NAMES.MAINNET
+    NETWORK_NAMES.ETHEREUM
   ]]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_TOKEN}`,
   [CHAIN_IDS[
     NETWORK_NAMES.RINKEBY

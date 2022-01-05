@@ -8,7 +8,7 @@ import {
   updateOwnerNameSuccess,
   updateOwnerNameError,
 } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import {
   GNOSIS_SAFE_TRANSACTION_ENDPOINTS,
   updateOwnerNameEndpoint,

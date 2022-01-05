@@ -15,7 +15,7 @@ import {
   getSafeOwnersSuccess,
   getSafeOwnersError,
 } from "./actions";
-import request from "utils/request";
+import {defaultRequest, request} from "utils/request";
 import {
   getSafesEndpoint,
   fetchSafesEndpoint,
@@ -49,7 +49,7 @@ export function* getParcelSafes(action) {
   };
 
   try {
-    const result = yield call(request, requestURL, options);
+    const result = yield call(defaultRequest, requestURL, options);
     if (result.flag !== 200) {
       // Error in payload
       yield put(getSafesError(result.log));

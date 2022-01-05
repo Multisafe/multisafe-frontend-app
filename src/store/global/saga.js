@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 
 import { GET_SAFE_INFO } from "./action-types";
 import { getSafeInfoSuccess, getSafeInfoError } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { getSafeInfoEndpoint } from "constants/endpoints";
 import { logoutUser } from "store/logout/actions";
 

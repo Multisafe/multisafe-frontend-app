@@ -88,7 +88,7 @@ export const getAdminStatsEndpoint = `${ROOT_BE_URL}/api/v1/admin/stats/get`;
 
 // GNOSIS
 export const GNOSIS_SAFE_TRANSACTION_ENDPOINTS = {
-  [CHAIN_IDS[NETWORK_NAMES.MAINNET]]:
+  [CHAIN_IDS[NETWORK_NAMES.ETHEREUM]]:
     "https://safe-transaction.gnosis.io/api/v1/safes/",
   [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]:
     "https://safe-transaction.rinkeby.gnosis.io/api/v1/safes/",
@@ -97,7 +97,7 @@ export const GNOSIS_SAFE_TRANSACTION_ENDPOINTS = {
 };
 
 export const GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS = {
-  [CHAIN_IDS[NETWORK_NAMES.MAINNET]]:
+  [CHAIN_IDS[NETWORK_NAMES.ETHEREUM]]:
     "https://safe-relay.gnosis.io/api/v2/safes/",
   [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]:
     "https://safe-relay.rinkeby.gnosis.io/api/v2/safes/",

@@ -2,8 +2,8 @@ import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 
 export function getNetworkNameById(chainId: number) {
   switch (chainId) {
-    case CHAIN_IDS[NETWORK_NAMES.MAINNET]:
-      return NETWORK_NAMES.MAINNET;
+    case CHAIN_IDS[NETWORK_NAMES.ETHEREUM]:
+      return NETWORK_NAMES.ETHEREUM;
     case CHAIN_IDS[NETWORK_NAMES.ROPSTEN]:
       return NETWORK_NAMES.ROPSTEN;
     case CHAIN_IDS[NETWORK_NAMES.RINKEBY]:

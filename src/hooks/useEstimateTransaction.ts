@@ -87,7 +87,7 @@ export const useEstimateTransaction = () => {
 
   const estimateTransaction = async (params: EstimateParamsSafeRelay) => {
     const useSafeRelayForEstimation =
-      chainId === CHAIN_IDS[NETWORK_NAMES.MAINNET] ||
+      chainId === CHAIN_IDS[NETWORK_NAMES.ETHEREUM] ||
       chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY];
 
     return useSafeRelayForEstimation

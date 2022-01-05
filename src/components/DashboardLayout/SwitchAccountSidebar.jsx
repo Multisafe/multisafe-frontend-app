@@ -61,7 +61,7 @@ function SwitchAccountSidebar() {
   const [safesToShow, setSafesToShow] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { account, chainId } = useActiveWeb3React();
+  const { account, setChainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -80,7 +80,7 @@ function SwitchAccountSidebar() {
 
   useEffect(() => {
     if (account) dispatch(getParcelSafes(account));
-  }, [dispatch, account, chainId]);
+  }, [dispatch, account]);
 
   useEffect(() => {
     if (safes && safes.length) setSafesToShow(safes);
@@ -104,6 +104,7 @@ function SwitchAccountSidebar() {
     safe,
     encryptionKeyData,
     organisationType,
+    networkId
   }) => {
     const encryptionKey = await getEncryptionKey(
       encryptionKeyData,
@@ -115,13 +116,14 @@ function SwitchAccountSidebar() {
     const password = getPassword(sign);
 
     if (safeAddress !== safe) {
+      setChainId(networkId);
       dispatch(
         loginUser({
           safeAddress: safe,
           encryptionKeyData,
           password,
           owner: account,
-          networkId: chainId,
+          networkId,
         })
       );
     }
@@ -133,7 +135,7 @@ function SwitchAccountSidebar() {
 
     return safesToShow.map(
       (
-        { safeAddress: safe, name, encryptionKeyData, organisationType },
+        { safeAddress: safe, name, encryptionKeyData, organisationType, networkId },
         idx
       ) => (
         <div
@@ -148,10 +150,11 @@ function SwitchAccountSidebar() {
               safe,
               encryptionKeyData,
               organisationType,
+              networkId
             })
           }
         >
-          <div className="name">{name}</div>
+          <div className="name">{name} | {networkId}</div>
           <div className="address">{safe}</div>
         </div>
       )

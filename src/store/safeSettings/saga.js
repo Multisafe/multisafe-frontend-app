@@ -1,7 +1,7 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { GET_SAFE_SETTINGS, SET_SAFE_SETTINGS } from "./action-types";
 import { ROOT_BE_URL } from "constants/endpoints";
-import request from "utils/request";
+import {request} from "utils/request";
 import {
   getSafeSettingsError,
   getSafeSettingsSuccess,

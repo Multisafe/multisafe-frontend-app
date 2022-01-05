@@ -18,7 +18,7 @@ export default function Web3ReactProvider({ children }) {
 
   const [appChainId, setAppChainId] = useLocalStorage(
     "NETWORK_ID",
-    CHAIN_IDS[NETWORK_NAMES.MAINNET]
+    CHAIN_IDS[NETWORK_NAMES.ETHEREUM]
   );
 
   useEffect(() => {

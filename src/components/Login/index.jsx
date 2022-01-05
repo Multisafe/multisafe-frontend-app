@@ -142,7 +142,7 @@ const Login = () => {
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
-  const { active, account, library, connector, chainId } = useActiveWeb3React();
+  const { active, account, library, connector, chainId, setChainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -235,7 +235,7 @@ const Login = () => {
 
   useEffect(() => {
     if (step === STEPS.ONE && account) {
-      dispatch(fetchSafes(account, chainId));
+      dispatch(fetchSafes(account));
     }
     if (step === STEPS.TWO && account) {
       if (flow === FLOWS.IMPORT) {
@@ -244,7 +244,7 @@ const Login = () => {
         dispatch(getParcelSafes(account));
       }
     }
-  }, [step, dispatch, account, flow, chainId]);
+  }, [step, dispatch, account, flow]);
 
   useEffect(() => {
     if (step === STEPS.THREE && flow === FLOWS.IMPORT) {
@@ -747,6 +747,7 @@ const Login = () => {
         safeDetails.push({
           safe: safes[i].safeAddress,
           name: safes[i].name,
+          networkId: safes[i].networkId,
           balance: "0",
           encryptionKeyData: safes[i].encryptionKeyData,
           createdBy,
@@ -770,7 +771,8 @@ const Login = () => {
     safe,
     encryptionKeyData,
     createdBy,
-    organisationType
+    organisationType,
+    networkId
   ) => {
     dispatch(chooseSafe(safe));
     dispatch(setOwnerDetails(name, safe, createdBy));
@@ -786,6 +788,7 @@ const Login = () => {
 
     const password = getPassword(sign);
 
+    setChainId(networkId);
     dispatch(
       loginUser({
         safeAddress: safe,
@@ -793,7 +796,7 @@ const Login = () => {
         password,
         signature: authSign,
         owner: account,
-        networkId: chainId,
+        networkId,
       })
     );
   };
@@ -919,7 +922,7 @@ const Login = () => {
         {safeDetails &&
           safeDetails.map(
             (
-              { safe, name, balance, encryptionKeyData, organisationType },
+              { safe, name, balance, encryptionKeyData, organisationType, networkId },
               idx
             ) => (
               <Safe
@@ -931,7 +934,8 @@ const Login = () => {
                         safe,
                         encryptionKeyData,
                         createdBy,
-                        organisationType
+                        organisationType,
+                        networkId
                       )
                     : handleImportSelectedSafe(safe)
                 }

@@ -45,7 +45,7 @@ const VerifyUser = () => {
   const [, setEncryptionKey] = useEncryptionKey();
   const [signing, setSigning] = useState(false);
 
-  const { account, library, chainId } = useActiveWeb3React();
+  const { account, library, setChainId } = useActiveWeb3React();
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -130,6 +130,7 @@ const VerifyUser = () => {
             const password = getPassword(signature);
             const searchParams = new URLSearchParams(location.search);
             const redirectUrl = searchParams.get("redirectUrl");
+            setChainId(safe.networkId);
             dispatch(
               loginUser({
                 safeAddress: params.safeAddress,
@@ -137,7 +138,7 @@ const VerifyUser = () => {
                 password,
                 owner: account,
                 redirectUrl,
-                networkId: chainId,
+                networkId: safe.networkId,
               })
             );
           } catch (err) {

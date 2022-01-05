@@ -24,11 +24,11 @@ export const NetworkSelect = () => {
 
   const options = [
     {
-      value: CHAIN_IDS[NETWORK_NAMES.MAINNET],
+      value: CHAIN_IDS[NETWORK_NAMES.ETHEREUM],
       label: (
         <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.MAINNET]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.MAINNET]}
+          chainId={CHAIN_IDS[NETWORK_NAMES.ETHEREUM]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.ETHEREUM]}
         />
       ),
     },

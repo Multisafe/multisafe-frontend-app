@@ -44,14 +44,14 @@ export const getDefaultIconIfPossible = (tokenSymbol, icons) => {
 };
 
 export const DEFAULT_TOKEN_DETAILS = {
-  [CHAIN_IDS[NETWORK_NAMES.MAINNET]]: [
+  [CHAIN_IDS[NETWORK_NAMES.ETHEREUM]]: [
     {
       id: 0,
       name: TOKEN_SYMBOLS.ETH,
       icon: ETHIcon,
       balance: 0,
       usd: 0,
-      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].ZERO_ADDRESS,
+      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.ETHEREUM]].ZERO_ADDRESS,
       decimals: 18,
       usdConversionRate: 1,
     },
@@ -61,7 +61,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       icon: DAIIcon,
       balance: 0,
       usd: 0,
-      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].DAI_ADDRESS,
+      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.ETHEREUM]].DAI_ADDRESS,
       decimals: 18,
       usdConversionRate: 1,
     },
@@ -71,7 +71,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       icon: USDCIcon,
       balance: 0,
       usd: 0,
-      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].USDC_ADDRESS,
+      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.ETHEREUM]].USDC_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
     },
@@ -81,7 +81,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       icon: USDTIcon,
       balance: 0,
       usd: 0,
-      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.MAINNET]].USDT_ADDRESS,
+      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.ETHEREUM]].USDT_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
     },
