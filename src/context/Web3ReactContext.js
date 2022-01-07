@@ -23,7 +23,7 @@ export default function Web3ReactProvider({ children }) {
 
   useEffect(() => {
     if (!onboard) {
-      setAppChainId(CHAIN_IDS[NETWORK_NAMES.ETHEREUM]);
+      setAppChainId(appChainId);
 
       const onboard = initOnboard(appChainId, {
         address: setAddress,
