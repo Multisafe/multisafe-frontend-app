@@ -9,6 +9,7 @@ import Button from "components/common/Button";
 import CoinshiftLogo from "assets/images/logo.svg";
 import Img from "components/common/Img";
 import { routeTemplates } from "constants/routes/templates";
+import { NetworkSelect } from "components/NetworkSelect";
 
 function PlainHeader() {
   const location = useLocation();
@@ -30,7 +31,7 @@ function PlainHeader() {
         const searchParams = new URLSearchParams(location.search);
         history.push({ pathname: "/signup", search: searchParams.toString() });
       }}
-      className="secondary ml-3 py-2 px-4"
+      className="secondary py-2 px-4"
     >
       Sign Up
     </Button>
@@ -42,7 +43,7 @@ function PlainHeader() {
         const searchParams = new URLSearchParams(location.search);
         history.push({ pathname: "/", search: searchParams.toString() });
       }}
-      className="secondary ml-3 py-2 px-4"
+      className="secondary py-2 px-4"
     >
       Login
     </Button>
@@ -58,6 +59,7 @@ function PlainHeader() {
             </HeaderLink>
           </div>
           <NavGroup>
+            <NetworkSelect />
             {!account ? (
               <ConnectButton className="py-2 px-4">Connect</ConnectButton>
             ) : (

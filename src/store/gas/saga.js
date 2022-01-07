@@ -1,9 +1,9 @@
 import { call, put, delay, race, take } from "redux-saga/effects";
-import { BigNumber } from "@ethersproject/bignumber";
+import { ethers } from "ethers";
 import Big from "big.js";
 
 import { getGasPriceSuccess, getGasPriceError } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { gasPriceEndpoint } from "constants/endpoints";
 import { ONE_GWEI } from "constants/index";
 import { GAS_MODES } from "./constants";
@@ -19,7 +19,7 @@ function roundWei(value) {
     .mul(Big(ONE_GWEI))
     .toString();
 
-  return BigNumber.from(roundedWei);
+  return ethers.utils.BigNumber.from(roundedWei);
 }
 
 export function* getGasPrices() {

@@ -13,7 +13,7 @@ import { DisbursementCard } from "./styles";
 import { getAmountFromWei } from "utils/tx-helpers";
 import FlexibleMassPayoutDetails from "./FlexibleMassPayoutDetails";
 import { usePeople } from "hooks/usePeople";
-import {getName} from "utils/getName";
+import { getName } from "utils/getName";
 
 export default function DisbursementDetails({
   paidTeammates,

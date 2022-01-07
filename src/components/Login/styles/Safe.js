@@ -58,6 +58,11 @@ export default styled.div`
       text-overflow: ellipsis;
     }
   }
+  
+  .network {
+    color: #aaaaaa;
+    font-weight: normal;
+  }
 
   &:hover {
     .select-safe {

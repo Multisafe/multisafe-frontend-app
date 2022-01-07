@@ -1,14 +1,14 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
-import { isAddress } from "@ethersproject/address";
+import { ethers } from "ethers";
 
 import { GET_SAFE_INFO } from "./action-types";
 import { getSafeInfoSuccess, getSafeInfoError } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { getSafeInfoEndpoint } from "constants/endpoints";
 import { logoutUser } from "store/logout/actions";
 
 function* fetchSafeInfo({ safeAddress, ownerAddress, isCached }) {
-  if (!isAddress(safeAddress)) yield put(logoutUser());
+  if (!ethers.utils.isAddress(safeAddress)) yield put(logoutUser());
 
   const requestURL = new URL(`${getSafeInfoEndpoint}`);
   const params = [

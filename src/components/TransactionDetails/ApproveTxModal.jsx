@@ -20,18 +20,19 @@ import {
   makeSelectMultisigTransactionDetails,
   makeSelectMultisigExecutionAllowed,
 } from "store/multisig/selectors";
-import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
   confirmMultisigTransaction,
   submitMultisigTransaction,
 } from "store/multisig/actions";
 import { Information } from "components/Register/styles";
+import { useAddresses } from "hooks/useAddresses";
 
 export const MODAL_NAME = "approve-tx-modal";
-const { MULTISEND_ADDRESS } = addresses;
 
 function ApproveTxModal(props) {
+  const { MULTISEND_ADDRESS } = useAddresses();
+
   const { show, handleHide } = props;
   const { account } = useActiveWeb3React();
 

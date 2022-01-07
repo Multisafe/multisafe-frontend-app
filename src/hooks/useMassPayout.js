@@ -6,13 +6,13 @@ import {
   useBatchTransactions,
 } from "hooks";
 import { getAmountInWei } from "utils/tx-helpers";
-import addresses from "constants/addresses";
-import { tokens } from "constants/index";
+import { TOKEN_SYMBOLS } from "constants/index";
 import ERC20ABI from "constants/abis/ERC20.json";
-
-const { ZERO_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
 
 export default function useMassPayout() {
+  const { ZERO_ADDRESS } = useAddresses();
+
   const [baseRequestBody, setBaseRequestBody] = useState();
   const { executeBatchTransactions, loadingTx, txHash, txData } =
     useBatchTransactions();
@@ -35,7 +35,7 @@ export default function useMassPayout() {
 
     let transactions = [];
 
-    if (tokenDetails.name !== tokens.ETH) {
+    if (tokenDetails.name !== TOKEN_SYMBOLS.ETH) {
       const erc20 = getERC20Contract(tokenDetails.address);
       if (!erc20) {
         throw new Error("ERC20 token undefined");
@@ -98,7 +98,7 @@ export default function useMassPayout() {
       );
 
       if (tokenDetails) {
-        if (tokenDetails.name !== tokens.ETH) {
+        if (tokenDetails.name !== TOKEN_SYMBOLS.ETH) {
           const erc20 = getERC20Contract(tokenDetails.address);
           if (!erc20) {
             throw new Error("ERC20 token undefined");

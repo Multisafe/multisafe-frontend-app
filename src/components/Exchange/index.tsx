@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { OptimalRate } from "paraswap-core";
 import { useForm, useWatch } from "react-hook-form";
 import { show } from "redux-modal";
-import { BigNumber } from "@ethersproject/bignumber";
+import { BigNumber } from "ethers";
 //@ts-ignore
 import { cryptoUtils } from "coinshift-sdk";
 import {
@@ -64,6 +64,7 @@ import {
   RouteCard,
 } from "./styles";
 import { ExchangeAlert } from "./ExchangeAlert";
+import { useActiveWeb3React } from "../../hooks";
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
@@ -102,6 +103,7 @@ export default function Exchange() {
   const dispatch = useDispatch();
   const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } =
     useExchange();
+  const { chainId } = useActiveWeb3React();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
@@ -128,7 +130,7 @@ export default function Exchange() {
     if (safeAddress) {
       dispatch(getTokens(safeAddress));
     }
-  }, [safeAddress, dispatch]);
+  }, [safeAddress, dispatch, chainId]);
 
   useEffect(() => {
     if (tokenDetails) {

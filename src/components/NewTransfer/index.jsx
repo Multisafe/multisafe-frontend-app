@@ -53,6 +53,7 @@ import TokenImg from "components/common/TokenImg";
 import Img from "components/common/Img";
 import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
 import InfoIcon from "assets/icons/new-transfer/info-warn.svg";
+import InfoHelpIcon from "assets/icons/new-transfer/info-help.svg";
 import UploadCsvModal, {
   MODAL_NAME as UPLOAD_CSV_MODAL,
 } from "./UploadCsvModal";
@@ -73,6 +74,8 @@ import {
   GrandTotalText,
   FinalSummarySection,
   SectionDivider,
+  HowItWorksContainer,
+  HowItWorks,
 } from "./styles/NewTransfer";
 import {
   PaymentFlex,
@@ -81,6 +84,7 @@ import {
   PaymentButtonContainer,
   PaymentDescription,
 } from "./styles/PaymentSummary";
+import ExternalLink from "components/common/ExternalLink";
 
 const defaultValues = {
   batch: [
@@ -95,13 +99,15 @@ const defaultValues = {
 const MAX_BATCH_LENGTH = 5;
 
 const getDescription = (receivers, fiatValue) => {
-  return `Transfer $${formatNumber(fiatValue)} to ${receivers} address${receivers > 1 ? "es" : ""}`;
+  return `Transfer $${formatNumber(fiatValue)} to ${receivers} address${
+    receivers > 1 ? "es" : ""
+  }`;
 };
 
 export default function NewTransfer({ prefilledValues }) {
   const [encryptionKey] = useEncryptionKey();
 
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [existingTokenDetails, setExistingTokenDetails] = useState();
   const [tokensDropdown, setTokensDropdown] = useState([]);
   const [grandTotalSummary, setGrandTotalSummary] = useState(null);
@@ -148,9 +154,9 @@ export default function NewTransfer({ prefilledValues }) {
 
   useEffect(() => {
     if (safeAddress) {
-      dispatch(getTokens(safeAddress));
+      dispatch(getTokens(safeAddress, chainId));
     }
-  }, [safeAddress, dispatch]);
+  }, [safeAddress, dispatch, chainId]);
 
   useEffect(() => {
     if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
@@ -406,6 +412,12 @@ export default function NewTransfer({ prefilledValues }) {
         <Heading>New Transfer</Heading>
 
         <div className="d-flex align-items-center">
+          <ExternalLink href="https://bit.ly/3lw7hZ2">
+            <HowItWorksContainer>
+              <Img src={InfoHelpIcon} alt="how it works" />
+              <HowItWorks className="ml-2">How it works</HowItWorks>
+            </HowItWorksContainer>
+          </ExternalLink>
           <Button
             onClick={showUploadCsvModal}
             type="button"

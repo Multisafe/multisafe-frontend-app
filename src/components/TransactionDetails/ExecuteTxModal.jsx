@@ -18,17 +18,18 @@ import {
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
 } from "store/multisig/selectors";
-import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { submitMultisigTransaction } from "store/multisig/actions";
 import { Information } from "components/Register/styles";
 import LinkIcon from "assets/icons/dashboard/link-icon.svg";
 import Img from "components/common/Img";
+import { useAddresses } from "hooks/useAddresses";
 
 export const MODAL_NAME = "execute-tx-modal";
-const { MULTISEND_ADDRESS } = addresses;
 
 function ExecuteTxModal(props) {
+  const { MULTISEND_ADDRESS } = useAddresses();
+
   const { show, handleHide } = props;
   const { account } = useActiveWeb3React();
   const [isOnChainRejection, setIsOnChainRejection] = useState();

@@ -32,14 +32,19 @@ import safeSettingsReducer, {
   safeSettingsKey,
 } from "store/safeSettings/reducer";
 import { getSafeSettings } from "store/safeSettings/actions";
+import {
+  FEATURE_NAMES,
+  useFeatureManagement,
+} from "hooks/useFeatureManagement";
 
 const globalKey = "global";
 
 const DashboardPage = () => {
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const { account, chainId } = useActiveWeb3React();
+  const { account } = useActiveWeb3React();
   const params = useParams();
+  const { isFeatureEnabled } = useFeatureManagement();
 
   useSocket({ safeAddress: params.safeAddress, isReadOnly });
 
@@ -60,10 +65,10 @@ const DashboardPage = () => {
       dispatch(getSafeInfo(safeAddress, account));
     }
 
-    if (safeAddress && chainId) {
-      dispatch(getSafeSettings({ safeAddress, networkId: chainId }));
+    if (safeAddress) {
+      dispatch(getSafeSettings({ safeAddress }));
     }
-  }, [dispatch, params.safeAddress, account, safeAddress, chainId]);
+  }, [dispatch, params.safeAddress, account, safeAddress]);
 
   return (
     <Authenticated>
@@ -79,11 +84,13 @@ const DashboardPage = () => {
             path={routeTemplates.dashboard.people}
             component={People}
           />
-          <Route
-            exact
-            path={routeTemplates.dashboard.exchange}
-            component={Exchange}
-          />
+          {isFeatureEnabled(FEATURE_NAMES.TOKEN_SWAP) ? (
+            <Route
+              exact
+              path={routeTemplates.dashboard.exchange}
+              component={Exchange}
+            />
+          ) : null}
           <Route
             exact
             path={routeTemplates.dashboard.transactions}

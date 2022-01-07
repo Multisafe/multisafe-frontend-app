@@ -8,9 +8,8 @@ import { push } from "connected-react-router";
 import { LOGIN_USER } from "./action-types";
 import { loginUserSuccess, loginUserError } from "./actions";
 import { getSafeInfoSuccess } from "../global/actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { loginEndpoint } from "constants/endpoints";
-import { networkId } from "constants/networks";
 import { routeGenerators } from "constants/routes/generators";
 
 export function* loginUser({
@@ -20,6 +19,7 @@ export function* loginUser({
   password,
   owner,
   redirectUrl,
+  networkId,
 }) {
   const requestURL = `${loginEndpoint}`;
 

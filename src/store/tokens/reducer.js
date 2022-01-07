@@ -13,7 +13,10 @@ import {
   GET_TOKEN_LIST_SUCCESS,
   GET_TOKEN_LIST_ERROR,
 } from "./action-types";
-import { defaultTokenDetails, getDefaultIconIfPossible } from "constants/index";
+import {
+  DEFAULT_TOKEN_DETAILS,
+  getDefaultIconIfPossible,
+} from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
 import { constructLabel } from "utils/tokens";
 
@@ -34,6 +37,8 @@ export const initialState = {
 /* eslint-disable default-case, no-param-reassign */
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
+    const networkId = localStorage.getItem("NETWORK_ID");
+
     switch (action.type) {
       case GET_TOKENS:
         draft.loading = true;
@@ -41,6 +46,7 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_TOKENS_SUCCESS:
+
         const allTokenDetails =
           action.tokens &&
           action.tokens
@@ -84,6 +90,8 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
+        const defaultTokenDetails = DEFAULT_TOKEN_DETAILS[networkId];
+
         if (allTokenDetails.length < 4) {
           for (let i = 0; i < defaultTokenDetails.length; i++) {
             if (
@@ -111,7 +119,7 @@ const reducer = (state = initialState, action) =>
 
       case GET_TOKENS_ERROR:
         draft.loading = false;
-        draft.tokenList = defaultTokenDetails;
+        draft.tokenList = DEFAULT_TOKEN_DETAILS[networkId];
         draft.error = action.error;
         break;
 

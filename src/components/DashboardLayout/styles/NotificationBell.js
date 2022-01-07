@@ -5,7 +5,6 @@ export default styled.div`
 
   .bell {
     width: 2.5em;
-    margin-right: 2em;
     cursor: pointer;
     ${({ hasSeen }) =>
       !hasSeen &&

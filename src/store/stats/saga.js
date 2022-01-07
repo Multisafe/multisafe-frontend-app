@@ -1,12 +1,11 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { GET_ADMIN_STATS } from "./action-types";
 import { getAdminStatsSuccess, getAdminStatsError } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { getAdminStatsEndpoint } from "constants/endpoints";
-import { networkId } from "constants/networks";
 
-function* fetchAdminStats() {
-  const requestURL = `${getAdminStatsEndpoint}?networkId=${networkId}`;
+function* fetchAdminStats(action) {
+  const requestURL = `${getAdminStatsEndpoint}`;
 
   const options = {
     method: "GET",

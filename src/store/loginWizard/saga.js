@@ -15,17 +15,16 @@ import {
   getSafeOwnersSuccess,
   getSafeOwnersError,
 } from "./actions";
-import request from "utils/request";
+import {defaultRequest, request} from "utils/request";
 import {
   getSafesEndpoint,
   fetchSafesEndpoint,
   getParcelSafesEndpoint,
   getSafeOwnersEndpoint,
 } from "constants/endpoints";
-import { networkId } from "constants/networks";
 
 export function* getSafes(action) {
-  const requestURL = `${getSafesEndpoint}?owner=${action.owner}&status=${action.status}&networkId=${networkId}`;
+  const requestURL = `${getSafesEndpoint}?owner=${action.owner}&status=${action.status}`;
   const options = {
     method: "GET",
   };
@@ -44,13 +43,13 @@ export function* getSafes(action) {
 }
 
 export function* getParcelSafes(action) {
-  const requestURL = `${getParcelSafesEndpoint}?owner=${action.owner}&status=${action.status}&networkId=${networkId}`;
+  const requestURL = `${getParcelSafesEndpoint}?owner=${action.owner}&status=${action.status}`;
   const options = {
     method: "GET",
   };
 
   try {
-    const result = yield call(request, requestURL, options);
+    const result = yield call(defaultRequest, requestURL, options);
     if (result.flag !== 200) {
       // Error in payload
       yield put(getSafesError(result.log));
@@ -63,7 +62,7 @@ export function* getParcelSafes(action) {
 }
 
 export function* fetchSafes(action) {
-  const requestURL = `${fetchSafesEndpoint}?owner=${action.owner}&networkId=${networkId}`;
+  const requestURL = `${fetchSafesEndpoint}?owner=${action.owner}`;
   const options = {
     method: "GET",
   };
@@ -85,7 +84,7 @@ export function* fetchSafes(action) {
 }
 
 export function* getSafeOwners(action) {
-  const requestURL = `${getSafeOwnersEndpoint}?safeAddress=${action.owner}&networkId=${networkId}`;
+  const requestURL = `${getSafeOwnersEndpoint}?safeAddress=${action.owner}`;
   const options = {
     method: "GET",
   };

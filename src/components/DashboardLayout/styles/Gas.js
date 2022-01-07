@@ -5,7 +5,6 @@ export default styled.div`
   min-width: 11rem;
   padding: 1rem;
   background-color: #ffffff;
-  margin-right: 3rem;
   border-radius: 0.4rem;
   display: flex;
   justify-content: center;
@@ -115,8 +114,5 @@ export default styled.div`
     &:last-child {
       border-bottom: none;
     }
-  }
-  @media (max-width: 600px) {
-    margin-right: 2rem;
   }
 `;

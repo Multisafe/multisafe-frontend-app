@@ -32,7 +32,7 @@ import {
   updateTransactionLabelsData,
   updateTransactionNoteData,
 } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import {
   createMultisigTransactionEndpoint,
   getMultisigTransactionEndpoint,
@@ -188,7 +188,6 @@ function* submitMultisigTransaction(action) {
 
 function* getLabels(action) {
   const urlParams = new URLSearchParams({
-    networkId: action.networkId,
     safeAddress: action.safeAddress,
     userAddress: action.userAddress,
     onlyActive: 0,
@@ -231,7 +230,6 @@ function* createOrUpdateLabel(action) {
     } else {
       yield put(
         getLabelsAction(
-          action.networkId,
           action.safeAddress,
           action.userAddress
         )

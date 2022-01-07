@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { hashMessage } from "@ethersproject/hash";
-import { recoverAddress } from "@ethersproject/transactions";
+import { ethers } from "ethers";
 import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "coinshift-sdk";
 import { show } from "redux-modal";
@@ -105,6 +104,7 @@ import {
 } from "./styles";
 import ErrorText from "components/common/ErrorText";
 import { routeTemplates } from "constants/routes/templates";
+import {NETWORK_NAME_BY_ID} from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -143,7 +143,7 @@ const Login = () => {
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
-  const { active, account, library, connector } = useActiveWeb3React();
+  const { active, account, library, connector, chainId, setChainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -210,8 +210,8 @@ const Login = () => {
 
   useEffect(() => {
     if (sign) {
-      const msgHash = hashMessage(MESSAGE_TO_SIGN);
-      const recoveredAddress = recoverAddress(msgHash, sign);
+      const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
 
       if (recoveredAddress !== account) {
         setHasAlreadySigned(false);
@@ -264,7 +264,9 @@ const Login = () => {
   useEffect(() => {
     if (account && sign) {
       const password = getPassword(sign);
-      dispatch(getVerificationStatus({ password, owner: account }));
+      dispatch(
+        getVerificationStatus({ password, owner: account })
+      );
     }
   }, [dispatch, sign, account]);
 
@@ -398,7 +400,7 @@ const Login = () => {
       dispatch(setOwnerDetails(formData.name, chosenSafeAddress, account));
       dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
       dispatch(setOrganisationType(organisationType));
-      dispatch(registerUser(body));
+      dispatch(registerUser(body, chainId));
     }
   };
 
@@ -746,6 +748,7 @@ const Login = () => {
         safeDetails.push({
           safe: safes[i].safeAddress,
           name: safes[i].name,
+          networkId: safes[i].networkId,
           balance: "0",
           encryptionKeyData: safes[i].encryptionKeyData,
           createdBy,
@@ -769,7 +772,8 @@ const Login = () => {
     safe,
     encryptionKeyData,
     createdBy,
-    organisationType
+    organisationType,
+    networkId
   ) => {
     dispatch(chooseSafe(safe));
     dispatch(setOwnerDetails(name, safe, createdBy));
@@ -785,6 +789,7 @@ const Login = () => {
 
     const password = getPassword(sign);
 
+    setChainId(networkId);
     dispatch(
       loginUser({
         safeAddress: safe,
@@ -792,6 +797,7 @@ const Login = () => {
         password,
         signature: authSign,
         owner: account,
+        networkId,
       })
     );
   };
@@ -917,7 +923,7 @@ const Login = () => {
         {safeDetails &&
           safeDetails.map(
             (
-              { safe, name, balance, encryptionKeyData, organisationType },
+              { safe, name, balance, encryptionKeyData, organisationType, networkId },
               idx
             ) => (
               <Safe
@@ -929,7 +935,8 @@ const Login = () => {
                         safe,
                         encryptionKeyData,
                         createdBy,
-                        organisationType
+                        organisationType,
+                        networkId
                       )
                     : handleImportSelectedSafe(safe)
                 }
@@ -953,7 +960,7 @@ const Login = () => {
                     </div>
                     <div className="info">
                       <div className="desc">Address</div>
-                      <div className="val">{safe}</div>
+                      <div className="val">{safe} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
                     </div>
                   </div>
                 </div>

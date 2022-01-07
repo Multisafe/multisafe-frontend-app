@@ -5,10 +5,9 @@ import {
   SET_SAFE_SETTINGS,
 } from "./action-types";
 
-export function getSafeSettings({ networkId, safeAddress }) {
+export function getSafeSettings({ safeAddress }) {
   return {
     type: GET_SAFE_SETTINGS,
-    networkId,
     safeAddress,
   };
 }
@@ -33,7 +32,7 @@ export function setSafeSettings({
   userAddress,
   gasSetting,
   onSuccess,
-  onError
+  onError,
 }) {
   return {
     type: SET_SAFE_SETTINGS,
@@ -42,6 +41,6 @@ export function setSafeSettings({
     userAddress,
     gasSetting,
     onSuccess,
-    onError
+    onError,
   };
 }

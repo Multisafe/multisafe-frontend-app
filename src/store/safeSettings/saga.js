@@ -1,7 +1,7 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { GET_SAFE_SETTINGS, SET_SAFE_SETTINGS } from "./action-types";
 import { ROOT_BE_URL } from "constants/endpoints";
-import request from "utils/request";
+import {request} from "utils/request";
 import {
   getSafeSettingsError,
   getSafeSettingsSuccess,
@@ -15,9 +15,9 @@ const GAS_SETTINGS_TO_MODE = {
   instant: GAS_MODES.INSTANT,
 };
 
-function* getSafeSettings({ safeAddress, networkId }) {
+function* getSafeSettings({ safeAddress }) {
   const endpoint = `${ROOT_BE_URL}/api/v1/safes/settings`;
-  const urlParams = new URLSearchParams({ safeAddress, networkId }).toString();
+  const urlParams = new URLSearchParams({ safeAddress }).toString();
   const options = {
     method: "GET",
   };
@@ -38,7 +38,14 @@ function* getSafeSettings({ safeAddress, networkId }) {
   }
 }
 
-function* setSafeSettings({ safeAddress, networkId, userAddress, gasSetting, onSuccess, onError }) {
+function* setSafeSettings({
+  safeAddress,
+  networkId,
+  userAddress,
+  gasSetting,
+  onSuccess,
+  onError,
+}) {
   const endpoint = `${ROOT_BE_URL}/api/v1/safes/settings`;
   const options = {
     method: "PUT",
@@ -54,7 +61,7 @@ function* setSafeSettings({ safeAddress, networkId, userAddress, gasSetting, onS
     const result = yield call(request, endpoint, options);
 
     if (result.flag === 200) {
-      yield getSafeSettings({ safeAddress, networkId });
+      yield getSafeSettings({ safeAddress });
       onSuccess && onSuccess();
     }
   } catch (e) {

@@ -9,7 +9,7 @@ import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
 } from "store/tokens/selectors";
-import { defaultTokenDetails } from "constants/index";
+import { DEFAULT_TOKEN_DETAILS } from "constants/index";
 import { formatNumber } from "utils/number-helpers";
 import { routeGenerators } from "constants/routes/generators";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
@@ -17,9 +17,13 @@ import { MODAL_NAME as ADD_FUNDS_MODAL } from "components/AddFunds";
 import AddFundsIcon from "assets/icons/navbar/add-funds.svg";
 
 import { Assets } from "./styles";
+import { useActiveWeb3React } from "hooks";
 
 function AssetsCard() {
-  const [tokenDetails, setTokenDetails] = useState(defaultTokenDetails);
+  const { chainId } = useActiveWeb3React();
+  const [tokenDetails, setTokenDetails] = useState(
+    DEFAULT_TOKEN_DETAILS[chainId]
+  );
 
   const dispatch = useDispatch();
 

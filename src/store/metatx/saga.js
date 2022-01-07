@@ -1,7 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { GET_METATX_ENABLED } from "./action-types";
 import { getMetaTxEnabledSuccess, getMetaTxEnabledError } from "./actions";
-import request from "utils/request";
+import {request} from "utils/request";
 import { getMetaTxLimitsEndpoint } from "constants/endpoints";
 
 export function* getMetaTxEnabled(action) {

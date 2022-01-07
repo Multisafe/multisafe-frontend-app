@@ -14,7 +14,7 @@ import { useInjectSaga } from "utils/injectSaga";
 import { cryptoUtils } from "coinshift-sdk";
 
 import addPeopleReducer from "store/add-people/reducer";
-import {useActiveWeb3React, useEncryptionKey} from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import { addBulkPeople } from "store/add-people/actions";
 import addPeopleSaga from "store/add-people/saga";
 import {

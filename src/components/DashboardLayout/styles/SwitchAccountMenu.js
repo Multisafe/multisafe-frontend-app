@@ -71,6 +71,11 @@ export default styled(Menu)`
       }
     }
   }
+  
+  .network {
+    color: #aaaaaa;
+    font-weight: normal;
+  }
 
   .no-safes {
     padding: 3rem;

@@ -8,7 +8,6 @@ import {
   useBatchTransactions,
 } from "hooks";
 import { getAmountInWei } from "utils/tx-helpers";
-import addresses from "constants/addresses";
 import GnosisSafeABIBeforeV130 from "constants/abis/GnosisSafeBeforeV130.json";
 import GnosisSafeABIAfterV130 from "constants/abis/GnosisSafe.json";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
@@ -16,10 +15,11 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectSafeVersion,
 } from "store/global/selectors";
-
-const { ZERO_ADDRESS, ALLOWANCE_MODULE_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
 
 export default function useSpendingLimits() {
+  const { ZERO_ADDRESS, ALLOWANCE_MODULE_ADDRESS } = useAddresses();
+
   const [baseRequestBody, setBaseRequestBody] = useState();
   const [proxyContract, setProxyContract] = useState();
 

@@ -208,3 +208,26 @@ export const BatchName = styled.div`
   font-size: 1.6rem;
   margin-top: 0.4rem;
 `;
+
+export const HowItWorksContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 2rem;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+export const HowItWorks = styled.div`
+  border-bottom: solid 0.1rem ${({ theme }) => theme.primary};
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  text-align: left;
+  color: ${({ theme }) => theme.primary};
+`;

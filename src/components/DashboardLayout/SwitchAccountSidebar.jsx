@@ -26,6 +26,7 @@ import ControlledInput from "components/common/Input";
 import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
+import {NETWORK_NAME_BY_ID} from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -61,7 +62,7 @@ function SwitchAccountSidebar() {
   const [safesToShow, setSafesToShow] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { account } = useActiveWeb3React();
+  const { account, setChainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -104,6 +105,7 @@ function SwitchAccountSidebar() {
     safe,
     encryptionKeyData,
     organisationType,
+    networkId
   }) => {
     const encryptionKey = await getEncryptionKey(
       encryptionKeyData,
@@ -115,12 +117,14 @@ function SwitchAccountSidebar() {
     const password = getPassword(sign);
 
     if (safeAddress !== safe) {
+      setChainId(networkId);
       dispatch(
         loginUser({
           safeAddress: safe,
           encryptionKeyData,
           password,
           owner: account,
+          networkId,
         })
       );
     }
@@ -132,7 +136,7 @@ function SwitchAccountSidebar() {
 
     return safesToShow.map(
       (
-        { safeAddress: safe, name, encryptionKeyData, organisationType },
+        { safeAddress: safe, name, encryptionKeyData, organisationType, networkId },
         idx
       ) => (
         <div
@@ -147,10 +151,11 @@ function SwitchAccountSidebar() {
               safe,
               encryptionKeyData,
               organisationType,
+              networkId
             })
           }
         >
-          <div className="name">{name}</div>
+          <div className="name">{name} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
           <div className="address">{safe}</div>
         </div>
       )

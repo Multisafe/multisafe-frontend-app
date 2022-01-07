@@ -116,7 +116,7 @@ export default function MultiSigTransactions() {
 
     return () => {
       dispatch(clearMultisigTransactionDetails());
-    }
+    };
   }, [dispatch, params.transactionId, ownerSafeAddress, account]);
 
   const noOfPeoplePaid = useMemo(() => {

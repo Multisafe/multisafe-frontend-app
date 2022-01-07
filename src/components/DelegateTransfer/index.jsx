@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Col, Row } from "reactstrap";
-import { arrayify } from "@ethersproject/bytes";
+import { ethers } from "ethers";
 
 import { useActiveWeb3React, useContract } from "hooks";
 import ConnectButton from "components/Connect";
@@ -19,7 +19,6 @@ import CircularProgress from "components/common/CircularProgress";
 import Img from "components/common/Img";
 import { useInjectSaga } from "utils/injectSaga";
 import Loading from "components/common/Loading";
-import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import { TransactionUrl } from "components/common/Web3Utils";
 import { DEFAULT_GAS_PRICE } from "constants/index";
@@ -33,6 +32,7 @@ import {
   StepDetails,
   StepInfo,
 } from "components/Login/styles";
+import { useAddresses } from "hooks/useAddresses";
 
 const STEPS = {
   ZERO: 0,
@@ -43,7 +43,6 @@ const STEPS = {
   FIVE: 5,
   SIX: 6,
 };
-const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = addresses;
 const gasPriceKey = "gas";
 
 const getStepsCount = () => {
@@ -56,6 +55,8 @@ const DELEGATE_TRANSFER_STEPS = {
 };
 
 const DelegateTransfer = () => {
+  const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = useAddresses();
+
   const [loadingAccount, setLoadingAccount] = useState(true);
   const [loadingTx, setLoadingTx] = useState();
   const [txHash, setTxHash] = useState();
@@ -202,7 +203,7 @@ const DelegateTransfer = () => {
 
       const signer = library.getSigner(account);
 
-      const sig = await signer.signMessage(arrayify(transferHash));
+      const sig = await signer.signMessage(ethers.utils.arrayify(transferHash));
 
       let sigV = parseInt(sig.slice(-2), 16);
       // Metamask with ledger returns v = 01, this is not valid for ethereum

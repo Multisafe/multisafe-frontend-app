@@ -4,17 +4,17 @@ import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
 
 import { useActiveWeb3React, useContract, useBatchTransactions } from "hooks";
-import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE } from "constants/index";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
-import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
-
-const { ZERO_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
+import { useEstimateTransaction } from "hooks/useEstimateTransaction";
 
 export default function useMultisigActions() {
   const { account, library } = useActiveWeb3React();
+  const { ZERO_ADDRESS } = useAddresses();
+  const { estimateTransaction } = useEstimateTransaction();
 
   const [confirmTxData, setConfirmTxData] = useState("");
   const {
@@ -167,27 +167,16 @@ export default function useMultisigActions() {
 
         try {
           let approvedSign;
-          // estimate using api
-          const estimateResponse = await fetch(
-            `${gnosisSafeTransactionV2Endpoint}${safe}/transactions/estimate/`,
-            {
-              method: "POST",
-              body: JSON.stringify({
-                safe,
-                to,
-                value,
-                data,
-                operation,
-                gasToken,
-              }),
-              headers: {
-                "content-type": "application/json",
-              },
-            }
-          );
-          const estimateResult = await estimateResponse.json();
+
           const { safeTxGas: finalSafeTxGas, baseGas: finalBaseGas } =
-            estimateResult;
+            await estimateTransaction({
+              to,
+              value,
+              data,
+              operation,
+              gasToken,
+            });
+
           const gasLimit =
             Number(finalSafeTxGas) + Number(finalBaseGas) + 21000; // giving a little higher gas limit just in case
 
