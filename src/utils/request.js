@@ -37,7 +37,18 @@ export const request = (url, options) => {
   const networkId = localStorage.getItem("NETWORK_ID");
 
   const requestUrl = new URL(url);
-  requestUrl.searchParams.set("networkId", networkId);
+
+  if (options.method === "GET" || !options.method) {
+    requestUrl.searchParams.set("networkId", networkId);
+  }
+
+  if (options.method === "POST") {
+    const parsedBody = JSON.parse(options.body);
+    options.body = JSON.stringify({
+      ...parsedBody,
+      networkId
+    });
+  }
 
   return defaultRequest(requestUrl.toString(), options);
 }

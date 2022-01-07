@@ -26,6 +26,7 @@ import ControlledInput from "components/common/Input";
 import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
+import {NETWORK_NAME_BY_ID} from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -154,7 +155,7 @@ function SwitchAccountSidebar() {
             })
           }
         >
-          <div className="name">{name} | {networkId}</div>
+          <div className="name">{name} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
           <div className="address">{safe}</div>
         </div>
       )

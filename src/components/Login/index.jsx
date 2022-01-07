@@ -104,6 +104,7 @@ import {
 } from "./styles";
 import ErrorText from "components/common/ErrorText";
 import { routeTemplates } from "constants/routes/templates";
+import {NETWORK_NAME_BY_ID} from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -959,7 +960,7 @@ const Login = () => {
                     </div>
                     <div className="info">
                       <div className="desc">Address</div>
-                      <div className="val">{safe}</div>
+                      <div className="val">{safe} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
                     </div>
                   </div>
                 </div>

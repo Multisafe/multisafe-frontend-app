@@ -12,6 +12,7 @@ import ManageOwners from "components/ManageOwners";
 import Profile from "components/Profile";
 import { getSafeInfo } from "store/global/actions";
 import { useActiveWeb3React } from "hooks";
+import {FEATURE_NAMES, useFeatureManagement} from "hooks/useFeatureManagement";
 
 const TABS = {
   OWNERS: "1",
@@ -81,6 +82,7 @@ const navStyles = `
 export default function Settings() {
   const [activeTab, setActiveTab] = useState(TABS.OWNERS);
   const { account, chainId } = useActiveWeb3React();
+  const {isFeatureEnabled} = useFeatureManagement();
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -108,19 +110,21 @@ export default function Settings() {
             <span>Owners</span>
           </NavLink>
         </NavItem>
-        <NavItem>
-          <NavLink
-            className={`${activeTab === TABS.SPENDING_LIMITS ? "active" : ""}`}
-            onClick={() => toggleTab(TABS.SPENDING_LIMITS)}
-          >
-            <Img
-              src={SpendingLimitsIcon}
-              alt="spending-limits"
-              className="mr-2"
-            />
-            <span>Spending Limits</span>
-          </NavLink>
-        </NavItem>
+        {isFeatureEnabled(FEATURE_NAMES.SPENDING_LIMIT) ? (
+          <NavItem>
+            <NavLink
+              className={`${activeTab === TABS.SPENDING_LIMITS ? "active" : ""}`}
+              onClick={() => toggleTab(TABS.SPENDING_LIMITS)}
+            >
+              <Img
+                src={SpendingLimitsIcon}
+                alt="spending-limits"
+                className="mr-2"
+              />
+              <span>Spending Limits</span>
+            </NavLink>
+          </NavItem>
+        ) : null}
         <NavItem>
           <NavLink
             className={`${activeTab === TABS.PROFILE ? "active" : ""}`}
@@ -135,11 +139,13 @@ export default function Settings() {
         <TabPane tabId={TABS.OWNERS}>
           <ManageOwners />
         </TabPane>
-        <TabPane tabId={TABS.SPENDING_LIMITS}>
-          <div className="mt-5">
-            <SpendingLimits />
-          </div>
-        </TabPane>
+        {isFeatureEnabled(FEATURE_NAMES.SPENDING_LIMIT) ? (
+          <TabPane tabId={TABS.SPENDING_LIMITS}>
+            <div className="mt-5">
+              <SpendingLimits />
+            </div>
+          </TabPane>
+        ) : null}
         <TabPane tabId={TABS.PROFILE}>
           <div className="mt-5">
             <Profile />

@@ -1,7 +1,7 @@
 import { useEffect, useState, createContext } from "react";
 import { ethers } from "ethers";
 
-import { initOnboard } from "utils/initOnboard";
+import {initOnboard} from "utils/initOnboard";
 import { useLocalStorage } from "hooks";
 import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 

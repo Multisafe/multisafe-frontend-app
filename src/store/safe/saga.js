@@ -17,7 +17,8 @@ import { MODAL_NAME as EDIT_OWNER_MODAL } from "components/ManageOwners/EditOwne
 import { getInvitations } from "store/invitation/actions";
 
 function* getTransactionNonce(action) {
-  const requestURL = `${GNOSIS_SAFE_TRANSACTION_ENDPOINTS[action.networkId]}${
+  const networkId = localStorage.getItem("NETWORK_ID");
+  const requestURL = `${GNOSIS_SAFE_TRANSACTION_ENDPOINTS[networkId]}${
     action.safeAddress
   }/transactions/?has_confirmations=True`;
 

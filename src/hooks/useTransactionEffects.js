@@ -26,7 +26,6 @@ import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/Transac
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import { useActiveWeb3React } from "hooks";
 
 // reducer/saga keys
 const transactionsKey = "transactions";
@@ -40,7 +39,6 @@ export default function useTransactionEffects({
   baseRequestBody,
 }) {
   const [metaTxHash, setMetaTxHash] = useState();
-  const { chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: transactionsKey, reducer: transactionsReducer });
@@ -68,7 +66,7 @@ export default function useTransactionEffects({
       dispatch(getNonce({ safeAddress }));
       dispatch(getMetaTxEnabled(safeAddress));
     }
-  }, [safeAddress, dispatch, chainId]);
+  }, [safeAddress, dispatch]);
 
   useEffect(() => {
     if (baseRequestBody) {
