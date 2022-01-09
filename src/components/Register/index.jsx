@@ -101,6 +101,7 @@ import {
 import ErrorText from "components/common/ErrorText";
 import WelcomeImg from "assets/images/register/welcome.svg";
 import { useAddresses } from "hooks/useAddresses";
+import {BLOCK_EXPLORER_BY_ID} from "constants/networks";
 
 const registerKey = "register";
 const registerWizardKey = "registerWizard";
@@ -1030,7 +1031,7 @@ const Register = () => {
         <div className="loading-hash my-3">
           {(txHash || txHashWithoutReferral) && (
             <TransactionUrl hash={txHash || txHashWithoutReferral}>
-              View Transaction on Etherscan
+              View Transaction on {BLOCK_EXPLORER_BY_ID[chainId]}
             </TransactionUrl>
           )}
         </div>

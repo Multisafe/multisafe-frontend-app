@@ -27,8 +27,8 @@ import invitationReducer from "store/invitation/reducer";
 import { getInvitations } from "store/invitation/actions";
 import { makeSelectIsSetupComplete } from "store/invitation/selectors";
 import CopyButton from "components/common/Copy";
-import EtherscanLink from "components/common/EtherscanLink";
-import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import BlockExplorerLink from "components/common/BlockExplorerLink";
+import { EXPLORER_LINK_TYPES } from "components/common/Web3Utils";
 import { useActiveWeb3React, useDropdown } from "hooks";
 import { minifyAddress } from "components/common/Web3Utils";
 import { routeGenerators } from "constants/routes/generators";
@@ -146,9 +146,9 @@ export default function Sidebar({ isSidebarOpen, closeSidebar }) {
                   className="mr-3"
                   stopPropagation
                 />
-                <EtherscanLink
-                  id="etherscan-link"
-                  type={ETHERSCAN_LINK_TYPES.ADDRESS}
+                <BlockExplorerLink
+                  id="block-explorer-link"
+                  type={EXPLORER_LINK_TYPES.ADDRESS}
                   address={safeAddress}
                 />
               </div>

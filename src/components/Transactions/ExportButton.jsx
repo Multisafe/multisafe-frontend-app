@@ -15,8 +15,9 @@ import { useEncryptionKey, useActiveWeb3React } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
 import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
-import { getEtherscanLink } from "components/common/Web3Utils";
+import { getBlockExplorerLink } from "components/common/Web3Utils";
 import { getDecryptedOwnerName } from "store/invitation/utils";
+import {GAS_TOKEN_SYMBOL_BY_ID} from "constants/networks";
 
 const joinArray = (arr) => {
   return arr && arr.join("\n");
@@ -188,6 +189,7 @@ export default function ExportButton() {
             }
           }
 
+          const transactionFeeColumnLabel = `Transaction fees (${GAS_TOKEN_SYMBOL_BY_ID[chainId]})`;
           csvData.push({
             Date: format(new Date(createdOn), "MMM-dd-yyyy"),
             Time: format(new Date(createdOn), "HH:mm:ss"),
@@ -210,11 +212,11 @@ export default function ExportButton() {
             "Created By Name": createdByName,
             "Transaction ID": transactionId,
             "Transaction Hash": transactionHash || "",
-            Link: getEtherscanLink({
+            Link: getBlockExplorerLink({
               chainId,
               hash: transactionHash || "",
             }),
-            "Transaction fees (ETH)": transactionFees ? transactionFees : "",
+            [transactionFeeColumnLabel]: transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
             Labels: joinArray(labels.map(({ name }) => name)) || " ",
             Note:

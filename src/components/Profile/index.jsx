@@ -25,8 +25,8 @@ import { modifyOrganisationName } from "store/organisation/actions";
 import { InfoCard } from "components/People/styles";
 import { ProfileContainer } from "./styles";
 import { ErrorMessage, Input } from "components/common/Form";
-import EtherscanLink from "components/common/EtherscanLink";
-import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import BlockExplorerLink from "components/common/BlockExplorerLink";
+import { EXPLORER_LINK_TYPES } from "components/common/Web3Utils";
 import ErrorText from "components/common/ErrorText";
 import Img from "components/common/Img";
 import InfoIcon from "assets/icons/dashboard/info-icon.svg";
@@ -115,9 +115,9 @@ export default function Profile() {
           value={safeAddress}
           className="mx-3"
         />
-        <EtherscanLink
-          id="etherscan-link"
-          type={ETHERSCAN_LINK_TYPES.ADDRESS}
+        <BlockExplorerLink
+          id="block-explorer-link"
+          type={EXPLORER_LINK_TYPES.ADDRESS}
           address={safeAddress}
         />
       </div>
