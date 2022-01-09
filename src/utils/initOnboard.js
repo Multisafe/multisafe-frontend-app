@@ -18,6 +18,9 @@ const dappId = process.env.REACT_APP_BLOCKNATIVE_API_KEY;
 const checkLedgerSupport = (networkId) => {
   return NETWORK_NAME_BY_ID[networkId] === NETWORK_NAMES.ETHEREUM;
 }
+const checkTrezorSupport = (networkId) => {
+  return NETWORK_NAME_BY_ID[networkId] === NETWORK_NAMES.ETHEREUM;
+}
 
 export const getWalletConfigs = (networkId) => {
   const rpcUrl = RPC_URLS[networkId];
@@ -29,12 +32,12 @@ export const getWalletConfigs = (networkId) => {
         walletName: "ledger",
         rpcUrl,
       },] : []),
-      {
+      ...(checkTrezorSupport(networkId) ? [{
         walletName: "trezor",
         appUrl: "https://reactdemo.blocknative.com",
         email: "aaron@blocknative.com",
         rpcUrl,
-      },
+      }] : []),
       // {
       //   walletName: "walletConnect",
       //   infuraKey: process.env.REACT_APP_INFURA_TOKEN,
