@@ -53,7 +53,7 @@ export default function Web3ReactProvider({ children }) {
     } else {
       onboard.config({ networkId: appChainId });
     }
-  }, [onboard, appChainId]);
+  }, [onboard, setAppChainId, appChainId]);
 
   // useEffect(() => {
   //   const previouslySelectedWallet =
