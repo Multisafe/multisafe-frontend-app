@@ -22,22 +22,13 @@ export const NetworkSelect = () => {
     setChainId(value);
   };
 
-  const options = [
+  const mainnetOptions = [
     {
       value: CHAIN_IDS[NETWORK_NAMES.ETHEREUM],
       label: (
         <NetworkLabel
           chainId={CHAIN_IDS[NETWORK_NAMES.ETHEREUM]}
           selected={chainId === CHAIN_IDS[NETWORK_NAMES.ETHEREUM]}
-        />
-      ),
-    },
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.RINKEBY],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
         />
       ),
     },
@@ -51,6 +42,19 @@ export const NetworkSelect = () => {
       ),
     },
   ];
+  const testnetOptions = [
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.RINKEBY],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
+        />
+      ),
+    }
+  ];
+
+  const options = process.env.NODE_ENV === "production" ? mainnetOptions : [...mainnetOptions, ...testnetOptions];
 
   return (
     <StyledSelect
