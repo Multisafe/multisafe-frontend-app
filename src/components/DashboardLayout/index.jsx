@@ -8,6 +8,7 @@ import { useInjectSaga } from "utils/injectSaga";
 import layoutReducer from "store/layout/reducer";
 import NotificationSidebar from "./NotificationSidebar";
 import PeopleDetailsSidebar from "components/People/PeopleDetailsSidebar";
+import MaintenanceAlert from "components/common/MaintenanceAlert";
 import SwitchAccountSidebar from "./SwitchAccountSidebar";
 import { getTokenList, getTokens } from "store/tokens/actions";
 import tokensReducer from "store/tokens/reducer";
@@ -52,6 +53,7 @@ function DashboardLayout({ children }) {
         <Sidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar} />
         <Navbar isSidebarOpen={isSidebarOpen} openSidebar={openSidebar} />
         <Main>{children}</Main>
+        <MaintenanceAlert />
       </LayoutContainer>
       <NotificationSidebar />
       <PeopleDetailsSidebar />
