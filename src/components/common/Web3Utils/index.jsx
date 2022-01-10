@@ -110,19 +110,19 @@ const scanLinkByChainId = {
   137: `polygonscan.com`,
 };
 
-export const ETHERSCAN_LINK_TYPES = {
+export const EXPLORER_LINK_TYPES = {
   TX: "tx",
   ADDRESS: "address",
 };
-export const getEtherscanLink = ({
+export const getBlockExplorerLink = ({
   chainId,
-  type = ETHERSCAN_LINK_TYPES.TX,
+  type = EXPLORER_LINK_TYPES.TX,
   hash,
   address,
 }) => {
-  if (type === ETHERSCAN_LINK_TYPES.TX) {
+  if (type === EXPLORER_LINK_TYPES.TX) {
     return `https://${scanLinkByChainId[chainId]}/${type}/${hash}`;
-  } else if (type === ETHERSCAN_LINK_TYPES.ADDRESS) {
+  } else if (type === EXPLORER_LINK_TYPES.ADDRESS) {
     return `https://${scanLinkByChainId[chainId]}/${type}/${address}`;
   }
   return `https://${scanLinkByChainId[chainId]}/`;
@@ -133,7 +133,7 @@ export const TransactionUrl = ({ hash, children, ...rest }) => {
 
   return (
     <a
-      href={getEtherscanLink({ chainId, hash })}
+      href={getBlockExplorerLink({ chainId, hash })}
       rel="noopener noreferrer"
       target="_blank"
       {...rest}

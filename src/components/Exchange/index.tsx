@@ -30,7 +30,7 @@ import { constructLabel } from "utils/tokens";
 import { useExchange } from "hooks/useExchange";
 import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { ExchangeDetails } from "./ExchangeDetails";
-import { DEFAULT_SLIPPAGE, ETH_ADDRESS, DAI_ADDRESS } from "./constants";
+import { DEFAULT_SLIPPAGE, ETH_ADDRESS } from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
 import { InfoCard } from "../People/styles";
@@ -64,7 +64,8 @@ import {
   RouteCard,
 } from "./styles";
 import { ExchangeAlert } from "./ExchangeAlert";
-import { useActiveWeb3React } from "../../hooks";
+import { useActiveWeb3React } from "hooks";
+import {useAddresses} from 'hooks/useAddresses';
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
@@ -104,12 +105,13 @@ export default function Exchange() {
   const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } =
     useExchange();
   const { chainId } = useActiveWeb3React();
+  const { DAI_ADDRESS } = useAddresses();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const [payToken, setPayToken] = useState<string>(ETH_ADDRESS);
-  const [receiveToken, setReceiveToken] = useState<string>(DAI_ADDRESS);
+  const [receiveToken, setReceiveToken] = useState<string>(DAI_ADDRESS.toLowerCase());
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE);
   const [tokensByAddress, setTokensByAddress] = useState<FixMe>(
     getTokensByAddress([])

@@ -6,11 +6,25 @@ import Button from "components/common/Button";
 import { useActiveWeb3React } from "hooks";
 import NotFoundImg from "assets/images/not-found.png";
 import { WrongNetwork } from "./styles";
-import { NETWORK_NAME_BY_ID } from "constants/networks";
+import {CHAIN_IDS, NETWORK_NAME_BY_ID, NETWORK_NAMES} from "constants/networks";
 import { ButtonContainer } from "components/Connect/styles/WrongNetwork";
 
+const NETWORK_DETAILS_BY_ID = {
+  [CHAIN_IDS[NETWORK_NAMES.POLYGON]]: {
+    chainId: "0x89",
+    chainName: "Polygon Mainnet",
+    nativeCurrency: {
+      name: "MATIC",
+      symbol: "MATIC",
+      decimals: 18
+    },
+    rpcUrls: ["https://polygon-rpc.com/"],
+    blockExplorerUrls: ["https://polygonscan.com/"]
+  }
+}
+
 const NetworkModal = () => {
-  const { library, active, walletChainId, chainId } = useActiveWeb3React();
+  const { onboard, library, active, walletChainId, chainId } = useActiveWeb3React();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -21,10 +35,24 @@ const NetworkModal = () => {
     }
   }, [walletChainId, chainId, active]);
 
-  const switchNetwork = () => {
-    library.send("wallet_switchEthereumChain", [
-      { chainId: ethers.utils.hexValue(chainId) },
-    ]);
+  const switchNetwork = async () => {
+    try {
+      await library.send("wallet_switchEthereumChain", [
+        { chainId: ethers.utils.hexValue(chainId) },
+      ]);
+    } catch (e) {
+      if (e.code === 4902) { //Unrecognized chain ID
+        addNetwork();
+      }
+    }
+  };
+
+  const addNetwork = async () => {
+    try {
+      await library.send("wallet_addEthereumChain", [NETWORK_DETAILS_BY_ID[chainId]]);
+    } catch (e) {
+      onboard.walletCheck();
+    }
   };
 
   return (

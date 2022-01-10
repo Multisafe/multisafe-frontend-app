@@ -9,8 +9,8 @@ import {
 } from "store/global/selectors";
 import { AddFunds } from "./styles";
 import CopyButton from "components/common/Copy";
-import EtherscanLink from "components/common/EtherscanLink";
-import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import BlockExplorerLink from "components/common/BlockExplorerLink";
+import { EXPLORER_LINK_TYPES } from "components/common/Web3Utils";
 import QRCode from "./QRCode";
 
 export const MODAL_NAME = "add-funds-modal";
@@ -45,9 +45,9 @@ function AddFundsModal(props) {
               value={safeAddress}
               className="mx-3"
             />
-            <EtherscanLink
-              id="etherscan-link"
-              type={ETHERSCAN_LINK_TYPES.ADDRESS}
+            <BlockExplorerLink
+              id="block-explorer-link"
+              type={EXPLORER_LINK_TYPES.ADDRESS}
               address={safeAddress}
             />
           </div>
