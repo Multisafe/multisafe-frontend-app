@@ -26,7 +26,7 @@ import ControlledInput from "components/common/Input";
 import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
-import {CHAIN_IDS, NETWORK_NAME_BY_ID, NETWORK_NAMES} from "constants/networks";
+import {NETWORK_NAME_BY_ID, SUPPORTED_NETWORK_IDS} from "constants/networks";
 import {SwitchSafeNetworkLabel} from "components/DashboardLayout/styles/SwitchAccountMenu";
 
 const loginKey = "login";
@@ -63,7 +63,7 @@ function SwitchAccountSidebar() {
   const [safesToShow, setSafesToShow] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { account, setChainId } = useActiveWeb3React();
+  const { account, setChainId, chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -135,18 +135,16 @@ function SwitchAccountSidebar() {
     if (!safesToShow || !safesToShow.length)
       return <div className="no-safes">No safes found</div>;
 
-    const supportedNetworkIds = [
-      CHAIN_IDS[NETWORK_NAMES.ETHEREUM],
-      CHAIN_IDS[NETWORK_NAMES.POLYGON],
-      CHAIN_IDS[NETWORK_NAMES.RINKEBY],
-    ];
+    const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
 
-    const safesByNetwork = supportedNetworkIds.reduce((acc, currNetworkId) => {
-      acc[currNetworkId] = safesToShow.filter(({networkId}) => networkId === currNetworkId)
-      return acc;
-    }, {});
+    const sortedGroups = sortedNetworkIds.reduce((acc, currNetworkId) => {
+      return [...acc, {
+        networkId: currNetworkId,
+        safes: safesToShow.filter(({networkId}) => networkId === currNetworkId)
+      }];
+    }, []);
 
-    return Object.entries(safesByNetwork).map(([networkId, safes]) => {
+    return sortedGroups.map(({networkId, safes}) => {
       return safes?.length ? (
         <div>
           <SwitchSafeNetworkLabel>{NETWORK_NAME_BY_ID[networkId]}</SwitchSafeNetworkLabel>

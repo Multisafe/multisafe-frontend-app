@@ -82,3 +82,13 @@ export default styled.div`
     }
   }
 `;
+
+export const InfoContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+export const NetworkLabelContainer = styled.div`
+  padding-left: 1rem;
+  border-left: 0.1rem solid #ccc;  
+`;
