@@ -23,14 +23,16 @@ const NETWORK_ID_TO_COLOR = {
 
 const LabelContainer = styled.div`
   display: flex;
-  align-items: center;
   gap: 1rem;
+  font-size: 1.4rem;
 `;
 
 const LabelColor = styled.div`
   width: 1rem;
   height: 1rem;
   border-radius: 0.2rem;
+  position: relative;
+  top: 0.3rem;
 `;
 
 const LabelSelected = styled(Img)`

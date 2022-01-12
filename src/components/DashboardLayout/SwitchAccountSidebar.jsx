@@ -26,7 +26,8 @@ import ControlledInput from "components/common/Input";
 import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
-import {NETWORK_NAME_BY_ID} from "constants/networks";
+import {NETWORK_NAME_BY_ID, SUPPORTED_NETWORK_IDS} from "constants/networks";
+import {SwitchSafeNetworkLabel} from "components/DashboardLayout/styles/SwitchAccountMenu";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -62,7 +63,7 @@ function SwitchAccountSidebar() {
   const [safesToShow, setSafesToShow] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { account, setChainId } = useActiveWeb3React();
+  const { account, setChainId, chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -134,32 +135,45 @@ function SwitchAccountSidebar() {
     if (!safesToShow || !safesToShow.length)
       return <div className="no-safes">No safes found</div>;
 
-    return safesToShow.map(
-      (
-        { safeAddress: safe, name, encryptionKeyData, organisationType, networkId },
-        idx
-      ) => (
-        <div
-          key={`${safe}-${idx}`}
-          className="safe-option"
-          style={{
-            backgroundColor:
-              safe === safeAddress ? "rgba(221, 220, 220, 0.2)" : "#fff",
-          }}
-          onClick={() =>
-            handleSwitchSafe({
-              safe,
-              encryptionKeyData,
-              organisationType,
-              networkId
-            })
-          }
-        >
-          <div className="name">{name} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
-          <div className="address">{safe}</div>
+    const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
+
+    const sortedGroups = sortedNetworkIds.reduce((acc, currNetworkId) => {
+      return [...acc, {
+        networkId: currNetworkId,
+        safes: safesToShow.filter(({networkId}) => networkId === currNetworkId)
+      }];
+    }, []);
+
+    return sortedGroups.map(({networkId, safes}) => {
+      return safes?.length ? (
+        <div>
+          <SwitchSafeNetworkLabel>{NETWORK_NAME_BY_ID[networkId]}</SwitchSafeNetworkLabel>
+          {safes.map(
+            ({ safeAddress: safe, name, encryptionKeyData, organisationType }) => (
+              <div
+                key={`${safe}`}
+                className="safe-option"
+                style={{
+                  backgroundColor:
+                    safe === safeAddress ? "rgba(221, 220, 220, 0.2)" : "#fff",
+                }}
+                onClick={() =>
+                  handleSwitchSafe({
+                    safe,
+                    encryptionKeyData,
+                    organisationType,
+                    networkId
+                  })
+                }
+              >
+                <div className="name">{name}</div>
+                <div className="address">{safe}</div>
+              </div>
+            )
+          )}
         </div>
-      )
-    );
+      ) : null;
+    })
   };
 
   const handleStateChange = (state) => {

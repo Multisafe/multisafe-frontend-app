@@ -1,3 +1,5 @@
 export const DEFAULT_SLIPPAGE = 1;
 
-export const ETH_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"; // ETH
+export const GAS_TOKEN_ADDRESS = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+
+export const MATIC_TOKEN_ADDRESS = "0x0000000000000000000000000000000000001010";

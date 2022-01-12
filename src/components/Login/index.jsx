@@ -104,7 +104,9 @@ import {
 } from "./styles";
 import ErrorText from "components/common/ErrorText";
 import { routeTemplates } from "constants/routes/templates";
-import {NETWORK_NAME_BY_ID} from "constants/networks";
+import {InfoContainer, NetworkLabelContainer} from "components/Login/styles/Safe";
+import {NetworkLabel} from "components/NetworkSelect/NetworkLabel";
+import {SUPPORTED_NETWORK_IDS} from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -914,30 +916,36 @@ const Login = () => {
       );
     }
 
+    const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
+
+    const sortedGroups = sortedNetworkIds.reduce((acc, currNetworkId) => {
+      return [...acc, {
+        networkId: currNetworkId,
+        safes: (safeDetails || []).filter(({networkId}) => networkId === currNetworkId)
+      }];
+    }, []);
+
     return (
       <StepDetails>
         <h3 className="title">Choose Account</h3>
         <p className="subtitle">
           Select the safe with which you would like to continue
         </p>
-        {safeDetails &&
-          safeDetails.map(
-            (
-              { safe, name, balance, encryptionKeyData, organisationType, networkId },
-              idx
-            ) => (
+        {sortedGroups.length && sortedGroups.map(({safes}) => {
+          return safes.map(
+            ({ safe, name, encryptionKeyData, organisationType, networkId }) => (
               <Safe
-                key={`${safe}-${idx}`}
+                key={`${safe}`}
                 onClick={() =>
                   encryptionKeyData
                     ? handleSelectSafe(
-                        name,
-                        safe,
-                        encryptionKeyData,
-                        createdBy,
-                        organisationType,
-                        networkId
-                      )
+                      name,
+                      safe,
+                      encryptionKeyData,
+                      createdBy,
+                      organisationType,
+                      networkId
+                    )
                     : handleImportSelectedSafe(safe)
                 }
               >
@@ -948,7 +956,12 @@ const Login = () => {
                     </div>
                     <div className="info">
                       <div className="desc">Name</div>
-                      <div className="val">{name}</div>
+                      <InfoContainer>
+                        <div className="val">{name}</div>
+                        <NetworkLabelContainer>
+                          <NetworkLabel chainId={networkId}/>
+                        </NetworkLabelContainer>
+                      </InfoContainer>
                     </div>
                   </div>
                 </div>
@@ -960,7 +973,7 @@ const Login = () => {
                     </div>
                     <div className="info">
                       <div className="desc">Address</div>
-                      <div className="val">{safe} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
+                      <div className="val">{safe}</div>
                     </div>
                   </div>
                 </div>
@@ -972,7 +985,8 @@ const Login = () => {
                 </div>
               </Safe>
             )
-          )}
+          )
+        })}
         {errorInLogin && <ErrorText>{errorInLogin}</ErrorText>}
         <RetryText onClick={handleRefetch}>Safe not loaded?</RetryText>
       </StepDetails>

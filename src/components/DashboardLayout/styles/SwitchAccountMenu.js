@@ -36,12 +36,12 @@ export default styled(Menu)`
     &:focus {
       outline: none;
     }
-    cursor: pointer;
     width: 100%;
 
     .safe-option {
       border-bottom: 0.1rem solid #dddcdc;
       padding: 2rem 3rem;
+      cursor: pointer;
 
       .name {
         font-size: 1.4rem;
@@ -100,4 +100,12 @@ export default styled(Menu)`
       border-bottom: 0;
     }
   }
+`;
+
+export const SwitchSafeNetworkLabel = styled.div`
+  font-size: 1.4rem;
+  font-weight: 700;
+  padding: 1rem 3rem;
+  background-color: #e7eefe;
+  color: #1452F5;
 `;
