@@ -4,7 +4,7 @@ import { FixedSizeList } from "react-window";
 import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import styled from "styled-components/macro";
 import { Input } from "components/common/Form";
-import { ETH_ADDRESS } from "./constants";
+import { GAS_TOKEN_ADDRESS } from "./constants";
 
 export const PAY_TOKEN_MODAL = "pay-token-modal";
 export const RECEIVE_TOKEN_MODAL = "receive-token-modal";
@@ -113,7 +113,7 @@ function TokenSelectModalComponent(props: Props) {
   const renderRow = useCallback(
     ({ index, style }) => {
       const { address, name, symbol, logoURI } = filteredTokensList[index];
-      const checkedAddress = (address || ETH_ADDRESS).toLowerCase();
+      const checkedAddress = (address || GAS_TOKEN_ADDRESS).toLowerCase();
 
       const tokenBalance = safeTokensByAddress[checkedAddress]?.balance;
       const usdBalance = safeTokensByAddress[checkedAddress]?.usd;

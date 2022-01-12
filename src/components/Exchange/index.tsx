@@ -30,7 +30,7 @@ import { constructLabel } from "utils/tokens";
 import { useExchange } from "hooks/useExchange";
 import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { ExchangeDetails } from "./ExchangeDetails";
-import { DEFAULT_SLIPPAGE, ETH_ADDRESS } from "./constants";
+import {DEFAULT_SLIPPAGE, GAS_TOKEN_ADDRESS, MATIC_TOKEN_ADDRESS} from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
 import { InfoCard } from "../People/styles";
@@ -85,8 +85,15 @@ const getTokensByAddress = (tokenList: FixMe) =>
     if (current.symbol === "USD") {
       return acc;
     }
-    const address = (current.address || ETH_ADDRESS).toLowerCase();
-    acc[address] = current;
+    let address = (current.address || GAS_TOKEN_ADDRESS).toLowerCase();
+    if (address === MATIC_TOKEN_ADDRESS) {
+      address = GAS_TOKEN_ADDRESS;
+    }
+    acc[address] = {
+      ...current,
+      address
+    };
+
     return acc;
   }, {});
 
@@ -110,7 +117,7 @@ export default function Exchange() {
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
 
-  const [payToken, setPayToken] = useState<string>(ETH_ADDRESS);
+  const [payToken, setPayToken] = useState<string>(GAS_TOKEN_ADDRESS);
   const [receiveToken, setReceiveToken] = useState<string>(DAI_ADDRESS.toLowerCase());
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE);
   const [tokensByAddress, setTokensByAddress] = useState<FixMe>(
@@ -223,7 +230,7 @@ export default function Exchange() {
   };
 
   const payTokenSelect = (tokenAddress: string) => {
-    const checkedTokenAddress = tokenAddress || ETH_ADDRESS;
+    const checkedTokenAddress = tokenAddress || GAS_TOKEN_ADDRESS;
 
     if (checkedTokenAddress === receiveToken) {
       setReceiveToken(payToken);
@@ -232,7 +239,7 @@ export default function Exchange() {
     setPayToken(checkedTokenAddress);
   };
   const receiveTokenSelect = (tokenAddress: string) => {
-    const checkedTokenAddress = tokenAddress || ETH_ADDRESS;
+    const checkedTokenAddress = tokenAddress || GAS_TOKEN_ADDRESS;
 
     if (checkedTokenAddress === payToken) {
       setPayToken(receiveToken);
