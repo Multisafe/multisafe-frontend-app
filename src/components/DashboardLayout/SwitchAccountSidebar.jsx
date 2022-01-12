@@ -26,7 +26,8 @@ import ControlledInput from "components/common/Input";
 import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
-import {NETWORK_NAME_BY_ID} from "constants/networks";
+import {CHAIN_IDS, NETWORK_NAME_BY_ID, NETWORK_NAMES} from "constants/networks";
+import {SwitchSafeNetworkLabel} from "components/DashboardLayout/styles/SwitchAccountMenu";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -134,32 +135,47 @@ function SwitchAccountSidebar() {
     if (!safesToShow || !safesToShow.length)
       return <div className="no-safes">No safes found</div>;
 
-    return safesToShow.map(
-      (
-        { safeAddress: safe, name, encryptionKeyData, organisationType, networkId },
-        idx
-      ) => (
-        <div
-          key={`${safe}-${idx}`}
-          className="safe-option"
-          style={{
-            backgroundColor:
-              safe === safeAddress ? "rgba(221, 220, 220, 0.2)" : "#fff",
-          }}
-          onClick={() =>
-            handleSwitchSafe({
-              safe,
-              encryptionKeyData,
-              organisationType,
-              networkId
-            })
-          }
-        >
-          <div className="name">{name} <span className="network">({NETWORK_NAME_BY_ID[networkId]})</span></div>
-          <div className="address">{safe}</div>
+    const supportedNetworkIds = [
+      CHAIN_IDS[NETWORK_NAMES.ETHEREUM],
+      CHAIN_IDS[NETWORK_NAMES.POLYGON],
+      CHAIN_IDS[NETWORK_NAMES.RINKEBY],
+    ];
+
+    const safesByNetwork = supportedNetworkIds.reduce((acc, currNetworkId) => {
+      acc[currNetworkId] = safesToShow.filter(({networkId}) => networkId === currNetworkId)
+      return acc;
+    }, {});
+
+    return Object.entries(safesByNetwork).map(([networkId, safes]) => {
+      return safes?.length ? (
+        <div>
+          <SwitchSafeNetworkLabel>{NETWORK_NAME_BY_ID[networkId]}</SwitchSafeNetworkLabel>
+          {safes.map(
+            ({ safeAddress: safe, name, encryptionKeyData, organisationType }) => (
+              <div
+                key={`${safe}`}
+                className="safe-option"
+                style={{
+                  backgroundColor:
+                    safe === safeAddress ? "rgba(221, 220, 220, 0.2)" : "#fff",
+                }}
+                onClick={() =>
+                  handleSwitchSafe({
+                    safe,
+                    encryptionKeyData,
+                    organisationType,
+                    networkId
+                  })
+                }
+              >
+                <div className="name">{name}</div>
+                <div className="address">{safe}</div>
+              </div>
+            )
+          )}
         </div>
-      )
-    );
+      ) : null;
+    })
   };
 
   const handleStateChange = (state) => {
