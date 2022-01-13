@@ -27,7 +27,7 @@ import {
 } from "store/multisig/actions";
 import { Information } from "components/Register/styles";
 import { useAddresses } from "hooks/useAddresses";
-import {GAS_TOKEN_SYMBOL_BY_ID} from "constants/networks";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 export const MODAL_NAME = "approve-tx-modal";
 
@@ -231,8 +231,8 @@ function ApproveTxModal(props) {
             </div>
 
             <Information className="my-5">
-              Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in this wallet to fund this
-              confirmation.
+              Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in
+              this wallet to fund this confirmation.
             </Information>
           </React.Fragment>
         )}

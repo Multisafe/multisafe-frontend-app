@@ -1,9 +1,9 @@
-import { call, put, delay, race, take } from "redux-saga/effects";
+import { call, put, delay, race, take, cancel } from "redux-saga/effects";
 import { BigNumber } from "ethers";
 import Big from "big.js";
 
 import { getGasPriceSuccess, getGasPriceError } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import { gasPriceEndpoint } from "constants/endpoints";
 import { ONE_GWEI } from "constants/index";
 import { GAS_MODES } from "./constants";
@@ -29,6 +29,14 @@ export function* getGasPrices() {
   };
 
   while (true) {
+    const token = localStorage.getItem("token");
+
+    // if (!token) {
+    //   console.log('no token')
+    //   yield delay(5000);
+    //   continue;
+    // }
+
     try {
       const result = yield call(request, requestURL, options);
       const { gasPrices } = result;

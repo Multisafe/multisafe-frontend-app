@@ -51,10 +51,13 @@ export const NetworkSelect = () => {
           selected={chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
         />
       ),
-    }
+    },
   ];
 
-  const options = process.env.NODE_ENV === "production" ? mainnetOptions : [...mainnetOptions, ...testnetOptions];
+  const options =
+    process.env.NODE_ENV === "production"
+      ? mainnetOptions
+      : [...mainnetOptions, ...testnetOptions];
 
   return (
     <StyledSelect

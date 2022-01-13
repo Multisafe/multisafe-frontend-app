@@ -17,7 +17,7 @@ import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { getBlockExplorerLink } from "components/common/Web3Utils";
 import { getDecryptedOwnerName } from "store/invitation/utils";
-import {GAS_TOKEN_SYMBOL_BY_ID} from "constants/networks";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 const joinArray = (arr) => {
   return arr && arr.join("\n");

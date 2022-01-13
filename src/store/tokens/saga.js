@@ -9,7 +9,7 @@ import {
   getTokenListSuccess,
   getTokenListError,
 } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import {
   getTokensEndpoint,
   getTokenListEndpoint,
@@ -52,12 +52,7 @@ function* fetchTokens(action) {
       yield put(getTokensError(result.log));
     } else {
       yield put(
-        getTokensSuccess(
-          result.tokens,
-          result.prices,
-          result.icons,
-          result.log,
-        )
+        getTokensSuccess(result.tokens, result.prices, result.icons, result.log)
       );
     }
   } catch (err) {

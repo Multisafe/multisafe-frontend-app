@@ -4,7 +4,6 @@ export default styled.div`
   background-color: #f7f7f7;
   align-items: center;
   position: relative;
-  
 
   .nav-icon {
     display: none;
@@ -23,14 +22,14 @@ export default styled.div`
   @media (max-width: 978px) {
     display: flex;
     height: auto;
-    
+
     .nav-icon {
       display: inline;
       padding: 0 1em;
       cursor: pointer;
       margin-left: 1rem;
     }
-    
+
     .nav-container {
       padding: 1rem 0;
       gap: 1rem;

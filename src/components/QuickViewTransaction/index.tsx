@@ -15,8 +15,8 @@ import { TxDetails } from "store/multisig/types";
 import { TransactionNote } from "components/Transactions/TransactionNote";
 import TokenImg from "components/common/TokenImg";
 import { UpdateLabels } from "./UpdateLabels";
-import {GAS_TOKEN_SYMBOL_BY_ID} from '../../constants/networks';
-import {useActiveWeb3React} from '../../hooks';
+import { GAS_TOKEN_SYMBOL_BY_ID } from "../../constants/networks";
+import { useActiveWeb3React } from "../../hooks";
 
 type Props = {
   isOpen: boolean;
@@ -110,7 +110,7 @@ export const QuickViewTransaction = ({
     tokenCurrencies,
   } = txDetails;
 
-  const {chainId} = useActiveWeb3React();
+  const { chainId } = useActiveWeb3React();
 
   const renderOptionalCards = () => {
     switch (transactionMode) {
@@ -210,7 +210,8 @@ export const QuickViewTransaction = ({
           <DetailsItem>
             <DetailsTitle>Transaction Fee</DetailsTitle>
             <DetailsContent>
-              ${formatNumber(transactionFees, 5)} {GAS_TOKEN_SYMBOL_BY_ID[chainId]}
+              ${formatNumber(transactionFees, 5)}{" "}
+              {GAS_TOKEN_SYMBOL_BY_ID[chainId]}
             </DetailsContent>
           </DetailsItem>
         ) : null}

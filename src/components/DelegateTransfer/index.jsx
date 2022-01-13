@@ -33,7 +33,7 @@ import {
   StepInfo,
 } from "components/Login/styles";
 import { useAddresses } from "hooks/useAddresses";
-import {BLOCK_EXPLORER_BY_ID} from "constants/networks";
+import { BLOCK_EXPLORER_BY_ID } from "constants/networks";
 
 const STEPS = {
   ZERO: 0,
@@ -456,7 +456,9 @@ const DelegateTransfer = () => {
         <h2 className="text-center">Transaction Submitted</h2>
         <div className="mt-2 mb-5 text-center">
           {txHash && (
-            <TransactionUrl hash={txHash}>View on {BLOCK_EXPLORER_BY_ID[chainId]}</TransactionUrl>
+            <TransactionUrl hash={txHash}>
+              View on {BLOCK_EXPLORER_BY_ID[chainId]}
+            </TransactionUrl>
           )}
         </div>
       </InnerCard>

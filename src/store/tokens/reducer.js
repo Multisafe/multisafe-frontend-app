@@ -46,7 +46,6 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_TOKENS_SUCCESS:
-
         const allTokenDetails =
           action.tokens &&
           action.tokens

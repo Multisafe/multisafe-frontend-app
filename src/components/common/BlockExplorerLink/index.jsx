@@ -6,7 +6,7 @@ import LinkIcon from "assets/icons/dashboard/link-icon.svg";
 import Img from "../Img";
 import { getBlockExplorerLink } from "../Web3Utils";
 import { useActiveWeb3React } from "hooks";
-import {BLOCK_EXPLORER_BY_ID} from "constants/networks";
+import { BLOCK_EXPLORER_BY_ID } from "constants/networks";
 
 export default function BlockExplorerLink({
   id,

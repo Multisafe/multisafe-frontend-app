@@ -1,7 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects";
 import { GET_TEAMS } from "./action-types";
 import { getTeamsSuccess, getTeamsError } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import { getAllDepartmentsEndpoint } from "constants/endpoints";
 
 export function* getTeams(action) {

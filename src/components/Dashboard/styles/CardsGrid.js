@@ -6,18 +6,18 @@ export default styled.div`
   grid-template-columns: 100%;
   grid-template-rows: auto;
   grid-template-areas:
-      "overview"
-      "expenses"
-      "recent-tx"
-      "assets";
+    "overview"
+    "expenses"
+    "recent-tx"
+    "assets";
 
   @media (min-width: 978px) {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
     grid-gap: 3rem;
     grid-template-areas:
-    "overview overview"
-    "expenses recent-tx"
-    "expenses assets";
+      "overview overview"
+      "expenses recent-tx"
+      "expenses assets";
   }
 `;

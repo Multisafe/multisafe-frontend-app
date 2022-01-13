@@ -58,7 +58,7 @@ export default styled.div`
       text-overflow: ellipsis;
     }
   }
-  
+
   .network {
     color: #aaaaaa;
     font-weight: normal;
@@ -90,5 +90,5 @@ export const InfoContainer = styled.div`
 
 export const NetworkLabelContainer = styled.div`
   padding-left: 1rem;
-  border-left: 0.1rem solid #ccc;  
+  border-left: 0.1rem solid #ccc;
 `;

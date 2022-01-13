@@ -178,8 +178,8 @@ function RecentTxCard() {
       TRANSACTION_MODES.QUICK_TRANSFER,
       TRANSACTION_MODES.SPENDING_LIMITS,
       TRANSACTION_MODES.APPROVE_AND_SWAP,
-      TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT
-    ].some(mode => mode === transactionMode);
+      TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
+    ].some((mode) => mode === transactionMode);
 
     return (
       <div className="tx-amounts">
@@ -188,13 +188,13 @@ function RecentTxCard() {
             <div className="top">
               {transactionMode === TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT
                 ? tokenCurrencies &&
-                tokenCurrencies.length > 0 && (
-                  <div className="amount">
-                    {[...new Set(tokenCurrencies)].map((token) => (
-                      <TokenImg token={token} key={token} />
-                    ))}
-                  </div>
-                )
+                  tokenCurrencies.length > 0 && (
+                    <div className="amount">
+                      {[...new Set(tokenCurrencies)].map((token) => (
+                        <TokenImg token={token} key={token} />
+                      ))}
+                    </div>
+                  )
                 : `${formatNumber(tokenValue, 5)} ${tokenCurrency}`}
             </div>
             <div className="bottom">
