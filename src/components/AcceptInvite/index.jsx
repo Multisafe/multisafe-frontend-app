@@ -108,7 +108,7 @@ const AcceptInvite = () => {
   useEffect(() => {
     if (step === STEPS.ONE && account) {
       if (sign) {
-        const msgHash = ethers.utils.utils.hashMessage(MESSAGE_TO_SIGN);
+        const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
         const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
         if (recoveredAddress === account) {
           setHasAlreadySigned(true);
