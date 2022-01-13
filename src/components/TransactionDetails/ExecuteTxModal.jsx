@@ -24,6 +24,7 @@ import { Information } from "components/Register/styles";
 import LinkIcon from "assets/icons/dashboard/link-icon.svg";
 import Img from "components/common/Img";
 import { useAddresses } from "hooks/useAddresses";
+import {GAS_TOKEN_SYMBOL_BY_ID} from "constants/networks";
 
 export const MODAL_NAME = "execute-tx-modal";
 
@@ -31,7 +32,7 @@ function ExecuteTxModal(props) {
   const { MULTISEND_ADDRESS } = useAddresses();
 
   const { show, handleHide } = props;
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [isOnChainRejection, setIsOnChainRejection] = useState();
 
   const {
@@ -208,7 +209,7 @@ function ExecuteTxModal(props) {
         )}
 
         <Information className="mb-5">
-          Make sure you have sufficient Ether in this wallet to fund this
+          Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in this wallet to fund this
           confirmation.
         </Information>
 
