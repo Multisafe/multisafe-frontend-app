@@ -26,7 +26,7 @@ import {
   submitMultisigTransaction,
 } from "store/multisig/actions";
 import { Information } from "components/Register/styles";
-import {GAS_TOKEN_SYMBOL_BY_ID} from "constants/networks";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 export const MODAL_NAME = "reject-tx-modal";
 
@@ -225,8 +225,8 @@ function RejectTxModal(props) {
             </div>
 
             <Information className="my-5">
-              Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in this wallet to fund this
-              confirmation.
+              Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in
+              this wallet to fund this confirmation.
             </Information>
           </React.Fragment>
         )}

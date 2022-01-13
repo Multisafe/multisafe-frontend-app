@@ -1,7 +1,7 @@
 import { call, put, fork, takeLatest } from "redux-saga/effects";
 import { GET_ADMIN_STATS } from "./action-types";
 import { getAdminStatsSuccess, getAdminStatsError } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import { getAdminStatsEndpoint } from "constants/endpoints";
 
 function* fetchAdminStats(action) {

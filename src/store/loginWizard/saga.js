@@ -15,14 +15,14 @@ import {
   getSafeOwnersSuccess,
   getSafeOwnersError,
 } from "./actions";
-import {defaultRequest, request} from "utils/request";
+import { defaultRequest, request } from "utils/request";
 import {
   getSafesEndpoint,
   fetchSafesEndpoint,
   getParcelSafesEndpoint,
   getSafeOwnersEndpoint,
 } from "constants/endpoints";
-import {CHAIN_IDS, NETWORK_NAMES} from "constants/networks";
+import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 
 export function* getSafes(action) {
   const requestURL = `${getSafesEndpoint}?owner=${action.owner}&status=${action.status}`;
@@ -45,7 +45,9 @@ export function* getSafes(action) {
 
 const filterSafes = (safes) => {
   return process.env.NODE_ENV === "production"
-    ? safes.filter(({networkId}) => networkId !== CHAIN_IDS[NETWORK_NAMES.RINKEBY])
+    ? safes.filter(
+        ({ networkId }) => networkId !== CHAIN_IDS[NETWORK_NAMES.RINKEBY]
+      )
     : safes;
 };
 
@@ -61,7 +63,9 @@ export function* getParcelSafes(action) {
       // Error in payload
       yield put(getSafesError(result.log));
     } else {
-      yield put(getSafesSuccess(filterSafes(result.safes), result.owner, result.log));
+      yield put(
+        getSafesSuccess(filterSafes(result.safes), result.owner, result.log)
+      );
     }
   } catch (err) {
     yield put(getSafesError(err));

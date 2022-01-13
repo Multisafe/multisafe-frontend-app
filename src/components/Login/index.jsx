@@ -104,9 +104,12 @@ import {
 } from "./styles";
 import ErrorText from "components/common/ErrorText";
 import { routeTemplates } from "constants/routes/templates";
-import {InfoContainer, NetworkLabelContainer} from "components/Login/styles/Safe";
-import {NetworkLabel} from "components/NetworkSelect/NetworkLabel";
-import {SUPPORTED_NETWORK_IDS} from "constants/networks";
+import {
+  InfoContainer,
+  NetworkLabelContainer,
+} from "components/Login/styles/Safe";
+import { NetworkLabel } from "components/NetworkSelect/NetworkLabel";
+import { SUPPORTED_NETWORK_IDS } from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -145,7 +148,8 @@ const Login = () => {
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
-  const { active, account, library, connector, chainId, setChainId } = useActiveWeb3React();
+  const { active, account, library, connector, chainId, setChainId } =
+    useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -266,9 +270,7 @@ const Login = () => {
   useEffect(() => {
     if (account && sign) {
       const password = getPassword(sign);
-      dispatch(
-        getVerificationStatus({ password, owner: account })
-      );
+      dispatch(getVerificationStatus({ password, owner: account }));
     }
   }, [dispatch, sign, account]);
 
@@ -919,10 +921,15 @@ const Login = () => {
     const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
 
     const sortedGroups = sortedNetworkIds.reduce((acc, currNetworkId) => {
-      return [...acc, {
-        networkId: currNetworkId,
-        safes: (safeDetails || []).filter(({networkId}) => networkId === currNetworkId)
-      }];
+      return [
+        ...acc,
+        {
+          networkId: currNetworkId,
+          safes: (safeDetails || []).filter(
+            ({ networkId }) => networkId === currNetworkId
+          ),
+        },
+      ];
     }, []);
 
     return (
@@ -931,62 +938,69 @@ const Login = () => {
         <p className="subtitle">
           Select the safe with which you would like to continue
         </p>
-        {sortedGroups.length && sortedGroups.map(({safes}) => {
-          return safes.map(
-            ({ safe, name, encryptionKeyData, organisationType, networkId }) => (
-              <Safe
-                key={`${safe}`}
-                onClick={() =>
-                  encryptionKeyData
-                    ? handleSelectSafe(
-                      name,
-                      safe,
-                      encryptionKeyData,
-                      createdBy,
-                      organisationType,
-                      networkId
-                    )
-                    : handleImportSelectedSafe(safe)
-                }
-              >
-                <div className="top">
-                  <div className="details">
-                    <div className="icon">
-                      <img src={TeamPng} alt="user" width="50" />
-                    </div>
-                    <div className="info">
-                      <div className="desc">Name</div>
-                      <InfoContainer>
-                        <div className="val">{name}</div>
-                        <NetworkLabelContainer>
-                          <NetworkLabel chainId={networkId}/>
-                        </NetworkLabelContainer>
-                      </InfoContainer>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bottom">
-                  <div className="details">
-                    <div className="icon">
-                      <FontAwesomeIcon icon={faLock} color="#aaa" />
-                    </div>
-                    <div className="info">
-                      <div className="desc">Address</div>
-                      <div className="val">{safe}</div>
+        {sortedGroups.length &&
+          sortedGroups.map(({ safes }) => {
+            return safes.map(
+              ({
+                safe,
+                name,
+                encryptionKeyData,
+                organisationType,
+                networkId,
+              }) => (
+                <Safe
+                  key={`${safe}`}
+                  onClick={() =>
+                    encryptionKeyData
+                      ? handleSelectSafe(
+                          name,
+                          safe,
+                          encryptionKeyData,
+                          createdBy,
+                          organisationType,
+                          networkId
+                        )
+                      : handleImportSelectedSafe(safe)
+                  }
+                >
+                  <div className="top">
+                    <div className="details">
+                      <div className="icon">
+                        <img src={TeamPng} alt="user" width="50" />
+                      </div>
+                      <div className="info">
+                        <div className="desc">Name</div>
+                        <InfoContainer>
+                          <div className="val">{name}</div>
+                          <NetworkLabelContainer>
+                            <NetworkLabel chainId={networkId} />
+                          </NetworkLabelContainer>
+                        </InfoContainer>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="select-safe">
-                  <Button iconOnly className="px-0">
-                    <Img src={RightArrowIcon} alt="right" />
-                  </Button>
-                </div>
-              </Safe>
-            )
-          )
-        })}
+                  <div className="bottom">
+                    <div className="details">
+                      <div className="icon">
+                        <FontAwesomeIcon icon={faLock} color="#aaa" />
+                      </div>
+                      <div className="info">
+                        <div className="desc">Address</div>
+                        <div className="val">{safe}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="select-safe">
+                    <Button iconOnly className="px-0">
+                      <Img src={RightArrowIcon} alt="right" />
+                    </Button>
+                  </div>
+                </Safe>
+              )
+            );
+          })}
         {errorInLogin && <ErrorText>{errorInLogin}</ErrorText>}
         <RetryText onClick={handleRefetch}>Safe not loaded?</RetryText>
       </StepDetails>

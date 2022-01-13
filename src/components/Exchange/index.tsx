@@ -30,7 +30,11 @@ import { constructLabel } from "utils/tokens";
 import { useExchange } from "hooks/useExchange";
 import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { ExchangeDetails } from "./ExchangeDetails";
-import {DEFAULT_SLIPPAGE, GAS_TOKEN_ADDRESS, MATIC_TOKEN_ADDRESS} from "./constants";
+import {
+  DEFAULT_SLIPPAGE,
+  GAS_TOKEN_ADDRESS,
+  MATIC_TOKEN_ADDRESS,
+} from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
 import { InfoCard } from "../People/styles";
@@ -65,7 +69,7 @@ import {
 } from "./styles";
 import { ExchangeAlert } from "./ExchangeAlert";
 import { useActiveWeb3React } from "hooks";
-import {useAddresses} from 'hooks/useAddresses';
+import { useAddresses } from "hooks/useAddresses";
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
@@ -91,7 +95,7 @@ const getTokensByAddress = (tokenList: FixMe) =>
     }
     acc[address] = {
       ...current,
-      address
+      address,
     };
 
     return acc;
@@ -118,7 +122,9 @@ export default function Exchange() {
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const [payToken, setPayToken] = useState<string>(GAS_TOKEN_ADDRESS);
-  const [receiveToken, setReceiveToken] = useState<string>(DAI_ADDRESS.toLowerCase());
+  const [receiveToken, setReceiveToken] = useState<string>(
+    DAI_ADDRESS.toLowerCase()
+  );
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE);
   const [tokensByAddress, setTokensByAddress] = useState<FixMe>(
     getTokensByAddress([])

@@ -6,7 +6,7 @@ import {
   getPeopleByTeamSuccess,
   getPeopleByTeamError,
 } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import {
   getAllPeopleEndpoint,
   getPeopleByTeamIdEndpoint,

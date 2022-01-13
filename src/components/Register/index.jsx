@@ -101,7 +101,7 @@ import {
 import ErrorText from "components/common/ErrorText";
 import WelcomeImg from "assets/images/register/welcome.svg";
 import { useAddresses } from "hooks/useAddresses";
-import {BLOCK_EXPLORER_BY_ID} from "constants/networks";
+import { BLOCK_EXPLORER_BY_ID } from "constants/networks";
 
 const registerKey = "register";
 const registerWizardKey = "registerWizard";

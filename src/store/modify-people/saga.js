@@ -8,7 +8,7 @@ import {
   deletePeopleSuccess,
   deletePeopleError,
 } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import { editPeopleEndpoint, deletePeopleEndpoint } from "constants/endpoints";
 import { getAllPeople } from "store/view-people/actions";
 import { MODAL_NAME as DELETE_PEOPLE_MODAL } from "components/People/DeletePeopleModal";

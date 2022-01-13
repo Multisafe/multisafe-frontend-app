@@ -12,7 +12,10 @@ import ManageOwners from "components/ManageOwners";
 import Profile from "components/Profile";
 import { getSafeInfo } from "store/global/actions";
 import { useActiveWeb3React } from "hooks";
-import {FEATURE_NAMES, useFeatureManagement} from "hooks/useFeatureManagement";
+import {
+  FEATURE_NAMES,
+  useFeatureManagement,
+} from "hooks/useFeatureManagement";
 
 const TABS = {
   OWNERS: "1",
@@ -82,7 +85,7 @@ const navStyles = `
 export default function Settings() {
   const [activeTab, setActiveTab] = useState(TABS.OWNERS);
   const { account, chainId } = useActiveWeb3React();
-  const {isFeatureEnabled} = useFeatureManagement();
+  const { isFeatureEnabled } = useFeatureManagement();
 
   const dispatch = useDispatch();
   const params = useParams();
@@ -113,7 +116,9 @@ export default function Settings() {
         {isFeatureEnabled(FEATURE_NAMES.SPENDING_LIMIT) ? (
           <NavItem>
             <NavLink
-              className={`${activeTab === TABS.SPENDING_LIMITS ? "active" : ""}`}
+              className={`${
+                activeTab === TABS.SPENDING_LIMITS ? "active" : ""
+              }`}
               onClick={() => toggleTab(TABS.SPENDING_LIMITS)}
             >
               <Img

@@ -8,7 +8,7 @@ import {
   updateOwnerNameSuccess,
   updateOwnerNameError,
 } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import {
   GNOSIS_SAFE_TRANSACTION_ENDPOINTS,
   updateOwnerNameEndpoint,
@@ -18,9 +18,7 @@ import { getInvitations } from "store/invitation/actions";
 
 function* getTransactionNonce(action) {
   const networkId = localStorage.getItem("NETWORK_ID");
-  const requestURL = `${GNOSIS_SAFE_TRANSACTION_ENDPOINTS[networkId]}${
-    action.safeAddress
-  }/transactions/?has_confirmations=True`;
+  const requestURL = `${GNOSIS_SAFE_TRANSACTION_ENDPOINTS[networkId]}${action.safeAddress}/transactions/?has_confirmations=True`;
 
   const options = {
     method: "GET",

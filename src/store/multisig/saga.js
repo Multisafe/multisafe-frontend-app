@@ -32,7 +32,7 @@ import {
   updateTransactionLabelsData,
   updateTransactionNoteData,
 } from "./actions";
-import {request} from "utils/request";
+import { request } from "utils/request";
 import {
   createMultisigTransactionEndpoint,
   getMultisigTransactionEndpoint,
@@ -228,12 +228,7 @@ function* createOrUpdateLabel(action) {
     if (result.flag !== 200) {
       action.onError();
     } else {
-      yield put(
-        getLabelsAction(
-          action.safeAddress,
-          action.userAddress
-        )
-      );
+      yield put(getLabelsAction(action.safeAddress, action.userAddress));
       action.onSuccess(result.data);
     }
   } catch (err) {

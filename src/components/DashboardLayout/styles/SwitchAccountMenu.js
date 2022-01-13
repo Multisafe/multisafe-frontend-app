@@ -71,7 +71,7 @@ export default styled(Menu)`
       }
     }
   }
-  
+
   .network {
     color: #aaaaaa;
     font-weight: normal;
@@ -107,5 +107,5 @@ export const SwitchSafeNetworkLabel = styled.div`
   font-weight: 700;
   padding: 1rem 3rem;
   background-color: #e7eefe;
-  color: #1452F5;
+  color: #1452f5;
 `;

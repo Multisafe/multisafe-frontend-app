@@ -26,8 +26,8 @@ import ControlledInput from "components/common/Input";
 import { getPassword } from "utils/encryption";
 
 import { SwitchAccountMenu } from "./styles";
-import {NETWORK_NAME_BY_ID, SUPPORTED_NETWORK_IDS} from "constants/networks";
-import {SwitchSafeNetworkLabel} from "components/DashboardLayout/styles/SwitchAccountMenu";
+import { NETWORK_NAME_BY_ID, SUPPORTED_NETWORK_IDS } from "constants/networks";
+import { SwitchSafeNetworkLabel } from "components/DashboardLayout/styles/SwitchAccountMenu";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -106,7 +106,7 @@ function SwitchAccountSidebar() {
     safe,
     encryptionKeyData,
     organisationType,
-    networkId
+    networkId,
   }) => {
     const encryptionKey = await getEncryptionKey(
       encryptionKeyData,
@@ -138,18 +138,30 @@ function SwitchAccountSidebar() {
     const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
 
     const sortedGroups = sortedNetworkIds.reduce((acc, currNetworkId) => {
-      return [...acc, {
-        networkId: currNetworkId,
-        safes: safesToShow.filter(({networkId}) => networkId === currNetworkId)
-      }];
+      return [
+        ...acc,
+        {
+          networkId: currNetworkId,
+          safes: safesToShow.filter(
+            ({ networkId }) => networkId === currNetworkId
+          ),
+        },
+      ];
     }, []);
 
-    return sortedGroups.map(({networkId, safes}) => {
+    return sortedGroups.map(({ networkId, safes }) => {
       return safes?.length ? (
         <div>
-          <SwitchSafeNetworkLabel>{NETWORK_NAME_BY_ID[networkId]}</SwitchSafeNetworkLabel>
+          <SwitchSafeNetworkLabel>
+            {NETWORK_NAME_BY_ID[networkId]}
+          </SwitchSafeNetworkLabel>
           {safes.map(
-            ({ safeAddress: safe, name, encryptionKeyData, organisationType }) => (
+            ({
+              safeAddress: safe,
+              name,
+              encryptionKeyData,
+              organisationType,
+            }) => (
               <div
                 key={`${safe}`}
                 className="safe-option"
@@ -162,7 +174,7 @@ function SwitchAccountSidebar() {
                     safe,
                     encryptionKeyData,
                     organisationType,
-                    networkId
+                    networkId,
                   })
                 }
               >
@@ -173,7 +185,7 @@ function SwitchAccountSidebar() {
           )}
         </div>
       ) : null;
-    })
+    });
   };
 
   const handleStateChange = (state) => {
