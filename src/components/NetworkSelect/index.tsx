@@ -1,25 +1,24 @@
 import React from "react";
 import { useActiveWeb3React } from "hooks";
-import { useDispatch } from "react-redux";
 import Select from "react-select";
 import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 import { inputStyles } from "components/common/Form";
 import { NetworkLabel } from "./NetworkLabel";
 import styled from "styled-components/macro";
-import { logoutUser } from "store/logout/actions";
 
 const StyledSelect = styled(Select)``;
 
 export const NetworkSelect = () => {
-  const dispatch = useDispatch();
   const { onboard, chainId, setChainId } = useActiveWeb3React();
 
   const onChange = ({ value }: FixMe) => {
     if (onboard) {
       onboard.walletReset();
     }
-    dispatch(logoutUser());
     setChainId(value);
+
+    // eslint-disable-next-line
+    location.reload();
   };
 
   const mainnetOptions = [
@@ -73,5 +72,25 @@ export const NetworkSelect = () => {
       isSearchable={false}
       isClearable={false}
     />
+  );
+};
+
+const StaticContainer = styled.div`
+  height: 4rem;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 0.4rem;
+`;
+
+export const StaticNetworkSelect = () => {
+  const { chainId } = useActiveWeb3React();
+
+  return (
+    <StaticContainer>
+      <NetworkLabel chainId={chainId} />
+    </StaticContainer>
   );
 };

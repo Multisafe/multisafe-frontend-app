@@ -925,8 +925,8 @@ const Login = () => {
         ...acc,
         {
           networkId: currNetworkId,
-          safes: (safeDetails || []).filter(
-            ({ networkId }) => networkId === currNetworkId
+          safes: (safeDetails || []).filter(({ networkId }) =>
+            networkId ? networkId === currNetworkId : true
           ),
         },
       ];
@@ -946,7 +946,7 @@ const Login = () => {
                 name,
                 encryptionKeyData,
                 organisationType,
-                networkId,
+                networkId = chainId,
               }) => (
                 <Safe
                   key={`${safe}`}
