@@ -1,64 +1,54 @@
-import React, { useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { show } from "redux-modal";
-
-import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import Button from "components/common/Button";
-import multisigReducer from "store/multisig/reducer";
-import multisigSaga from "store/multisig/saga";
+import ErrorText from "components/common/ErrorText";
+import Loading from "components/common/Loading";
+import { StepCircle, Stepper } from "components/common/Stepper";
+import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/TransactionSubmittedModal";
+import { InfoCard } from "components/People/styles";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
+import React, { useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { show } from "redux-modal";
+import {
+  makeSelectIsMultiOwner, makeSelectIsReadOnly, makeSelectOrganisationType, makeSelectOwnerSafeAddress, makeSelectSafeOwners, makeSelectThreshold
+} from "store/global/selectors";
+import { getDecryptedOwnerName } from "store/invitation/utils";
+import { getMetaTxEnabled } from "store/metatx/actions";
+import metaTxReducer from "store/metatx/reducer";
+import metaTxSaga from "store/metatx/saga";
 import {
   clearMultisigTransactionDetails,
   clearMultisigTransactionHash,
-  getMultisigTransactionById,
+  getMultisigTransactionById
 } from "store/multisig/actions";
+import multisigReducer from "store/multisig/reducer";
+import multisigSaga from "store/multisig/saga";
 import {
-  makeSelectFetching,
-  makeSelectMultisigTransactionHash,
-  makeSelectUpdating,
-  makeSelectMultisigTransactionDetails,
-  makeSelectMultisigExecutionAllowed,
-  makeSelectTransactionId as makeSelectMultisigTransactionId,
+  makeSelectFetching, makeSelectMultisigExecutionAllowed, makeSelectMultisigTransactionDetails, makeSelectMultisigTransactionHash, makeSelectTransactionId as makeSelectMultisigTransactionId, makeSelectUpdating
 } from "store/multisig/selectors";
 import safeReducer from "store/safe/reducer";
 import safeSaga from "store/safe/saga";
-import metaTxReducer from "store/metatx/reducer";
-import metaTxSaga from "store/metatx/saga";
-import { getMetaTxEnabled } from "store/metatx/actions";
+import { getDecryptedDetails } from "utils/encryption";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
-import {
-  makeSelectOwnerSafeAddress,
-  makeSelectThreshold,
-  makeSelectSafeOwners,
-  makeSelectOrganisationType,
-  makeSelectIsReadOnly,
-  makeSelectIsMultiOwner,
-} from "store/global/selectors";
-import Loading from "components/common/Loading";
-import { Stepper, StepCircle } from "components/common/Stepper";
-import { InfoCard } from "components/People/styles";
+import ApproveTxModal, {
+  MODAL_NAME as APPROVE_TX_MODAL
+} from "./ApproveTxModal";
+import DisbursementDetails from "./DisbursementDetails";
+import ExecuteTxModal, {
+  MODAL_NAME as EXECUTE_TX_MODAL
+} from "./ExecuteTxModal";
+import RejectTxModal, { MODAL_NAME as REJECT_TX_MODAL } from "./RejectTxModal";
 import {
   ConfirmSection,
   DescriptionRow,
   FinalStatus,
-  StepperCard,
+  StepperCard
 } from "./styles";
-import { getDecryptedDetails } from "utils/encryption";
-import { MODAL_NAME as TX_SUBMITTED_MODAL } from "components/NewTransfer/TransactionSubmittedModal";
-import DisbursementDetails from "./DisbursementDetails";
 import Summary from "./Summary";
-import ErrorText from "components/common/ErrorText";
-import ApproveTxModal, {
-  MODAL_NAME as APPROVE_TX_MODAL,
-} from "./ApproveTxModal";
-import RejectTxModal, { MODAL_NAME as REJECT_TX_MODAL } from "./RejectTxModal";
-import ExecuteTxModal, {
-  MODAL_NAME as EXECUTE_TX_MODAL,
-} from "./ExecuteTxModal";
-import { getDecryptedOwnerName } from "store/invitation/utils";
 import { TransactionDescription } from "./TransactionDescription";
 import { TransactionDetailsNote } from "./TransactionDetailsNote";
+
 
 const multisigKey = "multisig";
 const safeKey = "safe";
@@ -217,6 +207,7 @@ export default function MultiSigTransactions() {
               confirmedOwner.approved,
               confirmedOwner.rejected
             ),
+            address: safeOwner.owner,
           };
         } else {
           name = getDecryptedOwnerName({
@@ -235,11 +226,12 @@ export default function MultiSigTransactions() {
             safeOwner.approved,
             safeOwner.rejected
           ),
+          address: safeOwner.owner,
         };
       });
 
     return statuses.map(
-      ({ ownerInfo, title, subtitle, backgroundColor }, idx) => (
+      ({ ownerInfo, title, subtitle, backgroundColor, address }, idx) => (
         <StepCircle
           key={`${ownerInfo.owner}-${idx}`}
           title={title}
@@ -247,6 +239,7 @@ export default function MultiSigTransactions() {
           backgroundColor={backgroundColor}
           isInitiator={createdBy && ownerInfo.owner === createdBy}
           isExecutor={executor && ownerInfo.owner === executor}
+          address={address}
         />
       )
     );
