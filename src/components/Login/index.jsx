@@ -920,17 +920,25 @@ const Login = () => {
 
     const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
 
-    const sortedGroups = sortedNetworkIds.reduce((acc, currNetworkId) => {
-      return [
-        ...acc,
-        {
-          networkId: currNetworkId,
-          safes: (safeDetails || []).filter(({ networkId }) =>
-            networkId ? networkId === currNetworkId : true
-          ),
-        },
-      ];
-    }, []);
+    const sortedGroups =
+      flow === FLOWS.LOGIN
+        ? sortedNetworkIds.reduce((acc, currNetworkId) => {
+            return [
+              ...acc,
+              {
+                networkId: currNetworkId,
+                safes: (safeDetails || []).filter(({ networkId }) =>
+                  networkId ? networkId === currNetworkId : true
+                ),
+              },
+            ];
+          }, [])
+        : [
+            {
+              networkId: chainId,
+              safes: safeDetails,
+            },
+          ];
 
     return (
       <StepDetails>
