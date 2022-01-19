@@ -19,9 +19,10 @@ export default function TokenImg({
 }: Props) {
   const icons = useSelector(makeSelectTokenIcons());
 
+  const tokenAddress = address ? address.toLowerCase() : "";
   return (
     <Img
-      src={getDefaultIconIfPossible({ symbol: token, address, icons })}
+      src={getDefaultIconIfPossible({ symbol: token, address: tokenAddress, icons })}
       alt="token"
       className={className || "mr-1"}
       width={width || "16"}

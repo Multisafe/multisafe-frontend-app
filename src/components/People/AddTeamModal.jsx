@@ -85,7 +85,7 @@ function AddTeamModal(props) {
 
   const onSubmit = (values) => {
     const [valueAddress] = values.token.value.split(" ");
-    const tokenInfo = tokenDetails && tokenDetails[valueAddress];
+    const tokenInfo = tokenDetails && tokenDetails[valueAddress?.toLowerCase()];
 
     if (account && safeAddress && tokenInfo) {
       const body = {

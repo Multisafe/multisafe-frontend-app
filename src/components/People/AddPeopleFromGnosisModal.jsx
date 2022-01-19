@@ -131,7 +131,7 @@ function AddPeopleFromGnosisModal(props) {
     });
 
     const [valueAddress] = teamToken.value.split(" ");
-    const tokenInfo = tokenDetails && tokenDetails[valueAddress];
+    const tokenInfo = tokenDetails && tokenDetails[valueAddress?.toLowerCase()];
 
     const requestData = [
       {
