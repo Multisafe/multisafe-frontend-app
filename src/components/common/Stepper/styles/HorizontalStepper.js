@@ -3,7 +3,7 @@ import styled from "styled-components/macro";
 export default styled.div`
   display: grid;
   grid-template-columns: repeat(${({ count }) => count}, 1fr);
-  width: ${({ count }) => count * 15}rem;
+  width: ${({ count }) => count * 20}rem;
 
   .step {
     .step-container {
@@ -37,6 +37,7 @@ export default styled.div`
     .step-info-text {
       text-align: center;
       margin-top: 1.5rem;
+      padding: 0 1.5rem;
     }
 
     .step-title {
@@ -58,6 +59,22 @@ export default styled.div`
       letter-spacing: normal;
       color: #373737;
       font-weight: normal;
+    }
+
+    .step-owner {
+      padding: 0.2rem 0;
+      justify-content: center;
+    }
+
+    .step-owner > span.address {
+      font-size: 1.2rem;
+      letter-spacing: normal;
+      color: #373737;
+      font-weight: normal;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 0.6rem;
     }
 
     .step-text {
@@ -100,7 +117,7 @@ export default styled.div`
   @media (max-width: 600px) {
     width: 100%;
     .step {
-      min-width: 10rem;
+      min-width: 15rem;
     }
   }
 `;

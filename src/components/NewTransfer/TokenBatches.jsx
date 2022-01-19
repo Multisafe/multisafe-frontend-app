@@ -117,11 +117,11 @@ function Batch({
         tokenTotal: totalAmountInToken,
         usdTotal: totalAmountInUsd,
         isInsufficientBalance:
-          tokenDetails.balance - prevUsdTotal - totalAmountInToken < 0,
+          tokenDetails.balance - prevTokenTotal - totalAmountInToken < 0,
         currentTokenBalance: tokenDetails.balance - prevTokenTotal,
         currentUsdBalance: tokenDetails.usd - prevUsdTotal,
         tokenBalanceAfterPayment:
-          tokenDetails.balance - prevUsdTotal - totalAmountInToken,
+          tokenDetails.balance - prevTokenTotal - totalAmountInToken,
         usdBalanceAfterPayment:
           tokenDetails.usd - prevUsdTotal - totalAmountInUsd,
       };

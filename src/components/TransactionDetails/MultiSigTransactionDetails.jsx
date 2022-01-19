@@ -217,6 +217,7 @@ export default function MultiSigTransactions() {
               confirmedOwner.approved,
               confirmedOwner.rejected
             ),
+            address: safeOwner.owner,
           };
         } else {
           name = getDecryptedOwnerName({
@@ -235,11 +236,12 @@ export default function MultiSigTransactions() {
             safeOwner.approved,
             safeOwner.rejected
           ),
+          address: safeOwner.owner,
         };
       });
 
     return statuses.map(
-      ({ ownerInfo, title, subtitle, backgroundColor }, idx) => (
+      ({ ownerInfo, title, subtitle, backgroundColor, address }, idx) => (
         <StepCircle
           key={`${ownerInfo.owner}-${idx}`}
           title={title}
@@ -247,6 +249,7 @@ export default function MultiSigTransactions() {
           backgroundColor={backgroundColor}
           isInitiator={createdBy && ownerInfo.owner === createdBy}
           isExecutor={executor && ownerInfo.owner === executor}
+          address={address}
         />
       )
     );
