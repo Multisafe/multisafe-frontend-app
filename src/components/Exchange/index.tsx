@@ -473,11 +473,11 @@ export default function Exchange() {
                     <RouteLabel>
                       <div>
                         {receiveTokenAmount}{" "}
-                        {tokensByAddress[receiveToken].symbol}
+                        {tokensByAddress[receiveToken]?.symbol}
                       </div>
                       <Img
-                        src={tokensByAddress[receiveToken].logoURI}
-                        alt={tokensByAddress[receiveToken].name}
+                        src={tokensByAddress[receiveToken]?.logoURI}
+                        alt={tokensByAddress[receiveToken]?.name}
                         width="16"
                       />
                     </RouteLabel>
