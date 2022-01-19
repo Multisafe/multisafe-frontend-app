@@ -23,8 +23,8 @@ export const TOKEN_SYMBOLS = {
   MATIC: "MATIC",
 };
 
-export const getDefaultIconIfPossible = (tokenSymbol, icons) => {
-  switch (tokenSymbol) {
+export const getDefaultIconIfPossible = ({ symbol, address, icons }) => {
+  switch (symbol) {
     case TOKEN_SYMBOLS.DAI:
       return DAIIcon;
     case TOKEN_SYMBOLS.USDC:
@@ -38,7 +38,7 @@ export const getDefaultIconIfPossible = (tokenSymbol, icons) => {
     case TOKEN_SYMBOLS.MATIC:
       return maticIcon;
     default:
-      if (icons && icons[tokenSymbol]) return icons[tokenSymbol];
+      if (icons && icons[address]) return icons[address];
       return DefaultIcon;
   }
 };

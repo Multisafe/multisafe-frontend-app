@@ -75,7 +75,10 @@ export default function DisbursementDetails({
       <TableBody style={{ maxHeight: "30rem", overflow: "auto" }}>
         {paidTeammates &&
           paidTeammates.map(
-            ({ address, salaryAmount, salaryToken, usd }, idx) => {
+            (
+              { address, salaryAmount, salaryToken, salaryTokenAddress, usd },
+              idx
+            ) => {
               const person = personByAddress[address];
 
               return (
@@ -84,7 +87,10 @@ export default function DisbursementDetails({
                     {person ? `${person.firstName} ${person.lastName}` : null}
                   </td>
                   <td style={{ width: "30%" }}>
-                    <TokenImg token={salaryToken} />
+                    <TokenImg
+                      token={salaryToken}
+                      address={salaryTokenAddress}
+                    />
                     {salaryToken === "USD"
                       ? `${usd} USD`
                       : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}

@@ -110,9 +110,12 @@ function AddSinglePeopleModal(props) {
   }, [allTeams, isEditMode]);
 
   const onSubmit = (values) => {
-    const { firstName, lastName, address, team, teamName, token, amount } =
-      values;
-    const tokenInfo = tokenDetails && tokenDetails[values.token.value];
+    const { firstName, lastName, address, team, teamName, amount } = values;
+    const [valueAddress, tokenSymbol] = values.token.value.split(" ");
+    const tokenInfo =
+      tokenDetails?.[valueAddress] ||
+      Object.values(tokenDetails).find(({ symbol }) => symbol === tokenSymbol);
+
     if (account && safeAddress && tokenInfo) {
       const encryptedEmployeeDetails =
         cryptoUtils.encryptDataUsingEncryptionKey(
@@ -120,7 +123,8 @@ function AddSinglePeopleModal(props) {
             firstName,
             lastName,
             salaryAmount: amount,
-            salaryToken: token.value,
+            salaryToken: tokenInfo.symbol,
+            salaryTokenAddress: tokenInfo.address,
             address,
           }),
           encryptionKey,
@@ -219,7 +223,7 @@ function AddSinglePeopleModal(props) {
                       if (value && teamIdToDetailsMap[value]) {
                         const { tokenInfo } = teamIdToDetailsMap[value];
                         const tokenDropdownValue = {
-                          value: tokenInfo.symbol,
+                          value: `${tokenInfo.address} ${tokenInfo.symbol}`,
                           label: constructLabel({
                             token: tokenInfo.symbol,
                             imgUrl: tokenInfo.logoURI,

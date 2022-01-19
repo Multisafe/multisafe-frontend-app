@@ -149,8 +149,13 @@ function PeopleDetailsSidebar() {
       peopleId,
       salaryAmount,
       salaryToken,
+      salaryTokenAddress,
       address,
     } = peopleDetails;
+    const tokenInfo =
+      tokenDetails?.[salaryTokenAddress] ||
+      Object.values(tokenDetails).find(({ symbol }) => symbol === salaryToken);
+
     dispatch(
       show(EDIT_PEOPLE_MODAL, {
         defaultValues: {
@@ -158,11 +163,10 @@ function PeopleDetailsSidebar() {
           lastName,
           amount: salaryAmount,
           token: {
-            value: salaryToken,
+            value: `${salaryTokenAddress} ${salaryToken}`,
             label: constructLabel({
               token: salaryToken,
-              imgUrl:
-                tokenDetails[salaryToken] && tokenDetails[salaryToken].logoURI,
+              imgUrl: tokenInfo.logoURI,
             }),
           },
           address,
