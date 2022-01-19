@@ -40,7 +40,7 @@ export const request = (url, options) => {
 
   requestUrl.searchParams.set("networkId", networkId);
 
-  if (options.method === "POST") {
+  if (options.method === "POST" || options.method === "PUT") {
     const parsedBody = JSON.parse(options.body);
     options.body = JSON.stringify({
       ...parsedBody,

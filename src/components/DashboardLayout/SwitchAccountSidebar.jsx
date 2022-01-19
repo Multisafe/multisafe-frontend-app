@@ -151,7 +151,7 @@ function SwitchAccountSidebar() {
 
     return sortedGroups.map(({ networkId, safes }) => {
       return safes?.length ? (
-        <div>
+        <div key={networkId}>
           <SwitchSafeNetworkLabel>
             {NETWORK_NAME_BY_ID[networkId]}
           </SwitchSafeNetworkLabel>
@@ -163,7 +163,7 @@ function SwitchAccountSidebar() {
               organisationType,
             }) => (
               <div
-                key={`${safe}`}
+                key={safe}
                 className="safe-option"
                 style={{
                   backgroundColor:

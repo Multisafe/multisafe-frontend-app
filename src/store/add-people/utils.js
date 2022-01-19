@@ -33,7 +33,11 @@ export const isValidField = (fieldName, value, tokens) => {
     }
 
     case FIELD_NAMES.TOKEN: {
-      if (!value || typeof value !== "string" || tokens[value] === undefined)
+      const tokenInfo = Object.values(tokens).find(
+        ({ symbol }) => symbol === value
+      );
+
+      if (!value || typeof value !== "string" || tokenInfo === undefined)
         return false;
       return true;
     }

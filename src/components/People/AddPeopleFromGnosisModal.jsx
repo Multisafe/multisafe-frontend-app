@@ -130,11 +130,14 @@ function AddPeopleFromGnosisModal(props) {
       };
     });
 
+    const [valueAddress] = teamToken.value.split(" ");
+    const tokenInfo = tokenDetails && tokenDetails[valueAddress];
+
     const requestData = [
       {
         departmentName:
           selectedTeam.value === ADD_TEAM_VALUE ? teamName : selectedTeam.label,
-        tokenInfo: tokenDetails[teamToken.value],
+        tokenInfo,
         peopleDetails: peopleData,
       },
     ];

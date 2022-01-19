@@ -43,10 +43,10 @@ export default function Assets() {
   const renderAssets = () => {
     if (loading) return <TableLoader colSpan={4} />;
 
-    return tokenList.map(({ name, usd, balance }) => (
+    return tokenList.map(({ name, usd, balance, address }) => (
       <tr key={name}>
         <td className="d-flex align-items-center">
-          <TokenImg token={name} />
+          <TokenImg token={name} address={address} />
           <div className="ml-2 mt-1">{name}</div>
         </td>
         <td>

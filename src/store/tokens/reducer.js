@@ -51,10 +51,11 @@ const reducer = (state = initialState, action) =>
           action.tokens
             .map(({ tokenDetails, balanceDetails }, idx) => {
               if (!tokenDetails) return null;
-              const tokenIcon = getDefaultIconIfPossible(
-                tokenDetails.tokenInfo.symbol,
-                action.icons
-              );
+              const tokenIcon = getDefaultIconIfPossible({
+                symbol: tokenDetails.tokenInfo.symbol,
+                address: tokenDetails.tokenInfo.address,
+                icons: action.icons,
+              });
               // eslint-disable-next-line
               if (balanceDetails && balanceDetails.balance == 0) {
                 return {
@@ -131,11 +132,11 @@ const reducer = (state = initialState, action) =>
         draft.loading = false;
         draft.log = action.log;
         draft.tokensDropdown = Object.keys(action.tokenDetails).map(
-          (tokenName) => ({
-            value: tokenName,
+          (tokenAddress) => ({
+            value: `${tokenAddress} ${action.tokenDetails[tokenAddress].symbol}`,
             label: constructLabel({
-              token: tokenName,
-              imgUrl: action.tokenDetails[tokenName].logoURI,
+              token: action.tokenDetails[tokenAddress].symbol,
+              imgUrl: action.tokenDetails[tokenAddress].logoURI,
             }),
           })
         );
