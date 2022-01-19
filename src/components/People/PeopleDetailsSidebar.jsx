@@ -153,7 +153,7 @@ function PeopleDetailsSidebar() {
       address,
     } = peopleDetails;
     const tokenInfo =
-      tokenDetails?.[salaryTokenAddress] ||
+      tokenDetails?.[salaryTokenAddress?.toLowerCase()] ||
       Object.values(tokenDetails).find(({ symbol }) => symbol === salaryToken);
 
     dispatch(
