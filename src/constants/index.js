@@ -39,6 +39,7 @@ export const getDefaultIconIfPossible = ({ symbol, address, icons }) => {
       return maticIcon;
     default:
       if (icons && icons[address]) return icons[address];
+      if (icons && icons[symbol]) return icons[symbol];
       return DefaultIcon;
   }
 };
