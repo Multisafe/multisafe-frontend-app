@@ -113,7 +113,7 @@ function AddSinglePeopleModal(props) {
     const { firstName, lastName, address, team, teamName, amount } = values;
     const [valueAddress, tokenSymbol] = values.token.value.split(" ");
     const tokenInfo =
-      tokenDetails?.[valueAddress?.toLowerCase()] ||
+      tokenDetails?.[valueAddress] ||
       Object.values(tokenDetails).find(({ symbol }) => symbol === tokenSymbol);
 
     if (account && safeAddress && tokenInfo) {

@@ -133,7 +133,7 @@ const reducer = (state = initialState, action) =>
         draft.log = action.log;
         draft.tokensDropdown = Object.keys(action.tokenDetails).map(
           (tokenAddress) => ({
-            value: `${tokenAddress?.toLowerCase()} ${
+            value: `${tokenAddress} ${
               action.tokenDetails[tokenAddress].symbol
             }`,
             label: constructLabel({
