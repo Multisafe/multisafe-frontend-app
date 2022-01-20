@@ -3,11 +3,18 @@ import {
   GET_GAS_PRICE_SUCCESS,
   GET_GAS_PRICE_ERROR,
   SET_SELECTED_GAS_PRICE,
+  RESTART_GAS_PRICE,
 } from "./action-types";
 
 export function getGasPrice() {
   return {
     type: GET_GAS_PRICE,
+  };
+}
+
+export function restartGasPricePolling() {
+  return {
+    type: RESTART_GAS_PRICE,
   };
 }
 

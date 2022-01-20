@@ -28,6 +28,7 @@ import { getPassword } from "utils/encryption";
 import { SwitchAccountMenu } from "./styles";
 import { NETWORK_NAME_BY_ID, SUPPORTED_NETWORK_IDS } from "constants/networks";
 import { SwitchSafeNetworkLabel } from "components/DashboardLayout/styles/SwitchAccountMenu";
+import { restartGasPricePolling } from "store/gas/actions";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -119,6 +120,7 @@ function SwitchAccountSidebar() {
 
     if (safeAddress !== safe) {
       setChainId(networkId);
+      dispatch(restartGasPricePolling());
       dispatch(
         loginUser({
           safeAddress: safe,
