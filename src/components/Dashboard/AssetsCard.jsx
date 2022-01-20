@@ -56,7 +56,12 @@ function AssetsCard() {
   const renderAssetCard = ({ icon, name, balance, usd, address }) => (
     <div className="asset-card" key={name}>
       <div className="token-details">
-        <TokenImg token={name} address={address} width={20} className="token-icon"/>
+        <TokenImg
+          token={name}
+          address={address}
+          width={20}
+          className="token-icon"
+        />
         <div>
           <div className="token-name">
             {formatNumber(balance, 5)} {name}
