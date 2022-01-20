@@ -1,12 +1,4 @@
-import {
-  call,
-  put,
-  fork,
-  delay,
-  race,
-  take,
-  takeLatest,
-} from "redux-saga/effects";
+import { call, put, fork, delay, takeLatest } from "redux-saga/effects";
 import { BigNumber } from "ethers";
 import Big from "big.js";
 
@@ -17,7 +9,6 @@ import { ONE_GWEI } from "constants/index";
 import { GAS_MODES } from "./constants";
 import { RESTART_GAS_PRICE } from "store/gas/action-types";
 
-const STOP_GAS_POLLING = "STOP_GAS_POLLING";
 const POLLING_INTERVAL = 20000; // 20s
 
 function roundWei(value) {
@@ -48,23 +39,18 @@ export function* getGasPrices() {
           [GAS_MODES.INSTANT]: roundWei(gasPrices["rapid"]),
         })
       );
-      yield delay(POLLING_INTERVAL);
     } catch (err) {
       yield put(getGasPriceError(err));
-      yield put({ type: STOP_GAS_POLLING, err });
     }
+    yield delay(POLLING_INTERVAL);
   }
 }
 
-export function* startGasPolling() {
-  yield race([call(getGasPrices), take(STOP_GAS_POLLING)]);
-}
-
 function* watchStartGasPolling() {
-  yield takeLatest(RESTART_GAS_PRICE, startGasPolling);
+  yield takeLatest(RESTART_GAS_PRICE, getGasPrices);
 }
 
 export default function* watchGetGasPrices() {
-  yield call(startGasPolling);
   yield fork(watchStartGasPolling);
+  yield put({ type: RESTART_GAS_PRICE });
 }

@@ -4,14 +4,16 @@ import {
   useContract,
   useTransactionEffects,
   useBatchTransactions,
+  useActiveWeb3React,
 } from "hooks";
 import { getAmountInWei } from "utils/tx-helpers";
-import { TOKEN_SYMBOLS } from "constants/index";
 import ERC20ABI from "constants/abis/ERC20.json";
 import { useAddresses } from "hooks/useAddresses";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 export default function useMassPayout() {
   const { ZERO_ADDRESS } = useAddresses();
+  const { chainId } = useActiveWeb3React();
 
   const [baseRequestBody, setBaseRequestBody] = useState();
   const { executeBatchTransactions, loadingTx, txHash, txData } =
@@ -35,7 +37,23 @@ export default function useMassPayout() {
 
     let transactions = [];
 
-    if (tokenDetails.name !== TOKEN_SYMBOLS.ETH) {
+    if (tokenDetails.name === GAS_TOKEN_SYMBOL_BY_ID[chainId]) {
+      transactions = receivers.reduce((tx, { address, salaryAmount }) => {
+        const transferAmount = getAmountInWei(
+          salaryAmount,
+          tokenDetails.decimals
+        );
+
+        // ETH
+        tx.push({
+          operation: 0, // CALL
+          data: "0x",
+          to: address,
+          value: transferAmount,
+        });
+        return tx;
+      }, []);
+    } else {
       const erc20 = getERC20Contract(tokenDetails.address);
       if (!erc20) {
         throw new Error("ERC20 token undefined");
@@ -60,22 +78,6 @@ export default function useMassPayout() {
 
         return tx;
       }, []);
-    } else {
-      transactions = receivers.reduce((tx, { address, salaryAmount }) => {
-        const transferAmount = getAmountInWei(
-          salaryAmount,
-          tokenDetails.decimals
-        );
-
-        // ETH
-        tx.push({
-          operation: 0, // CALL
-          data: "0x",
-          to: address,
-          value: transferAmount,
-        });
-        return tx;
-      }, []);
     }
 
     await executeBatchTransactions({ transactions });
@@ -98,7 +100,28 @@ export default function useMassPayout() {
       );
 
       if (tokenDetails) {
-        if (tokenDetails.name !== TOKEN_SYMBOLS.ETH) {
+        if (tokenDetails.name === GAS_TOKEN_SYMBOL_BY_ID[chainId]) {
+          const ethTransferTxs = receivers.reduce(
+            (tx, { address, tokenValue }) => {
+              const transferAmount = getAmountInWei(
+                tokenValue,
+                tokenDetails.decimals
+              );
+
+              // ETH
+              tx.push({
+                operation: 0, // CALL
+                data: "0x",
+                to: address,
+                value: transferAmount,
+              });
+              return tx;
+            },
+            []
+          );
+
+          transactions.push(...ethTransferTxs);
+        } else {
           const erc20 = getERC20Contract(tokenDetails.address);
           if (!erc20) {
             throw new Error("ERC20 token undefined");
@@ -128,27 +151,6 @@ export default function useMassPayout() {
           );
 
           transactions.push(...erc20TransferTxs);
-        } else {
-          const ethTransferTxs = receivers.reduce(
-            (tx, { address, tokenValue }) => {
-              const transferAmount = getAmountInWei(
-                tokenValue,
-                tokenDetails.decimals
-              );
-
-              // ETH
-              tx.push({
-                operation: 0, // CALL
-                data: "0x",
-                to: address,
-                value: transferAmount,
-              });
-              return tx;
-            },
-            []
-          );
-
-          transactions.push(...ethTransferTxs);
         }
       }
     }
