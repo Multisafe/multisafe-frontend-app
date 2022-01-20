@@ -11,7 +11,7 @@ import { getSafeInfoSuccess } from "../global/actions";
 import { request } from "utils/request";
 import { loginEndpoint } from "constants/endpoints";
 import { routeGenerators } from "constants/routes/generators";
-import {RESTART_GAS_PRICE} from "store/gas/action-types";
+import { RESTART_GAS_PRICE } from "store/gas/action-types";
 
 export function* loginUser({
   safeAddress,
@@ -50,7 +50,7 @@ export function* loginUser({
       } else {
         yield put(push(routeGenerators.dashboard.root({ safeAddress })));
       }
-      yield put({type: RESTART_GAS_PRICE});
+      yield put({ type: RESTART_GAS_PRICE });
     }
   } catch (err) {
     yield put(loginUserError(err));

@@ -1,10 +1,4 @@
-import {
-  call,
-  put,
-  fork,
-  delay,
-  takeLatest,
-} from "redux-saga/effects";
+import { call, put, fork, delay, takeLatest } from "redux-saga/effects";
 import { BigNumber } from "ethers";
 import Big from "big.js";
 
@@ -58,5 +52,5 @@ function* watchStartGasPolling() {
 
 export default function* watchGetGasPrices() {
   yield fork(watchStartGasPolling);
-  yield put({type: RESTART_GAS_PRICE});
+  yield put({ type: RESTART_GAS_PRICE });
 }
