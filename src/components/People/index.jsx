@@ -203,7 +203,6 @@ export default function People() {
         }
       }
 
-      console.log(peopleByTeam);
       setPeopleByTeam(peopleByTeam);
     }
   }, [
