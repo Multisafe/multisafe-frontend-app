@@ -22,7 +22,11 @@ export default function TokenImg({
   const tokenAddress = address ? address.toLowerCase() : "";
   return (
     <Img
-      src={getDefaultIconIfPossible({ symbol: token, address: tokenAddress, icons })}
+      src={getDefaultIconIfPossible({
+        symbol: token,
+        address: tokenAddress,
+        icons,
+      })}
       alt="token"
       className={className || "mr-1"}
       width={width || "16"}

@@ -1,4 +1,12 @@
-import { call, put, delay, race, take } from "redux-saga/effects";
+import {
+  call,
+  put,
+  fork,
+  delay,
+  race,
+  take,
+  takeLatest,
+} from "redux-saga/effects";
 import { BigNumber } from "ethers";
 import Big from "big.js";
 
@@ -7,6 +15,7 @@ import { request } from "utils/request";
 import { gasPriceEndpoint } from "constants/endpoints";
 import { ONE_GWEI } from "constants/index";
 import { GAS_MODES } from "./constants";
+import { RESTART_GAS_PRICE } from "store/gas/action-types";
 
 const STOP_GAS_POLLING = "STOP_GAS_POLLING";
 const POLLING_INTERVAL = 20000; // 20s
@@ -47,6 +56,15 @@ export function* getGasPrices() {
   }
 }
 
-export default function* watchGetGasPrices() {
+export function* startGasPolling() {
   yield race([call(getGasPrices), take(STOP_GAS_POLLING)]);
+}
+
+function* watchStartGasPolling() {
+  yield takeLatest(RESTART_GAS_PRICE, startGasPolling);
+}
+
+export default function* watchGetGasPrices() {
+  yield call(startGasPolling);
+  yield fork(watchStartGasPolling);
 }

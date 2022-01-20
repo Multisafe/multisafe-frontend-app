@@ -20,6 +20,7 @@ import AddFundsIcon from "assets/icons/navbar/add-funds.svg";
 
 import { Assets } from "./styles";
 import { useActiveWeb3React } from "hooks";
+import TokenImg from "components/common/TokenImg";
 
 function AssetsCard() {
   const { chainId } = useActiveWeb3React();
@@ -52,10 +53,15 @@ function AssetsCard() {
     );
   }, [tokenList]);
 
-  const renderAssetCard = ({ icon, name, balance, usd }) => (
+  const renderAssetCard = ({ icon, name, balance, usd, address }) => (
     <div className="asset-card" key={name}>
       <div className="token-details">
-        <Img src={icon} alt={name} className="token-icon" />
+        <TokenImg
+          token={name}
+          address={address}
+          width={20}
+          className="token-icon"
+        />
         <div>
           <div className="token-name">
             {formatNumber(balance, 5)} {name}
