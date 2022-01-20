@@ -171,7 +171,7 @@ export default function NewTransfer({ prefilledValues }) {
                 {formatNumber(details.balance, 5)} {details.name}
               </div>
             ),
-            imgUrl: details.icon,
+            address: details.address,
           }),
         }))
       );
