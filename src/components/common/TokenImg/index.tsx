@@ -8,13 +8,25 @@ type Props = {
   token: string;
   width?: string;
   className?: string;
+  address?: string;
 };
-export default function TokenImg({ token, width, className, ...rest }: Props) {
+export default function TokenImg({
+  token,
+  address,
+  width,
+  className,
+  ...rest
+}: Props) {
   const icons = useSelector(makeSelectTokenIcons());
 
+  const tokenAddress = address ? address.toLowerCase() : "";
   return (
     <Img
-      src={getDefaultIconIfPossible(token, icons)}
+      src={getDefaultIconIfPossible({
+        symbol: token,
+        address: tokenAddress,
+        icons,
+      })}
       alt="token"
       className={className || "mr-1"}
       width={width || "16"}

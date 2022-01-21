@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { hashMessage } from "@ethersproject/hash";
-import { recoverAddress } from "@ethersproject/transactions";
+import { ethers } from "ethers";
 import { faLock, faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import { cryptoUtils } from "coinshift-sdk";
 import { show } from "redux-modal";
@@ -105,6 +104,12 @@ import {
 } from "./styles";
 import ErrorText from "components/common/ErrorText";
 import { routeTemplates } from "constants/routes/templates";
+import {
+  InfoContainer,
+  NetworkLabelContainer,
+} from "components/Login/styles/Safe";
+import { NetworkLabel } from "components/NetworkSelect/NetworkLabel";
+import { SUPPORTED_NETWORK_IDS } from "constants/networks";
 
 const loginKey = "login";
 const loginWizardKey = "loginWizard";
@@ -143,7 +148,8 @@ const Login = () => {
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
-  const { active, account, library, connector } = useActiveWeb3React();
+  const { active, account, library, connector, chainId, setChainId } =
+    useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: loginWizardKey, reducer: loginWizardReducer });
@@ -210,8 +216,8 @@ const Login = () => {
 
   useEffect(() => {
     if (sign) {
-      const msgHash = hashMessage(MESSAGE_TO_SIGN);
-      const recoveredAddress = recoverAddress(msgHash, sign);
+      const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
 
       if (recoveredAddress !== account) {
         setHasAlreadySigned(false);
@@ -398,7 +404,7 @@ const Login = () => {
       dispatch(setOwnerDetails(formData.name, chosenSafeAddress, account));
       dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
       dispatch(setOrganisationType(organisationType));
-      dispatch(registerUser(body));
+      dispatch(registerUser(body, chainId));
     }
   };
 
@@ -746,6 +752,7 @@ const Login = () => {
         safeDetails.push({
           safe: safes[i].safeAddress,
           name: safes[i].name,
+          networkId: safes[i].networkId,
           balance: "0",
           encryptionKeyData: safes[i].encryptionKeyData,
           createdBy,
@@ -769,7 +776,8 @@ const Login = () => {
     safe,
     encryptionKeyData,
     createdBy,
-    organisationType
+    organisationType,
+    networkId
   ) => {
     dispatch(chooseSafe(safe));
     dispatch(setOwnerDetails(name, safe, createdBy));
@@ -785,6 +793,7 @@ const Login = () => {
 
     const password = getPassword(sign);
 
+    setChainId(networkId);
     dispatch(
       loginUser({
         safeAddress: safe,
@@ -792,6 +801,7 @@ const Login = () => {
         password,
         signature: authSign,
         owner: account,
+        networkId,
       })
     );
   };
@@ -908,64 +918,97 @@ const Login = () => {
       );
     }
 
+    const sortedNetworkIds = [...new Set([chainId, ...SUPPORTED_NETWORK_IDS])];
+
+    const sortedGroups =
+      flow === FLOWS.LOGIN
+        ? sortedNetworkIds.reduce((acc, currNetworkId) => {
+            return [
+              ...acc,
+              {
+                networkId: currNetworkId,
+                safes: (safeDetails || []).filter(({ networkId }) =>
+                  networkId ? networkId === currNetworkId : true
+                ),
+              },
+            ];
+          }, [])
+        : [
+            {
+              networkId: chainId,
+              safes: safeDetails,
+            },
+          ];
+
     return (
       <StepDetails>
         <h3 className="title">Choose Account</h3>
         <p className="subtitle">
           Select the safe with which you would like to continue
         </p>
-        {safeDetails &&
-          safeDetails.map(
-            (
-              { safe, name, balance, encryptionKeyData, organisationType },
-              idx
-            ) => (
-              <Safe
-                key={`${safe}-${idx}`}
-                onClick={() =>
-                  encryptionKeyData
-                    ? handleSelectSafe(
-                        name,
-                        safe,
-                        encryptionKeyData,
-                        createdBy,
-                        organisationType
-                      )
-                    : handleImportSelectedSafe(safe)
-                }
-              >
-                <div className="top">
-                  <div className="details">
-                    <div className="icon">
-                      <img src={TeamPng} alt="user" width="50" />
-                    </div>
-                    <div className="info">
-                      <div className="desc">Name</div>
-                      <div className="val">{name}</div>
+        {sortedGroups.length &&
+          sortedGroups.map(({ safes }) => {
+            return safes.map(
+              ({
+                safe,
+                name,
+                encryptionKeyData,
+                organisationType,
+                networkId = chainId,
+              }) => (
+                <Safe
+                  key={`${safe}`}
+                  onClick={() =>
+                    encryptionKeyData
+                      ? handleSelectSafe(
+                          name,
+                          safe,
+                          encryptionKeyData,
+                          createdBy,
+                          organisationType,
+                          networkId
+                        )
+                      : handleImportSelectedSafe(safe)
+                  }
+                >
+                  <div className="top">
+                    <div className="details">
+                      <div className="icon">
+                        <img src={TeamPng} alt="user" width="50" />
+                      </div>
+                      <div className="info">
+                        <div className="desc">Name</div>
+                        <InfoContainer>
+                          <div className="val">{name}</div>
+                          <NetworkLabelContainer>
+                            <NetworkLabel chainId={networkId} />
+                          </NetworkLabelContainer>
+                        </InfoContainer>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="bottom">
-                  <div className="details">
-                    <div className="icon">
-                      <FontAwesomeIcon icon={faLock} color="#aaa" />
-                    </div>
-                    <div className="info">
-                      <div className="desc">Address</div>
-                      <div className="val">{safe}</div>
+                  <div className="bottom">
+                    <div className="details">
+                      <div className="icon">
+                        <FontAwesomeIcon icon={faLock} color="#aaa" />
+                      </div>
+                      <div className="info">
+                        <div className="desc">Address</div>
+                        <div className="val">{safe}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="select-safe">
-                  <Button iconOnly className="px-0">
-                    <Img src={RightArrowIcon} alt="right" />
-                  </Button>
-                </div>
-              </Safe>
-            )
-          )}
+                  <div className="select-safe">
+                    <Button iconOnly className="px-0">
+                      <Img src={RightArrowIcon} alt="right" />
+                    </Button>
+                  </div>
+                </Safe>
+              )
+            );
+          })}
         {errorInLogin && <ErrorText>{errorInLogin}</ErrorText>}
         <RetryText onClick={handleRefetch}>Safe not loaded?</RetryText>
       </StepDetails>

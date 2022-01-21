@@ -69,7 +69,7 @@ const AddNoteMessage = styled.div`
 export const TransactionDetailsNote = ({ txDetails }: Props) => {
   const dispatch = useDispatch();
   const { editedNote } = useTransactionNote(txDetails);
-  const { account: userAddress, chainId: networkId } = useActiveWeb3React();
+  const { account: userAddress } = useActiveWeb3React();
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
 
   const { quickViewOpen, onQuickViewOpen, onQuickViewClose } =
@@ -81,8 +81,8 @@ export const TransactionDetailsNote = ({ txDetails }: Props) => {
   useInjectSaga({ key: MULTISIG_KEY, saga: multisigSaga });
 
   useEffect(() => {
-    dispatch(getLabels(networkId, safeAddress, userAddress));
-  }, [dispatch, networkId, safeAddress, userAddress]);
+    dispatch(getLabels(safeAddress, userAddress));
+  }, [dispatch, safeAddress, userAddress]);
 
   return (
     <React.Fragment>

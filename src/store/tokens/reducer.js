@@ -13,7 +13,10 @@ import {
   GET_TOKEN_LIST_SUCCESS,
   GET_TOKEN_LIST_ERROR,
 } from "./action-types";
-import { defaultTokenDetails, getDefaultIconIfPossible } from "constants/index";
+import {
+  DEFAULT_TOKEN_DETAILS,
+  getDefaultIconIfPossible,
+} from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
 import { constructLabel } from "utils/tokens";
 
@@ -34,6 +37,8 @@ export const initialState = {
 /* eslint-disable default-case, no-param-reassign */
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
+    const networkId = localStorage.getItem("NETWORK_ID");
+
     switch (action.type) {
       case GET_TOKENS:
         draft.loading = true;
@@ -46,10 +51,11 @@ const reducer = (state = initialState, action) =>
           action.tokens
             .map(({ tokenDetails, balanceDetails }, idx) => {
               if (!tokenDetails) return null;
-              const tokenIcon = getDefaultIconIfPossible(
-                tokenDetails.tokenInfo.symbol,
-                action.icons
-              );
+              const tokenIcon = getDefaultIconIfPossible({
+                symbol: tokenDetails.tokenInfo.symbol,
+                address: tokenDetails.tokenInfo.address,
+                icons: action.icons,
+              });
               // eslint-disable-next-line
               if (balanceDetails && balanceDetails.balance == 0) {
                 return {
@@ -84,6 +90,8 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
+        const defaultTokenDetails = DEFAULT_TOKEN_DETAILS[networkId];
+
         if (allTokenDetails.length < 4) {
           for (let i = 0; i < defaultTokenDetails.length; i++) {
             if (
@@ -111,7 +119,7 @@ const reducer = (state = initialState, action) =>
 
       case GET_TOKENS_ERROR:
         draft.loading = false;
-        draft.tokenList = defaultTokenDetails;
+        draft.tokenList = DEFAULT_TOKEN_DETAILS[networkId];
         draft.error = action.error;
         break;
 
@@ -124,11 +132,13 @@ const reducer = (state = initialState, action) =>
         draft.loading = false;
         draft.log = action.log;
         draft.tokensDropdown = Object.keys(action.tokenDetails).map(
-          (tokenName) => ({
-            value: tokenName,
+          (tokenAddress) => ({
+            value: `${tokenAddress} ${
+              action.tokenDetails[tokenAddress].symbol
+            }`,
             label: constructLabel({
-              token: tokenName,
-              imgUrl: action.tokenDetails[tokenName].logoURI,
+              token: action.tokenDetails[tokenAddress].symbol,
+              imgUrl: action.tokenDetails[tokenAddress].logoURI,
             }),
           })
         );

@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { isAddress } from "@ethersproject/address";
+import { ethers } from "ethers";
 
 // check if the field is correct
 export const FIELD_NAMES = {
@@ -26,7 +26,7 @@ export const isValidField = (
     }
 
     case FIELD_NAMES.ADDRESS: {
-      if (!value || typeof value !== "string" || !isAddress(value))
+      if (!value || typeof value !== "string" || !ethers.utils.isAddress(value))
         return false;
       return true;
     }

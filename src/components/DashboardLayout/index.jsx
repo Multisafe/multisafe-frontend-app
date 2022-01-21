@@ -16,12 +16,14 @@ import tokensSaga from "store/tokens/saga";
 import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 
 import { LayoutContainer, Main } from "./styles";
+import { useActiveWeb3React } from "hooks";
 
 const layoutKey = "layout";
 const tokensKey = "tokens";
 
 function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { chainId } = useActiveWeb3React();
 
   useInjectReducer({ key: layoutKey, reducer: layoutReducer });
   useInjectReducer({ key: tokensKey, reducer: tokensReducer });
@@ -35,9 +37,9 @@ function DashboardLayout({ children }) {
   useEffect(() => {
     if (safeAddress) {
       dispatch(getTokenList(safeAddress));
-      dispatch(getTokens(safeAddress));
+      dispatch(getTokens(safeAddress, chainId));
     }
-  }, [dispatch, safeAddress]);
+  }, [dispatch, safeAddress, chainId]);
 
   const openSidebar = () => {
     setIsSidebarOpen(true);

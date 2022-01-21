@@ -18,19 +18,21 @@ import {
   makeSelectUpdating,
   makeSelectMultisigTransactionDetails,
 } from "store/multisig/selectors";
-import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { submitMultisigTransaction } from "store/multisig/actions";
 import { Information } from "components/Register/styles";
 import LinkIcon from "assets/icons/dashboard/link-icon.svg";
 import Img from "components/common/Img";
+import { useAddresses } from "hooks/useAddresses";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 export const MODAL_NAME = "execute-tx-modal";
-const { MULTISEND_ADDRESS } = addresses;
 
 function ExecuteTxModal(props) {
+  const { MULTISEND_ADDRESS } = useAddresses();
+
   const { show, handleHide } = props;
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
   const [isOnChainRejection, setIsOnChainRejection] = useState();
 
   const {
@@ -207,8 +209,8 @@ function ExecuteTxModal(props) {
         )}
 
         <Information className="mb-5">
-          Make sure you have sufficient Ether in this wallet to fund this
-          confirmation.
+          Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in
+          this wallet to fund this confirmation.
         </Information>
 
         <div className="d-flex justify-content-center align-items-center mt-4">

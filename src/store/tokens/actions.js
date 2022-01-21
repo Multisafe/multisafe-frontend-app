@@ -35,11 +35,10 @@ export function getTokensError(error) {
   };
 }
 
-export function getTokenList(safeAddress, chainId) {
+export function getTokenList(safeAddress) {
   return {
     type: GET_TOKEN_LIST,
     safeAddress,
-    chainId,
   };
 }
 

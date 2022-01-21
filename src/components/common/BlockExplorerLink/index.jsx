@@ -4,20 +4,23 @@ import ReactTooltip from "react-tooltip";
 
 import LinkIcon from "assets/icons/dashboard/link-icon.svg";
 import Img from "../Img";
-import { getEtherscanLink } from "../Web3Utils";
-import { networkId } from "constants/networks";
+import { getBlockExplorerLink } from "../Web3Utils";
+import { useActiveWeb3React } from "hooks";
+import { BLOCK_EXPLORER_BY_ID } from "constants/networks";
 
-export default function EtherscanLink({
+export default function BlockExplorerLink({
   id,
   type,
   address,
   hash,
   ...passThrough
 }) {
+  const { chainId } = useActiveWeb3React();
+
   return (
     <div className="position-relative">
       <a
-        href={getEtherscanLink({ chainId: networkId, type, address, hash })}
+        href={getBlockExplorerLink({ chainId, type, address, hash })}
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -28,7 +31,7 @@ export default function EtherscanLink({
           {...passThrough}
           width="14"
           data-for={id}
-          data-tip={"View on Etherscan"}
+          data-tip={`View on ${BLOCK_EXPLORER_BY_ID[chainId]}`}
         />
         <ReactTooltip id={id} place={"top"} type={"dark"} effect={"solid"} />
       </a>
@@ -36,7 +39,7 @@ export default function EtherscanLink({
   );
 }
 
-EtherscanLink.propTypes = {
+BlockExplorerLink.propTypes = {
   id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   type: PropTypes.string,
   address: PropTypes.string,

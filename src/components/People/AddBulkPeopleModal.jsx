@@ -153,11 +153,15 @@ function AddBulkPeopleModal(props) {
           const uniqueIndex = uniqueDepartmentsHashmap[uniqueDepartmentName];
           // this index is for each department. ex: 0 = HR, 1 = Engineering etc.
 
+          const tokenInfo = Object.values(tokenDetails).find(
+            ({ symbol }) => symbol === salaryToken
+          );
+
           if (departmentName === uniqueDepartmentName) {
             if (!data[uniqueIndex]) {
               data[uniqueIndex] = {
                 departmentName,
-                tokenInfo: tokenDetails[salaryToken],
+                tokenInfo,
                 peopleDetails: [
                   {
                     encryptedEmployeeDetails,

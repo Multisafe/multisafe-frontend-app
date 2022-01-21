@@ -1,13 +1,12 @@
 import jwt_decode from "jwt-decode";
-import { hashMessage } from "@ethersproject/hash";
-import { recoverAddress } from "@ethersproject/transactions";
+import { ethers } from "ethers";
 import { MESSAGE_TO_SIGN } from "constants/index";
 
 export function checkValidSignature(sign, account) {
   if (!sign) return false;
 
-  const msgHash = hashMessage(MESSAGE_TO_SIGN);
-  const recoveredAddress = recoverAddress(msgHash, sign);
+  const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
+  const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
 
   return recoveredAddress === account;
 }

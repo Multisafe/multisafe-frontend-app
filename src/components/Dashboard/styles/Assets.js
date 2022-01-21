@@ -53,7 +53,6 @@ export default styled(Card)`
       }
 
       .token-icon {
-        width: 2rem;
         margin-right: 1rem;
       }
 

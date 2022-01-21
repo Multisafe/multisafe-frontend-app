@@ -285,6 +285,7 @@ export default function SelectFromTeam(props) {
                   firstName = "",
                   lastName = "",
                   salaryAmount,
+                  salaryTokenAddress,
                   salaryToken,
                   address,
                 } = getDecryptedDetails(data, encryptionKey, organisationType);
@@ -335,7 +336,10 @@ export default function SelectFromTeam(props) {
                       </td>
                       <td style={{ width: "20%" }}>{departmentName}</td>
                       <td style={{ width: "15%" }}>
-                        <TokenImg token={salaryToken} />
+                        <TokenImg
+                          token={salaryToken}
+                          address={salaryTokenAddress}
+                        />
                         <span className="mr-2">
                           {salaryAmount || `0`} {salaryToken}
                         </span>

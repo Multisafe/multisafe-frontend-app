@@ -59,6 +59,11 @@ export default styled.div`
     }
   }
 
+  .network {
+    color: #aaaaaa;
+    font-weight: normal;
+  }
+
   &:hover {
     .select-safe {
       background: transparent;
@@ -76,4 +81,14 @@ export default styled.div`
       transition: width 1s linear;
     }
   }
+`;
+
+export const InfoContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+export const NetworkLabelContainer = styled.div`
+  padding-left: 1rem;
+  border-left: 0.1rem solid #ccc;
 `;

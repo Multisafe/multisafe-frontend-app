@@ -38,7 +38,6 @@ import PrivacySvg from "assets/images/register/privacy.svg";
 import VerificationSvg from "assets/images/register/verification.svg";
 import { Error } from "components/common/Form/styles";
 import { getPassword, getPublicKey } from "utils/encryption";
-import addresses from "constants/addresses";
 import GnosisSafeABI from "constants/abis/GnosisSafe.json";
 import ProxyFactoryABI from "constants/abis/ProxyFactory.json";
 import registerSaga from "store/register/saga";
@@ -101,8 +100,8 @@ import {
 } from "components/common/Stepper/SimpleStepper";
 import ErrorText from "components/common/ErrorText";
 import WelcomeImg from "assets/images/register/welcome.svg";
-
-const { GNOSIS_SAFE_ADDRESS, PROXY_FACTORY_ADDRESS, ZERO_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
+import { BLOCK_EXPLORER_BY_ID } from "constants/networks";
 
 const registerKey = "register";
 const registerWizardKey = "registerWizard";
@@ -148,7 +147,10 @@ const Register = () => {
   const [authSign, setAuthSign] = useState();
   const [isVerified, setIsVerified] = useState();
 
-  const { active, account, library } = useActiveWeb3React();
+  const { active, account, library, chainId } = useActiveWeb3React();
+  const { GNOSIS_SAFE_ADDRESS, PROXY_FACTORY_ADDRESS, ZERO_ADDRESS } =
+    useAddresses();
+
   // Reducers
   useInjectReducer({ key: registerWizardKey, reducer: registerWizardReducer });
   useInjectReducer({ key: registerKey, reducer: registerReducer });
@@ -493,7 +495,7 @@ const Register = () => {
             password: password,
             signature: authSign,
           };
-          dispatch(registerUser(body));
+          dispatch(registerUser(body, chainId));
           dispatch(setOwnerDetails(formData.name, proxy, account));
           dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
           dispatch(setOrganisationType(organisationType));
@@ -566,7 +568,7 @@ const Register = () => {
     dispatch(setOwnerDetails(formData.name, safeAddress, account));
     dispatch(setOwnersAndThreshold(encryptedOwners, threshold));
     dispatch(setOrganisationType(organisationType));
-    dispatch(registerUser(body));
+    dispatch(registerUser(body, chainId));
   };
 
   const showOrganisationInfo = (info) => {
@@ -1029,7 +1031,7 @@ const Register = () => {
         <div className="loading-hash my-3">
           {(txHash || txHashWithoutReferral) && (
             <TransactionUrl hash={txHash || txHashWithoutReferral}>
-              View Transaction on Etherscan
+              View Transaction on {BLOCK_EXPLORER_BY_ID[chainId]}
             </TransactionUrl>
           )}
         </div>

@@ -1,42 +1,66 @@
 import { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import { Modal, ModalBody } from "reactstrap";
-
-import { findNetworkNameByWeb3ChainId } from "constants/networks";
+import Button from "components/common/Button";
 
 import { useActiveWeb3React } from "hooks";
 import NotFoundImg from "assets/images/not-found.png";
 import { WrongNetwork } from "./styles";
-
-const requiredNetworkName = process.env.REACT_APP_NETWORK_NAME;
+import { NETWORK_DETAILS_BY_ID, NETWORK_NAME_BY_ID } from "constants/networks";
+import { ButtonContainer } from "components/Connect/styles/WrongNetwork";
 
 const NetworkModal = () => {
-  const { active, chainId } = useActiveWeb3React();
+  const { onboard, library, active, walletChainId, chainId } =
+    useActiveWeb3React();
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (
-      active &&
-      chainId &&
-      findNetworkNameByWeb3ChainId(chainId) !== requiredNetworkName
-    )
+    if (active && walletChainId && walletChainId !== chainId) {
       setShow(true);
-    else setShow(false);
-  }, [chainId, active]);
+    } else {
+      setShow(false);
+    }
+  }, [walletChainId, chainId, active]);
+
+  const switchNetwork = async () => {
+    try {
+      await library.send("wallet_switchEthereumChain", [
+        { chainId: ethers.utils.hexValue(chainId) },
+      ]);
+    } catch (e) {
+      if (e.code === 4902) {
+        //Unrecognized chain ID
+        addNetwork();
+      }
+    }
+  };
+
+  const addNetwork = async () => {
+    try {
+      await library.send("wallet_addEthereumChain", [
+        NETWORK_DETAILS_BY_ID[chainId],
+      ]);
+    } catch (e) {
+      onboard.walletCheck();
+    }
+  };
 
   return (
     <Modal isOpen={show} centered>
       <ModalBody>
         <WrongNetwork>
           <div className="text-center">
-            <div className="pb-4">
+            <div className="pt-3 pb-4">
               <img src={NotFoundImg} alt="error" width="300" className="mb-4" />
             </div>
             <h4 className="title pb-3">
               Your wallet is on a different network!
             </h4>
-            <div className="subtitle">
-              Select "{requiredNetworkName}" to continue.
-            </div>
+            <ButtonContainer>
+              <Button onClick={switchNetwork} className="secondary">
+                Switch wallet to {NETWORK_NAME_BY_ID[chainId]}
+              </Button>
+            </ButtonContainer>
           </div>
         </WrongNetwork>
       </ModalBody>

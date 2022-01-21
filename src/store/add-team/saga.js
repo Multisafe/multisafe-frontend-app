@@ -2,7 +2,7 @@ import { takeLatest, put, call, fork } from "redux-saga/effects";
 import { hide } from "redux-modal";
 import { ADD_TEAM } from "./action-types";
 import { addTeamSuccess, addTeamError } from "./actions";
-import request from "utils/request";
+import { request } from "utils/request";
 import { createDepartmentEndpoint } from "constants/endpoints";
 import { MODAL_NAME as ADD_TEAM_MODAL } from "components/People/AddTeamModal";
 import { getTeams } from "store/view-teams/actions";

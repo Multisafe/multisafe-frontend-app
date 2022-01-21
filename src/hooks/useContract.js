@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 // import { useWeb3React } from "@web3-react/core";
-import { Contract } from "@ethersproject/contracts";
+import { ethers } from "ethers";
 import useActiveWeb3React from "./useActiveWeb3React";
 // import useActiveWeb3React from "./useActiveWeb3React";
 
@@ -9,7 +9,7 @@ export default function useContract(address, ABI, withSigner = false) {
   return useMemo(
     () =>
       !!address && !!ABI && !!library
-        ? new Contract(
+        ? new ethers.Contract(
             address,
             ABI,
             withSigner ? library.getSigner(account).connectUnchecked() : library

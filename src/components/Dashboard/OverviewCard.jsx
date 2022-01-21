@@ -16,11 +16,13 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import PortfolioGraph from "./PortfolioGraph";
 import { Overview } from "./styles";
 import { getTokens } from "store/tokens/actions";
+import { useActiveWeb3React } from "hooks";
 
 const overviewKey = "overview";
 
 export default function OverviewCard() {
   const dispatch = useDispatch();
+  const { chainId } = useActiveWeb3React();
 
   // Reducers
   useInjectReducer({ key: overviewKey, reducer: overviewReducer });
@@ -35,10 +37,10 @@ export default function OverviewCard() {
   useEffect(() => {
     if (ownerSafeAddress) {
       dispatch(getOverview(ownerSafeAddress));
-      dispatch(getTokens(ownerSafeAddress));
+      dispatch(getTokens(ownerSafeAddress, chainId));
       dispatch(getPortfolioHistory(ownerSafeAddress));
     }
-  }, [ownerSafeAddress, dispatch]);
+  }, [ownerSafeAddress, dispatch, chainId]);
 
   const renderLoading = () => {
     return (

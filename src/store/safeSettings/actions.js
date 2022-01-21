@@ -5,10 +5,9 @@ import {
   SET_SAFE_SETTINGS,
 } from "./action-types";
 
-export function getSafeSettings({ networkId, safeAddress }) {
+export function getSafeSettings({ safeAddress }) {
   return {
     type: GET_SAFE_SETTINGS,
-    networkId,
     safeAddress,
   };
 }

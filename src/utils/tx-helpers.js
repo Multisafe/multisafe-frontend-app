@@ -1,5 +1,4 @@
-// import { BigNumber } from "@ethersproject/bignumber";
-import { parseUnits, formatUnits } from "@ethersproject/units";
+import { ethers } from "ethers";
 import Big from "big.js";
 
 // Hex helpers
@@ -37,12 +36,17 @@ export function standardizeTransaction(tx) {
 }
 
 export const getAmountInWei = (amount, decimals) => {
-  return parseUnits(Big(amount).round(decimals).toString(), decimals);
+  return ethers.utils.parseUnits(
+    Big(amount).round(decimals).toString(),
+    decimals
+  );
 };
 
 export const getAmountFromWei = (amount, decimals, precision) => {
   if (precision) {
-    return parseFloat(formatUnits(amount, decimals)).toFixed(precision);
+    return parseFloat(ethers.utils.formatUnits(amount, decimals)).toFixed(
+      precision
+    );
   }
-  return parseFloat(formatUnits(amount, decimals));
+  return parseFloat(ethers.utils.formatUnits(amount, decimals));
 };

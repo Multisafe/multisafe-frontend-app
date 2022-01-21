@@ -1,4 +1,4 @@
-import { networkNames } from "./networks";
+import { CHAIN_IDS, NETWORK_NAMES } from "./networks";
 
 export const ROOT_BE_URL = process.env.REACT_APP_BE_URL;
 
@@ -87,14 +87,21 @@ export const portfolioHistoryEndpoint = `${ROOT_BE_URL}/api/v1/users/portfolio/h
 export const getAdminStatsEndpoint = `${ROOT_BE_URL}/api/v1/admin/stats/get`;
 
 // GNOSIS
-export const gnosisSafeTransactionEndpoint =
-  process.env.REACT_APP_NETWORK_NAME === networkNames.MAINNET
-    ? `https://safe-transaction.gnosis.io/api/v1/safes/`
-    : `https://safe-transaction.rinkeby.gnosis.io/api/v1/safes/`;
-export const gnosisSafeTransactionV2Endpoint =
-  process.env.REACT_APP_NETWORK_NAME === networkNames.MAINNET
-    ? `https://safe-relay.gnosis.io/api/v2/safes/`
-    : `https://safe-relay.rinkeby.gnosis.io/api/v2/safes/`;
+export const GNOSIS_SAFE_TRANSACTION_ENDPOINTS = {
+  [CHAIN_IDS[NETWORK_NAMES.ETHEREUM]]:
+    "https://safe-transaction.gnosis.io/api/v1/safes/",
+  [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]:
+    "https://safe-transaction.rinkeby.gnosis.io/api/v1/safes/",
+  [CHAIN_IDS[NETWORK_NAMES.POLYGON]]:
+    "https://safe-transaction.polygon.gnosis.io/api/v1/safes/",
+};
+
+export const GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS = {
+  [CHAIN_IDS[NETWORK_NAMES.ETHEREUM]]:
+    "https://safe-relay.gnosis.io/api/v2/safes/",
+  [CHAIN_IDS[NETWORK_NAMES.RINKEBY]]:
+    "https://safe-relay.rinkeby.gnosis.io/api/v2/safes/",
+};
 
 // GAS PRICE
 export const gasPriceEndpoint = `${ROOT_BE_URL}/api/v1/gasPrices`;

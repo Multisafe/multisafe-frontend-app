@@ -10,10 +10,11 @@ import {
   GET_VERIFICATION_STATUS_ERROR,
 } from "./action-types";
 
-export function registerUser(body) {
+export function registerUser(body, networkId) {
   return {
     type: REGISTER_USER,
     body,
+    networkId,
   };
 }
 

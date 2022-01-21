@@ -8,7 +8,7 @@ import {
   addBulkPeopleSuccess,
   addBulkPeopleError,
 } from "./actions";
-import request from "utils/request";
+import { request } from "utils/request";
 import {
   createPeopleEndpoint,
   createBulkPeopleEndpoint,

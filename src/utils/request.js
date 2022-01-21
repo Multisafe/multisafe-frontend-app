@@ -15,8 +15,9 @@ function checkStatus(response) {
   throw error;
 }
 
-export default function request(url, options) {
+export const defaultRequest = (url, options) => {
   const token = localStorage.getItem("token");
+
   const authHeader = token
     ? { Authorization: `Bearer ${token}` }
     : { "x-api-key": process.env.REACT_APP_COINSHIFT_API_KEY };
@@ -30,4 +31,22 @@ export default function request(url, options) {
     },
   };
   return fetch(url, finalOptions).then(checkStatus).then(parseJSON);
-}
+};
+
+export const request = (url, options) => {
+  const networkId = localStorage.getItem("NETWORK_ID");
+
+  const requestUrl = new URL(url);
+
+  requestUrl.searchParams.set("networkId", networkId);
+
+  if (options.method === "POST" || options.method === "PUT") {
+    const parsedBody = JSON.parse(options.body);
+    options.body = JSON.stringify({
+      ...parsedBody,
+      networkId,
+    });
+  }
+
+  return defaultRequest(requestUrl.toString(), options);
+};

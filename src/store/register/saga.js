@@ -14,20 +14,19 @@ import {
   getVerificationStatusSuccess,
   getVerificationStatusError,
 } from "./actions";
-import request from "utils/request";
+import { request } from "utils/request";
 import {
   registerEndpoint,
   createMetaTxEndpoint,
   getVerificationStatusEndpoint,
 } from "constants/endpoints";
-import { networkId } from "constants/networks";
 import { routeGenerators } from "constants/routes/generators";
 
 export function* registerUser(action) {
   const requestURL = registerEndpoint;
   const options = {
     method: "POST",
-    body: JSON.stringify({ ...action.body, networkId }),
+    body: JSON.stringify({ ...action.body, networkId: action.networkId }),
   };
 
   try {
@@ -57,7 +56,7 @@ export function* createMetaTx(action) {
   const requestURL = createMetaTxEndpoint;
   const options = {
     method: "POST",
-    body: JSON.stringify({ ...action.body, networkId }),
+    body: JSON.stringify({ ...action.body, networkId: action.networkId }),
   };
 
   try {
@@ -78,7 +77,6 @@ export function* fetchVerificationStatus({ password, owner }) {
   const params = [
     ["password", password],
     ["owner", owner],
-    ["networkId", networkId],
   ];
 
   requestURL.search = new URLSearchParams(params).toString();
