@@ -1,7 +1,7 @@
 import React from "react";
 import CopyButton from "../Copy";
-import EtherscanLink from "../EtherscanLink";
-import { ETHERSCAN_LINK_TYPES, minifyAddress } from "../Web3Utils";
+import BlockExplorerLink from "../BlockExplorerLink";
+import { EXPLORER_LINK_TYPES, minifyAddress } from "../Web3Utils";
 import { HorizontalStepper } from "./styles";
 
 export function Stepper({ children, count }) {
@@ -63,9 +63,9 @@ export function StepCircle({
             className="mr-3"
             stopPropagation
           />
-          <EtherscanLink
+          <BlockExplorerLink
             id={`etherscan-link-${minifiedOwnerAddress}`}
-            type={ETHERSCAN_LINK_TYPES.ADDRESS}
+            type={EXPLORER_LINK_TYPES.ADDRESS}
             address={address}
           />
         </div>)}
