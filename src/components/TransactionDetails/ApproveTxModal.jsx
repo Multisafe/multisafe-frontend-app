@@ -20,20 +20,22 @@ import {
   makeSelectMultisigTransactionDetails,
   makeSelectMultisigExecutionAllowed,
 } from "store/multisig/selectors";
-import addresses from "constants/addresses";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import {
   confirmMultisigTransaction,
   submitMultisigTransaction,
 } from "store/multisig/actions";
 import { Information } from "components/Register/styles";
+import { useAddresses } from "hooks/useAddresses";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 export const MODAL_NAME = "approve-tx-modal";
-const { MULTISEND_ADDRESS } = addresses;
 
 function ApproveTxModal(props) {
+  const { MULTISEND_ADDRESS } = useAddresses();
+
   const { show, handleHide } = props;
-  const { account } = useActiveWeb3React();
+  const { account, chainId } = useActiveWeb3React();
 
   const {
     txHash,
@@ -229,8 +231,8 @@ function ApproveTxModal(props) {
             </div>
 
             <Information className="my-5">
-              Make sure you have sufficient Ether in this wallet to fund this
-              confirmation.
+              Make sure you have sufficient {GAS_TOKEN_SYMBOL_BY_ID[chainId]} in
+              this wallet to fund this confirmation.
             </Information>
           </React.Fragment>
         )}

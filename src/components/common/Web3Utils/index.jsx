@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { formatEther } from "@ethersproject/units";
+import { ethers } from "ethers";
 import { useActiveWeb3React } from "hooks";
-import { networkId, networkNames } from "constants/networks";
+import { NETWORK_NAMES } from "constants/networks";
 
 export const ChainId = () => {
   const { chainId } = useActiveWeb3React();
@@ -97,38 +97,43 @@ export const Balance = () => {
     }
   }, [account, library, chainId]); // ensures refresh if referential identity of library doesn't change across chainIds
 
-  return !!balance ? parseFloat(formatEther(balance)).toPrecision(4) : null;
+  return !!balance
+    ? parseFloat(ethers.utils.formatEther(balance)).toPrecision(4)
+    : null;
 };
 
-const etherscanPrefixByChainId = {
-  1: "",
-  3: `${networkNames.ROPSTEN.toLowerCase()}.`,
-  4: `${networkNames.RINKEBY.toLowerCase()}.`,
-  42: `${networkNames.KOVAN.toLowerCase()}.`,
+const scanLinkByChainId = {
+  1: "etherscan.io",
+  3: `${NETWORK_NAMES.ROPSTEN.toLowerCase()}.etherscan.io`,
+  4: `${NETWORK_NAMES.RINKEBY.toLowerCase()}.etherscan.io`,
+  42: `${NETWORK_NAMES.KOVAN.toLowerCase()}.etherscan.io`,
+  137: `polygonscan.com`,
 };
 
-export const ETHERSCAN_LINK_TYPES = {
+export const EXPLORER_LINK_TYPES = {
   TX: "tx",
   ADDRESS: "address",
 };
-export const getEtherscanLink = ({
+export const getBlockExplorerLink = ({
   chainId,
-  type = ETHERSCAN_LINK_TYPES.TX,
+  type = EXPLORER_LINK_TYPES.TX,
   hash,
   address,
 }) => {
-  if (type === ETHERSCAN_LINK_TYPES.TX) {
-    return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${hash}`;
-  } else if (type === ETHERSCAN_LINK_TYPES.ADDRESS) {
-    return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/${type}/${address}`;
+  if (type === EXPLORER_LINK_TYPES.TX) {
+    return `https://${scanLinkByChainId[chainId]}/${type}/${hash}`;
+  } else if (type === EXPLORER_LINK_TYPES.ADDRESS) {
+    return `https://${scanLinkByChainId[chainId]}/${type}/${address}`;
   }
-  return `https://${etherscanPrefixByChainId[chainId]}etherscan.io/`;
+  return `https://${scanLinkByChainId[chainId]}/`;
 };
 
 export const TransactionUrl = ({ hash, children, ...rest }) => {
+  const { chainId } = useActiveWeb3React();
+
   return (
     <a
-      href={getEtherscanLink({ chainId: networkId, hash })}
+      href={getBlockExplorerLink({ chainId, hash })}
       rel="noopener noreferrer"
       target="_blank"
       {...rest}

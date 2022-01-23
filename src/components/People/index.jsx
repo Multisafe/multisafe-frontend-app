@@ -163,13 +163,20 @@ export default function People() {
     if (encryptedPeople && allTeams && !loadingPeople) {
       const sortedDecryptedPeople = encryptedPeople
         .map(({ data, ...rest }) => {
-          const { firstName, lastName, salaryAmount, salaryToken, address } =
-            getDecryptedDetails(data, encryptionKey, organisationType);
+          const {
+            firstName,
+            lastName,
+            salaryAmount,
+            salaryToken,
+            salaryTokenAddress,
+            address,
+          } = getDecryptedDetails(data, encryptionKey, organisationType);
           return {
             firstName,
             lastName,
             salaryAmount,
             salaryToken,
+            salaryTokenAddress,
             address,
             ...rest,
           };
@@ -220,7 +227,7 @@ export default function People() {
         defaultValues: {
           team: { value: departmentId, label: departmentName },
           token: {
-            value: tokenInfo.symbol,
+            value: `${tokenInfo.address} ${tokenInfo.symbol}`,
             label: constructLabel({
               token: tokenInfo.symbol,
               imgUrl: tokenInfo.logoURI,
@@ -283,6 +290,7 @@ export default function People() {
     peopleId,
     salaryAmount,
     salaryToken,
+    salaryTokenAddress,
     address,
   }) => (
     <tr
@@ -296,6 +304,7 @@ export default function People() {
           peopleId,
           salaryAmount,
           salaryToken,
+          salaryTokenAddress,
           address,
         })
       }
@@ -312,7 +321,7 @@ export default function People() {
       <td style={{ width: "20%" }}>
         {salaryAmount && (
           <React.Fragment>
-            <TokenImg token={salaryToken} />
+            <TokenImg token={salaryToken} address={salaryTokenAddress} />
             <span>
               {formatNumber(salaryAmount, 5)} {salaryToken}
             </span>

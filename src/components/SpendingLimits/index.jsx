@@ -11,7 +11,7 @@ import {
   TableLoader,
 } from "components/common/Table";
 import Button from "components/common/Button";
-import { useContract } from "hooks";
+import { useActiveWeb3React, useContract } from "hooks";
 import { makeSelectTokenIcons } from "store/tokens/selectors";
 import { useInjectReducer } from "utils/injectReducer";
 import { useInjectSaga } from "utils/injectSaga";
@@ -21,7 +21,6 @@ import { makeSelectOwnerSafeAddress } from "store/global/selectors";
 import { getTokens } from "store/tokens/actions";
 import PlusIcon from "assets/icons/dashboard/white-plus-icon.svg";
 import NoSpendingLimitsIcon from "assets/icons/dashboard/empty/spending-limits.svg";
-import addresses from "constants/addresses";
 import AllowanceModuleABI from "constants/abis/AllowanceModule.json";
 import ERC20ABI from "constants/abis/ERC20.json";
 import { InfoCard } from "components/People/styles";
@@ -31,12 +30,14 @@ import Img from "components/common/Img";
 import NewSpendingLimitModal, {
   MODAL_NAME as NEW_SPENDING_LIMIT_MODAL,
 } from "./NewSpendingLimitModal";
+import { useAddresses } from "hooks/useAddresses";
 
 const tokensKey = "tokens";
 
-const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = addresses;
-
 export default function SpendingLimits() {
+  const { ALLOWANCE_MODULE_ADDRESS, ZERO_ADDRESS } = useAddresses();
+  const { chainId } = useActiveWeb3React();
+
   const allowanceModule = useContract(
     ALLOWANCE_MODULE_ADDRESS,
     AllowanceModuleABI
@@ -60,9 +61,9 @@ export default function SpendingLimits() {
 
   useEffect(() => {
     if (ownerSafeAddress && !icons) {
-      dispatch(getTokens(ownerSafeAddress));
+      dispatch(getTokens(ownerSafeAddress, chainId));
     }
-  }, [ownerSafeAddress, dispatch, icons]);
+  }, [ownerSafeAddress, dispatch, icons, chainId]);
 
   const getERC20Contract = useCallback(
     (contractAddress) => {
@@ -138,7 +139,7 @@ export default function SpendingLimits() {
         return [];
       }
     }
-  }, [allowanceModule, ownerSafeAddress, getERC20Contract]);
+  }, [allowanceModule, ownerSafeAddress, getERC20Contract, ZERO_ADDRESS]);
 
   useEffect(() => {
     let isMounted = true;

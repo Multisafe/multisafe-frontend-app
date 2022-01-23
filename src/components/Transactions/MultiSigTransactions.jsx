@@ -78,7 +78,7 @@ export default function MultiSigTransactions() {
   );
 
   useEffect(() => {
-    dispatch(getLabels(networkId, ownerSafeAddress, userAddress));
+    dispatch(getLabels(ownerSafeAddress, userAddress));
   }, [dispatch, networkId, ownerSafeAddress, userAddress]);
 
   useEffect(() => {

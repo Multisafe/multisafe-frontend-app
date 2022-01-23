@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { arrayify } from "@ethersproject/bytes";
 import { EthersAdapter } from "contract-proxy-kit";
 import { ethers } from "ethers";
 import semverSatisfies from "semver/functions/satisfies";
@@ -11,7 +10,6 @@ import {
   getHexDataLength,
   standardizeTransaction,
 } from "utils/tx-helpers";
-import addresses from "constants/addresses";
 import { DEFAULT_GAS_PRICE } from "constants/index";
 import GnosisSafeABIBeforeV130 from "constants/abis/GnosisSafeBeforeV130.json";
 import GnosisSafeABIAfterV130 from "constants/abis/GnosisSafe.json";
@@ -22,15 +20,15 @@ import {
   makeSelectSafeVersion,
 } from "store/global/selectors";
 import { makeSelectSelectedGasPriceInWei } from "store/gas/selectors";
-import { gnosisSafeTransactionV2Endpoint } from "constants/endpoints";
 import { makeSelectIsMetaTxEnabled } from "store/metatx/selectors";
 import { makeSelectNonce } from "store/safe/selectors";
-import { networkId } from "constants/networks";
-
-const { MULTISEND_ADDRESS, ZERO_ADDRESS } = addresses;
+import { useAddresses } from "hooks/useAddresses";
+import { useEstimateTransaction } from "hooks/useEstimateTransaction";
 
 export default function useBatchTransaction() {
-  const { account, library, connector } = useActiveWeb3React();
+  const { account, library, connector, chainId } = useActiveWeb3React();
+  const { MULTISEND_ADDRESS, ZERO_ADDRESS } = useAddresses();
+  const { estimateTransaction } = useEstimateTransaction();
 
   const [loadingTx, setLoadingTx] = useState(false);
   const [txHash, setTxHash] = useState("");
@@ -135,7 +133,7 @@ export default function useBatchTransaction() {
         const signer = library.getSigner(account);
 
         signer
-          .signMessage(arrayify(safeTxHash))
+          .signMessage(ethers.utils.arrayify(safeTxHash))
           .then((signature) => {
             let sigV = parseInt(signature.slice(-2), 16);
             // Metamask with ledger returns v = 01, this is not valid for ethereum
@@ -233,7 +231,7 @@ export default function useBatchTransaction() {
 
     const domain = {
       verifyingContract: safeAddress,
-      chainId: eip712WithChainId ? networkId : undefined,
+      chainId: eip712WithChainId ? chainId : undefined,
     };
 
     const types = getEip712MessageTypes(safeVersion);
@@ -356,29 +354,16 @@ export default function useBatchTransaction() {
       setTxData("");
 
       try {
-        // estimate using api
-        const estimateResponse = await fetch(
-          `${gnosisSafeTransactionV2Endpoint}${safeAddress}/transactions/estimate/`,
+        const { safeTxGas, baseGas, lastUsedNonce } = await estimateTransaction(
           {
-            method: "POST",
-            body: JSON.stringify({
-              safe: safeAddress,
-              to,
-              value: valueWei,
-              data,
-              operation,
-              gasToken,
-            }),
-            headers: {
-              "content-type": "application/json",
-            },
+            to,
+            value: valueWei,
+            data,
+            operation,
+            gasToken,
           }
         );
-        const estimateResult = await estimateResponse.json();
-        const { safeTxGas, baseGas, lastUsedNonce, exception } = estimateResult;
-        if (exception) {
-          throw new Error("Gas estimation error. The transaction might fail.");
-        }
+
         const gasLimit = Number(safeTxGas) + Number(baseGas) + 21000; // giving a little higher gas limit just in case
         const nonce = lastUsedNonce === null ? 0 : lastUsedNonce + 1;
         if (!isMultiOwner) {

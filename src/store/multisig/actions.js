@@ -197,10 +197,9 @@ export function clearMultisigTransactionDetails() {
   };
 }
 
-export function getLabels(networkId, safeAddress, userAddress) {
+export function getLabels(safeAddress, userAddress) {
   return {
     type: GET_LABELS,
-    networkId,
     safeAddress,
     userAddress,
   };

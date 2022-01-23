@@ -15,10 +15,12 @@ import { InfoCard } from "components/People/styles";
 import TokenImg from "components/common/TokenImg";
 import Img from "components/common/Img";
 import NoAssetsImg from "assets/icons/dashboard/empty/assets.svg";
+import { useActiveWeb3React } from "hooks";
 
 export default function Assets() {
   const dispatch = useDispatch();
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
+  const { chainId } = useActiveWeb3React();
 
   // Selectors
   const loading = useSelector(makeSelectLoading());
@@ -26,9 +28,9 @@ export default function Assets() {
 
   useEffect(() => {
     if (ownerSafeAddress) {
-      dispatch(getTokens(ownerSafeAddress));
+      dispatch(getTokens(ownerSafeAddress, chainId));
     }
-  }, [ownerSafeAddress, dispatch]);
+  }, [ownerSafeAddress, dispatch, chainId]);
 
   const isAssetsEmpty = useMemo(() => {
     return (
@@ -41,10 +43,10 @@ export default function Assets() {
   const renderAssets = () => {
     if (loading) return <TableLoader colSpan={4} />;
 
-    return tokenList.map(({ name, usd, balance }) => (
+    return tokenList.map(({ name, usd, balance, address }) => (
       <tr key={name}>
         <td className="d-flex align-items-center">
-          <TokenImg token={name} />
+          <TokenImg token={name} address={address} />
           <div className="ml-2 mt-1">{name}</div>
         </td>
         <td>

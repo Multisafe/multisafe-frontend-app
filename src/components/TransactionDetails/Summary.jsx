@@ -7,11 +7,15 @@ import StatusText from "components/Transactions/StatusText";
 import { TransactionDetails } from "./styles";
 import { TRANSACTION_MODES } from "constants/transactions";
 import { formatNumber } from "utils/number-helpers";
-import EtherscanLink from "components/common/EtherscanLink";
-import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import BlockExplorerLink from "components/common/BlockExplorerLink";
+import { EXPLORER_LINK_TYPES } from "components/common/Web3Utils";
 import TokenImg from "components/common/TokenImg";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
+import { useActiveWeb3React } from "hooks";
 
 export default function Summary({ txDetails, executionDate, paidTeammates }) {
+  const { chainId } = useActiveWeb3React();
+
   if (!txDetails) return null;
   const {
     transactionHash: txDetailsHash,
@@ -118,9 +122,9 @@ export default function Summary({ txDetails, executionDate, paidTeammates }) {
                   value={txDetailsHash}
                   className="mr-3"
                 />
-                <EtherscanLink
-                  id="etherscan-link"
-                  type={ETHERSCAN_LINK_TYPES.TX}
+                <BlockExplorerLink
+                  id="block-explorer-link"
+                  type={EXPLORER_LINK_TYPES.TX}
                   hash={txDetailsHash}
                 />
               </div>
@@ -139,7 +143,9 @@ export default function Summary({ txDetails, executionDate, paidTeammates }) {
           <div className="detail-title">Transaction Fees</div>
           <div className="detail-subtitle">
             {transactionFees > 0
-              ? `${formatNumber(transactionFees, 5)} ETH`
+              ? `${formatNumber(transactionFees, 5)} ${
+                  GAS_TOKEN_SYMBOL_BY_ID[chainId]
+                }`
               : `-`}
           </div>
         </div>

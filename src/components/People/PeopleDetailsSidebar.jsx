@@ -16,12 +16,12 @@ import {
   makeSelectTokensDetails,
 } from "store/tokens/selectors";
 import { PeopleDetails } from "./styles";
-import EtherscanLink from "components/common/EtherscanLink";
+import BlockExplorerLink from "components/common/BlockExplorerLink";
 import Button from "components/common/Button";
 import { MODAL_NAME as DELETE_PEOPLE_MODAL } from "./DeletePeopleModal";
 import { MODAL_NAME as EDIT_PEOPLE_MODAL } from "./AddSinglePeopleModal";
 import { constructLabel } from "utils/tokens";
-import { ETHERSCAN_LINK_TYPES } from "components/common/Web3Utils";
+import { EXPLORER_LINK_TYPES } from "components/common/Web3Utils";
 import { formatNumber } from "utils/number-helpers";
 import { MODAL_NAME as NEW_TRANSFER_MODAL } from "components/NewTransfer/NewTransferModal";
 import { formatText } from "utils/string-utils";
@@ -149,8 +149,13 @@ function PeopleDetailsSidebar() {
       peopleId,
       salaryAmount,
       salaryToken,
+      salaryTokenAddress,
       address,
     } = peopleDetails;
+    const tokenInfo =
+      tokenDetails?.[salaryTokenAddress] ||
+      Object.values(tokenDetails).find(({ symbol }) => symbol === salaryToken);
+
     dispatch(
       show(EDIT_PEOPLE_MODAL, {
         defaultValues: {
@@ -158,11 +163,10 @@ function PeopleDetailsSidebar() {
           lastName,
           amount: salaryAmount,
           token: {
-            value: salaryToken,
+            value: `${salaryTokenAddress} ${salaryToken}`,
             label: constructLabel({
               token: salaryToken,
-              imgUrl:
-                tokenDetails[salaryToken] && tokenDetails[salaryToken].logoURI,
+              imgUrl: tokenInfo.logoURI,
             }),
           },
           address,
@@ -228,9 +232,9 @@ function PeopleDetailsSidebar() {
               value={address}
               className="mr-3"
             />
-            <EtherscanLink
-              id="etherscan-link"
-              type={ETHERSCAN_LINK_TYPES.ADDRESS}
+            <BlockExplorerLink
+              id="block-explorer-link"
+              type={EXPLORER_LINK_TYPES.ADDRESS}
               address={address}
             />
           </div>

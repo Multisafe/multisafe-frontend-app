@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { hashMessage } from "@ethersproject/hash";
-import { recoverAddress } from "@ethersproject/transactions";
-import { toUtf8Bytes } from "@ethersproject/strings";
-import { keccak256 } from "@ethersproject/keccak256";
+import { ethers } from "ethers";
 
 import { useActiveWeb3React, useLocalStorage } from "hooks";
 import ConnectButton from "components/Connect";
@@ -98,8 +95,8 @@ const AcceptInvite = () => {
 
   useEffect(() => {
     if (sign) {
-      const msgHash = hashMessage(MESSAGE_TO_SIGN);
-      const recoveredAddress = recoverAddress(msgHash, sign);
+      const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
+      const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
       if (recoveredAddress !== account) {
         setHasAlreadySigned(false);
         setSign("");
@@ -111,8 +108,8 @@ const AcceptInvite = () => {
   useEffect(() => {
     if (step === STEPS.ONE && account) {
       if (sign) {
-        const msgHash = hashMessage(MESSAGE_TO_SIGN);
-        const recoveredAddress = recoverAddress(msgHash, sign);
+        const msgHash = ethers.utils.hashMessage(MESSAGE_TO_SIGN);
+        const recoveredAddress = ethers.utils.recoverAddress(msgHash, sign);
         if (recoveredAddress === account) {
           setHasAlreadySigned(true);
         }
@@ -127,10 +124,10 @@ const AcceptInvite = () => {
         if (connector.name === "WalletConnect") {
           const rawMessage = MESSAGE_TO_SIGN;
           const messageLength = new Blob([rawMessage]).size;
-          const message = toUtf8Bytes(
+          const message = ethers.utils.toUtf8Bytes(
             "\x19Ethereum Signed Message:\n" + messageLength + rawMessage
           );
-          const hashedMessage = keccak256(message);
+          const hashedMessage = ethers.utils.keccak256(message);
 
           connector.provider.wc
             .signMessage([account.toLowerCase(), hashedMessage])

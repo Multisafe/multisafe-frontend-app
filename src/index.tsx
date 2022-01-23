@@ -25,7 +25,7 @@ const persistConfig = {
   key: "root",
   storage: localForage,
   // NOTE: ONLY KEEP MOST IMP DATA HERE
-  whitelist: ["global"], // global state will pe persisted
+  whitelist: ["global", "network"], // global state will pe persisted
 };
 //@ts-ignore
 window.persistor = persistStore(store, persistConfig);

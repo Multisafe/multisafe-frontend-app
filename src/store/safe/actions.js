@@ -7,7 +7,7 @@ import {
   UPDATE_OWNER_NAME_ERROR,
 } from "./action-types";
 
-export function getNonce(safeAddress) {
+export function getNonce({ safeAddress }) {
   return {
     type: GET_NONCE,
     safeAddress,

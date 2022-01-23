@@ -11,13 +11,13 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectSafeOwners,
 } from "store/global/selectors";
-import { useEncryptionKey } from "hooks";
+import { useEncryptionKey, useActiveWeb3React } from "hooks";
 import { makeSelectMultisigTransactions } from "store/multisig/selectors";
 import { Export } from "components/People/styles";
 import { TRANSACTION_MODES } from "constants/transactions";
-import { getEtherscanLink } from "components/common/Web3Utils";
-import { networkId } from "constants/networks";
+import { getBlockExplorerLink } from "components/common/Web3Utils";
 import { getDecryptedOwnerName } from "store/invitation/utils";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 const joinArray = (arr) => {
   return arr && arr.join("\n");
@@ -81,6 +81,8 @@ export default function ExportButton() {
   const organisationType = useSelector(makeSelectOrganisationType());
   const safeOwners = useSelector(makeSelectSafeOwners());
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
+
+  const { chainId } = useActiveWeb3React();
 
   useEffect(() => {
     let csvData = [];
@@ -187,6 +189,7 @@ export default function ExportButton() {
             }
           }
 
+          const transactionFeeColumnLabel = `Transaction fees (${GAS_TOKEN_SYMBOL_BY_ID[chainId]})`;
           csvData.push({
             Date: format(new Date(createdOn), "MMM-dd-yyyy"),
             Time: format(new Date(createdOn), "HH:mm:ss"),
@@ -209,11 +212,11 @@ export default function ExportButton() {
             "Created By Name": createdByName,
             "Transaction ID": transactionId,
             "Transaction Hash": transactionHash || "",
-            Link: getEtherscanLink({
-              chainId: networkId,
+            Link: getBlockExplorerLink({
+              chainId,
               hash: transactionHash || "",
             }),
-            "Transaction fees (ETH)": transactionFees ? transactionFees : "",
+            [transactionFeeColumnLabel]: transactionFees ? transactionFees : "",
             "Safe Address": safeAddress,
             Labels: joinArray(labels.map(({ name }) => name)) || " ",
             Note:
@@ -228,7 +231,13 @@ export default function ExportButton() {
         setCsvData(csvData);
       }
     }
-  }, [encryptionKey, organisationType, multisigTransactions, safeOwners]);
+  }, [
+    encryptionKey,
+    organisationType,
+    multisigTransactions,
+    safeOwners,
+    chainId,
+  ]);
 
   return (
     <CSVLink

@@ -66,7 +66,7 @@ export const LabelsSelect = ({
 
   useEffect(() => {
     if (!allLabels) {
-      dispatch(getLabels(networkId, ownerSafeAddress, userAddress));
+      dispatch(getLabels(ownerSafeAddress, userAddress));
     }
   }, [dispatch, networkId, ownerSafeAddress, userAddress, allLabels]);
 

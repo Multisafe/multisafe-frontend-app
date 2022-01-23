@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch } from "react-redux";
 
-import { networkId } from "constants/networks";
 import { ROOT_BE_URL } from "constants/endpoints";
 import { showToast, toaster } from "components/common/Toast";
 import { getMultisigTransactionByIdSuccess } from "store/multisig/actions";
@@ -12,9 +11,13 @@ import { getNotificationsSuccess } from "store/notifications/actions";
 import { getTokensSuccess } from "store/tokens/actions";
 import Button from "components/common/Button";
 import { routeGenerators } from "constants/routes/generators";
+import { useActiveWeb3React } from "hooks";
 
 export default function useSocket(props) {
   const { safeAddress, isReadOnly } = props;
+
+  const { chainId } = useActiveWeb3React();
+
   const socketRef = useRef();
 
   const dispatch = useDispatch();
@@ -69,7 +72,7 @@ export default function useSocket(props) {
 
       // txConfirmed
       socketRef.current.on(
-        `${safeAddress}_${networkId}_txConfirmed`,
+        `${safeAddress}_${chainId}_txConfirmed`,
         (message) => {
           showTxConfirmedToast(message);
         }
@@ -77,7 +80,7 @@ export default function useSocket(props) {
 
       // notifications
       socketRef.current.on(
-        `${safeAddress}_${networkId}_notifications`,
+        `${safeAddress}_${chainId}_notifications`,
         (message) => {
           if (
             message.notifications.length > 0 &&
@@ -89,7 +92,8 @@ export default function useSocket(props) {
                 data.tokenBalances.tokens,
                 data.tokenBalances.prices,
                 data.tokenBalances.icons,
-                data.tokenBalances.log
+                data.tokenBalances.log,
+                chainId
               )
             );
           }
@@ -103,7 +107,7 @@ export default function useSocket(props) {
         }
       );
     }
-  }, [safeAddress, dispatch, showTxConfirmedToast, isReadOnly]);
+  }, [safeAddress, dispatch, showTxConfirmedToast, isReadOnly, chainId]);
 
   return socketRef;
 }

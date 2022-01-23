@@ -2,9 +2,9 @@ import React, { ReactNode, SyntheticEvent, useState } from "react";
 import styled from "styled-components/macro";
 import { format } from "date-fns";
 import CopyButton from "components/common/Copy";
-import EtherscanLink from "components/common/EtherscanLink";
+import BlockExplorerLink from "components/common/BlockExplorerLink";
 import {
-  ETHERSCAN_LINK_TYPES,
+  EXPLORER_LINK_TYPES,
   minifyAddress,
 } from "components/common/Web3Utils";
 import { SideDrawer } from "components/common/SideDrawer";
@@ -15,6 +15,8 @@ import { TxDetails } from "store/multisig/types";
 import { TransactionNote } from "components/Transactions/TransactionNote";
 import TokenImg from "components/common/TokenImg";
 import { UpdateLabels } from "./UpdateLabels";
+import { GAS_TOKEN_SYMBOL_BY_ID } from "../../constants/networks";
+import { useActiveWeb3React } from "../../hooks";
 
 type Props = {
   isOpen: boolean;
@@ -108,6 +110,8 @@ export const QuickViewTransaction = ({
     tokenCurrencies,
   } = txDetails;
 
+  const { chainId } = useActiveWeb3React();
+
   const renderOptionalCards = () => {
     switch (transactionMode) {
       case TRANSACTION_MODES.MASS_PAYOUT:
@@ -189,9 +193,9 @@ export const QuickViewTransaction = ({
                 value={transactionHash}
               />
               {/*@ts-ignore*/}
-              <EtherscanLink
-                id="etherscan-link"
-                type={ETHERSCAN_LINK_TYPES.TX}
+              <BlockExplorerLink
+                id="block-explorer-link"
+                type={EXPLORER_LINK_TYPES.TX}
                 hash={transactionHash}
               />
             </TransactionHashContainer>
@@ -206,7 +210,8 @@ export const QuickViewTransaction = ({
           <DetailsItem>
             <DetailsTitle>Transaction Fee</DetailsTitle>
             <DetailsContent>
-              ${formatNumber(transactionFees, 5)} ETH
+              ${formatNumber(transactionFees, 5)}{" "}
+              {GAS_TOKEN_SYMBOL_BY_ID[chainId]}
             </DetailsContent>
           </DetailsItem>
         ) : null}

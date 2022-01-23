@@ -8,10 +8,10 @@ import { push } from "connected-react-router";
 import { LOGIN_USER } from "./action-types";
 import { loginUserSuccess, loginUserError } from "./actions";
 import { getSafeInfoSuccess } from "../global/actions";
-import request from "utils/request";
+import { request } from "utils/request";
 import { loginEndpoint } from "constants/endpoints";
-import { networkId } from "constants/networks";
 import { routeGenerators } from "constants/routes/generators";
+import { RESTART_GAS_PRICE } from "store/gas/action-types";
 
 export function* loginUser({
   safeAddress,
@@ -20,6 +20,7 @@ export function* loginUser({
   password,
   owner,
   redirectUrl,
+  networkId,
 }) {
   const requestURL = `${loginEndpoint}`;
 
@@ -49,6 +50,7 @@ export function* loginUser({
       } else {
         yield put(push(routeGenerators.dashboard.root({ safeAddress })));
       }
+      yield put({ type: RESTART_GAS_PRICE });
     }
   } catch (err) {
     yield put(loginUserError(err));
