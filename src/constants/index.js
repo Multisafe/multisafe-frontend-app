@@ -169,17 +169,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.POLYGON]].USDT_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
-    },
-    {
-      id: 4,
-      name: TOKEN_SYMBOLS.ETH,
-      icon: ETHIcon,
-      balance: 0,
-      usd: 0,
-      address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.POLYGON]].WETH_ADDRESS,
-      decimals: 18,
-      usdConversionRate: 1,
-    },
+    }
   ],
 };
 
