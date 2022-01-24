@@ -15,5 +15,6 @@ export const routeTemplates = {
     assets: "/dashboard/:safeAddress/assets",
     transactions: "/dashboard/:safeAddress/transactions",
     transactionById: "/dashboard/:safeAddress/transactions/:transactionId",
+    stream: "/dashboard/:safeAddress/stream",
   },
 };

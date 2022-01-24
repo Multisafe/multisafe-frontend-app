@@ -36,6 +36,7 @@ import {
   FEATURE_NAMES,
   useFeatureManagement,
 } from "hooks/useFeatureManagement";
+import StreamUI from "components/Stream/loadable";
 
 const globalKey = "global";
 
@@ -106,6 +107,7 @@ const DashboardPage = () => {
             path={routeTemplates.dashboard.assets}
             component={Assets}
           />
+          <Route exact path={routeTemplates.dashboard.stream} component={StreamUI}/>
           <Route
             exact
             path={routeTemplates.dashboard.settings}

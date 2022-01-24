@@ -31,5 +31,7 @@ export const routeGenerators = {
         safeAddress,
         transactionId,
       }),
+    stream: ({ safeAddress }) =>
+      generatePath(routeTemplates.dashboard.stream, { safeAddress }),
   },
 };
