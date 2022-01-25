@@ -1,3 +1,5 @@
+import {ethers} from 'ethers';
+
 export const NETWORK_NAMES = {
   LOCAL: "Local",
   RINKEBY: "Rinkeby",
@@ -53,7 +55,7 @@ export const SUPPORTED_NETWORK_IDS = [
 
 export const NETWORK_DETAILS_BY_ID = {
   [CHAIN_IDS[NETWORK_NAMES.POLYGON]]: {
-    chainId: CHAIN_IDS[NETWORK_NAMES.POLYGON],
+    chainId: ethers.utils.hexlify(CHAIN_IDS[NETWORK_NAMES.POLYGON]),
     chainName: "Polygon Mainnet",
     nativeCurrency: {
       name: "MATIC",
@@ -64,7 +66,7 @@ export const NETWORK_DETAILS_BY_ID = {
     blockExplorerUrls: ["https://polygonscan.com/"],
   },
   [CHAIN_IDS[NETWORK_NAMES.BSC]]: {
-    chainId: CHAIN_IDS[NETWORK_NAMES.BSC],
+    chainId: ethers.utils.hexlify(CHAIN_IDS[NETWORK_NAMES.BSC]),
     chainName: "Binance Smart Chain Mainnet",
     nativeCurrency: {
       name: "BNB",
@@ -75,7 +77,7 @@ export const NETWORK_DETAILS_BY_ID = {
     blockExplorerUrls: ["https://bscscan.com/"],
   },
   [CHAIN_IDS[NETWORK_NAMES.AVALANCHE]]: {
-    chainId: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
+    chainId: ethers.utils.hexlify(CHAIN_IDS[NETWORK_NAMES.AVALANCHE]),
     chainName: "Avalanche Mainnet",
     nativeCurrency: {
       name: "AVAX",
