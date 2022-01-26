@@ -72,7 +72,7 @@ export const NetworkSelect = () => {
   ];
 
   const options =
-    process.env.NODE_ENV === "production"
+    process.env.CONFIG_ENV === "production"
       ? mainnetOptions
       : [...mainnetOptions, ...testnetOptions];
 
