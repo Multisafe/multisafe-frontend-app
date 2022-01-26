@@ -44,7 +44,7 @@ export function* getSafes(action) {
 }
 
 const filterSafes = (safes) => {
-  return process.env.NODE_ENV === "production"
+  return process.env.CONFIG_ENV === "production"
     ? safes.filter(
         ({ networkId }) => networkId !== CHAIN_IDS[NETWORK_NAMES.RINKEBY]
       )
