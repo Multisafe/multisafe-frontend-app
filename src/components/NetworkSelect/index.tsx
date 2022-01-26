@@ -40,6 +40,24 @@ export const NetworkSelect = () => {
         />
       ),
     },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.BSC],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.BSC]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.BSC]}
+        />
+      ),
+    },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+        />
+      ),
+    }
   ];
   const testnetOptions = [
     {

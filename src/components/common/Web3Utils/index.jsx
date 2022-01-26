@@ -108,6 +108,8 @@ const scanLinkByChainId = {
   4: `${NETWORK_NAMES.RINKEBY.toLowerCase()}.etherscan.io`,
   42: `${NETWORK_NAMES.KOVAN.toLowerCase()}.etherscan.io`,
   137: `polygonscan.com`,
+  43114: `snowtrace.io`,
+  56: `bscscan.com/`,
 };
 
 export const EXPLORER_LINK_TYPES = {
