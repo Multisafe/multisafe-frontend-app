@@ -1,90 +1,88 @@
+import InfoHelpIcon from "assets/icons/new-transfer/info-help.svg";
+import InfoIcon from "assets/icons/new-transfer/info-warn.svg";
+import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
+import { cryptoUtils } from "coinshift-sdk";
+import {
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
+} from "components/common/Accordion";
+import { Alert, AlertMessage } from "components/common/Alert";
+import Button from "components/common/Button";
+import ErrorText from "components/common/ErrorText";
+import ExternalLink from "components/common/ExternalLink";
+import { TextArea } from "components/common/Form";
+import Img from "components/common/Img";
+import { showWarningToast, toaster } from "components/common/Toast";
+import TokenImg from "components/common/TokenImg";
+import { LabelsSelect } from "components/LabelsSelect";
+import { TRANSACTION_MODES } from "constants/transactions";
+import { useActiveWeb3React, useEncryptionKey, useMassPayout } from "hooks";
+import { isEqual } from "lodash";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelector, useDispatch } from "react-redux";
-import { cryptoUtils } from "coinshift-sdk";
-import { isEqual } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
 import { show } from "redux-modal";
-import xss from "xss";
-
-import Button from "components/common/Button";
-import { useMassPayout, useActiveWeb3React, useEncryptionKey } from "hooks";
-import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
-import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
-import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
 import {
+  makeSelectIsMultiOwner,
+  makeSelectIsReadOnly,
+  makeSelectOrganisationType,
   makeSelectOwnerSafeAddress,
   makeSelectThreshold,
-  makeSelectOrganisationType,
-  makeSelectIsReadOnly,
-  makeSelectIsMultiOwner,
 } from "store/global/selectors";
-import { getTokens } from "store/tokens/actions";
-import {
-  makeSelectLoading as makeSelectLoadingTokens,
-  makeSelectTokenList,
-  makeSelectTotalBalance,
-} from "store/tokens/selectors";
-import SelectFromTeamModal from "./SelectFromTeamModal";
-import { TRANSACTION_MODES } from "constants/transactions";
-import { formatNumber } from "utils/number-helpers";
-import { constructLabel } from "utils/tokens";
-import ErrorText from "components/common/ErrorText";
-import TokenBatches from "./TokenBatches";
-import {
-  makeSelectTransferSummary,
-  makeSelectStep,
-  makeSelectFormData,
-} from "store/new-transfer/selectors";
-import { STEPS } from "store/register/resources";
+import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
 import {
   selectStep,
   setTransferSummary,
   updateForm,
 } from "store/new-transfer/actions";
 import {
-  Accordion,
-  AccordionItem,
-  AccordionBody,
-  AccordionHeader,
-} from "components/common/Accordion";
-import { TextArea } from "components/common/Form";
+  makeSelectFormData,
+  makeSelectStep,
+  makeSelectTransferSummary,
+} from "store/new-transfer/selectors";
+import { STEPS } from "store/register/resources";
+import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
+import { getTokens } from "store/tokens/actions";
+import {
+  makeSelectLoading as makeSelectLoadingTokens,
+  makeSelectTokenList,
+  makeSelectTotalBalance,
+} from "store/tokens/selectors";
+import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions/selectors";
+import { formatNumber } from "utils/number-helpers";
+import { constructLabel } from "utils/tokens";
+import xss from "xss";
+import SelectFromTeamModal from "./SelectFromTeamModal";
+import {
+  ButtonsContainer,
+  FinalSummarySection,
+  GrandTotalText,
+  Heading,
+  HeadingContainer,
+  HowItWorks,
+  HowItWorksContainer,
+  InputTitle,
+  NewTransferContainer,
+  SectionDivider,
+  SummaryContainer,
+  TransferFooter,
+  TransferRow,
+  TransferSummaryContainer,
+} from "./styles/NewTransfer";
+import {
+  PaymentButtonContainer,
+  PaymentDescription,
+  PaymentFlex,
+  PaymentSubtitle,
+  PaymentTitle,
+} from "./styles/PaymentSummary";
+import TokenBatches from "./TokenBatches";
 import TokenSummary from "./TokenSummary";
-import TokenImg from "components/common/TokenImg";
-import Img from "components/common/Img";
-import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
-import InfoIcon from "assets/icons/new-transfer/info-warn.svg";
-import InfoHelpIcon from "assets/icons/new-transfer/info-help.svg";
 import UploadCsvModal, {
   MODAL_NAME as UPLOAD_CSV_MODAL,
 } from "./UploadCsvModal";
-import { Alert, AlertMessage } from "components/common/Alert";
-import { showWarningToast, toaster } from "components/common/Toast";
-import { LabelsSelect } from "components/LabelsSelect";
-
-import {
-  NewTransferContainer,
-  SummaryContainer,
-  TransferFooter,
-  ButtonsContainer,
-  HeadingContainer,
-  Heading,
-  TransferSummaryContainer,
-  TransferRow,
-  InputTitle,
-  GrandTotalText,
-  FinalSummarySection,
-  SectionDivider,
-  HowItWorksContainer,
-  HowItWorks,
-} from "./styles/NewTransfer";
-import {
-  PaymentFlex,
-  PaymentTitle,
-  PaymentSubtitle,
-  PaymentButtonContainer,
-  PaymentDescription,
-} from "./styles/PaymentSummary";
-import ExternalLink from "components/common/ExternalLink";
 
 const defaultValues = {
   batch: [
@@ -398,11 +396,17 @@ export default function NewTransfer({ prefilledValues }) {
         },
       };
 
-      await batchMassPayout({
-        batch: formData.batch,
-        allTokenDetails: existingTokenDetails,
+      console.log({
+        form: formData.batch,
         baseRequestBody,
+        existingTokenDetails,
       });
+
+      // await batchMassPayout({
+      //   batch: formData.batch,
+      //   allTokenDetails: existingTokenDetails,
+      //   baseRequestBody,
+      // });
     }
   };
 

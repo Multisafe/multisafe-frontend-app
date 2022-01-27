@@ -47,6 +47,12 @@ export const mainNavItems = [
     activeIcon: ActiveTransactionsIcon,
   },
   {
+    link: routeGenerators.dashboard.stream,
+    name: "Stream",
+    icon: TransactionsIcon,
+    activeIcon: ActiveTransactionsIcon,
+  },
+  {
     href: "https://discord.gg/yHwg8DkBpf",
     name: "Support",
     icon: SupportIcon,
