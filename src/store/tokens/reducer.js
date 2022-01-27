@@ -15,9 +15,7 @@ import {
 } from "./action-types";
 import {
   DEFAULT_TOKEN_DETAILS,
-  getDefaultIconIfPossible,
 } from "constants/index";
-import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
 import { constructLabel } from "utils/tokens";
 
 export const initialState = {
@@ -51,41 +49,24 @@ const reducer = (state = initialState, action) =>
           action.tokens
             .map(({ tokenDetails, balanceDetails }, idx) => {
               if (!tokenDetails) return null;
-              const tokenIcon = getDefaultIconIfPossible({
-                symbol: tokenDetails.tokenInfo.symbol,
-                address: tokenDetails.tokenInfo.address,
-                icons: action.icons,
-              });
-              // eslint-disable-next-line
-              if (balanceDetails && balanceDetails.balance == 0) {
-                return {
-                  id: idx,
-                  name: tokenDetails.tokenInfo.symbol,
-                  icon:
-                    tokenIcon || tokenDetails.tokenInfo.logoUri || DefaultIcon,
-                  balance: 0,
-                  usd: 0,
-                  address: tokenDetails.tokenInfo.address,
-                  decimals: tokenDetails.tokenInfo.decimals,
-                  usdConversionRate: balanceDetails.usdConversion,
-                };
-              }
-              // erc20
-              const balance = getAmountFromWei(
+
+              const address = tokenDetails.tokenInfo.address;
+
+              const balance = balanceDetails?.balance ? getAmountFromWei(
                 balanceDetails.balance,
                 tokenDetails.tokenInfo.decimals
-              );
+              ) : 0;
+
+              const usdPrice = action.prices[address] || 0;
 
               return {
                 id: idx,
                 name: tokenDetails.tokenInfo.symbol,
-                icon:
-                  tokenIcon || tokenDetails.tokenInfo.logoUri || DefaultIcon,
                 balance,
-                usd: balance * balanceDetails.fiatConversion,
-                address: tokenDetails.tokenInfo.address,
+                usd: balance * usdPrice,
+                address,
                 decimals: tokenDetails.tokenInfo.decimals,
-                usdConversionRate: balanceDetails.usdConversion,
+                usdConversionRate: usdPrice,
               };
             })
             .filter(Boolean);

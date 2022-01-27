@@ -163,7 +163,7 @@ export default function NewTransfer({ prefilledValues }) {
       setExistingTokenDetails(tokenList);
       setTokensDropdown(
         tokenList.map((details) => ({
-          value: details.name,
+          value: details.address,
           label: constructLabel({
             token: details.name,
             component: (

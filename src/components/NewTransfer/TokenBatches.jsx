@@ -82,7 +82,7 @@ function Batch({
   const tokenDetails = useMemo(
     () =>
       existingTokenDetails && selectedToken
-        ? existingTokenDetails.find(({ name }) => name === selectedToken.value)
+        ? existingTokenDetails.find(({ address }) => address === selectedToken.value)
         : null,
     [existingTokenDetails, selectedToken]
   );
@@ -111,7 +111,7 @@ function Batch({
     if (selectedToken && tokenDetails) {
       const summary = {
         id: index,
-        tokenName: selectedToken.value,
+        tokenName: tokenDetails.name,
         receivers: visibleReceivers,
         count: selectedCount,
         tokenTotal: totalAmountInToken,

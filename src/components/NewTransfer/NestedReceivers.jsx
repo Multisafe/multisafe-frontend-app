@@ -180,7 +180,7 @@ function NestedReceivers({
     if (selectedToken && selectedToken.value && existingTokenDetails) {
       setSelectedTokenDetails(
         existingTokenDetails.filter(
-          ({ name }) => name === selectedToken.value
+          ({ address }) => address === selectedToken.value
         )[0]
       );
     }
