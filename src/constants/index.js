@@ -179,7 +179,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.POLYGON]].USDT_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
-    }
+    },
   ],
   [CHAIN_IDS[NETWORK_NAMES.BSC]]: [
     {
@@ -221,7 +221,7 @@ export const DEFAULT_TOKEN_DETAILS = {
       address: ADDRESSES[CHAIN_IDS[NETWORK_NAMES.BSC]].USDT_ADDRESS,
       decimals: 6,
       usdConversionRate: 1,
-    }
+    },
   ],
   [CHAIN_IDS[NETWORK_NAMES.AVALANCHE]]: [
     {

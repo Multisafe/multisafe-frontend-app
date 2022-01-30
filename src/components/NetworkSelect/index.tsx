@@ -57,7 +57,7 @@ export const NetworkSelect = () => {
           selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
         />
       ),
-    }
+    },
   ];
   const testnetOptions = [
     {

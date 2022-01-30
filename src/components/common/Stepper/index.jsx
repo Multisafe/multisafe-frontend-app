@@ -54,21 +54,23 @@ export function StepCircle({
 
       <div className="step-info-text">
         <div className="step-title">{title}</div>
-        {address && (<div className="step-owner d-flex mt-2">
-          <span className="address">{minifiedOwnerAddress}</span>
-          <CopyButton
-            id={`owner-address-${minifiedOwnerAddress}`}
-            tooltip="address"
-            value={address || ""}
-            className="mr-3"
-            stopPropagation
-          />
-          <BlockExplorerLink
-            id={`etherscan-link-${minifiedOwnerAddress}`}
-            type={EXPLORER_LINK_TYPES.ADDRESS}
-            address={address}
-          />
-        </div>)}
+        {address && (
+          <div className="step-owner d-flex mt-2">
+            <span className="address">{minifiedOwnerAddress}</span>
+            <CopyButton
+              id={`owner-address-${minifiedOwnerAddress}`}
+              tooltip="address"
+              value={address || ""}
+              className="mr-3"
+              stopPropagation
+            />
+            <BlockExplorerLink
+              id={`etherscan-link-${minifiedOwnerAddress}`}
+              type={EXPLORER_LINK_TYPES.ADDRESS}
+              address={address}
+            />
+          </div>
+        )}
         <div className="step-subtitle">{subtitle}</div>
         {renderInitiatorAndExecutor(isInitiator, isExecutor)}
       </div>

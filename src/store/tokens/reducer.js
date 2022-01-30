@@ -13,9 +13,7 @@ import {
   GET_TOKEN_LIST_SUCCESS,
   GET_TOKEN_LIST_ERROR,
 } from "./action-types";
-import {
-  DEFAULT_TOKEN_DETAILS,
-} from "constants/index";
+import { DEFAULT_TOKEN_DETAILS } from "constants/index";
 import { constructLabel } from "utils/tokens";
 
 export const initialState = {
@@ -52,10 +50,12 @@ const reducer = (state = initialState, action) =>
 
               const address = tokenDetails.tokenInfo.address;
 
-              const balance = balanceDetails?.balance ? getAmountFromWei(
-                balanceDetails.balance,
-                tokenDetails.tokenInfo.decimals
-              ) : 0;
+              const balance = balanceDetails?.balance
+                ? getAmountFromWei(
+                    balanceDetails.balance,
+                    tokenDetails.tokenInfo.decimals
+                  )
+                : 0;
 
               const usdPrice = action.prices[address] || 0;
 
@@ -114,9 +114,7 @@ const reducer = (state = initialState, action) =>
         draft.log = action.log;
         draft.tokensDropdown = Object.keys(action.tokenDetails).map(
           (tokenAddress) => ({
-            value: `${tokenAddress} ${
-              action.tokenDetails[tokenAddress].symbol
-            }`,
+            value: `${tokenAddress} ${action.tokenDetails[tokenAddress].symbol}`,
             label: constructLabel({
               token: action.tokenDetails[tokenAddress].symbol,
               imgUrl: action.tokenDetails[tokenAddress].logoURI,
