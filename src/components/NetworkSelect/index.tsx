@@ -58,6 +58,33 @@ export const NetworkSelect = () => {
         />
       ),
     },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.GNOSIS],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
+        />
+      ),
+    },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.ARBITRUM],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
+        />
+      ),
+    },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.OPTIMISM],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
+        />
+      ),
+    },
   ];
   const testnetOptions = [
     {
