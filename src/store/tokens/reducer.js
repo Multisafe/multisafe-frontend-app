@@ -57,7 +57,7 @@ const reducer = (state = initialState, action) =>
                   )
                 : 0;
 
-              const usdPrice = action.prices[address] || 0;
+              const usdPrice = action.prices[address.toLowerCase()] || 0;
 
               return {
                 id: idx,

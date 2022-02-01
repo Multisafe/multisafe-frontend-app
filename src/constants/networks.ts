@@ -124,6 +124,7 @@ export const NETWORK_DETAILS_BY_ID = {
       symbol: "AETH",
       decimals: 18,
     },
+    //eslint-disable-next-line no-template-curly-in-string
     rpcUrls: ["https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}"],
     blockExplorerUrls: ["https://arbiscan.io"],
   },

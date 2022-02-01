@@ -116,14 +116,14 @@ export default function Exchange() {
   const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } =
     useExchange();
   const { chainId } = useActiveWeb3React();
-  const { DAI_ADDRESS } = useAddresses();
+  const { USDC_ADDRESS } = useAddresses();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const [payToken, setPayToken] = useState<string>(GAS_TOKEN_ADDRESS);
   const [receiveToken, setReceiveToken] = useState<string>(
-    DAI_ADDRESS.toLowerCase()
+    USDC_ADDRESS.toLowerCase()
   );
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE);
   const [tokensByAddress, setTokensByAddress] = useState<FixMe>(
