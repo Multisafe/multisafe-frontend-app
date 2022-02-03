@@ -197,7 +197,6 @@ function Batch({
           )}
         </div>
 
-        <Title style={{ marginTop: "3rem" }}>Paying To</Title>
         <NestedReceivers
           nestIndex={index}
           {...{

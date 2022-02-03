@@ -1,4 +1,4 @@
-import { useEffect, memo, useState } from "react";
+import { useEffect, memo, useState, useMemo } from "react";
 import { useFieldArray, useWatch } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { show } from "redux-modal";
@@ -20,6 +20,7 @@ import {
   DetailsRow,
   Divider,
   TeamLabel,
+  Title,
 } from "./styles/NewTransfer";
 
 function NestedReceiver({
@@ -168,7 +169,6 @@ function NestedReceivers({
   const selectedToken = watch(`batch[${nestIndex}].token`);
   const visibleReceivers = watch(`batch[${nestIndex}].receivers`);
 
-  const [selectedTokenDetails, setSelectedTokenDetails] = useState();
   const [peopleFromTeam, setPeopleFromTeam] = useState([]);
 
   const dispatch = useDispatch();
@@ -176,14 +176,13 @@ function NestedReceivers({
   // Selectors
   // const prices = useSelector(makeSelectPrices());
 
-  useEffect(() => {
+  const selectedTokenDetails = useMemo(() => {
     if (selectedToken && selectedToken.value && existingTokenDetails) {
-      setSelectedTokenDetails(
-        existingTokenDetails.filter(
-          ({ address }) => address === selectedToken.value
-        )[0]
-      );
+      return existingTokenDetails.filter(
+        ({ address }) => address === selectedToken.value
+      )[0];
     }
+    return null;
   }, [selectedToken, existingTokenDetails]);
 
   useEffect(() => {
@@ -235,8 +234,9 @@ function NestedReceivers({
     );
   };
 
-  return (
+  return selectedTokenDetails ? (
     <div>
+      <Title style={{ marginTop: "3rem" }}>Paying To</Title>
       {fields.map((item, k) => {
         return (
           <NestedReceiver
@@ -288,7 +288,7 @@ function NestedReceivers({
 
       {selectedToken && selectedToken.value && <Divider />}
     </div>
-  );
+  ) : null;
 }
 
 export default memo(NestedReceivers);

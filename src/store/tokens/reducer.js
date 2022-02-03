@@ -48,7 +48,7 @@ const reducer = (state = initialState, action) =>
             .map(({ tokenDetails, balanceDetails }, idx) => {
               if (!tokenDetails) return null;
 
-              const address = tokenDetails.tokenInfo.address;
+              const address = tokenDetails.tokenInfo.address?.toLowerCase();
 
               const balance = balanceDetails?.balance
                 ? getAmountFromWei(
@@ -57,7 +57,7 @@ const reducer = (state = initialState, action) =>
                   )
                 : 0;
 
-              const usdPrice = action.prices[address.toLowerCase()] || 0;
+              const usdPrice = action.prices[address] || 0;
 
               return {
                 id: idx,
@@ -110,22 +110,31 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_TOKEN_LIST_SUCCESS:
+        const tokenDetailsWithUSD = {
+          USD: {
+            logoURI: "https://images.multisafe.finance/backend/usd_icon.png",
+            name: "United States Dollar",
+            symbol: "USD",
+          },
+          ...action.tokenDetails,
+        };
+
         draft.loading = false;
         draft.log = action.log;
-        draft.tokensDropdown = Object.keys(action.tokenDetails).map(
+        draft.tokensDropdown = Object.keys(tokenDetailsWithUSD).map(
           (tokenAddress) => ({
-            value: `${tokenAddress} ${action.tokenDetails[tokenAddress].symbol}`,
+            value: `${tokenAddress} ${tokenDetailsWithUSD[tokenAddress].symbol}`,
             label: constructLabel({
-              token: action.tokenDetails[tokenAddress].symbol,
-              imgUrl: action.tokenDetails[tokenAddress].logoURI,
+              token: tokenDetailsWithUSD[tokenAddress].symbol,
+              imgUrl: tokenDetailsWithUSD[tokenAddress].logoURI,
             }),
           })
         );
-        draft.icons = Object.keys(action.tokenDetails).reduce((map, key) => {
-          map[key] = action.tokenDetails[key].logoURI;
+        draft.icons = Object.keys(tokenDetailsWithUSD).reduce((map, key) => {
+          map[key] = tokenDetailsWithUSD[key].logoURI;
           return map;
         }, {});
-        draft.tokenDetails = action.tokenDetails;
+        draft.tokenDetails = tokenDetailsWithUSD;
         break;
 
       case GET_TOKEN_LIST_ERROR:
