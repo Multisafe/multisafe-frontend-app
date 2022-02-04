@@ -141,7 +141,7 @@ export const useExchange = () => {
       rate,
       safeAddress,
       undefined,
-      addresses.COINSHIFT_FEE_ADDRESS,
+      addresses.COINSHIFT_FEE_ADDRESS || undefined,
       undefined,
       safeAddress,
       {
