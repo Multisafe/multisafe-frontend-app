@@ -27,13 +27,25 @@ const ENABLED_FEATURES = {
     [FEATURE_NAMES.TOKEN_SWAP]: true,
     [FEATURE_NAMES.SPENDING_LIMIT]: false,
   },
+  [CHAIN_IDS[NETWORK_NAMES.GNOSIS]]: {
+    [FEATURE_NAMES.TOKEN_SWAP]: false,
+    [FEATURE_NAMES.SPENDING_LIMIT]: false,
+  },
+  [CHAIN_IDS[NETWORK_NAMES.ARBITRUM]]: {
+    [FEATURE_NAMES.TOKEN_SWAP]: false,
+    [FEATURE_NAMES.SPENDING_LIMIT]: false,
+  },
+  [CHAIN_IDS[NETWORK_NAMES.OPTIMISM]]: {
+    [FEATURE_NAMES.TOKEN_SWAP]: false,
+    [FEATURE_NAMES.SPENDING_LIMIT]: false,
+  },
 };
 
 export const useFeatureManagement = () => {
   const { chainId } = useActiveWeb3React();
 
   const isFeatureEnabled = (featureName: string) =>
-    ENABLED_FEATURES[chainId][featureName] || false;
+    ENABLED_FEATURES[chainId]?.[featureName] || false;
 
   return {
     isFeatureEnabled,
