@@ -28,19 +28,7 @@ export const isValidField = (
 
     case FIELD_NAMES.TOKEN_ADDRESS:
     case FIELD_NAMES.ADDRESS: {
-      if (
-        !value ||
-        typeof value !== "string" ||
-        (value !== "0x0000000000000000000000000000000000000" &&
-          !ethers.utils.isAddress(value))
-      ) {
-        console.log(value);
-        //@ts-ignore
-        console.log(ethers.utils.isAddress(value));
-        return false;
-      }
-
-      return true;
+      return ethers.utils.isAddress(String(value));
     }
     case FIELD_NAMES.TOKEN_VALUE: {
       if (value < 0 || isNaN(Number(value))) return false;

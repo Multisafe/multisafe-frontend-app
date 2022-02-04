@@ -70,6 +70,7 @@ import {
 import { ExchangeAlert } from "./ExchangeAlert";
 import { useActiveWeb3React } from "hooks";
 import { useAddresses } from "hooks/useAddresses";
+import { ZERO_ADDRESS } from "constants/addresses";
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
@@ -89,10 +90,10 @@ const getTokensByAddress = (tokenList: FixMe) =>
     if (current.symbol === "USD") {
       return acc;
     }
-    let address = (current.address || GAS_TOKEN_ADDRESS).toLowerCase();
-    if (address === MATIC_TOKEN_ADDRESS) {
-      address = GAS_TOKEN_ADDRESS;
-    }
+    let address =
+      current.address === ZERO_ADDRESS
+        ? GAS_TOKEN_ADDRESS
+        : current.address.toLowerCase();
     acc[address] = {
       ...current,
       address,
