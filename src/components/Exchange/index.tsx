@@ -33,7 +33,6 @@ import { ExchangeDetails } from "./ExchangeDetails";
 import {
   DEFAULT_SLIPPAGE,
   GAS_TOKEN_ADDRESS,
-  MATIC_TOKEN_ADDRESS,
 } from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
