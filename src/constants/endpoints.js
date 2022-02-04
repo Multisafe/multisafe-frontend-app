@@ -98,6 +98,12 @@ export const GNOSIS_SAFE_TRANSACTION_ENDPOINTS = {
     "https://safe-transaction.bsc.gnosis.io/api/v1/safes/",
   [CHAIN_IDS[NETWORK_NAMES.AVALANCHE]]:
     "https://safe-transaction.avalanche.gnosis.io/api/v1/safes/",
+  [CHAIN_IDS[NETWORK_NAMES.GNOSIS]]:
+    "https://safe-transaction.xdai.gnosis.io/api/v1/safes/",
+  [CHAIN_IDS[NETWORK_NAMES.ARBITRUM]]:
+    "https://safe-transaction.arbitrum.gnosis.io/api/v1/safes/",
+  [CHAIN_IDS[NETWORK_NAMES.OPTIMISM]]:
+    "https://safe-transaction.optimism.gnosis.io/api/v1/safes/",
 };
 
 export const GNOSIS_SAFE_TRANSACTION_V2_ENDPOINTS = {

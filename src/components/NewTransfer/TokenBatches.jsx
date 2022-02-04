@@ -82,7 +82,9 @@ function Batch({
   const tokenDetails = useMemo(
     () =>
       existingTokenDetails && selectedToken
-        ? existingTokenDetails.find(({ name }) => name === selectedToken.value)
+        ? existingTokenDetails.find(
+            ({ address }) => address === selectedToken.value
+          )
         : null,
     [existingTokenDetails, selectedToken]
   );
@@ -94,8 +96,8 @@ function Batch({
 
       for (let i = 0; i < index; i++) {
         if (transferSummary[i]) {
-          const { tokenName, tokenTotal, usdTotal } = transferSummary[i];
-          if (tokenName === selectedToken.value) {
+          const { tokenAddress, tokenTotal, usdTotal } = transferSummary[i];
+          if (tokenAddress === selectedToken.value) {
             previousTokenTotal += tokenTotal;
             previousUsdTotal += usdTotal;
           }
@@ -111,7 +113,8 @@ function Batch({
     if (selectedToken && tokenDetails) {
       const summary = {
         id: index,
-        tokenName: selectedToken.value,
+        tokenName: tokenDetails.name,
+        tokenAddress: tokenDetails.address,
         receivers: visibleReceivers,
         count: selectedCount,
         tokenTotal: totalAmountInToken,
@@ -194,7 +197,6 @@ function Batch({
           )}
         </div>
 
-        <Title style={{ marginTop: "3rem" }}>Paying To</Title>
         <NestedReceivers
           nestIndex={index}
           {...{

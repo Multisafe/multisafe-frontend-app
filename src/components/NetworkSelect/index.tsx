@@ -41,6 +41,18 @@ export const NetworkSelect = () => {
       ),
     },
     {
+      value: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+        />
+      ),
+    },
+  ];
+
+  const testnetOptions = [
+    {
       value: CHAIN_IDS[NETWORK_NAMES.BSC],
       label: (
         <NetworkLabel
@@ -50,16 +62,32 @@ export const NetworkSelect = () => {
       ),
     },
     {
-      value: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
+      value: CHAIN_IDS[NETWORK_NAMES.GNOSIS],
       label: (
         <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+          chainId={CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
         />
       ),
-    }
-  ];
-  const testnetOptions = [
+    },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.ARBITRUM],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
+        />
+      ),
+    },
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.OPTIMISM],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
+        />
+      ),
+    },
     {
       value: CHAIN_IDS[NETWORK_NAMES.RINKEBY],
       label: (
@@ -72,7 +100,7 @@ export const NetworkSelect = () => {
   ];
 
   const options =
-    process.env.CONFIG_ENV === "production"
+    process.env.REACT_APP_CONFIG_ENV === "production"
       ? mainnetOptions
       : [...mainnetOptions, ...testnetOptions];
 

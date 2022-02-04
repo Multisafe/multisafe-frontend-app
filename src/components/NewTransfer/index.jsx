@@ -22,6 +22,7 @@ import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
+  makeSelectTokensDetails,
   makeSelectTotalBalance,
 } from "store/tokens/selectors";
 import SelectFromTeamModal from "./SelectFromTeamModal";
@@ -151,6 +152,7 @@ export default function NewTransfer({ prefilledValues }) {
   const formData = useSelector(makeSelectFormData());
   const totalBalance = useSelector(makeSelectTotalBalance());
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
+  const tokenDetails = useSelector(makeSelectTokensDetails());
 
   useEffect(() => {
     if (safeAddress) {
@@ -163,7 +165,7 @@ export default function NewTransfer({ prefilledValues }) {
       setExistingTokenDetails(tokenList);
       setTokensDropdown(
         tokenList.map((details) => ({
-          value: details.name,
+          value: details.address,
           label: constructLabel({
             token: details.name,
             component: (
@@ -305,6 +307,7 @@ export default function NewTransfer({ prefilledValues }) {
       const batch = formData.batch;
       const tokenValues = [];
       const tokenCurrencies = [];
+      const tokenAddresses = [];
       const addresses = [];
 
       batch.forEach(({ receivers, token }) => {
@@ -318,7 +321,8 @@ export default function NewTransfer({ prefilledValues }) {
         }
 
         tokenValues.push(totalTokenValue);
-        tokenCurrencies.push(token.value);
+        tokenAddresses.push(token.value);
+        tokenCurrencies.push(tokenDetails[token.value]?.symbol || "");
       });
 
       const encryptedTransferSummary = transferSummary.map(
@@ -385,6 +389,7 @@ export default function NewTransfer({ prefilledValues }) {
         tokenCurrency: "",
         tokenValues,
         tokenCurrencies,
+        tokenAddresses,
         fiatValue: grandTotalSummary.usdTotal,
         description: encryptedDescription,
         notes: encryptedNote,
