@@ -41,20 +41,23 @@ export const NetworkSelect = () => {
       ),
     },
     {
-      value: CHAIN_IDS[NETWORK_NAMES.BSC],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.BSC]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.BSC]}
-        />
-      ),
-    },
-    {
       value: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
       label: (
         <NetworkLabel
           chainId={CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
           selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+        />
+      ),
+    },
+  ];
+
+  const testnetOptions = [
+    {
+      value: CHAIN_IDS[NETWORK_NAMES.BSC],
+      label: (
+        <NetworkLabel
+          chainId={CHAIN_IDS[NETWORK_NAMES.BSC]}
+          selected={chainId === CHAIN_IDS[NETWORK_NAMES.BSC]}
         />
       ),
     },
@@ -85,8 +88,6 @@ export const NetworkSelect = () => {
         />
       ),
     },
-  ];
-  const testnetOptions = [
     {
       value: CHAIN_IDS[NETWORK_NAMES.RINKEBY],
       label: (
@@ -99,7 +100,7 @@ export const NetworkSelect = () => {
   ];
 
   const options =
-    process.env.CONFIG_ENV === "production"
+    process.env.REACT_APP_CONFIG_ENV === "production"
       ? mainnetOptions
       : [...mainnetOptions, ...testnetOptions];
 
