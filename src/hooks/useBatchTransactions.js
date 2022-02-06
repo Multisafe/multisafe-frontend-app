@@ -364,7 +364,8 @@ export default function useBatchTransaction() {
           }
         );
 
-        const gasLimit = Number(safeTxGas) + Number(baseGas) + 21000; // giving a little higher gas limit just in case
+        const gasLimit = 1000000; // giving a little higher gas limit just in case
+        // const gasLimit = Number(safeTxGas) + Number(baseGas) + 21000; // giving a little higher gas limit just in case
         const nonce = lastUsedNonce === null ? 0 : lastUsedNonce + 1;
         if (!isMultiOwner) {
           if (isMetaEnabled) {

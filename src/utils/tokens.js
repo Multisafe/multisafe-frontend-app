@@ -34,3 +34,13 @@ export const defaultTokenOptions = [
     label: constructLabel({ token: TOKEN_SYMBOLS.DAI, imgUrl: DAIIcon }),
   },
 ];
+
+export const checkIsSuperfluidWrappedToken = (meta) => {
+  if (meta) {
+    if (meta?.isWrapped && meta?.SUPPORTED_PROTOCOLS) {
+      if (meta?.SUPPORTED_PROTOCOLS?.includes("SUPERFLUID")) return true;
+    }
+  }
+
+  return false;
+};

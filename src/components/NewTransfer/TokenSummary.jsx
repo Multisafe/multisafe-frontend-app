@@ -9,7 +9,7 @@ import {
   PaymentSubtitle,
 } from "./styles/PaymentSummary";
 
-const TokenSummary = ({ summary, ...rest }) => {
+const TokenSummary = ({ summary, showFiatEquivalent = true, ...rest }) => {
   if (!summary) return null;
 
   const {
@@ -32,9 +32,11 @@ const TokenSummary = ({ summary, ...rest }) => {
           <PaymentSubtitle className="text-bold">
             {`${formatNumber(currentTokenBalance, 5)} ${tokenName}`}
           </PaymentSubtitle>
-          <PaymentSubtitle>
-            {`US$ ${formatNumber(currentUsdBalance)}`}
-          </PaymentSubtitle>
+          {showFiatEquivalent && (
+            <PaymentSubtitle>
+              {`US$ ${formatNumber(currentUsdBalance)}`}
+            </PaymentSubtitle>
+          )}
         </div>
         <div>
           <PaymentTitle>Balance after payment</PaymentTitle>
@@ -45,11 +47,13 @@ const TokenSummary = ({ summary, ...rest }) => {
               <ErrorText hideError>Insufficient Balance</ErrorText>
             )}
           </PaymentSubtitle>
-          <PaymentSubtitle>
-            {!isInsufficientBalance
-              ? `US$ ${formatNumber(usdBalanceAfterPayment)}`
-              : ``}
-          </PaymentSubtitle>
+          {showFiatEquivalent && (
+            <PaymentSubtitle>
+              {!isInsufficientBalance
+                ? `US$ ${formatNumber(usdBalanceAfterPayment)}`
+                : ``}
+            </PaymentSubtitle>
+          )}
         </div>
         <div>
           <PaymentTitle>Total Selected</PaymentTitle>
@@ -62,9 +66,11 @@ const TokenSummary = ({ summary, ...rest }) => {
               ? `${formatNumber(tokenTotal)} ${tokenName}`
               : `0`}
           </PaymentSubtitle>
-          <PaymentSubtitle>
-            {!isNaN(usdTotal) ? `US$ ${formatNumber(usdTotal)}` : `0`}
-          </PaymentSubtitle>
+          {showFiatEquivalent && (
+            <PaymentSubtitle>
+              {!isNaN(usdTotal) ? `US$ ${formatNumber(usdTotal)}` : `0`}
+            </PaymentSubtitle>
+          )}
         </div>
       </PaymentInfo>
     </PaymentSummary>

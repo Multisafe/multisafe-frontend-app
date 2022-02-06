@@ -104,7 +104,7 @@ const CurrencyConversionInputField = ({
                 value={value}
                 placeholder="0.00"
                 id={`${baseName}.tokenValue`}
-                style={{ border: "none", minWidth: "6rem" }}
+                style={{ border: "none", minWidth: "9rem" }}
                 onChange={(e) => {
                   const tokenValue = e.target.value;
                   const fiatValue =
@@ -145,51 +145,55 @@ const CurrencyConversionInputField = ({
             },
           }}
           defaultValue={item?.fiatValue || ""}
-          render={({ onChange, value }) => (
-            <InputRow>
-              <InputLabel htmlFor={`${baseName}.fiatValue`}>US$</InputLabel>
+          render={({ onChange, value }) => {
+            const inputStyle = showNoConversionInfo
+              ? { paddingRight: "0.6rem" }
+              : {};
+            return (
+              <InputRow>
+                <InputLabel htmlFor={`${baseName}.fiatValue`}>US$</InputLabel>
 
-              <Input
-                type="number"
-                name={`${baseName}.fiatValue`}
-                value={value}
-                placeholder="0.00"
-                id={`${baseName}.fiatValue`}
-                style={{ border: "none" }}
-                onChange={(e) => {
-                  const fiatValue = e.target.value;
-                  const tokenValue =
-                    fiatValue && Number(conversionRate)
-                      ? Big(fiatValue).div(Big(conversionRate)).toString()
-                      : "";
-                  setValue(`${baseName}.tokenValue`, tokenValue);
-                  onChange(e);
-                }}
-                step=".0001"
-              />
-            </InputRow>
-          )}
+                <Input
+                  type="number"
+                  name={`${baseName}.fiatValue`}
+                  value={value}
+                  placeholder="0.00"
+                  id={`${baseName}.fiatValue`}
+                  style={{ border: "none", minWidth: "9rem", ...inputStyle }}
+                  onChange={(e) => {
+                    const fiatValue = e.target.value;
+                    const tokenValue =
+                      fiatValue && Number(conversionRate)
+                        ? Big(fiatValue).div(Big(conversionRate)).toString()
+                        : "";
+                    setValue(`${baseName}.tokenValue`, tokenValue);
+                    onChange(e);
+                  }}
+                  step=".0001"
+                />
+                {showNoConversionInfo && (
+                  <>
+                    <Img
+                      id={`no-conversion-${baseName}`}
+                      src={InfoIcon}
+                      alt="info"
+                      data-for={`no-conversion-${baseName}`}
+                      data-tip={`Fiat conversion is not <br />available for ${tokenName}`}
+                      style={{ marginRight: "1.2rem" }}
+                    />
+                    <ReactTooltip
+                      id={`no-conversion-${baseName}`}
+                      place={"top"}
+                      type={"dark"}
+                      effect={"solid"}
+                      multiline={true}
+                    />
+                  </>
+                )}
+              </InputRow>
+            );
+          }}
         />
-
-        {showNoConversionInfo && (
-          <>
-            <Img
-              id={`no-conversion-${baseName}`}
-              src={InfoIcon}
-              alt="info"
-              data-for={`no-conversion-${baseName}`}
-              data-tip={`Fiat conversion is not <br />available for ${tokenName}`}
-              className="ml-3"
-            />
-            <ReactTooltip
-              id={`no-conversion-${baseName}`}
-              place={"top"}
-              type={"dark"}
-              effect={"solid"}
-              multiline={true}
-            />
-          </>
-        )}
       </div>
     </div>
   );

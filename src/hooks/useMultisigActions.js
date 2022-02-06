@@ -178,7 +178,7 @@ export default function useMultisigActions() {
             });
 
           const gasLimit =
-            Number(finalSafeTxGas) + Number(finalBaseGas) + 21000; // giving a little higher gas limit just in case
+            Number(finalSafeTxGas || 0) + Number(finalBaseGas || 0) + 21000; // giving a little higher gas limit just in case
 
           const contractTransactionHash =
             await proxyContract.getTransactionHash(
@@ -326,7 +326,7 @@ export default function useMultisigActions() {
               );
             }
 
-            const tx = await proxyContract.execTransaction(
+            const txData = [
               to,
               value,
               data,
@@ -340,8 +340,10 @@ export default function useMultisigActions() {
               {
                 gasLimit,
                 gasPrice: selectedGasPrice || DEFAULT_GAS_PRICE,
-              }
-            );
+              },
+            ];
+
+            const tx = await proxyContract.execTransaction(...txData);
             setTxHash(tx.hash);
             console.log({ hash: tx.hash });
 
@@ -360,7 +362,7 @@ export default function useMultisigActions() {
                 nonce,
                 contractTransactionHash,
                 sender: account,
-                transactionHash: tx.hash,
+                // transactionHash: tx.hash,
                 origin,
               },
             });

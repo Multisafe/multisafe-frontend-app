@@ -8,7 +8,7 @@ export const inputStyles = {
     ...styles,
     width: state.selectProps.width || "100%",
     minHeight: "4rem",
-    borderRadius: "0.5rem",
+    borderRadius: "0.4rem",
     backgroundColor: "#ffffff",
     fontSize: "1.4rem",
     color: "#373737",

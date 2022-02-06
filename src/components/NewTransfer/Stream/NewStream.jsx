@@ -1,4 +1,3 @@
-import InfoHelpIcon from "assets/icons/new-transfer/info-help.svg";
 import InfoIcon from "assets/icons/new-transfer/info-warn.svg";
 import LeftArrowIcon from "assets/icons/new-transfer/left-arrow-secondary.svg";
 import { cryptoUtils } from "coinshift-sdk";
@@ -11,19 +10,19 @@ import {
 import { Alert, AlertMessage } from "components/common/Alert";
 import Button from "components/common/Button";
 import ErrorText from "components/common/ErrorText";
-import ExternalLink from "components/common/ExternalLink";
 import { TextArea } from "components/common/Form";
 import Img from "components/common/Img";
 import { showWarningToast, toaster } from "components/common/Toast";
 import TokenImg from "components/common/TokenImg";
 import { LabelsSelect } from "components/LabelsSelect";
+import { STREAM_DURATION_OPTIONS } from "constants/index";
 import { TRANSACTION_MODES } from "constants/transactions";
-import { useActiveWeb3React, useEncryptionKey, useMassPayout } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
+import useMassStream from "hooks/useMassStream";
 import { isEqual } from "lodash";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { show } from "redux-modal";
 import {
   makeSelectIsMultiOwner,
   makeSelectIsReadOnly,
@@ -34,17 +33,17 @@ import {
 import { makeSelectUpdating as makeSelectAddTxLoading } from "store/multisig/selectors";
 import {
   selectStep,
-  setTransferSummary,
+  setStreamSummary,
   updateForm,
-} from "store/new-transfer/actions";
+} from "store/new-stream/actions";
 import {
   makeSelectFormData,
   makeSelectStep,
-  makeSelectTransferSummary,
-} from "store/new-transfer/selectors";
+  makeSelectStreamSummary,
+} from "store/new-stream/selectors";
 import { STEPS } from "store/register/resources";
 import { makeSelectLoading as makeSelectLoadingSafeDetails } from "store/safe/selectors";
-import { getTokens } from "store/tokens/actions";
+import { getTokenList, getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
@@ -54,40 +53,62 @@ import { makeSelectError as makeSelectErrorInCreateTx } from "store/transactions
 import { formatNumber } from "utils/number-helpers";
 import { constructLabel } from "utils/tokens";
 import xss from "xss";
-import SelectFromTeamModal from "./SelectFromTeamModal";
+import SelectFromTeamModal from "../SelectFromTeamModal";
 import {
   ButtonsContainer,
   FinalSummarySection,
   GrandTotalText,
   Heading,
   HeadingContainer,
-  HowItWorks,
-  HowItWorksContainer,
   InputTitle,
-  NewTransferContainer,
+  NewStreamContainer,
   SectionDivider,
+  StreamFooter,
+  StreamRow,
+  StreamRowContainer,
   SummaryContainer,
-  TransferFooter,
-  TransferRow,
-  TransferSummaryContainer,
-} from "./styles/NewTransfer";
+} from "../shared/styles/Components";
+import { TransferSummaryContainer } from "../styles/NewTransfer";
 import {
   PaymentButtonContainer,
   PaymentDescription,
   PaymentFlex,
   PaymentSubtitle,
   PaymentTitle,
-} from "./styles/PaymentSummary";
-import TokenBatches from "./TokenBatches";
-import TokenSummary from "./TokenSummary";
-import UploadCsvModal, {
-  MODAL_NAME as UPLOAD_CSV_MODAL,
-} from "./UploadCsvModal";
+} from "../styles/PaymentSummary";
+import TokenSummary from "../TokenSummary";
+import UploadCsvModal from "../UploadCsvModal";
+import StreamBatches from "./StreamBatches";
+import StreamRateMessage from "./StreamRateMessage";
+
+const DEFAULT_STREAM_DURATION = STREAM_DURATION_OPTIONS[0];
 
 const defaultValues = {
   batch: [
     {
-      receivers: [{ address: "" }],
+      receivers: [
+        {
+          address: "0xa78a6CFDe1c40f9fBdaa1a3DD6ac9AeD0bBe3A84",
+          tokenValue: "1",
+          duration: DEFAULT_STREAM_DURATION,
+        },
+        {
+          address: "0x4981540F20C9C90d7B68Fc7bFb769BD9068B0042",
+          tokenValue: "1",
+          duration: DEFAULT_STREAM_DURATION,
+        },
+      ],
+      departmentName: "",
+      isDisabled: false,
+    },
+    {
+      receivers: [
+        {
+          address: "0x2d21388dd08232060C01cEb08eBaFb68D16423fB",
+          tokenValue: "1",
+          duration: DEFAULT_STREAM_DURATION,
+        },
+      ],
       departmentName: "",
       isDisabled: false,
     },
@@ -97,25 +118,12 @@ const defaultValues = {
 const MAX_BATCH_LENGTH = 5;
 
 const getDescription = (receivers, fiatValue) => {
-  return `Transfer $${formatNumber(fiatValue)} to ${receivers} address${
+  return `Stream $${formatNumber(fiatValue)} to ${receivers} address${
     receivers > 1 ? "es" : ""
   }`;
 };
 
-export default function NewTransfer({ prefilledValues }) {
-  const [encryptionKey] = useEncryptionKey();
-
-  const { account, chainId } = useActiveWeb3React();
-  const [existingTokenDetails, setExistingTokenDetails] = useState();
-  const [tokensDropdown, setTokensDropdown] = useState([]);
-  const [grandTotalSummary, setGrandTotalSummary] = useState(null);
-  const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
-    useState(false);
-  const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState([]);
-
-  const { loadingTx, batchMassPayout } = useMassPayout();
-
+const StreamModal = ({ prefilledValues }) => {
   const {
     register,
     errors,
@@ -130,11 +138,24 @@ export default function NewTransfer({ prefilledValues }) {
     defaultValues: prefilledValues ? prefilledValues : defaultValues,
   });
 
+  const [encryptionKey] = useEncryptionKey();
+
+  const { account, chainId } = useActiveWeb3React();
+  const [existingTokenDetails, setExistingTokenDetails] = useState();
+  const [tokensDropdown, setTokensDropdown] = useState([]);
+  const [grandTotalSummary, setGrandTotalSummary] = useState(null);
+  const [isInsufficientBalanceError, setIsInsufficientBalanceError] =
+    useState(false);
+  const [isBatchCountTooHigh, setIsBatchCountTooHigh] = useState(false);
+  const [selectedLabels, setSelectedLabels] = useState([]);
+
+  const { loadingTx, batchStream } = useMassStream();
+
   const batchWatcher = watch("batch");
 
   const dispatch = useDispatch();
 
-  // Selectors
+  // selectors
   const safeAddress = useSelector(makeSelectOwnerSafeAddress());
   const loadingTokens = useSelector(makeSelectLoadingTokens());
   const tokenList = useSelector(makeSelectTokenList());
@@ -144,7 +165,7 @@ export default function NewTransfer({ prefilledValues }) {
   const loadingSafeDetails = useSelector(makeSelectLoadingSafeDetails());
   const organisationType = useSelector(makeSelectOrganisationType());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
-  const transferSummary = useSelector(makeSelectTransferSummary());
+  const streamSummary = useSelector(makeSelectStreamSummary());
   const step = useSelector(makeSelectStep());
   const formData = useSelector(makeSelectFormData());
   const totalBalance = useSelector(makeSelectTotalBalance());
@@ -152,6 +173,7 @@ export default function NewTransfer({ prefilledValues }) {
 
   useEffect(() => {
     if (safeAddress) {
+      dispatch(getTokenList(safeAddress, chainId));
       dispatch(getTokens(safeAddress, chainId));
     }
   }, [safeAddress, dispatch, chainId]);
@@ -183,18 +205,13 @@ export default function NewTransfer({ prefilledValues }) {
   }, [reset, formData]);
 
   useEffect(() => {
-    if (transferSummary && step === STEPS.ZERO) {
-      if (
-        transferSummary.some(
-          (summary) => summary && summary.isInsufficientBalance
-        )
-      ) {
-        setIsInsufficientBalanceError(true);
-      } else {
-        setIsInsufficientBalanceError(false);
-      }
-    } else if (transferSummary && step === STEPS.ONE) {
-      const grandTotalSummary = transferSummary.reduce(
+    if (streamSummary && step === STEPS.ZERO) {
+      const hasInsufficientBalance = streamSummary.some(
+        (summary) => summary && summary.isInsufficientBalance
+      );
+      setIsInsufficientBalanceError(hasInsufficientBalance);
+    } else if (streamSummary && step === STEPS.ONE) {
+      const grandTotalSummary = streamSummary.reduce(
         (totalSummary, { count, usdTotal, tokenName }) => {
           totalSummary.usdTotal += usdTotal;
           totalSummary.count += count;
@@ -211,7 +228,7 @@ export default function NewTransfer({ prefilledValues }) {
 
       setGrandTotalSummary(grandTotalSummary);
     }
-  }, [transferSummary, step]);
+  }, [streamSummary, step]);
 
   useEffect(() => {
     if (batchWatcher && batchWatcher.length >= MAX_BATCH_LENGTH) {
@@ -220,9 +237,8 @@ export default function NewTransfer({ prefilledValues }) {
       setIsBatchCountTooHigh(false);
     }
   }, [batchWatcher]);
-
   const showWarning = () => {
-    const WARNING_TOAST_ID = "warning-msg";
+    const WARNING_TOAST_ID = "stream-warning-msg";
     toaster.dismiss();
     showWarningToast(
       <div className="d-flex align-items-center">
@@ -258,10 +274,6 @@ export default function NewTransfer({ prefilledValues }) {
     dispatch(selectStep(step + 1));
   };
 
-  const showUploadCsvModal = () => {
-    dispatch(show(UPLOAD_CSV_MODAL));
-  };
-
   const onLabelsChange = (value) => {
     setSelectedLabels(value || []);
   };
@@ -277,23 +289,28 @@ export default function NewTransfer({ prefilledValues }) {
     });
   };
 
+  const resetForm = () => {
+    reset(defaultValues);
+    dispatch(setStreamSummary([]));
+  };
+
   const handleAddBatch = () => {
     setValue("batch", [
       ...getValues().batch,
       {
         token: undefined,
-        receivers: [{ address: "", tokenValue: "" }],
+        receivers: [
+          {
+            address: "",
+            tokenValue: "",
+            duration: DEFAULT_STREAM_DURATION,
+          },
+        ],
       },
     ]);
 
     goToBottom();
   };
-
-  const resetForm = () => {
-    reset(defaultValues);
-    dispatch(setTransferSummary([]));
-  };
-
   const onSubmit = async (values) => {
     dispatch(updateForm(values));
 
@@ -319,7 +336,7 @@ export default function NewTransfer({ prefilledValues }) {
         tokenCurrencies.push(token.value);
       });
 
-      const encryptedTransferSummary = transferSummary.map(
+      const encryptedStreamSummary = streamSummary.map(
         ({
           id,
           batchName,
@@ -360,7 +377,7 @@ export default function NewTransfer({ prefilledValues }) {
         : "";
 
       const to = cryptoUtils.encryptDataUsingEncryptionKey(
-        JSON.stringify(transferSummary),
+        JSON.stringify(streamSummary),
         encryptionKey,
         organisationType
       );
@@ -379,8 +396,6 @@ export default function NewTransfer({ prefilledValues }) {
         to,
         safeAddress: safeAddress,
         createdBy: account,
-        tokenValue: 0,
-        tokenCurrency: "",
         tokenValues,
         tokenCurrencies,
         fiatValue: grandTotalSummary.usdTotal,
@@ -389,14 +404,20 @@ export default function NewTransfer({ prefilledValues }) {
         fiatCurrency: "USD",
         addresses,
         labels: selectedLabels.map(({ value }) => value),
-        transactionMode: TRANSACTION_MODES.FLEXIBLE_MASS_PAYOUT,
+        transactionMode: TRANSACTION_MODES.STREAMING,
         metaData: {
-          transferSummary: encryptedTransferSummary,
+          streamSummary: encryptedStreamSummary,
           grandTotalSummary,
         },
       };
 
-      await batchMassPayout({
+      console.log({
+        form: formData.batch,
+        baseRequestBody,
+        existingTokenDetails,
+      });
+
+      await batchStream({
         batch: formData.batch,
         allTokenDetails: existingTokenDetails,
         baseRequestBody,
@@ -404,40 +425,23 @@ export default function NewTransfer({ prefilledValues }) {
     }
   };
 
-  const renderFlexibleMassPayout = () => (
+  const renderStreamPayout = () => (
     <div>
       <HeadingContainer>
-        <Heading>New Transfer</Heading>
-
+        <Heading>Streams</Heading>
         <div className="d-flex align-items-center">
-          <ExternalLink href="https://bit.ly/3lw7hZ2">
-            <HowItWorksContainer>
-              <Img src={InfoHelpIcon} alt="how it works" />
-              <HowItWorks className="ml-2">How it works</HowItWorks>
-            </HowItWorksContainer>
-          </ExternalLink>
-          <Button
-            onClick={showUploadCsvModal}
-            type="button"
-            className="secondary-4"
-            style={{ marginRight: "2rem" }}
-            width="12rem"
-          >
-            Upload CSV
-          </Button>
           <Button
             onClick={resetForm}
             type="button"
             className="primary"
             width="12rem"
-            disabled={!transferSummary.length}
+            disabled={!streamSummary.length}
           >
             Reset
           </Button>
         </div>
       </HeadingContainer>
-
-      <TokenBatches
+      <StreamBatches
         {...{
           control,
           register,
@@ -450,7 +454,6 @@ export default function NewTransfer({ prefilledValues }) {
           setValue,
         }}
       />
-
       {errorFromMetaTx && <ErrorText>{errorFromMetaTx}</ErrorText>}
     </div>
   );
@@ -475,9 +478,8 @@ export default function NewTransfer({ prefilledValues }) {
           </HeadingContainer>
 
           <Accordion>
-            {transferSummary.map((summary, index) => {
+            {streamSummary.map((summary, index) => {
               const { id, tokenName, receivers } = summary;
-
               return (
                 <AccordionItem key={id} isOpen={index === 0}>
                   <AccordionHeader>Batch {id + 1}</AccordionHeader>
@@ -485,20 +487,38 @@ export default function NewTransfer({ prefilledValues }) {
                     <React.Fragment>
                       {receivers.map(
                         (
-                          { address, tokenValue, departmentName, name },
+                          {
+                            address,
+                            tokenValue,
+                            departmentName,
+                            name,
+                            duration,
+                          },
                           idx
                         ) => (
-                          <TransferRow key={`${address}-${idx}`}>
-                            <div>{name}</div>
-                            <div>
-                              <TokenImg token={tokenName} />{" "}
-                              {formatNumber(tokenValue, 5)} {tokenName}
-                            </div>
-                            <div>{address}</div>
-                          </TransferRow>
+                          <>
+                            <StreamRowContainer key={`${address}-${idx}`}>
+                              <StreamRow>
+                                <div>{name}</div>
+                                <div>
+                                  <TokenImg token={tokenName} />{" "}
+                                  {formatNumber(tokenValue, 5)} {tokenName}{" "}
+                                  {duration?.label}
+                                </div>
+                                <div>{address}</div>
+                              </StreamRow>
+                              <StreamRateMessage
+                                style={{ marginBottom: 0 }}
+                                duration={duration?.value}
+                                tokenName={tokenName}
+                                tokenValue={tokenValue}
+                              />
+                            </StreamRowContainer>
+                          </>
                         )
                       )}
                       <TokenSummary
+                        showFiatEquivalent={false}
                         summary={summary}
                         style={{ padding: "2.6rem 3rem", marginTop: "0" }}
                       />
@@ -624,14 +644,10 @@ export default function NewTransfer({ prefilledValues }) {
       </SummaryContainer>
     );
   };
-  const renderNewTransfer = () => {
+  const renderNewStream = () => {
     switch (step) {
       case STEPS.ZERO:
-        return (
-          <NewTransferContainer>
-            {renderFlexibleMassPayout()}
-          </NewTransferContainer>
-        );
+        return <NewStreamContainer>{renderStreamPayout()}</NewStreamContainer>;
 
       case STEPS.ONE:
         return renderSummary();
@@ -640,13 +656,12 @@ export default function NewTransfer({ prefilledValues }) {
         return null;
     }
   };
-
   return (
     <React.Fragment>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {renderNewTransfer()}
+        {renderNewStream()}
         {step === STEPS.ZERO && (
-          <TransferFooter>
+          <StreamFooter>
             <ButtonsContainer>
               <Button
                 type="button"
@@ -665,11 +680,13 @@ export default function NewTransfer({ prefilledValues }) {
                 Confirm
               </Button>
             </ButtonsContainer>
-          </TransferFooter>
+          </StreamFooter>
         )}
       </form>
       <SelectFromTeamModal />
       <UploadCsvModal />
     </React.Fragment>
   );
-}
+};
+
+export default StreamModal;

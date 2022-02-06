@@ -23,6 +23,29 @@ export const TOKEN_SYMBOLS = {
   MATIC: "MATIC",
 };
 
+export const STREAM_DURATION_OPTIONS = [
+  {
+    label: "/hour",
+    value: 3600, // seconds in an hour,
+  },
+  {
+    label: "/day",
+    value: 24 * 3600, // seconds in a day,
+  },
+  {
+    label: "/week",
+    value: 7 * 24 * 3600, // seconds in a week,
+  },
+  {
+    label: "/month",
+    value: 30 * 24 * 3600, // seconds in a month,
+  },
+  {
+    label: "/year",
+    value: 365 * 24 * 3600, // seconds in an year,
+  },
+];
+
 export const getDefaultIconIfPossible = ({ symbol, address, icons }) => {
   switch (symbol) {
     case TOKEN_SYMBOLS.DAI:

@@ -1,6 +1,5 @@
 import produce from "immer";
 import { getAmountFromWei } from "utils/tx-helpers";
-
 import {
   GET_TOKENS,
   GET_TOKENS_ERROR,
@@ -18,7 +17,7 @@ import {
   getDefaultIconIfPossible,
 } from "constants/index";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
-import { constructLabel } from "utils/tokens";
+import { checkIsSuperfluidWrappedToken, constructLabel } from "utils/tokens";
 
 export const initialState = {
   log: "",
@@ -46,30 +45,47 @@ const reducer = (state = initialState, action) =>
         break;
 
       case GET_TOKENS_SUCCESS:
+        const tokensList = state.tokenDetails;
         const allTokenDetails =
           action.tokens &&
           action.tokens
             .map(({ tokenDetails, balanceDetails }, idx) => {
               if (!tokenDetails) return null;
+
               const tokenIcon = getDefaultIconIfPossible({
                 symbol: tokenDetails.tokenInfo.symbol,
                 address: tokenDetails.tokenInfo.address,
                 icons: action.icons,
               });
+
+              const basicTokenData = {
+                id: idx,
+                name: tokenDetails.tokenInfo.symbol,
+                icon:
+                  tokenIcon || tokenDetails.tokenInfo.logoUri || DefaultIcon,
+                address: tokenDetails.tokenInfo.address,
+                decimals: tokenDetails.tokenInfo.decimals,
+                usdConversionRate: balanceDetails.usdConversion,
+              };
+
+              // check for Superfluid Wrapped ERC777 token
+              const currentTokenAddress =
+                tokenDetails.tokenInfo.address.toLowerCase();
+              const tokenMeta = tokensList?.[currentTokenAddress]?.meta;
+
+              if (checkIsSuperfluidWrappedToken(tokenMeta)) {
+                basicTokenData.underlyingAddress = tokenMeta?.underlyingAddress;
+              }
+
               // eslint-disable-next-line
               if (balanceDetails && balanceDetails.balance == 0) {
                 return {
-                  id: idx,
-                  name: tokenDetails.tokenInfo.symbol,
-                  icon:
-                    tokenIcon || tokenDetails.tokenInfo.logoUri || DefaultIcon,
+                  ...basicTokenData,
                   balance: 0,
                   usd: 0,
-                  address: tokenDetails.tokenInfo.address,
-                  decimals: tokenDetails.tokenInfo.decimals,
-                  usdConversionRate: balanceDetails.usdConversion,
                 };
               }
+
               // erc20
               const balance = getAmountFromWei(
                 balanceDetails.balance,
@@ -77,15 +93,9 @@ const reducer = (state = initialState, action) =>
               );
 
               return {
-                id: idx,
-                name: tokenDetails.tokenInfo.symbol,
-                icon:
-                  tokenIcon || tokenDetails.tokenInfo.logoUri || DefaultIcon,
+                ...basicTokenData,
                 balance,
                 usd: balance * balanceDetails.fiatConversion,
-                address: tokenDetails.tokenInfo.address,
-                decimals: tokenDetails.tokenInfo.decimals,
-                usdConversionRate: balanceDetails.usdConversion,
               };
             })
             .filter(Boolean);
@@ -133,9 +143,7 @@ const reducer = (state = initialState, action) =>
         draft.log = action.log;
         draft.tokensDropdown = Object.keys(action.tokenDetails).map(
           (tokenAddress) => ({
-            value: `${tokenAddress} ${
-              action.tokenDetails[tokenAddress].symbol
-            }`,
+            value: `${tokenAddress} ${action.tokenDetails[tokenAddress].symbol}`,
             label: constructLabel({
               token: action.tokenDetails[tokenAddress].symbol,
               imgUrl: action.tokenDetails[tokenAddress].logoURI,
