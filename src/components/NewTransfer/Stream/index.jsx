@@ -1,4 +1,3 @@
-// import StreamUITrial from "./trial";
 import { Button } from "components/common/Button/styles";
 import { MODAL_NAME as NEW_TRANSFER_MODAL } from "components/NewTransfer/NewTransferModal";
 import { useActiveWeb3React } from "hooks";

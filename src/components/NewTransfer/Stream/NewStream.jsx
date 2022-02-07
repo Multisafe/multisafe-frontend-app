@@ -88,24 +88,8 @@ const defaultValues = {
     {
       receivers: [
         {
-          address: "0xa78a6CFDe1c40f9fBdaa1a3DD6ac9AeD0bBe3A84",
-          tokenValue: "1",
-          duration: DEFAULT_STREAM_DURATION,
-        },
-        {
-          address: "0x4981540F20C9C90d7B68Fc7bFb769BD9068B0042",
-          tokenValue: "1",
-          duration: DEFAULT_STREAM_DURATION,
-        },
-      ],
-      departmentName: "",
-      isDisabled: false,
-    },
-    {
-      receivers: [
-        {
-          address: "0x2d21388dd08232060C01cEb08eBaFb68D16423fB",
-          tokenValue: "1",
+          address: "",
+          tokenValue: "",
           duration: DEFAULT_STREAM_DURATION,
         },
       ],
@@ -182,18 +166,22 @@ const StreamModal = ({ prefilledValues }) => {
     if (tokenList && tokenList.length > 0 && !tokensDropdown.length) {
       setExistingTokenDetails(tokenList);
       setTokensDropdown(
-        tokenList.map((details) => ({
-          value: details.name,
-          label: constructLabel({
-            token: details.name,
-            component: (
-              <div>
-                {formatNumber(details.balance, 5)} {details.name}
-              </div>
-            ),
-            address: details.address,
-          }),
-        }))
+        // TODO: filter out supported Supertokens
+        tokenList.map((details) => {
+          return {
+            value: details.name,
+            label: constructLabel({
+              token: details.name,
+              component: (
+                <div>
+                  {formatNumber(details.balance, 5)} {details.name}
+                </div>
+              ),
+              address: details.address,
+            }),
+            meta: details,
+          };
+        })
       );
     }
   }, [tokenList, tokensDropdown]);
