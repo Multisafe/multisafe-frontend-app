@@ -77,7 +77,7 @@ const reducer = (state = initialState, action) =>
           for (let i = 0; i < defaultTokenDetails.length; i++) {
             if (
               !allTokenDetails.find(
-                ({ name }) => name === defaultTokenDetails[i].name
+                ({ address }) => address === defaultTokenDetails[i].address
               )
             ) {
               allTokenDetails.push(defaultTokenDetails[i]);
