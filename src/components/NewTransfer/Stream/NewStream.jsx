@@ -88,8 +88,8 @@ const defaultValues = {
     {
       receivers: [
         {
-          address: "",
-          tokenValue: "",
+          address: "0x2d21388dd08232060C01cEb08eBaFb68D16423fB",
+          tokenValue: "1",
           duration: DEFAULT_STREAM_DURATION,
         },
       ],
@@ -200,18 +200,15 @@ const StreamModal = ({ prefilledValues }) => {
       setIsInsufficientBalanceError(hasInsufficientBalance);
     } else if (streamSummary && step === STEPS.ONE) {
       const grandTotalSummary = streamSummary.reduce(
-        (totalSummary, { count, usdTotal, tokenName }) => {
-          totalSummary.usdTotal += usdTotal;
+        (totalSummary, { count, tokenName }) => {
           totalSummary.count += count;
-
           if (!totalSummary.tokensMap[tokenName]) {
             totalSummary.tokensMap[tokenName] = tokenName;
             totalSummary.tokens.push(tokenName);
           }
-
           return totalSummary;
         },
-        { count: 0, usdTotal: 0, tokensMap: {}, tokens: [] }
+        { count: 0, tokensMap: {}, tokens: [] }
       );
 
       setGrandTotalSummary(grandTotalSummary);
@@ -522,7 +519,12 @@ const StreamModal = ({ prefilledValues }) => {
           <SectionDivider />
           <FinalSummarySection>
             <InputTitle>Description</InputTitle>
-            <PaymentDescription>{description}</PaymentDescription>
+            <TextArea
+              name="description"
+              register={register}
+              placeholder="Enter Description"
+              rows={1}
+            />
 
             <InputTitle style={{ marginTop: "3rem" }}>Label</InputTitle>
             <div>
@@ -534,14 +536,6 @@ const StreamModal = ({ prefilledValues }) => {
                 }}
               />
             </div>
-
-            <InputTitle style={{ marginTop: "3rem" }}>Note</InputTitle>
-            <TextArea
-              name="note"
-              register={register}
-              placeholder="Enter Note"
-              rows={1}
-            />
 
             <GrandTotalText>Grand Total</GrandTotalText>
 

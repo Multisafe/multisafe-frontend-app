@@ -4,7 +4,7 @@ import { useActiveWeb3React } from "hooks";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { show } from "redux-modal";
-// import StreamUITrial from "./trial";
+// import StreamUITrial from "./demo";
 
 export default function StreamUI(props) {
   const { library, account } = useActiveWeb3React();

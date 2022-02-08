@@ -11,7 +11,6 @@ const TokenValueInput = ({ control, baseName, item, setValue, tokenName }) => {
         required: "Token amount is required",
         validate: (value) => {
           if (value <= 0) return "Please check the token amount";
-
           return true;
         },
       }}

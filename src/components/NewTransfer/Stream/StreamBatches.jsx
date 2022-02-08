@@ -18,6 +18,7 @@ import {
 } from "../shared/styles/Components";
 import TokenSummary from "../TokenSummary";
 import NestedStreamReceivers from "./NestedStreamReceivers";
+import StreamBatchSummary from "./StreamBatchSummary";
 
 function Batch({
   control,
@@ -39,6 +40,8 @@ function Batch({
   const [prevTokenTotal, setPrevTokenTotal] = useState(0);
   const [prevUsdTotal, setPrevUsdTotal] = useState(0);
 
+  // const {} = useSelector()
+
   const selectedToken = useWatch({ control, name: `batch[${index}].token` });
   const dispatch = useDispatch();
 
@@ -51,6 +54,29 @@ function Batch({
 
   const prices = useSelector(makeSelectPrices());
   const streamSummary = useSelector(makeSelectStreamSummary());
+
+  const estimatedNettFlowRate = useMemo(() => {
+    if (
+      visibleReceivers &&
+      visibleReceivers.length > 0 &&
+      selectedToken &&
+      selectedToken.value
+    ) {
+      const rate = visibleReceivers.reduce(
+        (accRate, { tokenValue = 1, duration }) => {
+          if (Number(tokenValue) > 0 && duration) {
+            const amount = Number(tokenValue) / Number(duration.value);
+            accRate += amount;
+          }
+          return accRate;
+        },
+        0
+      );
+
+      return rate;
+    }
+    return 0;
+  }, [visibleReceivers, selectedToken]);
 
   const totalAmountInToken = useMemo(() => {
     if (
@@ -108,20 +134,19 @@ function Batch({
   useEffect(() => {
     if (selectedToken && tokenDetails) {
       const summary = {
-        id: index,
-        tokenName: selectedToken.value,
-        receivers: visibleReceivers,
         count: selectedCount,
+        id: index,
+        receivers: visibleReceivers,
+        token: selectedToken,
+        tokenName: selectedToken.value,
         tokenTotal: totalAmountInToken,
-        usdTotal: totalAmountInUsd,
+        estimatedNettFlowRate,
+        usdTotal: 0,
+        currentTokenBalance: tokenDetails.balance - prevTokenTotal,
         isInsufficientBalance:
           tokenDetails.balance - prevTokenTotal - totalAmountInToken < 0,
-        currentTokenBalance: tokenDetails.balance - prevTokenTotal,
-        currentUsdBalance: tokenDetails.usd - prevUsdTotal,
         tokenBalanceAfterPayment:
           tokenDetails.balance - prevTokenTotal - totalAmountInToken,
-        usdBalanceAfterPayment:
-          tokenDetails.usd - prevUsdTotal - totalAmountInUsd,
       };
 
       const newStreamSummary = [...streamSummary];
@@ -133,7 +158,6 @@ function Batch({
   }, [
     dispatch,
     totalAmountInToken,
-    totalAmountInUsd,
     index,
     streamSummary,
     prevTokenTotal,
@@ -209,10 +233,7 @@ function Batch({
             }}
           />
           <div className="mb-5">
-            <TokenSummary
-              showFiatEquivalent={false}
-              summary={streamSummary[index]}
-            />
+            <StreamBatchSummary summary={streamSummary[index]} />
           </div>
         </div>
       </Card>

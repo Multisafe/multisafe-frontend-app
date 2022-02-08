@@ -74,7 +74,8 @@ const reducer = (state = initialState, action) =>
               const tokenMeta = tokensList?.[currentTokenAddress]?.meta;
 
               if (checkIsSuperfluidWrappedToken(tokenMeta)) {
-                basicTokenData.underlyingAddress = tokenMeta?.underlyingAddress;
+                basicTokenData.underlyingERC777Address =
+                  tokenMeta?.underlyingAddress;
               }
 
               // eslint-disable-next-line

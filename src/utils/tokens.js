@@ -36,10 +36,13 @@ export const defaultTokenOptions = [
 ];
 
 export const checkIsSuperfluidWrappedToken = (meta) => {
-  if (meta) {
-    if (meta?.isWrapped && meta?.SUPPORTED_PROTOCOLS) {
-      if (meta?.SUPPORTED_PROTOCOLS?.includes("SUPERFLUID")) return true;
-    }
+  if (
+    meta &&
+    meta?.isWrapped &&
+    meta?.SUPPORTED_PROTOCOLS &&
+    meta?.SUPPORTED_PROTOCOLS?.includes("SUPERFLUID")
+  ) {
+    return true;
   }
 
   return false;
