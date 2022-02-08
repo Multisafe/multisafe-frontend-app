@@ -130,8 +130,7 @@ export const NETWORK_DETAILS_BY_ID = {
       symbol: "AETH",
       decimals: 18,
     },
-    //eslint-disable-next-line no-template-curly-in-string
-    rpcUrls: ["https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}"],
+    rpcUrls: ["https://arb1.arbitrum.io/rpc"],
     blockExplorerUrls: ["https://arbiscan.io"],
   },
   [CHAIN_IDS[NETWORK_NAMES.OPTIMISM]]: {
