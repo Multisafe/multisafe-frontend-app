@@ -58,18 +58,12 @@ function UploadCsvModal(props) {
     if (csvData) {
       const tokenToPaymentDetailsMap = {};
       for (let i = 0; i < csvData.length; i++) {
-        const { tokenName, payUsdInToken } = csvData[i];
+        const { tokenAddress } = csvData[i];
 
-        let tokenSymbol = tokenName;
-
-        if (tokenName === "USD") {
-          tokenSymbol = payUsdInToken;
-        }
-
-        if (!tokenToPaymentDetailsMap[tokenSymbol]) {
-          tokenToPaymentDetailsMap[tokenSymbol] = [csvData[i]];
+        if (!tokenToPaymentDetailsMap[tokenAddress]) {
+          tokenToPaymentDetailsMap[tokenAddress] = [csvData[i]];
         } else {
-          tokenToPaymentDetailsMap[tokenSymbol].push(csvData[i]);
+          tokenToPaymentDetailsMap[tokenAddress].push(csvData[i]);
         }
       }
 
@@ -80,7 +74,7 @@ function UploadCsvModal(props) {
   const handleDrop = (data, fileName) => {
     setFileName(fileName);
     // checking for at least 6 columns in the csv
-    if (!data || data.length === 0 || data.some((arr) => arr.length < 6)) {
+    if (!data || data.length === 0 || data.some((arr) => arr.length < 7)) {
       setInvalidCsvData(true);
       return;
     }
@@ -92,9 +86,10 @@ function UploadCsvModal(props) {
           lastName: arr[1],
           address: arr[2],
           tokenValue: arr[3],
-          tokenName: arr[4],
-          payUsdInToken: arr[5],
-          departmentName: arr[6],
+          tokenAddress: arr[4]?.toLowerCase(),
+          tokenName: arr[5],
+          payUsdInToken: arr[6],
+          departmentName: arr[7],
         },
       ];
     }, []);
@@ -115,16 +110,16 @@ function UploadCsvModal(props) {
   const onConfirm = () => {
     if (!encryptionKey || !ownerSafeAddress) return;
 
-    const batch = Object.keys(tokenToPaymentDetailsMap).map((tokenName) => {
+    const batch = Object.keys(tokenToPaymentDetailsMap).map((tokenAddress) => {
       const token = tokenList
-        .filter((details) => details.name === tokenName)
+        .filter((details) => details.address === tokenAddress)
         .map((details) => ({
-          value: details.name,
+          value: details.address,
           label: constructLabel({
-            token: details.name,
+            token: details.address,
             component: (
               <div>
-                {formatNumber(details.balance, 5)} {details.name}
+                {formatNumber(details.balance, 5)} {details.symbol}
               </div>
             ),
             imgUrl: details.icon,
@@ -133,12 +128,13 @@ function UploadCsvModal(props) {
 
       return {
         token,
-        receivers: tokenToPaymentDetailsMap[tokenName].map(
+        receivers: tokenToPaymentDetailsMap[tokenAddress].map(
           ({
             firstName,
             lastName,
             address,
             tokenValue,
+            tokenAddress,
             tokenName,
             payUsdInToken,
             departmentName,
@@ -150,6 +146,7 @@ function UploadCsvModal(props) {
             departmentName,
             tokenName: tokenName === "USD" ? payUsdInToken : tokenName,
             fiatValue: tokenName === "USD" ? tokenValue : "",
+            tokenAddress,
           })
         ),
       };
@@ -167,6 +164,7 @@ function UploadCsvModal(props) {
     tokenName,
     payUsdInToken,
     departmentName,
+    tokenAddress,
     idx,
   }) => {
     const invalidName =
@@ -175,10 +173,10 @@ function UploadCsvModal(props) {
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
     const invalidPayDetails =
       !isValidField(FIELD_NAMES.TOKEN_VALUE, tokenValue) ||
-      !isValidField(FIELD_NAMES.TOKEN, tokenName, tokenDetails);
+      !isValidField(FIELD_NAMES.TOKEN_ADDRESS, tokenAddress);
     const invalidPayInUsd = !isValidField(
       FIELD_NAMES.PAY_USD_IN_TOKEN,
-      payUsdInToken,
+      tokenAddress,
       tokenDetails,
       { tokenName }
     );
@@ -266,8 +264,8 @@ function UploadCsvModal(props) {
           <ul className="points">
             <li>Please make sure the file extension is .csv</li>
             <li>
-              Address and currency are required fields. Rest of the fields are
-              optional
+              Receiver address and token address are required fields. Rest of
+              the fields are optional
             </li>
             <li>You can add multiple currencies in the csv</li>
             <li>
@@ -330,6 +328,7 @@ function UploadCsvModal(props) {
                   tokenName,
                   payUsdInToken,
                   departmentName,
+                  tokenAddress,
                 },
                 idx
               ) =>
@@ -341,6 +340,7 @@ function UploadCsvModal(props) {
                   tokenName,
                   payUsdInToken,
                   departmentName,
+                  tokenAddress,
                   idx,
                 })
             )}

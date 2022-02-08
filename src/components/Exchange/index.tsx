@@ -33,7 +33,6 @@ import { ExchangeDetails } from "./ExchangeDetails";
 import {
   DEFAULT_SLIPPAGE,
   GAS_TOKEN_ADDRESS,
-  MATIC_TOKEN_ADDRESS,
 } from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
@@ -70,6 +69,7 @@ import {
 import { ExchangeAlert } from "./ExchangeAlert";
 import { useActiveWeb3React } from "hooks";
 import { useAddresses } from "hooks/useAddresses";
+import { ZERO_ADDRESS } from "constants/addresses";
 
 const DEFAULT_PAY_AMOUNT = "1";
 const DEFAULT_RECEIVE_AMOUNT = "";
@@ -89,10 +89,10 @@ const getTokensByAddress = (tokenList: FixMe) =>
     if (current.symbol === "USD") {
       return acc;
     }
-    let address = (current.address || GAS_TOKEN_ADDRESS).toLowerCase();
-    if (address === MATIC_TOKEN_ADDRESS) {
-      address = GAS_TOKEN_ADDRESS;
-    }
+    let address =
+      current.address === ZERO_ADDRESS
+        ? GAS_TOKEN_ADDRESS
+        : current.address.toLowerCase();
     acc[address] = {
       ...current,
       address,
@@ -116,14 +116,14 @@ export default function Exchange() {
   const { getExchangeRate, approveAndSwap, error, loadingSwap, loadingTx } =
     useExchange();
   const { chainId } = useActiveWeb3React();
-  const { DAI_ADDRESS } = useAddresses();
+  const { USDC_ADDRESS } = useAddresses();
 
   const [encryptionKey] = useLocalStorage("ENCRYPTION_KEY");
   const organisationType = useSelector(makeSelectOrganisationType());
 
   const [payToken, setPayToken] = useState<string>(GAS_TOKEN_ADDRESS);
   const [receiveToken, setReceiveToken] = useState<string>(
-    DAI_ADDRESS.toLowerCase()
+    USDC_ADDRESS.toLowerCase()
   );
   const [slippage, setSlippage] = useState<number>(DEFAULT_SLIPPAGE);
   const [tokensByAddress, setTokensByAddress] = useState<FixMe>(

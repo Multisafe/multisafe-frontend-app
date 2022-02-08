@@ -10,6 +10,7 @@ export const FIELD_NAMES = {
   TOKEN: "TOKEN",
   PAY_USD_IN_TOKEN: "PAY_USD_IN_TOKEN",
   DEPARTMENT_NAME: "DEPARTMENT_NAME",
+  TOKEN_ADDRESS: "TOKEN_ADDRESS",
 };
 
 export const isValidField = (
@@ -25,10 +26,9 @@ export const isValidField = (
       return true;
     }
 
+    case FIELD_NAMES.TOKEN_ADDRESS:
     case FIELD_NAMES.ADDRESS: {
-      if (!value || typeof value !== "string" || !ethers.utils.isAddress(value))
-        return false;
-      return true;
+      return ethers.utils.isAddress(String(value));
     }
     case FIELD_NAMES.TOKEN_VALUE: {
       if (value < 0 || isNaN(Number(value))) return false;
