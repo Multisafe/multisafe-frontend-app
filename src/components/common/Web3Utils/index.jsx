@@ -109,7 +109,9 @@ const scanLinkByChainId = {
   42: `${NETWORK_NAMES.KOVAN.toLowerCase()}.etherscan.io`,
   137: `polygonscan.com`,
   43114: `snowtrace.io`,
-  56: `bscscan.com/`,
+  56: `bscscan.com`,
+  42161: `arbiscan.io`,
+  10: `optimistic.etherscan.io`,
 };
 
 export const EXPLORER_LINK_TYPES = {
