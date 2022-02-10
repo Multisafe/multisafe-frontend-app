@@ -18,7 +18,7 @@ type Props = {
 };
 
 function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
-  const renderTable = (receivers: Receivers, tokenName: string) => (
+  const renderTable = (receivers: Receivers, tokenName: string, tokenAddress?: string) => (
     <Table>
       <TableHead>
         <tr>
@@ -49,7 +49,7 @@ function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
                 </td>
                 <td style={{ width: "15%" }}>{departmentName}</td>
                 <td style={{ width: "20%" }}>
-                  <TokenImg token={tokenName} />
+                  <TokenImg address={tokenAddress} token={tokenName} />
 
                   {tokenName === "USD"
                     ? `${formatNumber(fiatValue)} USD (${formatNumber(
@@ -71,12 +71,12 @@ function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
     <Accordion>
       {paidTeammates &&
         paidTeammates.map((summary: PaidTeammate, index) => {
-          const { id, tokenName, receivers } = summary;
+          const { id, tokenName, receivers, tokenAddress } = summary;
 
           return (
             <AccordionItem key={id} isOpen={index === 0}>
               <AccordionHeader>Batch {id + 1}</AccordionHeader>
-              <AccordionBody>{renderTable(receivers, tokenName)}</AccordionBody>
+              <AccordionBody>{renderTable(receivers, tokenName, tokenAddress)}</AccordionBody>
             </AccordionItem>
           );
         })}
@@ -86,11 +86,11 @@ function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
   const renderSingleBatch = () => {
     if (!paidTeammates || !paidTeammates[0]) return null;
 
-    const { id, tokenName, receivers } = paidTeammates[0];
+    const { id, tokenName, receivers, tokenAddress } = paidTeammates[0];
     return (
       <DisbursementCard key={id}>
         <div className="title">Disbursement Details</div>
-        {renderTable(receivers, tokenName)}
+        {renderTable(receivers, tokenName, tokenAddress)}
       </DisbursementCard>
     );
   };
