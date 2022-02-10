@@ -15,6 +15,7 @@ export type PaidTeammate = {
   receivers: Receivers;
   tokenTotal: string | number;
   count: number;
+  tokenAddress?: string;
 };
 
 export type PaidTeammates = Array<PaidTeammate>;
