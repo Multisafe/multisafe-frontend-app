@@ -199,18 +199,17 @@ export default function NewTransfer({ prefilledValues }) {
       }
     } else if (transferSummary && step === STEPS.ONE) {
       const grandTotalSummary = transferSummary.reduce(
-        (totalSummary, { count, usdTotal, tokenName }) => {
+        (totalSummary, { count, usdTotal, tokenName, tokenAddress }) => {
           totalSummary.usdTotal += usdTotal;
           totalSummary.count += count;
 
-          if (!totalSummary.tokensMap[tokenName]) {
-            totalSummary.tokensMap[tokenName] = tokenName;
-            totalSummary.tokens.push(tokenName);
+          if (!totalSummary.tokens.includes(tokenAddress)) {
+            totalSummary.tokens.push(tokenAddress);
           }
 
           return totalSummary;
         },
-        { count: 0, usdTotal: 0, tokensMap: {}, tokens: [] }
+        { count: 0, usdTotal: 0, tokens: [] }
       );
 
       setGrandTotalSummary(grandTotalSummary);
@@ -483,7 +482,7 @@ export default function NewTransfer({ prefilledValues }) {
 
           <Accordion>
             {transferSummary.map((summary, index) => {
-              const { id, tokenName, receivers } = summary;
+              const { id, tokenName, receivers, tokenAddress } = summary;
 
               return (
                 <AccordionItem key={id} isOpen={index === 0}>
@@ -498,7 +497,7 @@ export default function NewTransfer({ prefilledValues }) {
                           <TransferRow key={`${address}-${idx}`}>
                             <div>{name}</div>
                             <div>
-                              <TokenImg token={tokenName} />{" "}
+                              <TokenImg address={tokenAddress} />{" "}
                               {formatNumber(tokenValue, 5)} {tokenName}
                             </div>
                             <div>{address}</div>
@@ -578,11 +577,11 @@ export default function NewTransfer({ prefilledValues }) {
                   Tokens used
                 </PaymentTitle>
                 <PaymentSubtitle className="text-bold">
-                  {grandTotalSummary.tokens.map((tokenName) => (
+                  {grandTotalSummary.tokens.map((tokenAddress) => (
                     <TokenImg
-                      token={tokenName}
+                      address={tokenAddress}
                       className="mr-2"
-                      key={tokenName}
+                      key={tokenAddress}
                     />
                   ))}
                 </PaymentSubtitle>
