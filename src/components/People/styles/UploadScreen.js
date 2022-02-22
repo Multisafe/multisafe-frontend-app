@@ -40,7 +40,6 @@ export default styled.div`
 
       li {
         font-size: 1.2rem;
-        font-weight: normal;
         text-align: left;
         color: #373737;
         padding-bottom: 0.5rem;
@@ -61,6 +60,10 @@ export default styled.div`
           font-size: 16px;
         }
       }
+    }
+
+    .accent {
+      font-weight: 500;
     }
   }
 `;

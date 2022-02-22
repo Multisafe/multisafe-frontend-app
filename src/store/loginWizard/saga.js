@@ -22,7 +22,7 @@ import {
   getParcelSafesEndpoint,
   getSafeOwnersEndpoint,
 } from "constants/endpoints";
-import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
+import {PROD_NETWORK_IDS, SUPPORTED_NETWORK_IDS} from "constants/networks";
 
 export function* getSafes(action) {
   const requestURL = `${getSafesEndpoint}?owner=${action.owner}&status=${action.status}`;
@@ -44,11 +44,13 @@ export function* getSafes(action) {
 }
 
 const filterSafes = (safes) => {
-  return process.env.NODE_ENV === "production"
+  return process.env.REACT_APP_CONFIG_ENV === "production"
     ? safes.filter(
-        ({ networkId }) => networkId !== CHAIN_IDS[NETWORK_NAMES.RINKEBY]
+        ({ networkId }) => PROD_NETWORK_IDS.includes(networkId)
       )
-    : safes;
+    : safes.filter(
+      ({ networkId }) => SUPPORTED_NETWORK_IDS.includes(networkId)
+    );
 };
 
 export function* getParcelSafes(action) {

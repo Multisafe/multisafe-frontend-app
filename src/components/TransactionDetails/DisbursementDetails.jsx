@@ -38,26 +38,28 @@ export default function DisbursementDetails({
         {paidTeammates &&
           paidTeammates.map(
             (
-              { firstName, lastName, address, salaryAmount, salaryToken, usd },
+              { firstName, lastName, address, salaryAmount, salaryToken, usd, tokenAddress },
               idx
-            ) => (
-              <tr key={`${idx}-${address}`}>
-                <td style={{ width: "30%" }}>
-                  {firstName} {lastName}
-                </td>
-                <td style={{ width: "30%" }}>
-                  <TokenImg token={salaryToken} />
+            ) => {
+              return (
+                <tr key={`${idx}-${address}`}>
+                  <td style={{ width: "30%" }}>
+                    {firstName} {lastName}
+                  </td>
+                  <td style={{ width: "30%" }}>
+                    <TokenImg address={tokenAddress} token={salaryToken} />
 
-                  {salaryToken === "USD"
-                    ? `${formatNumber(usd)} USD (${formatNumber(
+                    {salaryToken === "USD"
+                      ? `${formatNumber(usd)} USD (${formatNumber(
                         salaryAmount,
                         5
                       )} ${tokenCurrency})`
-                    : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
-                </td>
-                <td style={{ width: "40%" }}>{address}</td>
-              </tr>
-            )
+                      : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
+                  </td>
+                  <td style={{ width: "40%" }}>{address}</td>
+                </tr>
+              )
+            }
           )}
       </TableBody>
     </Table>

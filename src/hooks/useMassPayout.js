@@ -4,16 +4,13 @@ import {
   useContract,
   useTransactionEffects,
   useBatchTransactions,
-  useActiveWeb3React,
 } from "hooks";
 import { getAmountInWei } from "utils/tx-helpers";
 import ERC20ABI from "constants/abis/ERC20.json";
 import { useAddresses } from "hooks/useAddresses";
-import { GAS_TOKEN_SYMBOL_BY_ID } from "constants/networks";
 
 export default function useMassPayout() {
   const { ZERO_ADDRESS } = useAddresses();
-  const { chainId } = useActiveWeb3React();
 
   const [baseRequestBody, setBaseRequestBody] = useState();
   const { executeBatchTransactions, loadingTx, txHash, txData } =
@@ -37,7 +34,7 @@ export default function useMassPayout() {
 
     let transactions = [];
 
-    if (tokenDetails.name === GAS_TOKEN_SYMBOL_BY_ID[chainId]) {
+    if (tokenDetails.address === ZERO_ADDRESS) {
       transactions = receivers.reduce((tx, { address, salaryAmount }) => {
         const transferAmount = getAmountInWei(
           salaryAmount,
@@ -96,11 +93,11 @@ export default function useMassPayout() {
 
     for (let { receivers, token } of batch) {
       const tokenDetails = allTokenDetails.find(
-        ({ name }) => name === token.value
+        ({ address }) => address === token.value
       );
 
       if (tokenDetails) {
-        if (tokenDetails.name === GAS_TOKEN_SYMBOL_BY_ID[chainId]) {
+        if (tokenDetails.address === ZERO_ADDRESS) {
           const ethTransferTxs = receivers.reduce(
             (tx, { address, tokenValue }) => {
               const transferAmount = getAmountInWei(

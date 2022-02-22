@@ -22,6 +22,7 @@ import { getTokens } from "store/tokens/actions";
 import {
   makeSelectLoading as makeSelectLoadingTokens,
   makeSelectTokenList,
+  makeSelectTokensDetails,
   makeSelectTotalBalance,
 } from "store/tokens/selectors";
 import SelectFromTeamModal from "./SelectFromTeamModal";
@@ -151,6 +152,7 @@ export default function NewTransfer({ prefilledValues }) {
   const formData = useSelector(makeSelectFormData());
   const totalBalance = useSelector(makeSelectTotalBalance());
   const isMultiOwner = useSelector(makeSelectIsMultiOwner());
+  const tokenDetails = useSelector(makeSelectTokensDetails());
 
   useEffect(() => {
     if (safeAddress) {
@@ -163,7 +165,7 @@ export default function NewTransfer({ prefilledValues }) {
       setExistingTokenDetails(tokenList);
       setTokensDropdown(
         tokenList.map((details) => ({
-          value: details.name,
+          value: details.address,
           label: constructLabel({
             token: details.name,
             component: (
@@ -197,18 +199,17 @@ export default function NewTransfer({ prefilledValues }) {
       }
     } else if (transferSummary && step === STEPS.ONE) {
       const grandTotalSummary = transferSummary.reduce(
-        (totalSummary, { count, usdTotal, tokenName }) => {
+        (totalSummary, { count, usdTotal, tokenName, tokenAddress }) => {
           totalSummary.usdTotal += usdTotal;
           totalSummary.count += count;
 
-          if (!totalSummary.tokensMap[tokenName]) {
-            totalSummary.tokensMap[tokenName] = tokenName;
-            totalSummary.tokens.push(tokenName);
+          if (!totalSummary.tokens.includes(tokenAddress)) {
+            totalSummary.tokens.push(tokenAddress);
           }
 
           return totalSummary;
         },
-        { count: 0, usdTotal: 0, tokensMap: {}, tokens: [] }
+        { count: 0, usdTotal: 0, tokens: [] }
       );
 
       setGrandTotalSummary(grandTotalSummary);
@@ -305,6 +306,7 @@ export default function NewTransfer({ prefilledValues }) {
       const batch = formData.batch;
       const tokenValues = [];
       const tokenCurrencies = [];
+      const tokenAddresses = [];
       const addresses = [];
 
       batch.forEach(({ receivers, token }) => {
@@ -318,7 +320,8 @@ export default function NewTransfer({ prefilledValues }) {
         }
 
         tokenValues.push(totalTokenValue);
-        tokenCurrencies.push(token.value);
+        tokenAddresses.push(token.value);
+        tokenCurrencies.push(tokenDetails[token.value]?.symbol || "");
       });
 
       const encryptedTransferSummary = transferSummary.map(
@@ -385,6 +388,7 @@ export default function NewTransfer({ prefilledValues }) {
         tokenCurrency: "",
         tokenValues,
         tokenCurrencies,
+        tokenAddresses,
         fiatValue: grandTotalSummary.usdTotal,
         description: encryptedDescription,
         notes: encryptedNote,
@@ -478,7 +482,7 @@ export default function NewTransfer({ prefilledValues }) {
 
           <Accordion>
             {transferSummary.map((summary, index) => {
-              const { id, tokenName, receivers } = summary;
+              const { id, tokenName, receivers, tokenAddress } = summary;
 
               return (
                 <AccordionItem key={id} isOpen={index === 0}>
@@ -493,7 +497,7 @@ export default function NewTransfer({ prefilledValues }) {
                           <TransferRow key={`${address}-${idx}`}>
                             <div>{name}</div>
                             <div>
-                              <TokenImg token={tokenName} />{" "}
+                              <TokenImg address={tokenAddress} />{" "}
                               {formatNumber(tokenValue, 5)} {tokenName}
                             </div>
                             <div>{address}</div>
@@ -573,11 +577,11 @@ export default function NewTransfer({ prefilledValues }) {
                   Tokens used
                 </PaymentTitle>
                 <PaymentSubtitle className="text-bold">
-                  {grandTotalSummary.tokens.map((tokenName) => (
+                  {grandTotalSummary.tokens.map((tokenAddress) => (
                     <TokenImg
-                      token={tokenName}
+                      address={tokenAddress}
                       className="mr-2"
-                      key={tokenName}
+                      key={tokenAddress}
                     />
                   ))}
                 </PaymentSubtitle>
