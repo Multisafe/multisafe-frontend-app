@@ -38,7 +38,15 @@ export default function DisbursementDetails({
         {paidTeammates &&
           paidTeammates.map(
             (
-              { firstName, lastName, address, salaryAmount, salaryToken, usd, tokenAddress },
+              {
+                firstName,
+                lastName,
+                address,
+                salaryAmount,
+                salaryToken,
+                usd,
+                tokenAddress,
+              },
               idx
             ) => {
               return (
@@ -51,14 +59,14 @@ export default function DisbursementDetails({
 
                     {salaryToken === "USD"
                       ? `${formatNumber(usd)} USD (${formatNumber(
-                        salaryAmount,
-                        5
-                      )} ${tokenCurrency})`
+                          salaryAmount,
+                          5
+                        )} ${tokenCurrency})`
                       : `${formatNumber(salaryAmount, 5)} ${salaryToken}`}
                   </td>
                   <td style={{ width: "40%" }}>{address}</td>
                 </tr>
-              )
+              );
             }
           )}
       </TableBody>

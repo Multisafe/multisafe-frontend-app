@@ -1,7 +1,7 @@
 import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 import useActiveWeb3React from "./useActiveWeb3React";
-import {useSelector} from 'react-redux';
-import {makeSelectIsMultiOwner} from '../store/global/selectors';
+import { useSelector } from "react-redux";
+import { makeSelectIsMultiOwner } from "../store/global/selectors";
 
 export const FEATURE_NAMES = {
   SPENDING_LIMIT: "SPENDING_LIMIT",
