@@ -31,7 +31,7 @@ export const TOKEN_SYMBOLS = {
   xDAI: "xDAI",
 };
 
-export const getDefaultIconIfPossible = ({ symbol, address, icons }) => {
+export const getDefaultIconIfPossible = ({ symbol, address, icons, tokenDetails }) => {
   switch (symbol) {
     case TOKEN_SYMBOLS.DAI:
       return DAIIcon;
@@ -54,7 +54,10 @@ export const getDefaultIconIfPossible = ({ symbol, address, icons }) => {
     default:
       if (icons && icons[address]) return icons[address];
       if (icons && icons[symbol]) return icons[symbol];
-      return DefaultIcon;
+
+      const detailsBySymbol = Object.values(tokenDetails).find(({symbol: tokenSymbol}) => tokenSymbol === symbol);
+
+      return detailsBySymbol?.logoURI ?? DefaultIcon;
   }
 };
 
