@@ -40,69 +40,71 @@ export const NetworkSelect = () => {
         />
       ),
     },
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
-        />
-      ),
-    },
   ];
 
-  const testnetOptions = [
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.BSC],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.BSC]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.BSC]}
-        />
-      ),
-    },
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.GNOSIS],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
-        />
-      ),
-    },
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.ARBITRUM],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
-        />
-      ),
-    },
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.OPTIMISM],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
-        />
-      ),
-    },
-    {
-      value: CHAIN_IDS[NETWORK_NAMES.RINKEBY],
-      label: (
-        <NetworkLabel
-          chainId={CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
-          selected={chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
-        />
-      ),
-    },
-  ];
+  // const testnetOptions = [
+  //   {
+  //     value: CHAIN_IDS[NETWORK_NAMES.BSC],
+  //     label: (
+  //       <NetworkLabel
+  //         chainId={CHAIN_IDS[NETWORK_NAMES.BSC]}
+  //         selected={chainId === CHAIN_IDS[NETWORK_NAMES.BSC]}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     value: CHAIN_IDS[NETWORK_NAMES.GNOSIS],
+  //     label: (
+  //       <NetworkLabel
+  //         chainId={CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
+  //         selected={chainId === CHAIN_IDS[NETWORK_NAMES.GNOSIS]}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     value: CHAIN_IDS[NETWORK_NAMES.ARBITRUM],
+  //     label: (
+  //       <NetworkLabel
+  //         chainId={CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
+  //         selected={chainId === CHAIN_IDS[NETWORK_NAMES.ARBITRUM]}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     value: CHAIN_IDS[NETWORK_NAMES.OPTIMISM],
+  //     label: (
+  //       <NetworkLabel
+  //         chainId={CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
+  //         selected={chainId === CHAIN_IDS[NETWORK_NAMES.OPTIMISM]}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     value: CHAIN_IDS[NETWORK_NAMES.RINKEBY],
+  //     label: (
+  //       <NetworkLabel
+  //         chainId={CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
+  //         selected={chainId === CHAIN_IDS[NETWORK_NAMES.RINKEBY]}
+  //       />
+  //     ),
+  //   },
+  //   {
+  //     value: CHAIN_IDS[NETWORK_NAMES.AVALANCHE],
+  //     label: (
+  //       <NetworkLabel
+  //         chainId={CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+  //         selected={chainId === CHAIN_IDS[NETWORK_NAMES.AVALANCHE]}
+  //       />
+  //     ),
+  //   },
+  // ];
 
-  const options =
-    process.env.REACT_APP_CONFIG_ENV === "production"
-      ? mainnetOptions
-      : [...mainnetOptions, ...testnetOptions];
+  // const options =
+  //   process.env.REACT_APP_CONFIG_ENV === "production"
+  //     ? mainnetOptions
+  //     : [...mainnetOptions, ...testnetOptions];
+
+  const options = mainnetOptions;
 
   return (
     <StyledSelect

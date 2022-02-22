@@ -262,14 +262,14 @@ function UploadCsvModal(props) {
         <div className="points-to-remember">
           <div className="title">Some points to remember</div>
           <ul className="points">
+            <li className="accent">NEW: please add token address for every entry (check format CSV)</li>
             <li>Please make sure the file extension is .csv</li>
             <li>
-              Receiver address and token address are required fields. Rest of
-              the fields are optional
+              Receiver address and token address are required fields.
             </li>
             <li>You can add multiple currencies in the csv</li>
             <li>
-              If the currency is USD, please specify the "Pay USD in Token"
+              If the currency is USD, please specify the "Pay USD in Token" and token address
               field
             </li>
             <li>All entries can be edited later as well</li>
