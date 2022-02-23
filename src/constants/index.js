@@ -11,6 +11,7 @@ import xdaiIcon from "assets/icons/tokens/xDAI-icon.svg";
 import DefaultIcon from "assets/icons/tokens/Default-icon.jpg";
 import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 import { ADDRESSES } from "constants/addresses";
+import { isObject } from "lodash";
 
 export const DEFAULT_GAS_PRICE = "10000000000"; // 100 gwei
 export const ONE_GWEI = "1000000000";
@@ -31,7 +32,12 @@ export const TOKEN_SYMBOLS = {
   xDAI: "xDAI",
 };
 
-export const getDefaultIconIfPossible = ({ symbol, address, icons, tokenDetails }) => {
+export const getDefaultIconIfPossible = ({
+  symbol,
+  address,
+  icons,
+  tokenDetails,
+}) => {
   switch (symbol) {
     case TOKEN_SYMBOLS.DAI:
       return DAIIcon;
@@ -55,7 +61,11 @@ export const getDefaultIconIfPossible = ({ symbol, address, icons, tokenDetails 
       if (icons && icons[address]) return icons[address];
       if (icons && icons[symbol]) return icons[symbol];
 
-      const detailsBySymbol = Object.values(tokenDetails).find(({symbol: tokenSymbol}) => tokenSymbol === symbol);
+      const detailsBySymbol = isObject(tokenDetails)
+        ? Object.values(tokenDetails).find(
+            ({ symbol: tokenSymbol }) => tokenSymbol === symbol
+          )
+        : null;
 
       return detailsBySymbol?.logoURI ?? DefaultIcon;
   }
