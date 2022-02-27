@@ -21,7 +21,7 @@ const CurrencyConversionInputField = ({
 }) => {
   const [swapped, setSwapped] = useState(false);
   const [currentTokenName, setCurrentTokenName] = useState();
-  const [showNoConversionInfo, setShowNoConversionInfo] = useState(false);
+  const [noFiatConversionFound, setNoFiatConversionFound] = useState(false);
 
   const watchFiatValue = useWatch({ control, name: `${baseName}.fiatValue` });
   const watchTokenValue = useWatch({ control, name: `${baseName}.tokenValue` });
@@ -59,9 +59,9 @@ const CurrencyConversionInputField = ({
 
   useEffect(() => {
     if (!Number(conversionRate)) {
-      setShowNoConversionInfo(true);
+      setNoFiatConversionFound(true);
     } else {
-      setShowNoConversionInfo(false);
+      setNoFiatConversionFound(false);
     }
   }, [conversionRate]);
 
@@ -137,7 +137,7 @@ const CurrencyConversionInputField = ({
           control={control}
           name={`${baseName}.fiatValue`}
           rules={{
-            required: "Fiat amount is required",
+            required: noFiatConversionFound ? false : "Fiat amount is required",
             validate: (value) => {
               if (value < 0) return "Please check the fiat amount";
 
@@ -171,7 +171,7 @@ const CurrencyConversionInputField = ({
           )}
         />
 
-        {showNoConversionInfo && (
+        {noFiatConversionFound && (
           <>
             <Img
               id={`no-conversion-${baseName}`}

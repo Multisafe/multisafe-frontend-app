@@ -158,6 +158,7 @@ function AddTeamModal(props) {
               options={tokensDropdown}
               isSearchable
               isLoading={loadingTokenList}
+              defaultValue={null}
             />
           </div>
         </div>
