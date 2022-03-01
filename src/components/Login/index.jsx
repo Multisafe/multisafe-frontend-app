@@ -424,11 +424,11 @@ const Login = () => {
     switch (id) {
       case 1:
         ownerFlow = OWNER_FLOWS.INDIVIDUAL;
-        organisationType = ORGANISATION_TYPE.PRIVATE;
+        organisationType = ORGANISATION_TYPE.PUBLIC;
         break;
       case 2:
         ownerFlow = OWNER_FLOWS.COMPANY;
-        organisationType = ORGANISATION_TYPE.PRIVATE;
+        organisationType = ORGANISATION_TYPE.PUBLIC;
         break;
       case 3:
         ownerFlow = OWNER_FLOWS.DAO;
