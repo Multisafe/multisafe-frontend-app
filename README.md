@@ -29,6 +29,7 @@ To have the interface default to a different network when a wallet is not connec
 
 The interface will currently work on Rinkeby and Mainnet
 
+
 ## Contributions
 
 **Please open all pull requests against the `master` branch.**
