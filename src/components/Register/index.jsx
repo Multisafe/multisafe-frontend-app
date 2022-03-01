@@ -582,11 +582,11 @@ const Register = () => {
     switch (id) {
       case 1:
         flow = FLOWS.INDIVIDUAL;
-        organisationType = ORGANISATION_TYPE.PRIVATE;
+        organisationType = ORGANISATION_TYPE.PUBLIC;
         break;
       case 2:
         flow = FLOWS.COMPANY;
-        organisationType = ORGANISATION_TYPE.PRIVATE;
+        organisationType = ORGANISATION_TYPE.PUBLIC;
         break;
       case 3:
         flow = FLOWS.DAO;
