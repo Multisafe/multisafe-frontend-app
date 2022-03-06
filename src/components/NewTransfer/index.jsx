@@ -261,6 +261,7 @@ export default function NewTransfer({ prefilledValues }) {
     dispatch(selectStep(step + 1));
   };
 
+  // eslint-disable-next-line
   const showUploadCsvModal = () => {
     dispatch(show(UPLOAD_CSV_MODAL));
   };
@@ -422,7 +423,7 @@ export default function NewTransfer({ prefilledValues }) {
               <HowItWorks className="ml-2">How it works</HowItWorks>
             </HowItWorksContainer>
           </ExternalLink>
-          <Button
+          {/* <Button
             onClick={showUploadCsvModal}
             type="button"
             className="secondary-4"
@@ -430,7 +431,7 @@ export default function NewTransfer({ prefilledValues }) {
             width="12rem"
           >
             Upload CSV
-          </Button>
+          </Button> */}
           <Button
             onClick={resetForm}
             type="button"
