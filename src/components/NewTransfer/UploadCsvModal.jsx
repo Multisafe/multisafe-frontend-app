@@ -15,10 +15,7 @@ import { Modal, ModalHeader, ModalBody } from "components/common/Modal";
 import Img from "components/common/Img";
 import UploadSuccessIcon from "assets/icons/dashboard/upload-success-icon.svg";
 import UploadFailIcon from "assets/icons/dashboard/upload-fail-icon.svg";
-import {
-  makeSelectTokenList,
-  makeSelectTokensDetails,
-} from "store/tokens/selectors";
+import { makeSelectTokenList } from "store/tokens/selectors";
 import { formatNumber } from "utils/number-helpers";
 import { UploadScreen, UploadStatus } from "components/People/styles";
 import { Bullet } from "./styles/UploadCsv";
@@ -45,7 +42,6 @@ function UploadCsvModal(props) {
   const dispatch = useDispatch();
 
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const tokenDetails = useSelector(makeSelectTokensDetails());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const tokenList = useSelector(makeSelectTokenList());
 
@@ -177,7 +173,6 @@ function UploadCsvModal(props) {
     const invalidPayInUsd = !isValidField(
       FIELD_NAMES.PAY_USD_IN_TOKEN,
       tokenAddress,
-      tokenDetails,
       { tokenName }
     );
 
@@ -242,7 +237,7 @@ function UploadCsvModal(props) {
         </div>
         <div>
           <a
-            href="https://drive.google.com/file/d/1kKS_oOLhMrRFpI9UrUdWEvXrh91cj70o/view?usp=sharing"
+            href="https://drive.google.com/file/d/1Yv6VKuVDlWVwAHLQnGrJhGgkmzR_Mma5/view"
             rel="noreferrer noopener"
             target="_blank"
             className="format-csv"
@@ -262,15 +257,15 @@ function UploadCsvModal(props) {
         <div className="points-to-remember">
           <div className="title">Some points to remember</div>
           <ul className="points">
-            <li className="accent">NEW: please add token address for every entry (check format CSV)</li>
-            <li>Please make sure the file extension is .csv</li>
-            <li>
-              Receiver address and token address are required fields.
+            <li className="accent">
+              NEW: please add token address for every entry (check format CSV)
             </li>
+            <li>Please make sure the file extension is .csv</li>
+            <li>Receiver address and token address are required fields.</li>
             <li>You can add multiple currencies in the csv</li>
             <li>
-              If the currency is USD, please specify the "Pay USD in Token" and token address
-              field
+              If the currency is USD, please specify the "Pay USD in Token" and
+              token address field
             </li>
             <li>All entries can be edited later as well</li>
           </ul>

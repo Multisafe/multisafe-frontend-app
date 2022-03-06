@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { ethers } from "ethers";
 
 // check if the field is correct
@@ -13,12 +12,7 @@ export const FIELD_NAMES = {
   TOKEN_ADDRESS: "TOKEN_ADDRESS",
 };
 
-export const isValidField = (
-  fieldName: string,
-  value: number,
-  tokens: Array<{ value: string; label: ReactNode }>,
-  rest: any
-) => {
+export const isValidField = (fieldName: string, value: number, rest: any) => {
   switch (fieldName) {
     case FIELD_NAMES.FIRST_NAME:
     case FIELD_NAMES.LAST_NAME: {
@@ -34,18 +28,10 @@ export const isValidField = (
       if (value < 0 || isNaN(Number(value))) return false;
       return true;
     }
-    case FIELD_NAMES.TOKEN: {
-      if (!value || typeof value !== "string" || tokens[value] === undefined)
-        return false;
-      return true;
-    }
 
     case FIELD_NAMES.PAY_USD_IN_TOKEN: {
       const { tokenName } = rest;
-      if (
-        tokenName === "USD" &&
-        (!value || typeof value !== "string" || tokens[value] === undefined)
-      )
+      if (tokenName === "USD" && !ethers.utils.isAddress(String(value)))
         return false;
       return true;
     }
