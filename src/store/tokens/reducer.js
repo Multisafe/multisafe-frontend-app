@@ -71,20 +71,6 @@ const reducer = (state = initialState, action) =>
             })
             .filter(Boolean);
 
-        const defaultTokenDetails = DEFAULT_TOKEN_DETAILS[networkId];
-
-        if (allTokenDetails.length < 4) {
-          for (let i = 0; i < defaultTokenDetails.length; i++) {
-            if (
-              !allTokenDetails.find(
-                ({ address }) => address === defaultTokenDetails[i].address
-              )
-            ) {
-              allTokenDetails.push(defaultTokenDetails[i]);
-            }
-          }
-        }
-
         const total = allTokenDetails.reduce(
           (sum, token) => (sum += token.usd ? parseFloat(token.usd) : 0),
           0
