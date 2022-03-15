@@ -18,7 +18,11 @@ type Props = {
 };
 
 function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
-  const renderTable = (receivers: Receivers, tokenName: string, tokenAddress?: string) => (
+  const renderTable = (
+    receivers: Receivers,
+    tokenName: string,
+    tokenAddress?: string
+  ) => (
     <Table>
       <TableHead>
         <tr>
@@ -76,7 +80,9 @@ function FlexibleMassPayoutDetails({ paidTeammates }: Props) {
           return (
             <AccordionItem key={id} isOpen={index === 0}>
               <AccordionHeader>Batch {id + 1}</AccordionHeader>
-              <AccordionBody>{renderTable(receivers, tokenName, tokenAddress)}</AccordionBody>
+              <AccordionBody>
+                {renderTable(receivers, tokenName, tokenAddress)}
+              </AccordionBody>
             </AccordionItem>
           );
         })}

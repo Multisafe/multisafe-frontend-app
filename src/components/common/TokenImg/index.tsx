@@ -2,7 +2,10 @@ import { useSelector } from "react-redux";
 
 import Img from "components/common/Img";
 import { getDefaultIconIfPossible } from "constants/index";
-import { makeSelectTokenIcons, makeSelectTokensDetails } from "store/tokens/selectors";
+import {
+  makeSelectTokenIcons,
+  makeSelectTokensDetails,
+} from "store/tokens/selectors";
 
 type Props = {
   token: string;
@@ -27,7 +30,7 @@ export default function TokenImg({
         symbol: token,
         address: tokenAddress,
         icons,
-        tokenDetails
+        tokenDetails,
       })}
       alt="token"
       className={className || "mr-1"}
