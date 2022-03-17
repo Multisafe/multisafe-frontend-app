@@ -84,6 +84,7 @@ function PeopleDetailsSidebar() {
       departmentName,
       salaryAmount,
       salaryToken,
+      salaryTokenAddress,
       address,
     } = peopleDetails;
 
@@ -92,9 +93,10 @@ function PeopleDetailsSidebar() {
         ? tokenList
             .filter((details) => details.name === salaryToken)
             .map((details) => ({
-              value: details.name,
+              value: details.address,
               label: constructLabel({
                 token: details.name,
+                address: details.address,
                 component: (
                   <div>
                     {formatNumber(details.balance, 5)} {details.name}
@@ -104,7 +106,7 @@ function PeopleDetailsSidebar() {
               }),
             }))[0]
         : {
-            value: tokenList[0].name,
+            value: tokenList[0].address,
             label: constructLabel({
               token: tokenList[0].name,
               component: (
@@ -131,6 +133,7 @@ function PeopleDetailsSidebar() {
                   isDisabled: 1,
                   tokenValue: salaryToken !== "USD" ? salaryAmount : "",
                   fiatValue: salaryToken === "USD" ? salaryAmount : "",
+                  tokenAddress: salaryTokenAddress,
                 },
               ],
             },
