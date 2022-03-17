@@ -240,12 +240,12 @@ function UploadCsvModal(props) {
         </div>
         <div>
           <a
-            href="https://drive.google.com/file/d/1kKS_oOLhMrRFpI9UrUdWEvXrh91cj70o/view?usp=sharing"
+            href="https://drive.google.com/file/d/1kPP7gsBveUlzmbI0mSQhdElDyPD5HdHv"
             rel="noreferrer noopener"
             target="_blank"
             className="format-csv"
           >
-            Download Format CSV
+            Download Format CSV (Updated)
           </a>
         </div>
         {invalidCsvData && (
@@ -260,16 +260,10 @@ function UploadCsvModal(props) {
         <div className="points-to-remember">
           <div className="title">Some points to remember</div>
           <ul className="points">
-            <li className="accent">
-              NEW: please add token address for every entry (check format CSV)
-            </li>
             <li>Please make sure the file extension is .csv</li>
             <li>Receiver address and token address are required fields.</li>
             <li>You can add multiple currencies in the csv</li>
-            <li>
-              If the currency is USD, please specify the "Pay USD in Token" and
-              token address field
-            </li>
+            <li>If the currency is USD, please specify the "Amount USD"</li>
             <li>All entries can be edited later as well</li>
           </ul>
         </div>
