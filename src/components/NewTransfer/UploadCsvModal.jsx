@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { connectModal as reduxModal } from "redux-modal";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -49,6 +49,14 @@ function UploadCsvModal(props) {
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const tokenList = useSelector(makeSelectTokenList());
 
+  const tokenListMap = useMemo(() => {
+    return tokenList.reduce((acc, curr) => {
+      const { address } = curr;
+      acc[address] = curr;
+      return acc;
+    }, {});
+  }, [tokenList]);
+
   useEffect(() => {
     setInvalidCsvData(false);
     setInvalidCsvDataMessage();
@@ -86,10 +94,9 @@ function UploadCsvModal(props) {
           lastName: arr[1],
           address: arr[2],
           tokenValue: arr[3],
-          tokenAddress: arr[4]?.toLowerCase(),
-          tokenName: arr[5],
-          payUsdInToken: arr[6],
-          departmentName: arr[7],
+          usdValue: arr[4],
+          tokenAddress: arr[5]?.toLowerCase(),
+          departmentName: arr[6],
         },
       ];
     }, []);
@@ -111,41 +118,39 @@ function UploadCsvModal(props) {
     if (!encryptionKey || !ownerSafeAddress) return;
 
     const batch = Object.keys(tokenToPaymentDetailsMap).map((tokenAddress) => {
-      const token = tokenList
-        .filter((details) => details.address === tokenAddress)
-        .map((details) => ({
-          value: details.address,
+      const token = tokenListMap[tokenAddress];
+      const details = tokenDetails[tokenAddress];
+
+      return {
+        token: {
+          value: token.address,
           label: constructLabel({
-            token: details.address,
+            token: token.address,
             component: (
               <div>
-                {formatNumber(details.balance, 5)} {details.symbol}
+                {formatNumber(token.balance, 5)} {token?.name}
               </div>
             ),
             imgUrl: details.icon,
           }),
-        }))[0];
-
-      return {
-        token,
+        },
         receivers: tokenToPaymentDetailsMap[tokenAddress].map(
           ({
             firstName,
             lastName,
             address,
             tokenValue,
+            usdValue,
             tokenAddress,
-            tokenName,
-            payUsdInToken,
             departmentName,
           }) => ({
             name: formatText(`${firstName} ${lastName}`),
             address,
-            tokenValue: tokenName !== "USD" ? tokenValue : "",
+            tokenValue: !usdValue ? tokenValue : "",
             isDisabled: 0,
             departmentName,
-            tokenName: tokenName === "USD" ? payUsdInToken : tokenName,
-            fiatValue: tokenName === "USD" ? tokenValue : "",
+            tokenName: token.name,
+            fiatValue: !!usdValue ? usdValue : "",
             tokenAddress,
           })
         ),
@@ -161,28 +166,29 @@ function UploadCsvModal(props) {
     lastName,
     address,
     tokenValue,
-    tokenName,
-    payUsdInToken,
-    departmentName,
+    usdValue,
     tokenAddress,
+    departmentName,
     idx,
   }) => {
+    const token = tokenListMap[tokenAddress];
+
     const invalidName =
       !isValidField(FIELD_NAMES.FIRST_NAME, firstName) ||
       !isValidField(FIELD_NAMES.LAST_NAME, lastName);
     const invalidAddress = !isValidField(FIELD_NAMES.ADDRESS, address);
-    const invalidPayDetails =
-      !isValidField(FIELD_NAMES.TOKEN_VALUE, tokenValue) ||
-      !isValidField(FIELD_NAMES.TOKEN_ADDRESS, tokenAddress);
-    const invalidPayInUsd = !isValidField(
-      FIELD_NAMES.PAY_USD_IN_TOKEN,
+    const invalidToken = !isValidField(
+      FIELD_NAMES.TOKEN_ADDRESS,
       tokenAddress,
-      tokenDetails,
-      { tokenName }
+      tokenListMap
+    );
+    const invalidPayAmount = !isValidField(
+      FIELD_NAMES.TOKEN_VALUE,
+      tokenValue || usdValue
     );
 
     const isCsvDataInvalid =
-      invalidName || invalidAddress || invalidPayDetails || invalidPayInUsd;
+      invalidName || invalidAddress || invalidToken || invalidPayAmount;
 
     if (isCsvDataInvalid && !invalidCsvData) {
       setInvalidCsvData(true);
@@ -200,29 +206,21 @@ function UploadCsvModal(props) {
           <InvalidBullet isInvalid={invalidAddress} /> {address}
         </td>
         <td
-          className={`${invalidPayDetails && "text-red"}`}
-          style={{ width: "13%" }}
+          className={`${(invalidToken || invalidPayAmount) && "text-red"}`}
+          style={{ width: "25%" }}
         >
-          <InvalidBullet isInvalid={invalidPayDetails} />
+          <InvalidBullet isInvalid={invalidToken || invalidPayAmount} />
           <span>
-            <TokenImg token={tokenName} className="mr-2" />
+            <TokenImg
+              token={token?.name}
+              address={tokenAddress}
+              className="mr-2"
+            />
             <span>
-              {formatNumber(tokenValue, 5)} {tokenName}
+              {formatNumber(tokenValue || usdValue, 5)}
+              {usdValue ? " USD in" : ""} {token?.name}
             </span>
           </span>
-        </td>
-        <td
-          className={`${invalidPayInUsd && "text-red"}`}
-          style={{ width: "12%" }}
-        >
-          <InvalidBullet isInvalid={invalidPayInUsd} />
-
-          {payUsdInToken && (
-            <span>
-              <TokenImg token={payUsdInToken} className="mr-2" />
-              <span>{payUsdInToken}</span>
-            </span>
-          )}
         </td>
         <td style={{ width: "15%" }}>{departmentName}</td>
       </tr>
@@ -242,12 +240,12 @@ function UploadCsvModal(props) {
         </div>
         <div>
           <a
-            href="https://drive.google.com/file/d/1kKS_oOLhMrRFpI9UrUdWEvXrh91cj70o/view?usp=sharing"
+            href="https://drive.google.com/file/d/1kPP7gsBveUlzmbI0mSQhdElDyPD5HdHv"
             rel="noreferrer noopener"
             target="_blank"
             className="format-csv"
           >
-            Download Format CSV
+            Download Format CSV (Updated)
           </a>
         </div>
         {invalidCsvData && (
@@ -262,16 +260,10 @@ function UploadCsvModal(props) {
         <div className="points-to-remember">
           <div className="title">Some points to remember</div>
           <ul className="points">
-            <li className="accent">NEW: please add token address for every entry (check format CSV)</li>
             <li>Please make sure the file extension is .csv</li>
-            <li>
-              Receiver address and token address are required fields.
-            </li>
+            <li>Receiver address and token address are required fields.</li>
             <li>You can add multiple currencies in the csv</li>
-            <li>
-              If the currency is USD, please specify the "Pay USD in Token" and token address
-              field
-            </li>
+            <li>If the currency is USD, please specify the "Amount USD"</li>
             <li>All entries can be edited later as well</li>
           </ul>
         </div>
@@ -309,9 +301,8 @@ function UploadCsvModal(props) {
             <tr>
               <th style={{ width: "20%" }}>Name</th>
               <th style={{ width: "40%" }}>Address</th>
-              <th style={{ width: "13%" }}>Pay Amount</th>
-              <th style={{ width: "12%" }}>Pay USD In</th>
-              <th style={{ width: "17%" }}>Team</th>
+              <th style={{ width: "25%" }}>Pay Amount</th>
+              <th style={{ width: "15%" }}>Team</th>
             </tr>
           </TableHead>
 
@@ -325,8 +316,7 @@ function UploadCsvModal(props) {
                   lastName,
                   address,
                   tokenValue,
-                  tokenName,
-                  payUsdInToken,
+                  usdValue,
                   departmentName,
                   tokenAddress,
                 },
@@ -337,8 +327,7 @@ function UploadCsvModal(props) {
                   lastName,
                   address,
                   tokenValue,
-                  tokenName,
-                  payUsdInToken,
+                  usdValue,
                   departmentName,
                   tokenAddress,
                   idx,

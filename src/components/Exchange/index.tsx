@@ -30,10 +30,7 @@ import { constructLabel } from "utils/tokens";
 import { useExchange } from "hooks/useExchange";
 import { getAmountFromWei, getAmountInWei } from "utils/tx-helpers";
 import { ExchangeDetails } from "./ExchangeDetails";
-import {
-  DEFAULT_SLIPPAGE,
-  GAS_TOKEN_ADDRESS,
-} from "./constants";
+import { DEFAULT_SLIPPAGE, GAS_TOKEN_ADDRESS } from "./constants";
 import SwapIcon from "assets/icons/dashboard/swap-exchange-side.svg";
 import { formatNumber } from "utils/number-helpers";
 import { InfoCard } from "../People/styles";
