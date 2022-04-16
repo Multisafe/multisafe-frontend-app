@@ -7,7 +7,7 @@ import {
   makeSelectOwnerSafeAddress,
   makeSelectIsReadOnly,
 } from "store/global/selectors";
-import { useEncryptionKey } from "hooks";
+import { useActiveWeb3React, useEncryptionKey } from "hooks";
 import Dropzone from "components/common/Dropzone";
 import { FIELD_NAMES, isValidField } from "store/new-transfer/utils";
 import { Table, TableHead, TableBody } from "components/common/Table";
@@ -26,8 +26,17 @@ import { constructLabel } from "utils/tokens";
 import { formatText } from "utils/string-utils";
 import { updateForm } from "store/new-transfer/actions";
 import TokenImg from "components/common/TokenImg";
+import { CHAIN_IDS, NETWORK_NAMES } from "constants/networks";
 
 export const MODAL_NAME = "upload-csv-transfer-modal";
+
+const DEFAULT_FORMAT_EXAMPLE =
+  "https://drive.google.com/file/d/1kPP7gsBveUlzmbI0mSQhdElDyPD5HdHv";
+const FORMAT_EXAMPLE_BY_CHAIN = {
+  [CHAIN_IDS[NETWORK_NAMES.ETHEREUM]]: DEFAULT_FORMAT_EXAMPLE,
+  [CHAIN_IDS[NETWORK_NAMES.POLYGON]]:
+    "https://drive.google.com/file/d/14zCfECINphZgCylW8mBfO3y7FE-Skd9O",
+};
 
 function InvalidBullet({ isInvalid }) {
   return isInvalid ? <Bullet /> : null;
@@ -35,6 +44,7 @@ function InvalidBullet({ isInvalid }) {
 function UploadCsvModal(props) {
   const { show, handleHide } = props;
   const [encryptionKey] = useEncryptionKey();
+  const { chainId } = useActiveWeb3React();
 
   const [csvData, setCSVData] = useState();
   const [invalidCsvData, setInvalidCsvData] = useState(false);
@@ -171,7 +181,7 @@ function UploadCsvModal(props) {
     departmentName,
     idx,
   }) => {
-    const token = tokenListMap[tokenAddress];
+    const details = tokenDetails[tokenAddress];
 
     const invalidName =
       !isValidField(FIELD_NAMES.FIRST_NAME, firstName) ||
@@ -212,13 +222,13 @@ function UploadCsvModal(props) {
           <InvalidBullet isInvalid={invalidToken || invalidPayAmount} />
           <span>
             <TokenImg
-              token={token?.name}
+              token={details?.symbol}
               address={tokenAddress}
               className="mr-2"
             />
             <span>
               {formatNumber(tokenValue || usdValue, 5)}
-              {usdValue ? " USD in" : ""} {token?.name}
+              {usdValue ? " USD in" : ""} {details?.symbol}
             </span>
           </span>
         </td>
@@ -228,6 +238,9 @@ function UploadCsvModal(props) {
   };
 
   const renderUploadScreen = () => {
+    const formatExampleLink =
+      FORMAT_EXAMPLE_BY_CHAIN[chainId] || DEFAULT_FORMAT_EXAMPLE;
+
     return (
       <UploadScreen>
         <div className="text">Pay to multiple people quickly.</div>
@@ -240,7 +253,7 @@ function UploadCsvModal(props) {
         </div>
         <div>
           <a
-            href="https://drive.google.com/file/d/1kPP7gsBveUlzmbI0mSQhdElDyPD5HdHv"
+            href={formatExampleLink}
             rel="noreferrer noopener"
             target="_blank"
             className="format-csv"
