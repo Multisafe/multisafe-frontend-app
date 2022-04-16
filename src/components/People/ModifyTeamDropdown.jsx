@@ -33,7 +33,7 @@ export default function ModifyTeamDropdown({ departmentId }) {
         defaultValues: {
           name,
           token: {
-            value: tokenInfo.symbol,
+            value: `${tokenInfo.address} ${tokenInfo.symbol}`,
             label: constructLabel({
               token: tokenInfo.symbol,
               imgUrl: tokenInfo.logoURI,
