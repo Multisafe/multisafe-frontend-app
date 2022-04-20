@@ -81,8 +81,9 @@ export const useEstimateTransaction = () => {
       }
     );
     const { safeTxGas } = await estimateResponse.json();
-
-    return { safeTxGas, baseGas, lastUsedNonce };
+    // safeTxGas fallback - when polygon estimate fails
+    // Note: larger tx might fail due to OOG
+    return { safeTxGas: safeTxGas ?? 100000, baseGas, lastUsedNonce };
   };
 
   const estimateTransaction = async (params: EstimateParamsSafeRelay) => {
