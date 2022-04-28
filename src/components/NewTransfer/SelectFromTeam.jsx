@@ -99,10 +99,10 @@ export default function SelectFromTeam(props) {
   useEffect(() => {
     if (allTeams && allTeams.length > 0 && !teamsDropdown) {
       const dropdownList = allTeams
-        .filter(
-          ({ tokenInfo }) =>
-            tokenInfo.symbol === selectedToken || tokenInfo.symbol === "USD"
-        )
+        // .filter(
+        //   ({ tokenInfo }) =>
+        //     tokenInfo.symbol === selectedToken || tokenInfo.symbol === "USD"
+        // )
         .map(({ departmentId, name }) => ({
           value: departmentId,
           label: name,
