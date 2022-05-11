@@ -17,12 +17,12 @@ import UploadSuccessIcon from "assets/icons/dashboard/upload-success-icon.svg";
 import UploadFailIcon from "assets/icons/dashboard/upload-fail-icon.svg";
 import {
   makeSelectTokenList,
-  makeSelectTokensDetails,
+  // makeSelectTokensDetails,
 } from "store/tokens/selectors";
 import { formatNumber } from "utils/number-helpers";
 import { UploadScreen, UploadStatus } from "components/People/styles";
 import { Bullet } from "./styles/UploadCsv";
-import { constructLabel } from "utils/tokens";
+// import { constructLabel } from "utils/tokens";
 import { formatText } from "utils/string-utils";
 import { updateForm } from "store/new-transfer/actions";
 import TokenImg from "components/common/TokenImg";
@@ -45,7 +45,7 @@ function UploadCsvModal(props) {
   const dispatch = useDispatch();
 
   const ownerSafeAddress = useSelector(makeSelectOwnerSafeAddress());
-  const tokenDetails = useSelector(makeSelectTokensDetails());
+  // const tokenDetails = useSelector(makeSelectTokensDetails());
   const isReadOnly = useSelector(makeSelectIsReadOnly());
   const tokenList = useSelector(makeSelectTokenList());
 
@@ -119,20 +119,21 @@ function UploadCsvModal(props) {
 
     const batch = Object.keys(tokenToPaymentDetailsMap).map((tokenAddress) => {
       const token = tokenListMap[tokenAddress];
-      const details = tokenDetails[tokenAddress];
+      // const details = tokenDetails[tokenAddress];
 
       return {
         token: {
           value: token.address,
-          label: constructLabel({
-            token: token.address,
-            component: (
-              <div>
-                {formatNumber(token.balance, 5)} {token?.name}
-              </div>
-            ),
-            imgUrl: details.icon,
-          }),
+          label: `${formatNumber(token.balance, 5)} ${token?.name}`,
+          // label: constructLabel({
+          //   token: token.address,
+          //   component: (
+          //     <div>
+          //       {formatNumber(token.balance, 5)} {token?.name}
+          //     </div>
+          //   ),
+          //   imgUrl: details.icon,
+          // }),
         },
         receivers: tokenToPaymentDetailsMap[tokenAddress].map(
           ({
