@@ -22,7 +22,8 @@ export const Header = styled.div`
 
 export const Body = styled.div<{ toggle: boolean }>`
   overflow-y: hidden;
-  max-height: ${({ toggle }) => (toggle ? "500rem" : "0")};
+  max-height: ${({ toggle }) => (toggle ? "300rem" : "0")};
+  overflow-y: auto;
   transition: max-height 0.1s ease-in-out;
 `;
 
